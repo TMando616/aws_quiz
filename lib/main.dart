@@ -1,8 +1,13 @@
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'screens/quiz_screen.dart';
 
 void main() {
+  // runApp前にプラグイン（ネイティブ側）を使うときに必要
+  WidgetsFlutterBinding.ensureInitialized();
+  // 広告SDKの初期化。完了を待たずに画面を出す（広告は読み込めた時点で表示される）
+  MobileAds.instance.initialize();
   runApp(const MyApp());
 }
 

@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../ads/banner_ad_view.dart';
+import '../ads/interstitial_ad_manager.dart';
 import '../data/question_repository.dart';
 import '../models/question.dart';
 
@@ -21,10 +23,19 @@ class _QuizScreenState extends State<QuizScreen> {
   int _correctCount = 0;
   bool _finished = false;
 
+  final _interstitial = InterstitialAdManager();
+
   @override
   void initState() {
     super.initState();
     _future = QuestionRepository().load(widget.exam);
+    _interstitial.load();
+  }
+
+  @override
+  void dispose() {
+    _interstitial.dispose();
+    super.dispose();
   }
 
   void _toggle(Question q, int i) {
@@ -48,14 +59,19 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _next(int total) {
+    if (_index + 1 >= total) {
+      // 最後の問題のあとは、全画面広告を挟んでから結果画面へ
+      _interstitial.show(
+        onDone: () {
+          if (mounted) setState(() => _finished = true);
+        },
+      );
+      return;
+    }
     setState(() {
-      if (_index + 1 >= total) {
-        _finished = true;
-      } else {
-        _index++;
-        _selected.clear();
-        _answered = false;
-      }
+      _index++;
+      _selected.clear();
+      _answered = false;
     });
   }
 
@@ -81,7 +97,9 @@ class _QuizScreenState extends State<QuizScreen> {
           );
         }
         if (!snapshot.hasData) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         final questions = snapshot.data!;
         if (_finished) return _buildResult(questions.length);
@@ -98,9 +116,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final isCorrect = q.isCorrect(_selected);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.exam} 一問一答（${_index + 1}/$total）'),
-      ),
+      appBar: AppBar(title: Text('${widget.exam} 一問一答（${_index + 1}/$total）')),
       body: SafeArea(
         child: Column(
           children: [
@@ -113,8 +129,9 @@ class _QuizScreenState extends State<QuizScreen> {
                   children: [
                     Text(
                       q.domain,
-                      style: theme.textTheme.labelMedium
-                          ?.copyWith(color: theme.colorScheme.primary),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(q.question, style: theme.textTheme.bodyLarge),
@@ -160,6 +177,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 ),
               ),
             ),
+            const BannerAdView(),
           ],
         ),
       ),
@@ -192,7 +210,9 @@ class _QuizScreenState extends State<QuizScreen> {
         trailing: Icon(
           q.isMultiple
               ? (selected ? Icons.check_box : Icons.check_box_outline_blank)
-              : (selected ? Icons.radio_button_checked : Icons.radio_button_off),
+              : (selected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_off),
         ),
         onTap: () => _toggle(q, i),
       ),
@@ -203,6 +223,7 @@ class _QuizScreenState extends State<QuizScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text('${widget.exam} 結果')),
+      bottomNavigationBar: const SafeArea(child: BannerAdView()),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -210,8 +231,9 @@ class _QuizScreenState extends State<QuizScreen> {
             Text('$total問中', style: theme.textTheme.titleMedium),
             Text(
               '$_correctCount問 正解',
-              style: theme.textTheme.displaySmall
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 24),
             FilledButton(onPressed: _restart, child: const Text('もう一度解く')),

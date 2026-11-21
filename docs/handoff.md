@@ -94,12 +94,33 @@ lib/main.dart.orig                 元のテンプレートのバックアップ
 - `domain`は、後で分野別の正答率を出すために、公式の試験ガイドの分野名をそのまま入れる
 - 試験を追加するときは`assets/questions/<試験名の小文字>.json`を置く（例：`dva.json`）
 
+### 広告の実装（2026-11-21 追加）
+
+```
+lib/ads/ad_config.dart              広告ユニットIDの置き場所。今はGoogle公式のテスト用ID
+lib/ads/banner_ad_view.dart         画面幅に合わせたバナー。読み込めるまでは何も表示しない
+lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
+```
+
+- バナー：問題画面の「回答する」ボタンの下と、結果画面の下に表示
+- 全画面広告：最後の問題で「結果を見る」を押したときに1回だけ表示。読み込めていなければ出さずに結果画面へ進む
+  - 問題を切り替えるたびに全画面広告を出すと、使い勝手が悪いうえにAdMobのポリシーにも引っかかりやすいので、1周につき1回にした
+- アプリIDは `ios/Runner/Info.plist`（`GADApplicationIdentifier`）と `android/app/src/main/AndroidManifest.xml` に書いてある。どちらもテスト用ID
+- テストでは広告SDKが動かないので、`AdConfig.enabled = false` にしてから画面を作る
+- iOSシミュレーターでテスト用のバナーが表示されることを確認済み。全画面広告は画面操作で要確認
+
+**リリース前にやること（広告まわり）**
+- AdMobでアプリと広告ユニットを作り、`ad_config.dart`・`Info.plist`・`AndroidManifest.xml` の3か所を本番IDに差し替える
+- `Info.plist` の `SKAdNetworkItems` にGoogle推奨の一覧を追加する（今はGoogleの1件だけ）
+- 広告の同意（UMP SDK。`google_mobile_ads` に同梱）と、iOSのトラッキング許可（ATT）のダイアログ
+- プライバシーポリシーのページを用意する（広告IDの利用を明記。App Storeの審査で必須）
+
 ## 6. 次にやること（優先順）
 
 1. ~~**ビルドして動作確認**~~：2026-11-21 起動まで確認済み。回答→解説→結果画面の流れは実機操作で要確認
 2. ~~**gitの初期化**~~：2026-11-21 済（`main` ブランチ、リモートは未設定）
 3. **SAPの問題を30問程度まで増やす**（本人が作成。目安は最初のバージョンで30問）
-4. **AdMobの組み込み**：`google_mobile_ads`。まずはテスト用の広告ユニットIDで、問題の切り替え時や結果画面に表示
+4. ~~**AdMobの組み込み**~~：2026-11-21 テスト用IDで組み込み済み（下記「広告の実装」参照）
 5. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アプリ名、アイコン、プライバシー対応（広告の同意画面）
 6. Androidの環境構築とGoogle Playへの公開
 
