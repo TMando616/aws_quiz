@@ -1,22 +1,64 @@
+/// 選択肢1つ分。解説は「なぜ正解か／なぜ不正解か」
+class Choice {
+  const Choice({required this.text, required this.explanation});
+
+  final String text;
+  final String explanation;
+
+  factory Choice.fromJson(Map<String, dynamic> json) {
+    return Choice(
+      text: json['text'] as String,
+      explanation: json['explanation'] as String,
+    );
+  }
+}
+
+/// 解説の根拠となる公式ドキュメントなどへのリンク
+class Reference {
+  const Reference({required this.title, required this.url});
+
+  final String title;
+  final String url;
+
+  factory Reference.fromJson(Map<String, dynamic> json) {
+    return Reference(
+      title: json['title'] as String,
+      url: json['url'] as String,
+    );
+  }
+}
+
 /// 1問分のデータ。assets/questions/*.json の1要素に対応する。
 class Question {
   const Question({
     required this.id,
-    required this.domain,
+    required this.type,
+    required this.domainId,
     required this.question,
     required this.choices,
     required this.answers,
     required this.explanation,
+    required this.references,
   });
 
+  /// このバージョンのアプリが表示できる問題の種類。
+  /// 並べ替えなど新しい種類を足したとき、古いアプリはそれ以外を読み飛ばす
+  static const supportedTypes = {'choice'};
+
   final String id;
-  final String domain;
+
+  /// 問題の種類。省略時は 'choice'（単一選択・複数選択）
+  final String type;
+
+  /// exams.json の分野ID（例: d1）
+  final String domainId;
   final String question;
-  final List<String> choices;
+  final List<Choice> choices;
 
   /// 正解の選択肢のインデックス（複数選択問題なら2つ以上）
   final List<int> answers;
   final String explanation;
+  final List<Reference> references;
 
   bool get isMultiple => answers.length > 1;
 
@@ -27,11 +69,17 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       id: json['id'] as String,
-      domain: json['domain'] as String,
+      type: json['type'] as String? ?? 'choice',
+      domainId: json['domain'] as String,
       question: json['question'] as String,
-      choices: List<String>.from(json['choices'] as List),
+      choices: (json['choices'] as List)
+          .map((e) => Choice.fromJson(e as Map<String, dynamic>))
+          .toList(),
       answers: List<int>.from(json['answers'] as List),
       explanation: json['explanation'] as String,
+      references: ((json['references'] as List?) ?? const [])
+          .map((e) => Reference.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

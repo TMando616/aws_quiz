@@ -9,8 +9,10 @@ import 'dart:io';
 class AdConfig {
   AdConfig._();
 
-  /// テストでは広告SDKが動かないので、falseにして広告を出さないようにする
-  static bool enabled = true;
+  /// falseにすると広告も同意画面も出さない。
+  /// テスト（広告SDKが動かない）や、開発中の画面確認で使う。
+  /// `flutter run --dart-define=ADS=false` でも切り替えられる
+  static bool enabled = const bool.fromEnvironment('ADS', defaultValue: true);
 
   /// 画面下に常に出すバナー
   static String get bannerUnitId => Platform.isAndroid

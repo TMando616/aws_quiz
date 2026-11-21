@@ -1,0 +1,218 @@
+{
+  "updatedAt": "2026-11-21",
+  "exams": [
+    {
+      "id": "clf",
+      "code": "CLF-C02",
+      "shortName": "CLF",
+      "name": "Cloud Practitioner",
+      "nameJa": "クラウドプラクティショナー",
+      "level": "foundational",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "クラウドのコンセプト", "weight": 24 },
+        { "id": "d2", "name": "セキュリティとコンプライアンス", "weight": 30 },
+        { "id": "d3", "name": "クラウドテクノロジーとサービス", "weight": 34 },
+        { "id": "d4", "name": "請求、料金、サポート", "weight": 12 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 90 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02.html"
+    },
+    {
+      "id": "aif",
+      "code": "AIF-C01",
+      "shortName": "AIF",
+      "name": "AI Practitioner",
+      "nameJa": "AIプラクティショナー",
+      "level": "foundational",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "AI と ML の基礎", "weight": 20 },
+        { "id": "d2", "name": "GenAI の基礎", "weight": 24 },
+        { "id": "d3", "name": "基盤モデルの応用", "weight": 28 },
+        { "id": "d4", "name": "責任ある AI に関するガイドライン", "weight": 14 },
+        { "id": "d5", "name": "AI ソリューションのセキュリティ、コンプライアンス、ガバナンス", "weight": 14 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 90 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/ai-practitioner-01/ai-practitioner-01.html"
+    },
+    {
+      "id": "saa",
+      "code": "SAA-C03",
+      "shortName": "SAA",
+      "name": "Solutions Architect - Associate",
+      "nameJa": "ソリューションアーキテクト - アソシエイト",
+      "level": "associate",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "セキュアなアーキテクチャの設計", "weight": 30 },
+        { "id": "d2", "name": "レジリエントなアーキテクチャの設計", "weight": 26 },
+        { "id": "d3", "name": "高パフォーマンスなアーキテクチャの設計", "weight": 24 },
+        { "id": "d4", "name": "コストを最適化したアーキテクチャの設計", "weight": 20 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 130 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html"
+    },
+    {
+      "id": "dva",
+      "code": "DVA-C03",
+      "shortName": "DVA",
+      "name": "Developer - Associate",
+      "nameJa": "デベロッパー - アソシエイト",
+      "level": "associate",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "AWS のサービスによる開発", "weight": 30 },
+        { "id": "d2", "name": "セキュリティ", "weight": 26 },
+        { "id": "d3", "name": "テストとデプロイ", "weight": 22 },
+        { "id": "d4", "name": "トラブルシューティングと最適化", "weight": 22 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 130 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/developer-associate-03/developer-associate-03.html"
+    },
+    {
+      "id": "soa",
+      "code": "SOA-C03",
+      "shortName": "SOA",
+      "name": "CloudOps Engineer - Associate",
+      "nameJa": "CloudOps エンジニア - アソシエイト",
+      "level": "associate",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "モニタリング、ログ記録、分析、修復、パフォーマンスの最適化", "weight": 22 },
+        { "id": "d2", "name": "信頼性と事業の継続性", "weight": 22 },
+        { "id": "d3", "name": "デプロイ、プロビジョニング、オートメーション", "weight": 22 },
+        { "id": "d4", "name": "セキュリティとコンプライアンス", "weight": 16 },
+        { "id": "d5", "name": "ネットワークとコンテンツ配信", "weight": 18 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 130 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/sysops-administrator-associate-03/sysops-administrator-associate-03.html"
+    },
+    {
+      "id": "dea",
+      "code": "DEA-C01",
+      "shortName": "DEA",
+      "name": "Data Engineer - Associate",
+      "nameJa": "データエンジニア - アソシエイト",
+      "level": "associate",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "データの取り込みと変換", "weight": 34 },
+        { "id": "d2", "name": "データストア管理", "weight": 26 },
+        { "id": "d3", "name": "データ運用とサポート", "weight": 22 },
+        { "id": "d4", "name": "データセキュリティとガバナンス", "weight": 18 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 130 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/data-engineer-associate-01/data-engineer-associate-01.html"
+    },
+    {
+      "id": "mla",
+      "code": "MLA-C01",
+      "shortName": "MLA",
+      "name": "Machine Learning Engineer - Associate",
+      "nameJa": "機械学習エンジニア - アソシエイト",
+      "level": "associate",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "機械学習 (ML) のためのデータ準備", "weight": 28 },
+        { "id": "d2", "name": "ML モデルの開発", "weight": 26 },
+        { "id": "d3", "name": "ML ワークフローのデプロイとオーケストレーション", "weight": 22 },
+        { "id": "d4", "name": "ML ソリューションのモニタリング、保守、セキュリティ", "weight": 24 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 130 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/machine-learning-engineer-associate-01/machine-learning-engineer-associate-01.html"
+    },
+    {
+      "id": "sap",
+      "code": "SAP-C03",
+      "shortName": "SAP",
+      "name": "Solutions Architect - Professional",
+      "nameJa": "ソリューションアーキテクト - プロフェッショナル",
+      "level": "professional",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "クラウド向けに構築されたアーキテクチャの設計と実装", "weight": 25 },
+        { "id": "d2", "name": "セキュリティ、コンプライアンス、ガバナンス", "weight": 25 },
+        { "id": "d3", "name": "コストを最適化したアーキテクチャの設計", "weight": 15 },
+        { "id": "d4", "name": "回復力、移行、事業の継続性", "weight": 15 },
+        { "id": "d5", "name": "運用上の優秀性とオートメーション", "weight": 20 }
+      ],
+      "mock": { "questionCount": 75, "timeLimitMinutes": 180 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-professional-03/solutions-architect-professional-03.html"
+    },
+    {
+      "id": "dop",
+      "code": "DOP-C02",
+      "shortName": "DOP",
+      "name": "DevOps Engineer - Professional",
+      "nameJa": "DevOps エンジニア - プロフェッショナル",
+      "level": "professional",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "SDLC のオートメーション", "weight": 22 },
+        { "id": "d2", "name": "設定管理と IaC", "weight": 17 },
+        { "id": "d3", "name": "レジリエントなクラウドソリューション", "weight": 15 },
+        { "id": "d4", "name": "モニタリングとロギング", "weight": 15 },
+        { "id": "d5", "name": "インシデントとイベントへの対応", "weight": 14 },
+        { "id": "d6", "name": "セキュリティとコンプライアンス", "weight": 17 }
+      ],
+      "mock": { "questionCount": 75, "timeLimitMinutes": 180 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/devops-engineer-professional-02/devops-engineer-professional-02.html"
+    },
+    {
+      "id": "aip",
+      "code": "AIP-C01",
+      "shortName": "AIP",
+      "name": "Generative AI Developer - Professional",
+      "nameJa": "生成 AI デベロッパー - プロフェッショナル",
+      "level": "professional",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "基盤モデルの統合、データ管理、コンプライアンス", "weight": 31 },
+        { "id": "d2", "name": "実装と統合", "weight": 26 },
+        { "id": "d3", "name": "AI の安全性、セキュリティ、ガバナンス", "weight": 20 },
+        { "id": "d4", "name": "GenAI アプリケーションの運用効率と最適化", "weight": 12 },
+        { "id": "d5", "name": "テスト、検証、トラブルシューティング", "weight": 11 }
+      ],
+      "mock": { "questionCount": 75, "timeLimitMinutes": 180 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/ai-professional-01/ai-professional-01.html"
+    },
+    {
+      "id": "scs",
+      "code": "SCS-C03",
+      "shortName": "SCS",
+      "name": "Security - Specialty",
+      "nameJa": "セキュリティ - 専門知識",
+      "level": "specialty",
+      "status": "available",
+      "domains": [
+        { "id": "d1", "name": "検出", "weight": 16 },
+        { "id": "d2", "name": "インシデント対応", "weight": 14 },
+        { "id": "d3", "name": "インフラストラクチャのセキュリティ", "weight": 18 },
+        { "id": "d4", "name": "Identity and Access Management", "weight": 20 },
+        { "id": "d5", "name": "データ保護", "weight": 18 },
+        { "id": "d6", "name": "セキュリティ基盤とガバナンス", "weight": 14 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 170 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/security-specialty-03/security-specialty-03.html"
+    },
+    {
+      "id": "ans",
+      "code": "ANS-C01",
+      "shortName": "ANS",
+      "name": "Advanced Networking - Specialty",
+      "nameJa": "高度なネットワーキング - 専門知識",
+      "level": "specialty",
+      "status": "retiring",
+      "retireDate": "2026-12-31",
+      "domains": [
+        { "id": "d1", "name": "ネットワーク設計", "weight": 30 },
+        { "id": "d2", "name": "ネットワーク実装", "weight": 26 },
+        { "id": "d3", "name": "ネットワークの管理と運用", "weight": 20 },
+        { "id": "d4", "name": "ネットワークのセキュリティ、コンプライアンス、ガバナンス", "weight": 24 }
+      ],
+      "mock": { "questionCount": 65, "timeLimitMinutes": 170 },
+      "guideUrl": "https://docs.aws.amazon.com/ja_jp/aws-certification/latest/advanced-networking-specialty-01/advanced-networking-specialty-01.html"
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
 import 'ads/ad_consent.dart';
-import 'screens/quiz_screen.dart';
+import 'screens/home_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   // runApp前にプラグイン（ネイティブ側）を使うときに必要
@@ -18,11 +19,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AWS SAP 一問一答',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
-      ),
-      home: const QuizScreen(exam: 'SAP'),
+      // アプリ名に「AWS」を前面に出さない（商標の都合）
+      title: 'クラウド認定 学習',
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: ThemeMode.system, // 端末の設定に合わせてダークモードに切り替える
+      home: const HomeScreen(),
     );
   }
 }

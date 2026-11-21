@@ -3,22 +3,32 @@ import 'package:material_ui/material_ui.dart';
 import '../ads/ad_consent.dart';
 import '../ads/banner_ad_view.dart';
 import '../ads/interstitial_ad_manager.dart';
-import '../data/question_repository.dart';
+import '../models/exam.dart';
 import '../models/question.dart';
 import '../settings/quiz_layout.dart';
+import '../theme/app_theme.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key, required this.exam});
+  const QuizScreen({
+    super.key,
+    required this.exam,
+    required this.questions,
+    required this.title,
+  });
 
-  final String exam;
+  final Exam exam;
+
+  /// 出題する問題（出題範囲の絞り込みや並べ替えは呼び出し側で行う）
+  final List<Question> questions;
+
+  /// AppBarに出す出題範囲の名前（例: 全分野）
+  final String title;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  late Future<List<Question>> _future;
-
   int _index = 0; // 今何問目か
   final Set<int> _selected = {}; // 選んでいる選択肢
   bool _answered = false; // 「回答する」を押したか
@@ -38,7 +48,6 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    _future = QuestionRepository().load(widget.exam);
     _interstitial.load();
     _layoutSetting.load().then((layout) {
       if (mounted) setState(() => _layout = layout);
@@ -136,25 +145,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Question>>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(title: Text('${widget.exam} 一問一答')),
-            body: Center(child: Text('問題を読み込めませんでした\n${snapshot.error}')),
-          );
-        }
-        if (!snapshot.hasData) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-        final questions = snapshot.data!;
-        if (_finished) return _buildResult(questions.length);
-        return _buildQuestion(questions[_index], questions.length);
-      },
-    );
+    final questions = widget.questions;
+    if (_finished) return _buildResult(questions.length);
+    return _buildQuestion(questions[_index], questions.length);
   }
 
   Widget _buildQuestion(Question q, int total) {
@@ -169,7 +162,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.exam} 一問一答（${_index + 1}/$total）'),
+        title: Text(
+          '${widget.exam.shortName} ${widget.title}（${_index + 1}/$total）',
+        ),
         actions: [_buildMenu()],
       ),
       body: SafeArea(
@@ -367,7 +362,7 @@ class _QuizScreenState extends State<QuizScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          q.domain,
+          widget.exam.domainById(q.domainId)?.name ?? '',
           style: theme.textTheme.labelMedium?.copyWith(
             color: theme.colorScheme.primary,
           ),
@@ -392,7 +387,9 @@ class _QuizScreenState extends State<QuizScreen> {
         Text(
           isCorrect ? '⭕ 正解！' : '❌ 不正解',
           style: theme.textTheme.titleLarge?.copyWith(
-            color: isCorrect ? Colors.green : Colors.red,
+            color: isCorrect
+                ? AppTheme.correctForeground(context)
+                : AppTheme.wrongForeground(context),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -410,9 +407,9 @@ class _QuizScreenState extends State<QuizScreen> {
     // 回答後は正解を緑、選んだ不正解を赤で表示する
     Color? color;
     if (_answered && isAnswer) {
-      color = Colors.green.shade100;
+      color = AppTheme.correctBackground(context);
     } else if (_answered && selected) {
-      color = Colors.red.shade100;
+      color = AppTheme.wrongBackground(context);
     } else if (selected) {
       color = Theme.of(context).colorScheme.primaryContainer;
     }
@@ -433,7 +430,7 @@ class _QuizScreenState extends State<QuizScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         child: ListTile(
           leading: label,
-          title: Text(q.choices[i]),
+          title: Text(q.choices[i].text),
           trailing: icon,
           onTap: () => _toggle(q, i),
         ),
@@ -456,7 +453,7 @@ class _QuizScreenState extends State<QuizScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Text(
-                    q.choices[i],
+                    q.choices[i].text,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
@@ -473,7 +470,7 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget _buildResult(int total) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.exam} 結果')),
+      appBar: AppBar(title: Text('${widget.exam.shortName} 結果')),
       bottomNavigationBar: const SafeArea(child: BannerAdView()),
       body: Center(
         child: Column(
@@ -487,7 +484,22 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            FilledButton(onPressed: _restart, child: const Text('もう一度解く')),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                children: [
+                  FilledButton(
+                    onPressed: _restart,
+                    child: const Text('もう一度解く'),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('試験トップに戻る'),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

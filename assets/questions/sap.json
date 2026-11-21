@@ -1,44 +1,115 @@
 {
-  "exam": "SAP",
+  "examId": "sap",
+  "examCode": "SAP-C03",
   "questions": [
     {
       "id": "sap-001",
-      "domain": "複雑な組織に対応するソリューションの設計",
+      "domain": "d2",
       "question": "ある企業はAWS Organizationsで50以上のアカウントを管理している。セキュリティチームは、どのアカウントでも特定のリージョン以外にリソースを作成できないようにしたい。各アカウントの管理者がこの制限を外せないようにする必要がある。最も運用負荷が低い方法はどれか。",
       "choices": [
-        "各アカウントのIAMユーザーに、リージョンを制限するIAMポリシーをアタッチする",
-        "組織のルートまたはOUに、aws:RequestedRegionで許可リージョン以外を拒否するSCPを適用する",
-        "AWS Configルールで許可リージョン外のリソースを検出し、手動で削除する",
-        "各アカウントにCloudTrailを設定し、許可リージョン外のAPI呼び出しをアラート通知する"
+        {
+          "text": "各アカウントのIAMユーザーに、リージョンを制限するIAMポリシーをアタッチする",
+          "explanation": "IAMポリシーはアカウントの中で管理されるため、各アカウントの管理者が外したり書き換えたりできてしまいます。50以上のアカウントに個別に設定するので、運用負荷も高くなります。"
+        },
+        {
+          "text": "組織のルートまたはOUに、aws:RequestedRegionで許可リージョン以外を拒否するSCPを適用する",
+          "explanation": "SCPは組織側から各アカウントの権限の上限を決めるポリシーで、アカウントの管理者（ルートユーザーを含む）でも外せません。ルートやOUに1つ付けるだけで配下の全アカウントに効くので、運用負荷も最小です。"
+        },
+        {
+          "text": "AWS Configルールで許可リージョン外のリソースを検出し、手動で削除する",
+          "explanation": "Configは設定を記録・評価して違反を検出するサービスで、リソースの作成そのものは止められません。手動で削除する運用も負荷が高くなります。"
+        },
+        {
+          "text": "各アカウントにCloudTrailを設定し、許可リージョン外のAPI呼び出しをアラート通知する",
+          "explanation": "CloudTrailはAPIの呼び出しを記録するサービスです。通知はできても作成は防げず、「制限する」という要件を満たしません。"
+        }
       ],
       "answers": [1],
-      "explanation": "SCP（サービスコントロールポリシー）はアカウントの管理者でも外せない上限を組織側から設定できます。IAMポリシーはアカウント内で変更できてしまい、ConfigやCloudTrailは検出だけで作成自体は防げません。"
+      "explanation": "「アカウントの管理者でも外せない制限」を組織全体にかけるなら、SCPが定番です。IAMポリシーはアカウント内で変更でき、ConfigやCloudTrailは検出や記録だけで、作成自体は防げません。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        },
+        {
+          "title": "AWS グローバル条件コンテキストキー（aws:RequestedRegion）",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
     },
     {
       "id": "sap-002",
-      "domain": "ワークロードの移行とモダナイゼーションの加速",
+      "domain": "d4",
       "question": "ある企業はオンプレミスのデータセンターにある約500台のサーバーをAWSへ移行する計画を立てている。まず、サーバー間の依存関係と利用状況を把握し、移行計画を立てたい。この目的に適したものを2つ選べ。",
       "choices": [
-        "AWS Application Discovery Serviceでサーバー情報と依存関係を収集する",
-        "AWS Snowballでサーバーのディスクイメージを転送する",
-        "AWS Migration Hubで収集した情報を一元的に確認し、移行の進捗を追跡する",
-        "Amazon Inspectorでオンプレミスサーバーの脆弱性を評価する"
+        {
+          "text": "AWS Application Discovery Serviceでサーバー情報と依存関係を収集する",
+          "explanation": "Application Discovery Serviceは、オンプレミスのサーバーの構成・使用率・サーバー間の通信（依存関係）を収集する、移行前の調査のためのサービスです。"
+        },
+        {
+          "text": "AWS Snowballでサーバーのディスクイメージを転送する",
+          "explanation": "Snowballは物理デバイスで大量のデータを運ぶ転送手段です。依存関係や利用状況の調査には使いません。"
+        },
+        {
+          "text": "AWS Migration Hubで収集した情報を一元的に確認し、移行の進捗を追跡する",
+          "explanation": "Migration Hubは、Application Discovery Serviceで集めた情報を一か所で確認し、移行の計画と進捗の追跡ができるサービスです。"
+        },
+        {
+          "text": "Amazon Inspectorでオンプレミスサーバーの脆弱性を評価する",
+          "explanation": "Inspectorは脆弱性を評価するサービスです。移行計画に必要な依存関係や利用状況は集められません。"
+        },
+        {
+          "text": "AWS DataSyncでサーバー上のファイルをAmazon S3へ転送する",
+          "explanation": "DataSyncはオンラインでデータを転送するサービスで、移行の実行段階で使うものです。調査や計画の段階には向きません。"
+        }
       ],
       "answers": [0, 2],
-      "explanation": "移行前の調査にはApplication Discovery Serviceで情報を集め、Migration Hubで一元管理するのが定番の組み合わせです。Snowballはデータ転送の手段で、調査には使いません。Inspectorは脆弱性評価のサービスです。"
+      "explanation": "移行前の調査は、Application Discovery Serviceで情報を集め、Migration Hubで一元管理するのが定番の組み合わせです。Snowball・DataSyncはデータを運ぶ手段、Inspectorは脆弱性評価のサービスで、調査には使いません。",
+      "references": [
+        {
+          "title": "AWS Application Discovery Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/application-discovery/latest/userguide/what-is-appdiscovery.html"
+        },
+        {
+          "title": "AWS Migration Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/migrationhub/latest/ug/whatishub.html"
+        }
+      ]
     },
     {
       "id": "sap-003",
-      "domain": "既存ソリューションの継続的な改善",
+      "domain": "d4",
       "question": "あるWebアプリケーションは単一AZのEC2インスタンス1台とAmazon RDS（シングルAZ）で稼働している。アプリケーション層とデータベース層の可用性を、最小限の変更で高めたい。最も適切な組み合わせはどれか。",
       "choices": [
-        "EC2のインスタンスサイズを大きくし、RDSのストレージを増やす",
-        "複数AZにまたがるAuto ScalingグループとALBを構成し、RDSをマルチAZ配置に変更する",
-        "EC2のAMIを定期取得し、RDSのスナップショットを別リージョンにコピーする",
-        "CloudFrontをEC2の前段に配置し、RDSにリードレプリカを追加する"
+        {
+          "text": "EC2のインスタンスサイズを大きくし、RDSのストレージを増やす",
+          "explanation": "サイズを大きくしても、インスタンスやAZが1つのままなので、そこに障害が起きれば止まります。可用性ではなく性能や容量の対策です。"
+        },
+        {
+          "text": "複数AZにまたがるAuto ScalingグループとALBを構成し、RDSをマルチAZ配置に変更する",
+          "explanation": "複数AZのAuto ScalingとALBで、アプリ層の単一障害点がなくなります。RDSのマルチAZ配置は、別のAZのスタンバイへ自動でフェイルオーバーします。どちらも既存の構成を活かしたまま変更できます。"
+        },
+        {
+          "text": "EC2のAMIを定期取得し、RDSのスナップショットを別リージョンにコピーする",
+          "explanation": "バックアップは復旧のための対策で、障害が起きたときに止まること自体は防げません。復旧にも手作業と時間がかかります。"
+        },
+        {
+          "text": "CloudFrontをEC2の前段に配置し、RDSにリードレプリカを追加する",
+          "explanation": "CloudFrontはキャッシュによる配信の高速化が主な目的で、EC2が1台のままでは可用性は上がりません。リードレプリカは読み取りの負荷分散のためのもので、自動フェイルオーバーの仕組みではありません。"
+        }
       ],
       "answers": [1],
-      "explanation": "可用性を高めるには、単一障害点をなくすことが基本です。複数AZのAuto Scaling＋ALBでアプリ層を、RDSのマルチAZで自動フェイルオーバーを実現できます。サイズ拡大やバックアップだけでは、障害時に止まることは防げません。"
+      "explanation": "可用性を高める基本は、単一障害点をなくすことです。アプリ層は複数AZのAuto Scaling＋ALB、データベース層はRDSのマルチAZ配置で、どちらもAZ障害に耐えられる構成になります。",
+      "references": [
+        {
+          "title": "Amazon RDS のマルチ AZ 配置",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+        },
+        {
+          "title": "Elastic Load Balancing を使用して Auto Scaling グループ内のインスタンスにトラフィックを分散する",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        }
+      ]
     }
   ]
 }
