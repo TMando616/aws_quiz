@@ -2,6 +2,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'ad_config.dart';
+import 'ad_consent.dart';
 
 /// 全画面広告の読み込みと表示を担当する（Laravelでいうサービスクラス）
 ///
@@ -10,8 +11,10 @@ import 'ad_config.dart';
 class InterstitialAdManager {
   InterstitialAd? _ad;
 
-  void load() {
+  Future<void> load() async {
     if (!AdConfig.enabled) return;
+    // 同意の確認が終わるまで待つ。広告を出せない場合は何もしない
+    if (!await AdConsent.ready) return;
     InterstitialAd.load(
       adUnitId: AdConfig.interstitialUnitId,
       request: const AdRequest(),

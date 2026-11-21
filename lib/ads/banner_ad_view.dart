@@ -2,6 +2,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'ad_config.dart';
+import 'ad_consent.dart';
 
 /// 画面の幅に合わせたバナー広告。読み込めるまでは何も表示しない
 class BannerAdView extends StatefulWidget {
@@ -27,6 +28,8 @@ class _BannerAdViewState extends State<BannerAdView> {
   }
 
   Future<void> _load() async {
+    // 同意の確認が終わるまで待つ。広告を出せない場合は何もしない
+    if (!await AdConsent.ready || !mounted) return;
     final width = MediaQuery.sizeOf(context).width.truncate();
     final size = await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width);
     if (size == null || !mounted) return;

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../ads/ad_consent.dart';
 import '../ads/banner_ad_view.dart';
 import '../ads/interstitial_ad_manager.dart';
 import '../data/question_repository.dart';
@@ -27,6 +28,7 @@ class _QuizScreenState extends State<QuizScreen> {
   final _interstitial = InterstitialAdManager();
   final _layoutSetting = QuizLayoutSetting();
   QuizLayout _layout = QuizLayout.tabs;
+  bool _privacyOptionsRequired = false; // メニューに「広告のプライバシー設定」を出すか
 
   // 選択肢スワイプモードで使う
   final _questionScroll = ScrollController();
@@ -41,6 +43,14 @@ class _QuizScreenState extends State<QuizScreen> {
     _layoutSetting.load().then((layout) {
       if (mounted) setState(() => _layout = layout);
     });
+    _checkPrivacyOptions();
+  }
+
+  Future<void> _checkPrivacyOptions() async {
+    // 同意の確認が終わってからでないと、設定が必要かどうかわからない
+    await AdConsent.ready;
+    final required = await AdConsent.isPrivacyOptionsRequired();
+    if (mounted) setState(() => _privacyOptionsRequired = required);
   }
 
   @override
@@ -190,7 +200,7 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  /// 右上のメニュー。レイアウトの切り替え
+  /// 右上のメニュー。レイアウトの切り替えと、広告のプライバシー設定
   Widget _buildMenu() {
     return PopupMenuButton<QuizLayout>(
       icon: const Icon(Icons.view_agenda_outlined),
@@ -203,6 +213,13 @@ class _QuizScreenState extends State<QuizScreen> {
             checked: layout == _layout,
             child: Text(layout.label),
           ),
+        if (_privacyOptionsRequired) ...[
+          const PopupMenuDivider(),
+          const PopupMenuItem(
+            onTap: AdConsent.showPrivacyOptions,
+            child: Text('広告のプライバシー設定'),
+          ),
+        ],
       ],
     );
   }
