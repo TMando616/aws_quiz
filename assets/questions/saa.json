@@ -136,7 +136,8 @@
           "title": "Amazon SQS とは",
           "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
         }
-      ]
+      ],
+      "group": "messaging-service"
     },
     {
       "id": "saa-005",
@@ -239,7 +240,8 @@
           "title": "マルチ AZ DB インスタンスのデプロイ",
           "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
         }
-      ]
+      ],
+      "group": "db-availability-or-read"
     },
     {
       "id": "saa-008",
@@ -619,7 +621,8 @@
           "title": "Aurora の高可用性",
           "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
         }
-      ]
+      ],
+      "group": "db-availability-or-read"
     },
     {
       "id": "saa-019",
@@ -685,7 +688,8 @@
           "title": "SNS から SQS キューへのファンアウト",
           "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-sqs-as-subscriber.html"
         }
-      ]
+      ],
+      "group": "messaging-service"
     },
     {
       "id": "saa-021",
@@ -817,7 +821,8 @@
           "title": "Amazon Kinesis Data Streams とは",
           "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/introduction.html"
         }
-      ]
+      ],
+      "group": "messaging-service"
     },
     {
       "id": "saa-025",
@@ -920,7 +925,8 @@
           "title": "オブジェクトのライフサイクルの管理",
           "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
         }
-      ]
+      ],
+      "group": "s3-storage-class"
     },
     {
       "id": "saa-028",
@@ -995,7 +1001,8 @@
           "title": "Savings Plans とは",
           "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
         }
-      ]
+      ],
+      "group": "compute-pricing"
     },
     {
       "id": "saa-030",
@@ -1028,7 +1035,202 @@
           "title": "AWS Lambda とは",
           "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/welcome.html"
         }
-      ]
+      ],
+      "group": "compute-pricing"
+    },
+    {
+      "id": "saa-031",
+      "domain": "d4",
+      "question": "ある写真共有サービスは、利用者がアップロードした元の画像から、表示用の縮小画像（サムネイル）を作って Amazon S3 に保存している。サムネイルは作ってから1か月ほどすると、ほとんど表示されなくなるが、表示されるときはすぐに（ミリ秒単位で）返す必要がある。サムネイルは失われても、元の画像からいつでも作り直せる。サムネイルの保存の費用を最も下げられる方法はどれか。",
+      "choices": [
+        {
+          "text": "ライフサイクルルールで、30日後に S3 Standard-IA に移動する",
+          "explanation": "要件は満たせますが、Standard-IA は複数の AZ にデータを保存する分、1つの AZ にだけ保存するクラスより高くなります。作り直せるデータなら、さらに安いクラスを選べます。"
+        },
+        {
+          "text": "ライフサイクルルールで、30日後に S3 Glacier Deep Archive に移動する",
+          "explanation": "保存の費用は安くなりますが、取り出しに時間がかかるため、すぐに表示するという要件を満たしません。"
+        },
+        {
+          "text": "すべてのサムネイルを S3 Standard のまま保存し続ける",
+          "explanation": "すぐに表示できますが、ほとんど表示されないデータにも高い保存の費用がかかり続けます。"
+        },
+        {
+          "text": "ライフサイクルルールで、30日後に S3 One Zone-IA に移動する",
+          "explanation": "One Zone-IA はデータを1つの AZ にだけ保存するため、Standard-IA より安くなります。ミリ秒単位で取り出せます。AZ が失われるとデータも失われますが、作り直せるデータなら問題ありません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "「作り直せるデータ」「すぐに取り出したい」「アクセスは少ない」なら S3 One Zone-IA が最も安くなります。AZ の障害でデータを失ってはならない場合は Standard-IA を選びます。条件の1つで正解が変わる典型的な論点です。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ],
+      "group": "s3-storage-class"
+    },
+    {
+      "id": "saa-032",
+      "domain": "d4",
+      "question": "ある動画配信サービスは、多数の動画ファイル（どれも 1 MB 以上）を Amazon S3 に保存している。人気が出る動画と、ほとんど見られない動画が混ざっているが、どの動画がいつ見られるかは予測できない。見られるときはすぐに再生でき、取り出しの料金をかけずに、保存の費用を自動で最適化したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 Intelligent-Tiering に保存する",
+          "explanation": "Intelligent-Tiering はアクセスのパターンを監視し、30日間アクセスのないオブジェクトを低頻度アクセスの階層へ自動で移します。アクセスがあれば高頻度アクセスの階層に戻り、取り出しの料金はかかりません（少額の監視と自動化の料金がかかります）。"
+        },
+        {
+          "text": "ライフサイクルルールで、30日後に S3 Standard-IA に移動する",
+          "explanation": "Standard-IA は取り出しのたびに料金がかかります。30日を過ぎてから人気が出た動画があると、かえって費用が増えます。"
+        },
+        {
+          "text": "ライフサイクルルールで、30日後に S3 One Zone-IA に移動する",
+          "explanation": "取り出しの料金がかかり、AZ の障害でデータが失われます。アクセスが予測できない動画の保存には向きません。"
+        },
+        {
+          "text": "すべての動画を S3 Glacier Deep Archive に保存する",
+          "explanation": "取り出しに時間がかかるため、すぐに再生するという要件を満たしません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "「アクセスが予測できない」「取り出しの料金をかけたくない」なら S3 Intelligent-Tiering です。アクセスのパターンが分かっているならライフサイクルルール、分からないなら Intelligent-Tiering、と使い分けます。",
+      "references": [
+        {
+          "title": "S3 Intelligent-Tiering の仕組み",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        },
+        {
+          "title": "S3 Intelligent-Tiering（ストレージクラス）",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/intelligent-tiering/"
+        }
+      ],
+      "group": "s3-storage-class"
+    },
+    {
+      "id": "saa-033",
+      "domain": "d4",
+      "question": "ある金融機関は、取引の記録を規制により10年間保存する必要がある。記録は保存後に参照されることはほとんどなく、監査で求められたときも、2日以内に提出できればよい。10年を過ぎた記録は削除する。保存の費用を最も下げられる方法はどれか。",
+      "choices": [
+        {
+          "text": "ライフサイクルルールで S3 Standard-IA に移動する",
+          "explanation": "すぐに取り出せる分、アーカイブ用のクラスより保存の費用が高くなります。取り出しに時間がかかってよいなら、もっと安いクラスがあります。"
+        },
+        {
+          "text": "S3 Intelligent-Tiering に保存する",
+          "explanation": "アクセスのパターンが分からないデータ向けです。ほとんど参照しないことが分かっていて、取り出しに時間がかかってよいなら、アーカイブ用のクラスに直接移す方が安くなります。"
+        },
+        {
+          "text": "ライフサイクルルールで S3 Glacier Deep Archive に移動し、10年後に削除する有効期限を設定する",
+          "explanation": "Glacier Deep Archive はクラウドで最も低コストのストレージで、取り出しは12〜48時間です。2日以内に提出できればよいなら要件を満たします。最低保存期間の180日も、10年の保存なら問題になりません。"
+        },
+        {
+          "text": "すべての記録を S3 Standard のまま保存する",
+          "explanation": "ほとんど参照しないデータに、高い保存の費用がかかり続けます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "「ほぼ参照しない」「取り出しに時間がかかってよい」「長期保存」なら S3 Glacier Deep Archive が最も安くなります。すぐに取り出す必要があれば Standard-IA や One Zone-IA を選ぶ、と条件で使い分けます。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "S3 Glacier ストレージクラス",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/glacier/"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ],
+      "group": "s3-storage-class"
+    },
+    {
+      "id": "saa-034",
+      "domain": "d2",
+      "question": "ある企業の Amazon RDS for MySQL は、シングル AZ の DB インスタンスで動いている。読み込みの性能には問題がないが、AZ やインスタンスに障害が起きたときにデータベースが長く止まらないようにしたい。アプリケーションの接続先の変更はできるだけ避けたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "リードレプリカを作成し、障害時にはリードレプリカを手作業で昇格させる",
+          "explanation": "リードレプリカは読み込みの負荷を分散するためのもので、昇格は手作業です。昇格後は接続先も変わります。"
+        },
+        {
+          "text": "DB インスタンスをマルチ AZ 配置に変更する",
+          "explanation": "マルチ AZ 配置では、別の AZ に同期のスタンバイが自動で用意され、障害時はスタンバイへフェイルオーバーします。スタンバイは読み込みには使えませんが、今回は読み込みの性能に問題がないので、可用性を上げる目的に合います。"
+        },
+        {
+          "text": "DB インスタンスのクラスを大きくする",
+          "explanation": "性能は上がりますが、インスタンスも AZ も1つのままなので、障害が起きれば止まります。"
+        },
+        {
+          "text": "自動バックアップの保持期間を35日に延ばす",
+          "explanation": "復元できる期間は延びますが、障害時に復元するまでデータベースは止まります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "同じ RDS の機能でも、可用性を上げたいならマルチ AZ 配置、読み込みの負荷を分散したいならリードレプリカ、と目的で選びます。マルチ AZ のスタンバイは読み込みに使えない点がよく問われます。",
+      "references": [
+        {
+          "title": "マルチ AZ DB インスタンスのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        },
+        {
+          "title": "リードレプリカの操作",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ],
+      "group": "db-availability-or-read"
+    },
+    {
+      "id": "saa-035",
+      "domain": "d4",
+      "question": "ある企業は、毎晩、数千枚の画像に透かしを入れるバッチ処理を EC2 で実行している。処理は1枚ずつ独立していて、途中で中断されてもその画像からやり直せる。翌朝までに終わればよい。最もコストを下げられる方法はどれか。",
+      "choices": [
+        {
+          "text": "常時必要な台数分の Savings Plans を購入する",
+          "explanation": "Savings Plans は、1年または3年の一定の利用量を約束して割引を受けるしくみです。毎晩数時間しか動かない処理では、約束した利用量を使い切れません。"
+        },
+        {
+          "text": "処理を1つの AWS Lambda 関数にまとめ、すべての画像を1回の呼び出しで処理する",
+          "explanation": "Lambda は1回の呼び出しの実行時間に上限があり、数千枚を1回でまとめて処理する用途には向きません。"
+        },
+        {
+          "text": "オンデマンドインスタンスだけで実行する",
+          "explanation": "確実に動きますが、中断を許容できる処理としては割高です。"
+        },
+        {
+          "text": "スポットインスタンスを使い、複数のインスタンスタイプを指定して中断されにくい配分戦略で起動する",
+          "explanation": "スポットインスタンスは使われていない EC2 のキャパシティを大幅な割引価格で使えます。中断されることはありますが、やり直せる処理で、時間に余裕があるなら最も安くなります。中断の2分前には通知が届きます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "同じ「EC2 の費用を下げたい」でも、常に一定量使うなら Savings Plans、ときどき短く動くなら Lambda、中断されてもやり直せるならスポット、と条件で答えが変わります。",
+      "references": [
+        {
+          "title": "スポットインスタンス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        },
+        {
+          "title": "Auto Scaling の配分戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html"
+        }
+      ],
+      "group": "compute-pricing"
     }
   ]
 }

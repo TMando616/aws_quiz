@@ -41,7 +41,8 @@
           "title": "SCP の評価",
           "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html"
         }
-      ]
+      ],
+      "group": "permission-guardrails"
     },
     {
       "id": "sap-002",
@@ -164,7 +165,8 @@
           "title": "標準キュー",
           "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html"
         }
-      ]
+      ],
+      "group": "messaging-service"
     },
     {
       "id": "sap-005",
@@ -255,7 +257,8 @@
           "title": "VPC ピアリングの制限",
           "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
         }
-      ]
+      ],
+      "group": "vpc-connectivity"
     },
     {
       "id": "sap-007",
@@ -296,7 +299,8 @@
           "title": "VPC ピアリングの制限",
           "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
         }
-      ]
+      ],
+      "group": "vpc-connectivity"
     },
     {
       "id": "sap-008",
@@ -547,7 +551,8 @@
           "title": "IAM エンティティのアクセス許可の境界",
           "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html"
         }
-      ]
+      ],
+      "group": "permission-guardrails"
     },
     {
       "id": "sap-015",
@@ -720,7 +725,8 @@
           "title": "Savings Plans の種類",
           "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html"
         }
-      ]
+      ],
+      "group": "compute-pricing"
     },
     {
       "id": "sap-020",
@@ -798,7 +804,8 @@
           "title": "S3 Intelligent-Tiering（ストレージクラス）",
           "url": "https://aws.amazon.com/jp/s3/storage-classes/intelligent-tiering/"
         }
-      ]
+      ],
+      "group": "s3-storage-class"
     },
     {
       "id": "sap-022",
@@ -1191,7 +1198,8 @@
           "title": "オブジェクトのライフサイクルの管理",
           "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
         }
-      ]
+      ],
+      "group": "s3-storage-class"
     },
     {
       "id": "sap-032",
@@ -1228,7 +1236,8 @@
           "title": "Auto Scaling の配分戦略",
           "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html"
         }
-      ]
+      ],
+      "group": "compute-pricing"
     },
     {
       "id": "sap-033",
@@ -1476,7 +1485,8 @@
           "title": "Amazon VPC Lattice とは",
           "url": "https://docs.aws.amazon.com/ja_jp/vpc-lattice/latest/ug/what-is-vpc-lattice.html"
         }
-      ]
+      ],
+      "group": "vpc-connectivity"
     },
     {
       "id": "sap-040",
@@ -1509,7 +1519,8 @@
           "title": "AWS Cloud WAN とは",
           "url": "https://docs.aws.amazon.com/ja_jp/network-manager/latest/cloudwan/what-is-cloudwan.html"
         }
-      ]
+      ],
+      "group": "vpc-connectivity"
     },
     {
       "id": "sap-041",
@@ -1583,7 +1594,8 @@
           "title": "アカウント間でのイベントの送受信",
           "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-cross-account.html"
         }
-      ]
+      ],
+      "group": "messaging-service"
     },
     {
       "id": "sap-043",

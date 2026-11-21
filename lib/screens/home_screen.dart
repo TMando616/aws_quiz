@@ -10,6 +10,7 @@ import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../widgets/explanation_view.dart';
+import '../widgets/similar_questions_button.dart';
 import 'about_screen.dart';
 import 'exam_screen.dart';
 import 'mock_result_screen.dart';
@@ -86,8 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(builder: (_) => ExamScreen(exam: target.exam)),
     );
     if (_debugRoute == 'explanation' || _debugRoute == 'explanation-end') {
-      // 1問目で、不正解の選択肢のうち最初のものを選んだときの解説
-      final q = (await QuestionRepository().load(target.exam.id)).first;
+      // 類題のある最初の問題（無ければ1問目）で、不正解の選択肢のうち最初のものを選んだときの解説
+      final all = await QuestionRepository().load(target.exam.id);
+      final q = all.firstWhere((q) => q.group != null, orElse: () => all.first);
       navigator.push(
         MaterialPageRoute(
           builder: (_) => Scaffold(
@@ -97,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
               reverse: _debugRoute == 'explanation-end',
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
               child: ExplanationView(
+                action: SimilarQuestionsButton(exam: target.exam, question: q),
                 question: q,
                 selected: {
                   [for (var i = 0; i < q.choices.length; i++) i]

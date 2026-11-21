@@ -75,7 +75,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
 assets/questions/sap.json               SAPの問題（自作50問）
-assets/questions/saa.json               SAAの問題（自作30問。分野1〜4に 9・8・7・6問、うち複数選択2問）
+assets/questions/saa.json               SAAの問題（自作35問。分野1〜4に 9・9・7・10問、うち複数選択2問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
 lib/models/question.dart                Question・Choice・Reference
@@ -207,6 +207,17 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - プライバシーポリシー：下書きは `docs/privacy_policy.md`。`［ ］` を埋めて公開し（GitHub Pages など）、URLを `lib/config/app_info.dart` の `privacyPolicyUrl` に入れる
 - 問い合わせ用のメールアドレスを決めて `lib/config/app_info.dart` の `supportEmail` に入れる（解説の下の「この問題の誤りを報告」と「このアプリについて」で使う。空だと「未設定」と表示される）
 - バンドルID（iOS `com.example.awsQuiz`、Android `com.example.aws_quiz`）を自分のものに変える。公開後は変えられない
+
+### 類題（2026-11-21 追加）
+
+- 問題に任意の `"group"`（例: `"s3-storage-class"`）を付けると、同じグループの問題が「類題」になる
+- 類題は**条件を変えると正解が変わる問題**にする。言い回しだけ変えた問題は作らない（同じグループで正解の選択肢の文が同じだと、品質チェックが警告を出す）
+- 解説の根拠の下に「類題に挑戦（n問）」ボタンが出る（練習モードと模試の見直し）
+- 模試では、グループごとに1問を優先して選ぶ。収録数が足りないときだけ2問目以降でも補う（`lib/logic/mock_builder.dart`）
+- 今あるグループ
+  - SAA：s3-storage-class（4問）、messaging-service（3問）、db-availability-or-read（3問）、compute-pricing（3問）
+  - SAP：vpc-connectivity（4問）、s3-storage-class・compute-pricing・messaging-service・permission-guardrails（各2問）
+- 類題を足す候補：混同しやすい論点（SAP の s3-storage-class・messaging-service に3問目、DR の方式の使い分け、Route 53 のルーティングポリシーの使い分けなど）
 
 ## 6. 次にやること（優先順）
 
