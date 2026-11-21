@@ -1,11 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:aws_quiz/ads/ad_config.dart';
 import 'package:aws_quiz/main.dart';
 
 void main() {
   // テスト環境では広告SDK（ネイティブ側）が動かないので、広告を止める
-  setUp(() => AdConfig.enabled = false);
+  setUp(() {
+    AdConfig.enabled = false;
+    // 端末の保存領域の代わりに、メモリ上の空の設定を使う
+    SharedPreferences.setMockInitialValues({});
+  });
 
   testWidgets('アプリが起動する', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
