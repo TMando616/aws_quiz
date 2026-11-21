@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../ads/ad_consent.dart';
 import '../ads/banner_ad_view.dart';
 import '../ads/interstitial_ad_manager.dart';
+import '../data/study_repository.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
 import '../settings/quiz_layout.dart';
@@ -90,10 +91,12 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _submit(Question q) {
+    final correct = q.isCorrect(_selected);
     setState(() {
       _answered = true;
-      if (q.isCorrect(_selected)) _correctCount++;
+      if (correct) _correctCount++;
     });
+    _record(q, correct);
     // スワイプモードでは解説が問題文の下に出るので、そこまでスクロールする
     if (_layout == QuizLayout.swipeChoices) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -104,6 +107,21 @@ class _QuizScreenState extends State<QuizScreen> {
           curve: Curves.easeOut,
         );
       });
+    }
+  }
+
+  /// 回答を端末のDBに記録する。保存に失敗しても出題は続けられるようにする
+  Future<void> _record(Question q, bool correct) async {
+    try {
+      final repo = await StudyRepository.instance();
+      await repo.recordAnswer(
+        examId: widget.exam.id,
+        questionId: q.id,
+        correct: correct,
+        mode: StudyMode.practice,
+      );
+    } catch (e) {
+      debugPrint('回答の記録に失敗: $e');
     }
   }
 

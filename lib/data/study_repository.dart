@@ -1,0 +1,159 @@
+import 'package:path/path.dart' as p;
+import 'package:sqflite/sqflite.dart';
+
+import '../models/question.dart';
+
+/// 出題のモード。回答の記録に残す
+enum StudyMode { practice, mock }
+
+/// 正答率の集計結果
+class Accuracy {
+  const Accuracy({required this.answered, required this.correct});
+
+  /// 1回以上解いた問題の数
+  final int answered;
+
+  /// そのうち、最新の回答が正解だった問題の数
+  final int correct;
+
+  /// 正答率（0.0〜1.0）。まだ解いていなければ null
+  double? get rate => answered == 0 ? null : correct / answered;
+
+  static const empty = Accuracy(answered: 0, correct: 0);
+}
+
+/// 学習記録の保存担当（端末内のSQLite）。Laravelでいうリポジトリ層
+///
+/// テーブル
+/// - answers: 1回答ごとの記録（問題ID・正誤・モード・日時）
+/// - mock_results: 模試1回ごとの結果
+///
+/// 正答率は「各問題の最新の回答」で計算する。
+/// 一度間違えた問題も、解き直して正解すれば正答率に反映される。
+class StudyRepository {
+  StudyRepository._(this._db);
+
+  final Database _db;
+
+  static StudyRepository? _instance;
+
+  /// アプリ全体で1つのDB接続を使い回す
+  static Future<StudyRepository> instance() async {
+    final existing = _instance;
+    if (existing != null) return existing;
+    final dir = await getDatabasesPath();
+    final repo = await open(p.join(dir, 'study.db'));
+    return _instance = repo;
+  }
+
+  /// [path] のDBを開く（テストでは inMemoryDatabasePath を渡す）
+  static Future<StudyRepository> open(String path) async {
+    final db = await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        // Laravelのマイグレーションにあたる部分。
+        // 列を足すときは version を上げて onUpgrade に ALTER TABLE を書く
+        await db.execute('''
+          CREATE TABLE answers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_id TEXT NOT NULL,
+            question_id TEXT NOT NULL,
+            correct INTEGER NOT NULL,
+            mode TEXT NOT NULL,
+            answered_at INTEGER NOT NULL
+          )
+        ''');
+        await db.execute(
+          'CREATE INDEX idx_answers_exam_question ON answers (exam_id, question_id)',
+        );
+        await db.execute('''
+          CREATE TABLE mock_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            exam_id TEXT NOT NULL,
+            taken_at INTEGER NOT NULL,
+            question_count INTEGER NOT NULL,
+            correct_count INTEGER NOT NULL,
+            duration_seconds INTEGER NOT NULL,
+            domain_json TEXT NOT NULL
+          )
+        ''');
+      },
+    );
+    return StudyRepository._(db);
+  }
+
+  /// テスト用：使い回しているDB接続を差し替える
+  static void debugSetInstance(StudyRepository? repo) => _instance = repo;
+
+  Future<void> close() => _db.close();
+
+  /// 1問の回答を記録する
+  Future<void> recordAnswer({
+    required String examId,
+    required String questionId,
+    required bool correct,
+    required StudyMode mode,
+    DateTime? at,
+  }) async {
+    await _db.insert('answers', {
+      'exam_id': examId,
+      'question_id': questionId,
+      'correct': correct ? 1 : 0,
+      'mode': mode.name,
+      'answered_at': (at ?? DateTime.now()).millisecondsSinceEpoch,
+    });
+  }
+
+  /// 問題ID → 最新の回答が正解だったか
+  Future<Map<String, bool>> latestResults(String examId) async {
+    final rows = await _db.rawQuery(
+      '''
+      SELECT question_id, correct FROM answers
+      WHERE id IN (
+        SELECT MAX(id) FROM answers WHERE exam_id = ? GROUP BY question_id
+      )
+      ''',
+      [examId],
+    );
+    return {
+      for (final r in rows) r['question_id'] as String: r['correct'] == 1,
+    };
+  }
+
+  /// 分野ID → 正答率。分野は「今の問題データの分野」で集計する
+  /// （あとから問題の分野を付け替えても、集計がズレないようにするため）
+  Future<Map<String, Accuracy>> accuracyByDomain(
+    String examId,
+    List<Question> questions,
+  ) async {
+    final latest = await latestResults(examId);
+    final answered = <String, int>{};
+    final correct = <String, int>{};
+    for (final q in questions) {
+      final result = latest[q.id];
+      if (result == null) continue;
+      answered.update(q.domainId, (v) => v + 1, ifAbsent: () => 1);
+      if (result) correct.update(q.domainId, (v) => v + 1, ifAbsent: () => 1);
+    }
+    return {
+      for (final id in answered.keys)
+        id: Accuracy(answered: answered[id]!, correct: correct[id] ?? 0),
+    };
+  }
+
+  /// 試験全体の正答率（今の問題データに含まれる問題だけで集計）
+  Future<Accuracy> accuracyOfExam(
+    String examId,
+    List<Question> questions,
+  ) async {
+    final byDomain = await accuracyByDomain(examId, questions);
+    var answered = 0;
+    var correct = 0;
+    for (final a in byDomain.values) {
+      answered += a.answered;
+      correct += a.correct;
+    }
+    return Accuracy(answered: answered, correct: correct);
+  }
+}
