@@ -406,6 +406,245 @@
           "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/knowledge-base.html"
         }
       ]
+    },
+    {
+      "id": "sap-012",
+      "domain": "d2",
+      "question": "ある企業は AWS Organizations で約100のアカウントを運用している。従業員は社外の ID プロバイダー（SAML 2.0 に対応）で管理されている。従業員が普段の社内アカウントで各 AWS アカウントにサインインでき、入社・退職に合わせてユーザーとグループが AWS 側にも自動で反映されるようにしたい。アカウントごとに付与する権限も一元管理したい。最も運用負荷が低い方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントに従業員ごとの IAM ユーザーを作成し、退職時に手作業で削除する",
+          "explanation": "100アカウント分の IAM ユーザーの作成・削除が必要で、削除漏れのリスクもあります。長期的な認証情報（パスワードやアクセスキー）が増えるのも望ましくありません。"
+        },
+        {
+          "text": "IAM Identity Center を有効にし、外部 ID プロバイダーを ID ソースとして接続して SCIM で自動プロビジョニングし、許可セットをアカウントに割り当てる",
+          "explanation": "IAM Identity Center は組織の全アカウントへのサインインを一元化できます。外部 ID プロバイダーと SAML で連携し、SCIM でユーザーとグループを自動同期すれば、入退社も自動で反映されます。権限は許可セットとしてまとめて管理できます。"
+        },
+        {
+          "text": "各アカウントで IAM の SAML ID プロバイダーとロールを個別に設定する",
+          "explanation": "技術的には可能ですが、100アカウントそれぞれに ID プロバイダーとロールを設定・保守する必要があり、権限の一元管理もできません。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープールに従業員を登録し、AWS マネジメントコンソールへのサインインに使う",
+          "explanation": "Cognito は主に自社アプリケーションの利用者向けの認証サービスです。従業員による複数の AWS アカウントへのサインインと権限管理には、IAM Identity Center を使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織の複数アカウントへの従業員のアクセスは、IAM Identity Center に集約するのが定番です。外部 ID プロバイダーとの SAML 連携と SCIM による自動プロビジョニングで、入退社の反映まで自動化できます。",
+      "references": [
+        {
+          "title": "外部 ID プロバイダーへの接続（IAM Identity Center）",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+        },
+        {
+          "title": "自動プロビジョニング（SCIM）",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/provision-automatically.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-013",
+      "domain": "d2",
+      "question": "ある企業は、外部の監視サービス事業者に自社の AWS アカウントの読み取り権限を与えたい。この事業者は多くの企業に同じサービスを提供しており、事業者の AWS アカウントからロールを引き受ける方式をとっている。別の顧客が自社のロールの ARN を指定して、事業者経由で自社のアカウントにアクセスする「混乱した代理（confused deputy）」の問題を防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "自社のアカウントに IAM ユーザーを作成し、そのアクセスキーを事業者に渡す",
+          "explanation": "長期的なアクセスキーを外部に渡すことになり、漏えいのリスクがあります。ロールの引き受けによる一時的な認証情報を使うべきです。"
+        },
+        {
+          "text": "IAM ロールの信頼ポリシーで事業者の AWS アカウントを信頼し、事業者が自社ごとに発行する外部 ID を sts:ExternalId の条件として指定する",
+          "explanation": "外部 ID は、事業者が顧客ごとに一意に発行する値です。信頼ポリシーの条件に指定すると、その値を知っている事業者の正しい処理からしかロールを引き受けられず、ほかの顧客が自社のロールを指定しても引き受けに失敗します。"
+        },
+        {
+          "text": "IAM ロールの信頼ポリシーで、プリンシパルをすべて（*）にし、MFA を必須にする",
+          "explanation": "すべてのプリンシパルを信頼すると、誰でもロールの引き受けを試せる状態になります。事業者のシステムからのアクセスでは MFA も前提にできません。"
+        },
+        {
+          "text": "事業者のアカウントを自社の AWS Organizations の組織に招待する",
+          "explanation": "外部の事業者のアカウントを自社の組織に入れるのは、管理の範囲として不適切です。混乱した代理の問題も解決しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "第三者にクロスアカウントのロールを引き受けさせるときは、信頼ポリシーに外部 ID の条件を付けて、混乱した代理の問題を防ぎます。アクセスキーを渡す方法は避けます。",
+      "references": [
+        {
+          "title": "第三者にアクセスを許可するときの外部 ID の使い方",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+        },
+        {
+          "title": "混乱した代理問題",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-014",
+      "domain": "d2",
+      "question": "ある企業では、開発者が AWS Lambda 関数用の IAM ロールを自分で作成できるようにしたい。ただし、開発者が自分の権限より強い権限を持つロールを作り、それを使って権限を昇格させることは防ぎたい。中央のセキュリティチームの作業はできるだけ増やしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "SCP で、すべてのアカウントの iam:* を拒否する",
+          "explanation": "開発者がロールを作れなくなり、「自分で作成できるようにする」という要件を満たしません。"
+        },
+        {
+          "text": "開発者にロールの作成を許可する条件として、特定の許可の境界（permissions boundary）を付けることを必須にする",
+          "explanation": "許可の境界は、ロールやユーザーが持てる権限の上限を決めるポリシーです。「この境界を付けたロールだけ作成できる」という条件にすれば、開発者は自由にロールを作れますが、境界を超える権限は持たせられず、権限の昇格を防げます。"
+        },
+        {
+          "text": "開発者に AdministratorAccess を付与し、AWS CloudTrail で作成されたロールを定期的に確認する",
+          "explanation": "確認は事後になるため、権限の昇格そのものは防げません。確認作業でセキュリティチームの負荷も増えます。"
+        },
+        {
+          "text": "ロールの作成はすべてセキュリティチームが依頼を受けて行う",
+          "explanation": "開発者が自分で作成できるという要件を満たさず、セキュリティチームの作業も増えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "権限の作成を委任しつつ昇格を防ぐには、許可の境界（permissions boundary）を使います。「境界の付いたロールしか作れない」という条件にするのがポイントです。",
+      "references": [
+        {
+          "title": "IAM エンティティのアクセス許可の境界",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-015",
+      "domain": "d2",
+      "question": "ある企業は、AWS Organizations の全アカウントの API 操作の記録を、監査用に専用のログアーカイブアカウントの Amazon S3 バケットへ集約したい。今後追加されるアカウントも自動的に対象にし、各メンバーアカウントの管理者が記録を止めたり設定を変更したりできないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各メンバーアカウントで CloudTrail の証跡を作成し、ログアーカイブアカウントのバケットに出力する",
+          "explanation": "新しいアカウントごとに証跡を作る必要があり、各アカウントの管理者が証跡を停止・削除できてしまいます。"
+        },
+        {
+          "text": "管理アカウント（または委任された管理者）で CloudTrail の組織の証跡を作成し、ログアーカイブアカウントのバケットに出力する",
+          "explanation": "組織の証跡は、組織内のすべてのアカウント（新しく追加されたアカウントも含む）の操作を記録します。メンバーアカウントからは証跡を確認できますが、変更や削除はできません。"
+        },
+        {
+          "text": "各アカウントで AWS Config を有効にし、アグリゲーターでログアーカイブアカウントに集約する",
+          "explanation": "AWS Config はリソースの設定の変化を記録するサービスで、「誰がどの API を呼んだか」という操作の記録は CloudTrail の役割です。"
+        },
+        {
+          "text": "各アカウントの CloudWatch Logs にアプリケーションログを出力し、サブスクリプションで集約する",
+          "explanation": "アプリケーションログの集約にはなりますが、AWS の API 操作の記録にはなりません。各アカウントの管理者が設定を変更することも防げません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織全体の API 操作の記録は、CloudTrail の組織の証跡で集約するのが定番です。新しいアカウントも自動で対象になり、メンバーアカウントからは変更できません。",
+      "references": [
+        {
+          "title": "組織の証跡の作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-016",
+      "domain": "d2",
+      "question": "ある金融機関は、規制の要件により、暗号鍵を自社だけが管理するシングルテナントのハードウェアセキュリティモジュール（HSM）に保管する必要がある。鍵の管理者は自社の担当者だけで、AWS の担当者は鍵にアクセスできないことが求められる。アプリケーションは PKCS#11 などの標準的なインターフェイスで暗号処理を行う。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS KMS の AWS マネージドキーを使う",
+          "explanation": "AWS マネージドキーは AWS のサービスが自動で作成・管理する鍵で、鍵の管理を自社だけで行うという要件を満たしません。"
+        },
+        {
+          "text": "AWS KMS のカスタマーマネージドキーを作成し、自動ローテーションを有効にする",
+          "explanation": "カスタマーマネージドキーは鍵のポリシーやローテーションを自社で管理できますが、鍵は AWS が運用する共有の HSM で保護されます。シングルテナントの HSM という要件は満たしません。"
+        },
+        {
+          "text": "AWS CloudHSM のクラスターを作成し、HSM のユーザーと鍵を自社で管理する",
+          "explanation": "CloudHSM は専用のシングルテナント HSM を提供し、HSM のユーザーと鍵は顧客だけが管理します。PKCS#11 や JCE などの標準的なインターフェイスにも対応しています。"
+        },
+        {
+          "text": "Amazon S3 の SSE-S3 でデータを暗号化する",
+          "explanation": "SSE-S3 は S3 が管理する鍵による暗号化で、鍵の管理には関与できません。S3 以外のアプリケーションの暗号処理にも使えません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "「シングルテナントの HSM」「鍵を自社だけが管理」「PKCS#11 などの標準インターフェイス」という要件は AWS CloudHSM の特徴です。KMS は鍵の管理を簡単にできる一方で、HSM は AWS が運用する共有のものです。",
+      "references": [
+        {
+          "title": "AWS CloudHSM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cloudhsm/latest/userguide/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-017",
+      "domain": "d2",
+      "question": "ある企業のセキュリティチームは、組織内のすべてのアカウントについて、S3 バケット、IAM ロール、KMS キーなどのリソースが組織外のアカウントや公開アクセスに共有されていないかを継続的に把握したい。意図しない共有が新しく作られたら、すぐに検出したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon GuardDuty を組織全体で有効にする",
+          "explanation": "GuardDuty はログをもとに不審な振る舞いや脅威を検出するサービスで、リソースのポリシーによる外部への共有を一覧で把握する用途ではありません。"
+        },
+        {
+          "text": "IAM Access Analyzer で、組織を信頼ゾーンとするアナライザーを作成する",
+          "explanation": "Access Analyzer はリソースのポリシーを分析し、信頼ゾーン（ここでは組織）の外のプリンシパルや公開アクセスに共有されているリソースを検出結果として示します。新しい共有も継続的に検出できます。"
+        },
+        {
+          "text": "Amazon Inspector を組織全体で有効にする",
+          "explanation": "Inspector は EC2 やコンテナイメージ、Lambda 関数のソフトウェアの脆弱性などを評価するサービスで、リソースの共有状況は分析しません。"
+        },
+        {
+          "text": "AWS Config のマネージドルールで、S3 バケットの公開読み取りを検出する",
+          "explanation": "公開読み取りの S3 バケットは検出できますが、特定の外部アカウントへの共有や、IAM ロール・KMS キーなどほかのリソースは対象になりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "リソースが組織の外に共有されていないかを継続的に確認するには、IAM Access Analyzer の外部アクセスの分析を使います。信頼ゾーンを組織にすると、組織外への共有だけを検出できます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-018",
+      "domain": "d2",
+      "question": "ある企業は、クレジットカード情報を扱うシステムを AWS 上で運用している。外部の監査人から、AWS 自体が PCI DSS に準拠していることを示す証明書と、AWS の SOC 2 レポートの提出を求められた。最も迅速にこれらの資料を入手する方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS サポートにケースを作成し、資料の送付を依頼する",
+          "explanation": "これらの資料はセルフサービスで入手できるため、サポートに依頼する必要はありません。依頼すると入手までに時間がかかります。"
+        },
+        {
+          "text": "AWS Artifact から該当するレポートをダウンロードする",
+          "explanation": "AWS Artifact は、SOC レポートや PCI DSS の準拠証明など、AWS のコンプライアンスに関する資料をオンデマンドで入手できるポータルです。"
+        },
+        {
+          "text": "AWS Security Hub で PCI DSS のセキュリティ標準を有効にし、その結果を提出する",
+          "explanation": "Security Hub のセキュリティ標準は、自社の AWS リソースの設定がベストプラクティスに沿っているかをチェックするものです。AWS 自体の準拠を証明する資料にはなりません。"
+        },
+        {
+          "text": "AWS Audit Manager で評価を作成し、レポートを出力する",
+          "explanation": "Audit Manager は自社の AWS の利用状況から監査用の証跡を集めるサービスです。AWS 自体の第三者認証のレポートは提供しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS 自体のコンプライアンスの証明書や監査レポートは AWS Artifact で入手します。Security Hub や Audit Manager は、自社の利用状況を確認するためのサービスです（責任共有モデルの「クラウドの中」の部分）。",
+      "references": [
+        {
+          "title": "AWS Artifact とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/artifact/latest/ug/what-is-aws-artifact.html"
+        }
+      ]
     }
   ]
 }
