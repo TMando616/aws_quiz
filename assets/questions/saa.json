@@ -3503,6 +3503,1449 @@
           "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html"
         }
       ]
+    },
+    {
+      "id": "saa-036",
+      "domain": "d1",
+      "question": "ある企業は AWS Organizations で複数のアカウントを運用している。すべてのメンバーアカウントで、東京リージョン以外にリソースを作れないようにしたい。各アカウントの管理者でもこの制限を外せないようにする。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントの IAM ユーザーに、リージョンを制限する IAM ポリシーを付ける",
+          "explanation": "IAM ポリシーはアカウントの中で管理されるため、そのアカウントの管理者が外せます。"
+        },
+        {
+          "text": "組織のルートに、aws:RequestedRegion で東京以外を拒否する SCP を付ける",
+          "explanation": "SCP はメンバーアカウントの、ルートユーザーを含む IAM ユーザーとロールの権限を制限します。ルートに付ければ配下のすべてのアカウントに効き、アカウントの管理者は外せません。"
+        },
+        {
+          "text": "AWS Config のルールで、東京以外のリソースを検出する",
+          "explanation": "検出はできますが、作成そのものは止められません。"
+        },
+        {
+          "text": "CloudTrail で東京以外の API の呼び出しを記録する",
+          "explanation": "記録はできますが、作成は防げません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織全体に「アカウントの管理者でも外せない制限」をかけるなら SCP です。SCP は管理アカウントには効かない点、SCP 自体は権限を与えない点も押さえておきます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー（SCP）",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        },
+        {
+          "title": "AWS グローバル条件コンテキストキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-037",
+      "domain": "d1",
+      "question": "ある企業は、社外の ID プロバイダー（SAML 2.0）で従業員を管理している。従業員が普段の社内アカウントで、組織内の複数の AWS アカウントにサインインできるようにし、アカウントごとの権限もまとめて管理したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントに従業員ごとの IAM ユーザーを作る",
+          "explanation": "アカウントの数だけユーザーの作成・削除が必要で、長期的な認証情報も増えます。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープールに従業員を登録する",
+          "explanation": "アプリの利用者向けのユーザーディレクトリで、従業員の AWS アカウントへのサインインには使いません。"
+        },
+        {
+          "text": "IAM Identity Center で外部の ID プロバイダーを ID ソースにし、許可セットをアカウントに割り当てる",
+          "explanation": "IAM Identity Center は外部の ID プロバイダーと SAML 2.0 で連携でき、組織のすべてのアカウントへのアクセス許可を一元的に割り当てられます。許可セットで権限をまとめて管理します。"
+        },
+        {
+          "text": "アクセスキーを従業員全員で共有する",
+          "explanation": "誰が操作したか分からず、漏えいのリスクも高くなります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "従業員の複数アカウントへのサインインは IAM Identity Center に集約します。SCIM を使えば、ユーザーとグループの同期も自動化できます。",
+      "references": [
+        {
+          "title": "外部 ID プロバイダーとの接続",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+        },
+        {
+          "title": "許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-038",
+      "domain": "d1",
+      "question": "ある企業は、監査のための記録を S3 に保存している。規制により5年間、ルートユーザーを含めて誰も削除や上書きができないようにする必要がある。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 Object Lock をコンプライアンスモードで設定し、保持期間を5年にする",
+          "explanation": "コンプライアンスモードでは、ルートユーザーを含めて、保護されたオブジェクトのバージョンを上書き・削除できません。Object Lock はバージョニングを有効にしたバケットで使います。"
+        },
+        {
+          "text": "S3 Object Lock をガバナンスモードで設定する",
+          "explanation": "特別なアクセス許可を持つユーザーは削除できるため、「誰も削除できない」という要件を満たしません。"
+        },
+        {
+          "text": "バケットポリシーで削除を拒否する",
+          "explanation": "権限のある管理者はポリシー自体を書き換えられます。"
+        },
+        {
+          "text": "バケットでバージョニングだけを有効にする",
+          "explanation": "以前のバージョンは残りますが、権限のある管理者はバージョンごと削除できます。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "「誰も削除できない」WORM の保存は、S3 Object Lock のコンプライアンスモードです。ガバナンスモードとの違いがよく問われます。",
+      "references": [
+        {
+          "title": "S3 Object Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-039",
+      "domain": "d1",
+      "question": "ある Web サイトは、Application Load Balancer で HTTPS を提供している。証明書の更新を忘れてサイトが表示できなくなることがないよう、更新を自動化したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "外部で購入した証明書を ACM にインポートする",
+          "explanation": "インポートした証明書は、ACM のマネージドな更新の対象外です。"
+        },
+        {
+          "text": "自己署名の証明書を ALB に設定する",
+          "explanation": "利用者のブラウザで警告が出るため、公開サイトには使えません。"
+        },
+        {
+          "text": "EC2 インスタンスで更新のスクリプトを定期的に動かす",
+          "explanation": "仕組みを自分で作って運用する必要があります。"
+        },
+        {
+          "text": "ACM で DNS 検証の証明書を発行し、ALB に関連付ける",
+          "explanation": "ACM が発行した証明書は、DNS 検証を使っていれば自動で更新されます。ELB や CloudFront に関連付けた証明書が対象です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "証明書の更新の自動化は、ACM が発行した証明書を DNS 検証で使います。",
+      "references": [
+        {
+          "title": "ACM のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-040",
+      "domain": "d1",
+      "question": "ある企業は、プライベートサブネットの EC2 インスタンスへ、踏み台サーバー経由の SSH で接続している。インバウンドのポートを開けず、SSH キーの管理もやめたい。誰がいつ操作したかの記録も残したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "踏み台サーバーのセキュリティグループで、接続元を社内の IP アドレスに絞る",
+          "explanation": "ポートや SSH キーの管理は残ります。"
+        },
+        {
+          "text": "AWS Systems Manager の Session Manager で接続する",
+          "explanation": "インバウンドのポートを開けたり、踏み台を維持したり、SSH キーを管理したりする必要がありません。IAM でアクセスを制御し、セッションのログを S3 や CloudWatch Logs に保存できます。"
+        },
+        {
+          "text": "インスタンスにパブリック IP アドレスを付けて直接 SSH する",
+          "explanation": "インスタンスがインターネットから到達できる場所に置かれます。"
+        },
+        {
+          "text": "SSH キーを全員で共有する",
+          "explanation": "誰が操作したかを区別できません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "インスタンスへの安全な接続は Session Manager が定番です。",
+      "references": [
+        {
+          "title": "Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-041",
+      "domain": "d1",
+      "question": "ある企業は、取引先が自社の VPC で Network Load Balancer の背後に公開しているサービスを、インターネットを経由せずに自社の VPC から使いたい。両社の VPC の CIDR ブロックは重複している。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "両社の VPC を VPC ピアリングでつなぐ",
+          "explanation": "CIDR ブロックが重複している VPC どうしでは、ピアリング接続を作れません。"
+        },
+        {
+          "text": "両社の VPC を Transit Gateway にアタッチする",
+          "explanation": "ルーティングでつなぐため、CIDR の重複があると正しく経路を作れません。"
+        },
+        {
+          "text": "取引先のエンドポイントサービス（AWS PrivateLink）に、自社の VPC でインターフェイス VPC エンドポイントを作って接続する",
+          "explanation": "PrivateLink では、提供側が NLB の背後のサービスをエンドポイントサービスとして公開し、利用側はインターフェイス VPC エンドポイントを作って接続します。自社の VPC の中のエンドポイント経由で接続できます。"
+        },
+        {
+          "text": "取引先のサービスをインターネットに公開してもらう",
+          "explanation": "インターネットを経由するため、要件を満たしません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "特定のサービスをプライベートに使うなら AWS PrivateLink です。ピアリングは CIDR が重複していると使えません。",
+      "references": [
+        {
+          "title": "AWS PrivateLink とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/what-is-privatelink.html"
+        },
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-042",
+      "domain": "d1",
+      "question": "ある企業は、組織内のすべてのアカウントから、共通の S3 バケットのデータを読み取れるようにしたい。アカウントは頻繁に増えるが、バケットポリシーを毎回書き換えたくない。組織の外からは読み取れないようにする。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットポリシーで aws:PrincipalOrgID の条件に組織 ID を指定する",
+          "explanation": "aws:PrincipalOrgID は、リクエスト元のプリンシパルが属する組織の ID と比べる条件キーで、すべてのアカウント ID を列挙する代わりに使えます。"
+        },
+        {
+          "text": "バケットポリシーに、すべてのアカウント ID を並べる",
+          "explanation": "アカウントが増えるたびに書き換えが必要です。"
+        },
+        {
+          "text": "バケットを公開する",
+          "explanation": "組織の外からも読み取れてしまいます。"
+        },
+        {
+          "text": "SCP で S3 の読み取りを許可する",
+          "explanation": "SCP は権限を与えません。バケットのポリシーでの許可が必要です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リソースベースのポリシーで「自社の組織のアカウントだけ」を許可するなら aws:PrincipalOrgID です。",
+      "references": [
+        {
+          "title": "AWS グローバル条件コンテキストキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-043",
+      "domain": "d1",
+      "question": "ある企業は、外部の監視サービスに自社のアカウントの読み取り権限を与える。サービス事業者は、事業者のアカウントから自社の IAM ロールを引き受ける。別の顧客が自社のロールの ARN を指定して、事業者経由でアクセスする問題（混乱した代理）を防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "IAM ユーザーのアクセスキーを事業者に渡す",
+          "explanation": "長期的な認証情報を外部に渡すことになり、漏えいのリスクがあります。"
+        },
+        {
+          "text": "ロールの信頼ポリシーのプリンシパルを、すべて（*）にする",
+          "explanation": "誰でもロールの引き受けを試せる状態になります。"
+        },
+        {
+          "text": "事業者のアカウントを自社の組織に招待する",
+          "explanation": "管理の範囲として不適切で、混乱した代理も防げません。"
+        },
+        {
+          "text": "信頼ポリシーで事業者のアカウントを信頼し、事業者が自社用に発行した外部 ID を sts:ExternalId の条件にする",
+          "explanation": "事業者が顧客ごとに一意の外部 ID を生成し、信頼ポリシーの条件に指定します。別の顧客が自社のロールを指定しても、外部 ID が一致せず引き受けに失敗します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "第三者にロールを引き受けさせるときは、信頼ポリシーに外部 ID の条件を付けて、混乱した代理の問題を防ぎます。",
+      "references": [
+        {
+          "title": "混乱した代理の問題",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-044",
+      "domain": "d1",
+      "question": "ある企業のセキュリティチームは、アカウント内の S3 バケット・IAM ロール・KMS キーなどが、外部のアカウントや公開アクセスに共有されていないかを把握したい。新しい共有が作られたら検出したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon GuardDuty",
+          "explanation": "不審な振る舞いを検出するサービスで、ポリシーによる外部への共有を一覧で把握するものではありません。"
+        },
+        {
+          "text": "IAM Access Analyzer の外部アクセスの分析",
+          "explanation": "外部のエンティティと共有されているリソースを特定します。ポリシーが追加・変更されると、新しいポリシーを分析します。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "ソフトウェアの脆弱性などを評価するサービスです。"
+        },
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "API の操作の記録で、共有の状態を分析するものではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "リソースが外部に共有されていないかの確認は、IAM Access Analyzer の外部アクセスの分析です。信頼ゾーン（アカウントや組織）の外への共有が検出結果として示されます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-045",
+      "domain": "d1",
+      "question": "ある企業は、従業員がオンプレミスの Microsoft Active Directory の認証情報で、AWS のアプリケーションにサインインできるようにしたい。ディレクトリの情報はクラウドにキャッシュしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "IAM に従業員ごとのユーザーを作る",
+          "explanation": "社内の認証情報とは別の認証情報を管理することになります。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープールに従業員を登録する",
+          "explanation": "アプリの利用者向けで、社内の AD の認証情報をそのまま使う仕組みではありません。"
+        },
+        {
+          "text": "AWS Directory Service の AD Connector を使う",
+          "explanation": "AD Connector は、クラウドに情報をキャッシュせずに、ディレクトリのリクエストをオンプレミスの Active Directory へ転送するディレクトリゲートウェイです。"
+        },
+        {
+          "text": "Active Directory を EC2 に移行する",
+          "explanation": "ディレクトリの情報がクラウドに置かれ、運用も必要になります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "オンプレミスの AD をそのまま使い、クラウドに情報を置きたくないなら AD Connector です。",
+      "references": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-046",
+      "domain": "d1",
+      "question": "ある企業のプライベートサブネットの EC2 インスタンスは、同じリージョンの S3 にアクセスする。セキュリティの方針で、インスタンスからインターネットへの経路（インターネットゲートウェイや NAT）を使わずに S3 にアクセスさせたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 用のゲートウェイ VPC エンドポイントを作り、プライベートサブネットのルートテーブルに追加する",
+          "explanation": "ゲートウェイエンドポイントを使うと、インターネットゲートウェイや NAT デバイスなしで VPC から S3 にアクセスできます。追加料金もかかりません。"
+        },
+        {
+          "text": "インスタンスをパブリックサブネットに移す",
+          "explanation": "インターネットへの経路を使うことになり、セキュリティも下がります。"
+        },
+        {
+          "text": "NAT ゲートウェイを作る",
+          "explanation": "インターネットへの経路を使うことになります。"
+        },
+        {
+          "text": "S3 バケットを公開する",
+          "explanation": "誰でもアクセスできるようになります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "プライベートサブネットから同じリージョンの S3 にプライベートにアクセスするなら、ゲートウェイエンドポイントが定番です。オンプレミスや他のリージョンからは使えない点に注意します。",
+      "references": [
+        {
+          "title": "S3 のゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-047",
+      "domain": "d2",
+      "question": "ある企業の注文処理は SQS のキューを使っている。一部のメッセージは形式が壊れていて何度処理しても失敗し、キューに残り続けている。失敗を繰り返すメッセージを分けて保管し、あとで原因を調べたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "可視性タイムアウトを長くする",
+          "explanation": "再処理までの時間が延びるだけです。"
+        },
+        {
+          "text": "メッセージの保持期間を短くする",
+          "explanation": "調べる前にメッセージが消えてしまいます。"
+        },
+        {
+          "text": "キューを FIFO キューに作り直す",
+          "explanation": "順番の保証や重複の排除はできますが、失敗し続けるメッセージを分ける仕組みにはなりません。"
+        },
+        {
+          "text": "デッドレターキューを設定し、maxReceiveCount を超えたメッセージをそこへ移す",
+          "explanation": "デッドレターキューは、正常に処理されなかったメッセージの移動先になるキューです。あとで調べたり、再処理（リドライブ）したりできます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "処理に失敗し続けるメッセージはデッドレターキューに分けます。デッドレターキューはソースキューと同じアカウント・リージョンに置きます。",
+      "references": [
+        {
+          "title": "デッドレターキュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-048",
+      "domain": "d2",
+      "question": "あるゲームは、利用者のデータを複数のリージョンに置き、どのリージョンからも低遅延で読み書きしたい。1つのリージョンが止まっても、ほかのリージョンで読み書きを続けたい。キーと値のアクセスが中心である。最も適切なデータベースはどれか。",
+      "choices": [
+        {
+          "text": "1つのリージョンの RDS と、クロスリージョンのリードレプリカ",
+          "explanation": "リードレプリカは読み取り専用で、書き込みは1つのリージョンに集中します。"
+        },
+        {
+          "text": "DynamoDB グローバルテーブル",
+          "explanation": "グローバルテーブルのレプリカは、読み込みと書き込みの両方を処理できます（マルチアクティブ）。リージョンが止まっても、ほかのリージョンに切り替えて続けられます。"
+        },
+        {
+          "text": "1つのリージョンの DynamoDB テーブル",
+          "explanation": "そのリージョンが止まると読み書きできません。"
+        },
+        {
+          "text": "S3 のクロスリージョンレプリケーション",
+          "explanation": "S3 はデータベースではなく、細かい読み書きには向きません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "複数のリージョンのどこからでも書き込みたいなら、DynamoDB グローバルテーブルが合います。",
+      "references": [
+        {
+          "title": "DynamoDB グローバルテーブル",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-049",
+      "domain": "d2",
+      "question": "ある企業は、Aurora MySQL のデータベースをリージョン全体の障害に備えたい。別のリージョンに1秒未満の遅れで複製し、そのリージョンでは普段から読み取りにも使いたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎日スナップショットを別のリージョンにコピーする",
+          "explanation": "最後のスナップショット以降のデータが失われ、普段の読み取りにも使えません。"
+        },
+        {
+          "text": "同じリージョンでマルチ AZ にする",
+          "explanation": "リージョン全体の障害には備えられません。"
+        },
+        {
+          "text": "Aurora Global Database を作成し、別のリージョンにセカンダリクラスターを置く",
+          "explanation": "Aurora Global Database は、書き込みを行うプライマリリージョンと、読み取り専用のセカンダリリージョンで構成されます。通常1秒未満の遅延で複製し、リージョン全体の障害からの回復に使えます。"
+        },
+        {
+          "text": "別のリージョンに空のデータベースを用意しておく",
+          "explanation": "データが複製されていないため、障害時に使えません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "リージョン障害への備えと、別のリージョンでの読み取りを両立するなら Aurora Global Database です。",
+      "references": [
+        {
+          "title": "Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-050",
+      "domain": "d2",
+      "question": "ある企業の注文処理は、複数の Lambda 関数を順番に呼び出している。一時的なエラーでの再試行や、失敗したときの代わりの処理を、それぞれの関数に作り込んでいて保守が大変になっている。最も適切な改善策はどれか。",
+      "choices": [
+        {
+          "text": "AWS Step Functions で処理の流れを定義し、Retry と Catch で再試行と失敗時の処理を設定する",
+          "explanation": "Step Functions は処理の流れをステートマシンとして定義し、失敗したタスクの再試行や、失敗をキャッチして代わりの処理を実行できます。"
+        },
+        {
+          "text": "すべての処理を1つの大きな Lambda 関数にまとめる",
+          "explanation": "再試行や失敗時の処理は自分で書く必要があり、保守もしにくくなります。"
+        },
+        {
+          "text": "EC2 の cron で、関数を順番に呼び出す",
+          "explanation": "サーバーの管理が増え、失敗時の処理も作り込むことになります。"
+        },
+        {
+          "text": "関数のタイムアウトを最大にする",
+          "explanation": "再試行や失敗時の処理の管理にはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "複数の処理の流れと失敗時の処理をまとめて管理するなら Step Functions です。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        },
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d071",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-036",
+      "point": "SCP と管理アカウント",
+      "question": "SCP は、組織の管理アカウントのユーザーやロールにも効く。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP は組織のメンバーアカウントにだけ効き、管理アカウントのユーザーやロールには影響しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "管理アカウントでの作業は最小限にするのがベストプラクティスです。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー（SCP）",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d072",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-036",
+      "point": "アカウントの管理者でも外せない制限",
+      "question": "組織の全メンバーアカウントに、各アカウントの管理者でも外せない権限の上限をかけたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "IAM ポリシー",
+          "explanation": "アカウントの中で管理され、そのアカウントの管理者が外せます。"
+        },
+        {
+          "text": "AWS Config ルール",
+          "explanation": "違反の検出で、操作は止められません。"
+        },
+        {
+          "text": "サービスコントロールポリシー（SCP）",
+          "explanation": "メンバーアカウントのルートユーザーを含む IAM ユーザーとロールの権限を制限します。"
+        },
+        {
+          "text": "CloudTrail",
+          "explanation": "操作の記録です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "組織の側からかける権限の上限は SCP です。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー（SCP）",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d073",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-037",
+      "point": "SAML と SCIM",
+      "question": "IAM Identity Center は、外部の ID プロバイダーから SCIM でユーザーとグループを自動でプロビジョニングできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。IAM Identity Center は SCIM v2.0 による自動プロビジョニング（同期）に対応しています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SAML はサインインのため、SCIM はユーザーとグループの同期のため、と役割を分けて覚えます。",
+      "references": [
+        {
+          "title": "自動プロビジョニング",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/provision-automatically.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d074",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-037",
+      "point": "従業員の複数アカウントへのサインイン",
+      "question": "従業員が社内の ID で組織の複数の AWS アカウントにサインインでき、権限もまとめて管理したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Cognito のユーザープール",
+          "explanation": "アプリの利用者向けです。"
+        },
+        {
+          "text": "各アカウントの IAM ユーザー",
+          "explanation": "アカウントの数だけ管理が必要です。"
+        },
+        {
+          "text": "共有のアクセスキー",
+          "explanation": "誰が操作したか分かりません。"
+        },
+        {
+          "text": "IAM Identity Center",
+          "explanation": "組織のすべてのアカウントへのアクセス許可を一元的に割り当てられます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "従業員の複数アカウントへのアクセスは IAM Identity Center です。",
+      "references": [
+        {
+          "title": "外部 ID プロバイダーとの接続",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+        },
+        {
+          "title": "許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d075",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-038",
+      "point": "ガバナンスモード",
+      "question": "S3 Object Lock のガバナンスモードでは、どんな権限を持つユーザーも、保護されたオブジェクトを削除できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ガバナンスモードでは、特別なアクセス許可を持つユーザーは削除やロックの設定の変更ができます。誰にも削除させたくないなら、コンプライアンスモードを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "コンプライアンスモードはルートユーザーでも削除できない、ガバナンスモードは特別な権限で解除できる、と覚えます。",
+      "references": [
+        {
+          "title": "S3 Object Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d076",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-038",
+      "point": "Object Lock の前提",
+      "question": "S3 Object Lock を使うには、バケットでバージョニングを有効にする必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Object Lock は S3 のバージョニングが有効になっているバケットでだけ機能します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "オブジェクトのバージョンごとに、保持期間やリーガルホールドを設定します。",
+      "references": [
+        {
+          "title": "S3 Object Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d077",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-039",
+      "point": "インポートした証明書",
+      "question": "ACM にインポートした証明書は、ACM が自動で更新する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。インポートした証明書は、ACM のマネージドな更新の対象外です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "自動で更新されるのは、ACM が発行した証明書（DNS 検証を使っている場合など）です。",
+      "references": [
+        {
+          "title": "ACM のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d078",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-039",
+      "point": "証明書の更新の自動化",
+      "question": "ALB の TLS 証明書の更新を自動化したい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "外部の証明書をインポートする",
+          "explanation": "インポートした証明書は自動で更新されません。"
+        },
+        {
+          "text": "自己署名の証明書",
+          "explanation": "公開サイトでは警告が出ます。"
+        },
+        {
+          "text": "ACM で DNS 検証の証明書を発行する",
+          "explanation": "ACM が発行した証明書は、DNS 検証なら自動で更新されます。"
+        },
+        {
+          "text": "更新のスクリプトを動かす",
+          "explanation": "自分で作って運用する必要があります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "証明書の更新の自動化は、ACM の DNS 検証の証明書です。",
+      "references": [
+        {
+          "title": "ACM のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d079",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-040",
+      "point": "Session Manager とポート",
+      "question": "Session Manager でインスタンスに接続するには、インバウンドの SSH のポートを開ける必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Session Manager では、インバウンドのポートを開けたり、踏み台のホストを維持したり、SSH キーを管理したりする必要がありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アクセスは IAM で制御し、セッションのログを残せます。",
+      "references": [
+        {
+          "title": "Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d080",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-040",
+      "point": "ポートを開けずに接続する",
+      "question": "プライベートサブネットの EC2 に、ポートを開けず SSH キーも使わずに接続し、操作の記録を残したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "踏み台サーバー",
+          "explanation": "ポートや SSH キーの管理が残ります。"
+        },
+        {
+          "text": "パブリック IP での直接の SSH",
+          "explanation": "インターネットから到達できる場所に置かれます。"
+        },
+        {
+          "text": "共有の SSH キー",
+          "explanation": "誰が操作したか分かりません。"
+        },
+        {
+          "text": "Systems Manager の Session Manager",
+          "explanation": "ポートも SSH キーも不要で、IAM で制御し、ログを保存できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "安全な接続は Session Manager です。",
+      "references": [
+        {
+          "title": "Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d081",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-041",
+      "point": "PrivateLink の利用側",
+      "question": "AWS PrivateLink のエンドポイントサービスを使う側は、自分の VPC にインターフェイス VPC エンドポイントを作る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。サービスの利用者は、インターフェイス VPC エンドポイントを作成してエンドポイントサービスに接続します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "提供側は、NLB の背後のサービスをエンドポイントサービスとして公開します。",
+      "references": [
+        {
+          "title": "サービスを共有する",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/privatelink-share-your-services.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d082",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-041",
+      "point": "ピアリングと CIDR の重複",
+      "question": "CIDR ブロックが重複している VPC どうしでも、VPC ピアリング接続は作れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。IPv4 や IPv6 の CIDR ブロックが一致または重複する VPC の間では、VPC ピアリング接続を作成できません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CIDR が重複しているときに特定のサービスを使うなら、PrivateLink を検討します。",
+      "references": [
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d083",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-042",
+      "point": "aws:PrincipalOrgID",
+      "question": "aws:PrincipalOrgID の条件キーを使うと、組織内のすべてのアカウント ID を列挙する代わりに、組織 ID で許可できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。aws:PrincipalOrgID は、組織内のすべてのアカウント ID を一覧で指定する代わりに使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アカウントが増えてもポリシーを書き換えずに済みます。",
+      "references": [
+        {
+          "title": "AWS グローバル条件コンテキストキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d084",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-042",
+      "point": "組織のアカウントだけに許可する",
+      "question": "S3 バケットを組織内のすべてのアカウントから読み取れるようにし、組織の外からは読めないようにしたい。使う条件キーはどれか。",
+      "choices": [
+        {
+          "text": "aws:SourceIp",
+          "explanation": "IP アドレスの条件で、組織のアカウントかは分かりません。"
+        },
+        {
+          "text": "aws:RequestedRegion",
+          "explanation": "リクエスト先のリージョンの条件です。"
+        },
+        {
+          "text": "aws:PrincipalOrgID",
+          "explanation": "リクエスト元のプリンシパルが属する組織の ID と比べます。"
+        },
+        {
+          "text": "aws:SecureTransport",
+          "explanation": "暗号化された通信かどうかの条件です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "「自社の組織のアカウントだけ」は aws:PrincipalOrgID です。",
+      "references": [
+        {
+          "title": "AWS グローバル条件コンテキストキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d085",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-043",
+      "point": "外部 ID を発行する側",
+      "question": "ロールを引き受ける事業者は、顧客ごとに一意の外部 ID を生成して使う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。事業者は顧客ごとに一意の ExternalId の値を生成し、ロールを引き受けるリクエストで使います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "外部 ID は秘密の値ではなく、ロールを表示できる人には見えます。一意であることが大事です。",
+      "references": [
+        {
+          "title": "混乱した代理の問題",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d086",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-043",
+      "point": "混乱した代理を防ぐ条件",
+      "question": "第三者の事業者に自社のロールを引き受けさせる。混乱した代理を防ぐため、信頼ポリシーに付ける条件はどれか。",
+      "choices": [
+        {
+          "text": "aws:RequestedRegion",
+          "explanation": "リージョンの条件で、相手の区別にはなりません。"
+        },
+        {
+          "text": "MFA を必須にする条件",
+          "explanation": "システムによる自動の引き受けでは前提にできません。"
+        },
+        {
+          "text": "aws:SourceIp で事業者の IP を指定する",
+          "explanation": "どの顧客のための処理かは区別できません。"
+        },
+        {
+          "text": "sts:ExternalId",
+          "explanation": "事業者が顧客ごとに発行する外部 ID を条件にすると、別の顧客が指定しても引き受けに失敗します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "第三者へのクロスアカウントのロールには、sts:ExternalId の条件を付けます。",
+      "references": [
+        {
+          "title": "混乱した代理の問題",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d087",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-044",
+      "point": "Access Analyzer の信頼ゾーン",
+      "question": "IAM Access Analyzer の外部アクセスの分析では、選んだアカウントや組織が「信頼ゾーン」になり、その外への共有が検出される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。選択した組織またはアカウントは、アナライザーの信頼ゾーンと呼ばれます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "信頼ゾーンの外のプリンシパルや公開アクセスに共有されているリソースが、検出結果として示されます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d088",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-044",
+      "point": "外部への共有を見つける",
+      "question": "S3 バケットや IAM ロールが、外部のアカウントや公開アクセスに共有されていないかを確認したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "Amazon GuardDuty",
+          "explanation": "不審な振る舞いを検出するサービスです。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を評価するサービスです。"
+        },
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "操作の記録です。"
+        },
+        {
+          "text": "IAM Access Analyzer",
+          "explanation": "外部のエンティティと共有されているリソースを特定します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "外部への共有の確認は IAM Access Analyzer です。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d089",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-045",
+      "point": "AD Connector とキャッシュ",
+      "question": "AD Connector は、オンプレミスの Active Directory の情報をクラウドにキャッシュする。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AD Connector は、クラウドに情報をキャッシュせずに、リクエストをオンプレミスの Active Directory へ転送します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "既存の社内の認証情報で AWS のアプリケーションにサインインできます。",
+      "references": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d090",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-045",
+      "point": "オンプレミスの AD を使う",
+      "question": "社内の AD の認証情報で AWS のアプリケーションにサインインさせ、ディレクトリの情報はクラウドに置きたくない。使うのはどれか。",
+      "choices": [
+        {
+          "text": "IAM ユーザー",
+          "explanation": "社内の認証情報とは別です。"
+        },
+        {
+          "text": "Cognito のユーザープール",
+          "explanation": "アプリの利用者向けです。"
+        },
+        {
+          "text": "AD Connector",
+          "explanation": "情報をキャッシュせずに、オンプレミスの AD へリクエストを転送します。"
+        },
+        {
+          "text": "EC2 上の AD",
+          "explanation": "情報がクラウドに置かれます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "オンプレミスの AD をそのまま使うなら AD Connector です。",
+      "references": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d091",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-046",
+      "point": "ゲートウェイエンドポイントの料金",
+      "question": "S3 のゲートウェイ VPC エンドポイントは、追加料金なしで使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ゲートウェイエンドポイントは追加料金なしで使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "インターネットゲートウェイや NAT なしで、VPC から S3 にアクセスできます。",
+      "references": [
+        {
+          "title": "S3 のゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d092",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-046",
+      "point": "ゲートウェイエンドポイントとオンプレミス",
+      "question": "S3 のゲートウェイエンドポイントは、オンプレミスのネットワークからも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ゲートウェイエンドポイントは、オンプレミスのネットワーク、他のリージョンのピア接続された VPC、Transit Gateway からのアクセスを許可しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オンプレミスから S3 にプライベートにアクセスするなら、インターフェイスエンドポイントを使います。",
+      "references": [
+        {
+          "title": "S3 のゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d093",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-047",
+      "point": "デッドレターキューの場所",
+      "question": "SQS のデッドレターキューは、ソースキューと同じアカウント・同じリージョンに置く必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。デッドレターキューは、ソースキューと同じアカウントおよびリージョンにある必要があります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "maxReceiveCount の回数だけ受信されても処理できなかったメッセージが、デッドレターキューに移されます。",
+      "references": [
+        {
+          "title": "デッドレターキュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d094",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-047",
+      "point": "失敗し続けるメッセージを分ける",
+      "question": "SQS で、何度処理しても失敗するメッセージを分けて保管し、あとで調べたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "可視性タイムアウトを長くする",
+          "explanation": "再処理までの時間が延びるだけです。"
+        },
+        {
+          "text": "FIFO キューにする",
+          "explanation": "失敗し続けるメッセージを分ける仕組みではありません。"
+        },
+        {
+          "text": "デッドレターキュー",
+          "explanation": "正常に処理されなかったメッセージの移動先になるキューです。"
+        },
+        {
+          "text": "保持期間を短くする",
+          "explanation": "調べる前に消えてしまいます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "失敗し続けるメッセージはデッドレターキューに分けます。",
+      "references": [
+        {
+          "title": "デッドレターキュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d095",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-048",
+      "point": "グローバルテーブルの書き込み",
+      "question": "DynamoDB グローバルテーブルでは、どのリージョンのレプリカでも書き込める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。グローバルテーブルのレプリカは、読み込みと書き込みの両方を処理できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "複製は非同期で、結果整合性のモードでは最後の書き込みが優先されます。",
+      "references": [
+        {
+          "title": "DynamoDB グローバルテーブル",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d096",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-048",
+      "point": "整合性モードの変更",
+      "question": "DynamoDB グローバルテーブルの整合性モードは、作成したあとでも変えられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。グローバルテーブルの整合性モードは、作成後に変更できません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "指定しなければ、マルチリージョンの結果整合性（MREC）になります。",
+      "references": [
+        {
+          "title": "DynamoDB グローバルテーブル",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d097",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-049",
+      "point": "複製の遅延",
+      "question": "Aurora Global Database のセカンダリリージョンへの複製は、通常1秒未満の遅延で行われる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。通常1秒未満のレイテンシーで、データをセカンダリリージョンに複製します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リージョン全体の障害に備えつつ、データの損失を小さくできます。",
+      "references": [
+        {
+          "title": "Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d098",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-049",
+      "point": "リージョン障害に備える Aurora",
+      "question": "Aurora のデータを別のリージョンにほぼ遅れなく複製し、そのリージョンで普段から読み取りにも使いたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "マルチ AZ",
+          "explanation": "同じリージョンの中の仕組みです。"
+        },
+        {
+          "text": "スナップショットのコピー",
+          "explanation": "最後のコピー以降のデータが失われます。"
+        },
+        {
+          "text": "Aurora レプリカ（同じリージョン）",
+          "explanation": "リージョン全体の障害には備えられません。"
+        },
+        {
+          "text": "Aurora Global Database",
+          "explanation": "別のリージョンに読み取り専用のセカンダリを置き、通常1秒未満で複製します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "リージョン障害への備えは Aurora Global Database です。",
+      "references": [
+        {
+          "title": "Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d099",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-050",
+      "point": "Express ワークフローの実行時間",
+      "question": "Step Functions の Express ワークフローは、最大1年間実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Express ワークフローの実行は最大5分です。最大1年間実行できるのは Standard ワークフローです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Standard は1回だけの実行・最大1年、Express は1回以上の実行・最大5分です。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d100",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-050",
+      "point": "再試行と失敗時の処理",
+      "question": "Step Functions で、失敗したタスクの再試行と、失敗したときの代わりの処理を定義したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "SQS のデッドレターキュー",
+          "explanation": "メッセージの退避の仕組みです。"
+        },
+        {
+          "text": "ステートの Retry と Catch",
+          "explanation": "Task・Parallel・Map のステートに、再試行（Retry）と失敗時の処理（Catch）を設定できます。"
+        },
+        {
+          "text": "Lambda の予約済み同時実行数",
+          "explanation": "同時実行の数の設定です。"
+        },
+        {
+          "text": "CloudWatch アラーム",
+          "explanation": "メトリクスによる通知の仕組みです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Step Functions の再試行と失敗時の処理は、Retry と Catch で定義します。",
+      "references": [
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
     }
   ]
 }
