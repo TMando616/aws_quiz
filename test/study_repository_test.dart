@@ -65,4 +65,25 @@ void main() {
 
     expect(await repo.accuracyByDomain('sap', questions), isEmpty);
   });
+
+  test('模試の結果を保存し、新しい順に読み出せる', () async {
+    MockResult result(int day, int correct) => MockResult(
+      examId: 'sap',
+      takenAt: DateTime(2026, 11, day),
+      questionCount: 3,
+      correctCount: correct,
+      duration: const Duration(minutes: 7),
+      byDomain: {'d1': Accuracy(answered: 2, correct: correct.clamp(0, 2))},
+    );
+    await repo.saveMockResult(result(20, 1));
+    await repo.saveMockResult(result(21, 2));
+
+    final results = await repo.mockResults('sap');
+    expect(results, hasLength(2));
+    expect(results.first.takenAt, DateTime(2026, 11, 21));
+    expect(results.first.correctCount, 2);
+    expect(results.first.duration, const Duration(minutes: 7));
+    expect(results.first.byDomain['d1']!.correct, 2);
+    expect(await repo.mockResults('saa'), isEmpty);
+  });
 }

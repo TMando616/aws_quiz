@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
@@ -20,6 +22,29 @@ class Accuracy {
   double? get rate => answered == 0 ? null : correct / answered;
 
   static const empty = Accuracy(answered: 0, correct: 0);
+}
+
+/// 模試1回分の結果
+class MockResult {
+  const MockResult({
+    required this.examId,
+    required this.takenAt,
+    required this.questionCount,
+    required this.correctCount,
+    required this.duration,
+    required this.byDomain,
+  });
+
+  final String examId;
+  final DateTime takenAt;
+  final int questionCount;
+  final int correctCount;
+  final Duration duration;
+
+  /// 分野ID → その分野の出題数と正解数（未回答は不正解として数える）
+  final Map<String, Accuracy> byDomain;
+
+  double get rate => questionCount == 0 ? 0 : correctCount / questionCount;
 }
 
 /// 学習記録の保存担当（端末内のSQLite）。Laravelでいうリポジトリ層
@@ -155,5 +180,50 @@ class StudyRepository {
       correct += a.correct;
     }
     return Accuracy(answered: answered, correct: correct);
+  }
+
+  /// 模試の結果を保存する
+  Future<void> saveMockResult(MockResult result) async {
+    await _db.insert('mock_results', {
+      'exam_id': result.examId,
+      'taken_at': result.takenAt.millisecondsSinceEpoch,
+      'question_count': result.questionCount,
+      'correct_count': result.correctCount,
+      'duration_seconds': result.duration.inSeconds,
+      'domain_json': jsonEncode({
+        for (final e in result.byDomain.entries)
+          e.key: {'answered': e.value.answered, 'correct': e.value.correct},
+      }),
+    });
+  }
+
+  /// 模試の結果を新しい順に取得する
+  Future<List<MockResult>> mockResults(String examId, {int limit = 20}) async {
+    final rows = await _db.query(
+      'mock_results',
+      where: 'exam_id = ?',
+      whereArgs: [examId],
+      orderBy: 'taken_at DESC, id DESC',
+      limit: limit,
+    );
+    return [
+      for (final r in rows)
+        MockResult(
+          examId: r['exam_id'] as String,
+          takenAt: DateTime.fromMillisecondsSinceEpoch(r['taken_at'] as int),
+          questionCount: r['question_count'] as int,
+          correctCount: r['correct_count'] as int,
+          duration: Duration(seconds: r['duration_seconds'] as int),
+          byDomain: {
+            for (final e in (jsonDecode(
+              r['domain_json'] as String,
+            ) as Map<String, dynamic>).entries)
+              e.key: Accuracy(
+                answered: (e.value as Map<String, dynamic>)['answered'] as int,
+                correct: (e.value as Map<String, dynamic>)['correct'] as int,
+              ),
+          },
+        ),
+    ];
   }
 }

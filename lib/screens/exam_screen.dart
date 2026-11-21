@@ -2,8 +2,10 @@ import 'package:material_ui/material_ui.dart';
 
 import '../data/question_repository.dart';
 import '../data/study_repository.dart';
+import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
+import 'mock_screen.dart';
 import 'quiz_screen.dart';
 
 /// 試験ごとのトップ。分野ごとの問題数・正答率と、出題方法を選ぶ
@@ -18,12 +20,15 @@ class ExamScreen extends StatefulWidget {
 
 /// 画面に出すデータをまとめたもの
 class _ExamData {
-  const _ExamData(this.questions, this.accuracy);
+  const _ExamData(this.questions, this.accuracy, this.lastMock);
 
   final List<Question> questions;
 
   /// 分野ID → 正答率
   final Map<String, Accuracy> accuracy;
+
+  /// 前回の模試の結果（まだ受けていなければ null）
+  final MockResult? lastMock;
 
   int countOf(String domainId) =>
       questions.where((q) => q.domainId == domainId).length;
@@ -41,14 +46,17 @@ class _ExamScreenState extends State<ExamScreen> {
   Future<_ExamData> _load() async {
     final questions = await QuestionRepository().load(widget.exam.id);
     var accuracy = <String, Accuracy>{};
+    MockResult? lastMock;
     try {
       final repo = await StudyRepository.instance();
       accuracy = await repo.accuracyByDomain(widget.exam.id, questions);
+      final mocks = await repo.mockResults(widget.exam.id, limit: 1);
+      lastMock = mocks.firstOrNull;
     } catch (e) {
       // 記録が読めなくても、出題はできるようにする
       debugPrint('学習記録の読み込みに失敗: $e');
     }
-    return _ExamData(questions, accuracy);
+    return _ExamData(questions, accuracy, lastMock);
   }
 
   /// 出題画面へ。戻ってきたら正答率を読み直す
@@ -71,6 +79,47 @@ class _ExamScreenState extends State<ExamScreen> {
         ? (widget.exam.domainById(domainIds.first)?.name ?? '分野別')
         : '選択した分野';
     _start(questions, title);
+  }
+
+  /// 模試を始める。収録数が足りなければ、その旨を伝えてから始める
+  Future<void> _startMock(_ExamData data) async {
+    final exam = widget.exam;
+    final set = buildMockSet(exam, data.questions);
+    if (set.questions.isEmpty) return;
+    final minutes = (set.timeLimit.inSeconds / 60).ceil();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('模試を始めますか？'),
+        content: Text(
+          [
+            if (set.isShort)
+              '収録数が足りないため、${set.questions.length}問・$minutes分で実施します'
+                  '（本番は${exam.mock.questionCount}問・${exam.mock.timeLimitMinutes}分）。'
+            else
+              '${set.questions.length}問・$minutes分で実施します。',
+            '1問ごとの正誤は出さず、最後にまとめて採点します。',
+          ].join('\n\n'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('やめる'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('始める'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MockScreen(exam: exam, mockSet: set),
+      ),
+    );
+    if (mounted) setState(() => _future = _load());
   }
 
   Future<void> _pickDomains(_ExamData data) async {
@@ -130,6 +179,25 @@ class _ExamScreenState extends State<ExamScreen> {
                 onPressed: () => _pickDomains(data),
                 child: const Text('分野を選んで出題'),
               ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: questions.isEmpty ? null : () => _startMock(data),
+                child: Text(
+                  '模試（${exam.mock.questionCount}問・${exam.mock.timeLimitMinutes}分）',
+                ),
+              ),
+              if (data.lastMock case final last?)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '前回の模試：${(last.rate * 100).round()}%'
+                    '（${last.takenAt.month}/${last.takenAt.day}・${last.questionCount}問）',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 32),
               Text('出題分野', style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),

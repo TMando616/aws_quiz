@@ -4,7 +4,10 @@ import 'package:material_ui/material_ui.dart';
 import '../data/exam_repository.dart';
 import '../data/question_repository.dart';
 import '../models/exam.dart';
+import '../logic/mock_builder.dart';
 import 'exam_screen.dart';
+import 'mock_result_screen.dart';
+import 'mock_screen.dart';
 import 'quiz_screen.dart';
 import '../widgets/explanation_view.dart';
 
@@ -37,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
-  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説まで進む
+  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`mock` で模試、`mock-result` で模試の結果まで進む
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
 
   Future<void> _openDebugRoute(List<_ExamSummary> summaries) async {
@@ -63,6 +66,38 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       );
+    }
+    if (_debugRoute == 'mock' || _debugRoute == 'mock-result') {
+      final questions = await QuestionRepository().load(target.exam.id);
+      final set = buildMockSet(target.exam, questions);
+      if (_debugRoute == 'mock') {
+        navigator.push(
+          MaterialPageRoute(
+            builder: (_) => MockScreen(exam: target.exam, mockSet: set),
+          ),
+        );
+      } else {
+        // 1問目だけAを選び、残りは未回答にした結果
+        final selections = {
+          0: {0},
+        };
+        navigator.push(
+          MaterialPageRoute(
+            builder: (_) => MockResultScreen(
+              exam: target.exam,
+              result: gradeMock(
+                examId: target.exam.id,
+                questions: set.questions,
+                selections: selections,
+                startedAt: DateTime.now(),
+                duration: const Duration(minutes: 4, seconds: 12),
+              ),
+              questions: set.questions,
+              selections: selections,
+            ),
+          ),
+        );
+      }
     }
     if (_debugRoute == 'quiz') {
       final questions = await QuestionRepository().load(target.exam.id);
