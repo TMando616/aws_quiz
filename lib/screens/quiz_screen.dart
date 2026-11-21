@@ -7,7 +7,8 @@ import '../data/study_repository.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
 import '../settings/quiz_layout.dart';
-import '../theme/app_theme.dart';
+import '../theme/app_tokens.dart';
+import '../widgets/design_parts.dart';
 import '../widgets/domain_accuracy_bar.dart';
 import '../widgets/explanation_view.dart';
 import '../widgets/related_questions_buttons.dart';
@@ -185,6 +186,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   Widget _buildQuestion(Question q, int total) {
+    final t = context.tokens;
     final canSubmit = q.isMultiple
         ? _selected.length == q.answers.length
         : _selected.isNotEmpty;
@@ -199,20 +201,40 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '${widget.exam.shortName} ${widget.title}（${_index + 1}/$total）',
-        ),
+        title: Text('${widget.exam.shortName} ${widget.title}'),
         actions: [_buildMenu()],
       ),
       body: SafeArea(
         child: Column(
           children: [
-            LinearProgressIndicator(value: (_index + 1) / total),
-            Expanded(child: body),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
+            _buildProgress(total),
+            Expanded(
+              // 次の問題へ進むとき、カードを1枚めくるように横にスライドさせる（DESIGN.md 6章）
+              child: AnimatedSwitcher(
+                duration: t.cardFlip,
+                transitionBuilder: (child, animation) {
+                  final incoming = child.key == ValueKey(_index);
+                  final shift = incoming ? t.cardFlipShift : -t.cardFlipShift;
+                  return SlideTransition(
+                    position: Tween(
+                      begin: Offset(shift, 0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: FadeTransition(opacity: animation, child: child),
+                  );
+                },
+                child: KeyedSubtree(key: ValueKey(_index), child: body),
+              ),
+            ),
+            // 一問一答は選択肢をタップした時点で回答するので、答えるまではボタンを出さない
+            if (!q.isDrill || _answered)
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  t.space5,
+                  t.space3,
+                  t.space5,
+                  t.space3,
+                ),
                 child: FilledButton(
                   onPressed: _answered
                       ? () => _next(total)
@@ -220,14 +242,31 @@ class _QuizScreenState extends State<QuizScreen> {
                   child: Text(
                     !_answered
                         ? (q.isDrill ? '選択肢をタップして回答' : '回答する')
-                        : (_index + 1 >= total ? '結果を見る' : '次の問題へ'),
+                        : (_index + 1 >= total ? '結果を見る' : '次へ'),
                   ),
                 ),
               ),
-            ),
             const BannerAdView(),
           ],
         ),
+      ),
+    );
+  }
+
+  /// 上部の進捗。マーカーの黄色のバーと、等幅の「何問目 / 全部で何問」
+  Widget _buildProgress(int total) {
+    final t = context.tokens;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(t.space5, t.space2, t.space5, t.space2),
+      child: Row(
+        children: [
+          Expanded(child: ThinBar(value: (_index + 1) / total)),
+          SizedBox(width: t.space3),
+          Text(
+            '${_index + 1} / $total',
+            style: t.caption.copyWith(color: t.textPrimary),
+          ),
+        ],
       ),
     );
   }
@@ -258,25 +297,39 @@ class _QuizScreenState extends State<QuizScreen> {
 
   // ---------- 一問一答 ----------
 
+  /// 問題のカードを上に、選択肢を親指の届く下に寄せる。回答後は解説が下に続く
   Widget _buildDrillBody(Question q) {
-    return SingleChildScrollView(
-      key: ValueKey('drill-$_index'),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildQuestionText(q),
-          const SizedBox(height: 16),
-          for (var i = 0; i < q.choices.length; i++) _buildChoice(q, i),
-          if (_answered) _buildExplanation(q),
-        ],
-      ),
+    final t = context.tokens;
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(t.space5, t.space3, t.space5, 0),
+          sliver: SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                QuestionCard(child: _buildQuestionText(q)),
+                SizedBox(height: t.space5),
+                const Spacer(),
+                ..._buildChoiceList(q),
+              ],
+            ),
+          ),
+        ),
+        if (_answered)
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(t.space5, 0, t.space5, t.space6),
+            sliver: SliverToBoxAdapter(child: _buildExplanation(q)),
+          ),
+      ],
     );
   }
 
   // ---------- 問題と選択肢を分けるモード ----------
 
   Widget _buildTabsBody(Question q) {
+    final t = context.tokens;
     // keyに問題番号を入れて、問題が変わるたびに「問題」タブに戻す
     return DefaultTabController(
       key: ValueKey('tabs-$_index'),
@@ -293,18 +346,36 @@ class _QuizScreenState extends State<QuizScreen> {
             child: TabBarView(
               children: [
                 SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: _buildQuestionText(q),
+                  padding: EdgeInsets.all(t.space5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      QuestionCard(child: _buildQuestionText(q)),
+                      SizedBox(height: t.space3),
+                      // 読み終えたら、そのまま選択肢のタブへ進めるようにする
+                      Builder(
+                        builder: (context) => Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: () =>
+                                DefaultTabController.of(context).animateTo(1),
+                            iconAlignment: IconAlignment.end,
+                            icon: const Icon(Icons.arrow_forward),
+                            label: const Text('選択肢へ'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(t.space5),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _buildQuestionSummary(q),
-                      const SizedBox(height: 12),
-                      for (var i = 0; i < q.choices.length; i++)
-                        _buildChoice(q, i),
+                      SizedBox(height: t.space4),
+                      ..._buildChoiceList(q),
                       if (_answered) _buildExplanation(q),
                     ],
                   ),
@@ -319,57 +390,54 @@ class _QuizScreenState extends State<QuizScreen> {
 
   /// 選択肢タブの上に出す、問題文の最後の一文（「〜はどれか。」の部分）
   Widget _buildQuestionSummary(Question q) {
-    final theme = Theme.of(context);
+    final t = context.tokens;
     final sentences = q.question
         .split('。')
         .where((s) => s.trim().isNotEmpty)
         .toList();
     final last = sentences.isEmpty ? q.question : '${sentences.last}。';
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Text.rich(
+      TextSpan(
         children: [
-          Text(last, style: theme.textTheme.bodyMedium),
+          TextSpan(text: last),
           if (q.isMultiple)
-            Text('（${q.answers.length}つ選択）', style: theme.textTheme.labelLarge),
+            TextSpan(
+              text: '（${q.answers.length}つ選択）',
+              style: t.body.copyWith(fontWeight: FontWeight.w700),
+            ),
         ],
       ),
+      style: t.body,
     );
   }
 
   // ---------- 選択肢だけスワイプするモード ----------
 
   Widget _buildSwipeBody(Question q) {
+    final t = context.tokens;
     return Column(
       children: [
         Expanded(
           child: SingleChildScrollView(
             controller: _questionScroll,
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(t.space5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildQuestionText(q),
+                QuestionCard(child: _buildQuestionText(q)),
                 if (_answered) _buildExplanation(q),
               ],
             ),
           ),
         ),
-        const Divider(height: 1),
-        const SizedBox(height: 12),
         SizedBox(
-          height: 160,
+          height: t.swipeChoiceHeight,
           child: PageView.builder(
             controller: _choicePager,
             itemCount: q.choices.length,
             onPageChanged: (page) => setState(() => _choicePage = page),
             itemBuilder: (context, i) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padding: EdgeInsets.symmetric(horizontal: t.space1),
               child: _buildChoice(q, i, expand: true),
             ),
           ),
@@ -381,25 +449,25 @@ class _QuizScreenState extends State<QuizScreen> {
 
   /// 選択肢カードの下に出す A B C D のボタン。今のページと選択状態がわかり、タップでそのカードへ移動する
   Widget _buildChoiceIndicator(Question q) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: EdgeInsets.only(top: t.space2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           for (var i = 0; i < q.choices.length; i++)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padding: EdgeInsets.symmetric(horizontal: t.space1),
               child: ChoiceChip(
                 label: Text(String.fromCharCode(65 + i)),
                 selected: i == _choicePage,
                 showCheckmark: false,
                 avatar: _selected.contains(i)
-                    ? Icon(Icons.check, size: 16, color: scheme.primary)
+                    ? Icon(Icons.check, color: t.ink)
                     : null,
                 onSelected: (_) => _choicePager.animateToPage(
                   i,
-                  duration: const Duration(milliseconds: 250),
+                  duration: t.cardFlip,
                   curve: Curves.easeOut,
                 ),
               ),
@@ -411,8 +479,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
   // ---------- 両方のモードで使う部品 ----------
 
+  /// 問題のカードの中身：分野（と一問一答の印）→ ポイント → 問題文
   Widget _buildQuestionText(Question q) {
-    final theme = Theme.of(context);
+    final t = context.tokens;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -421,24 +490,34 @@ class _QuizScreenState extends State<QuizScreen> {
             if (q.isDrill) '一問一答',
             widget.exam.domainById(q.domainId)?.name ?? '',
           ].join('・'),
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.primary,
-          ),
+          style: t.label,
         ),
+        // 設計判断のポイントには、単語帳のマーカーのような黄色の下線を引く
         if (q.point case final point?) ...[
-          const SizedBox(height: 4),
-          Text(
-            point,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
+          SizedBox(height: t.space2),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: t.marker, width: t.markerUnderline),
+                ),
+              ),
+              child: Text(
+                point,
+                style: t.body.copyWith(fontWeight: FontWeight.w700),
+              ),
             ),
           ),
         ],
-        const SizedBox(height: 8),
-        Text(q.question, style: theme.textTheme.bodyLarge),
+        SizedBox(height: t.space3),
+        Text(q.question, style: t.question),
         if (q.isMultiple) ...[
-          const SizedBox(height: 8),
-          Text('（${q.answers.length}つ選択）', style: theme.textTheme.labelLarge),
+          SizedBox(height: t.space2),
+          Text(
+            '（${q.answers.length}つ選択）',
+            style: t.body.copyWith(fontWeight: FontWeight.w700),
+          ),
         ],
       ],
     );
@@ -450,77 +529,39 @@ class _QuizScreenState extends State<QuizScreen> {
     action: RelatedQuestionsButtons(exam: widget.exam, question: q),
   );
 
-  /// 選択肢のカード。[expand] がtrueならカードの高さいっぱいに広げ、長い文はカード内でスクロールする
-  Widget _buildChoice(Question q, int i, {bool expand = false}) {
+  /// ○×の問題か（選択肢の文に記号が入っているので、A・B を出さない）
+  static bool _isTrueFalse(Question q) =>
+      q.choices.length == 2 && q.choices.first.text.startsWith('○');
+
+  ChoiceState _stateOf(Question q, int i) {
     final selected = _selected.contains(i);
-    final isAnswer = q.answers.contains(i);
-
-    // 回答後は正解を緑、選んだ不正解を赤で表示する
-    Color? color;
-    if (_answered && isAnswer) {
-      color = AppTheme.correctBackground(context);
-    } else if (_answered && selected) {
-      color = AppTheme.wrongBackground(context);
-    } else if (selected) {
-      color = Theme.of(context).colorScheme.primaryContainer;
-    }
-
-    final label = Text(
-      String.fromCharCode(65 + i), // A, B, C, D
-      style: Theme.of(context).textTheme.titleMedium,
-    );
-    final icon = Icon(
-      q.isMultiple
-          ? (selected ? Icons.check_box : Icons.check_box_outline_blank)
-          : (selected ? Icons.radio_button_checked : Icons.radio_button_off),
-    );
-
-    if (!expand) {
-      return Card(
-        color: color,
-        margin: const EdgeInsets.only(bottom: 8),
-        child: ListTile(
-          leading: label,
-          title: Text(q.choices[i].text),
-          trailing: icon,
-          onTap: () => _toggle(q, i),
-        ),
-      );
-    }
-
-    return Card(
-      color: color,
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => _toggle(q, i),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              label,
-              const SizedBox(width: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Text(
-                    q.choices[i].text,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              icon,
-            ],
-          ),
-        ),
-      ),
-    );
+    if (!_answered) return selected ? ChoiceState.selected : ChoiceState.idle;
+    if (q.answers.contains(i)) return ChoiceState.correct;
+    if (selected) return ChoiceState.wrong;
+    return ChoiceState.inactive;
   }
 
+  List<Widget> _buildChoiceList(Question q) {
+    final t = context.tokens;
+    return [
+      for (var i = 0; i < q.choices.length; i++) ...[
+        if (i > 0) SizedBox(height: t.space2),
+        _buildChoice(q, i),
+      ],
+    ];
+  }
+
+  Widget _buildChoice(Question q, int i, {bool expand = false}) => ChoiceTile(
+    letter: _isTrueFalse(q) ? '' : String.fromCharCode(65 + i),
+    text: q.choices[i].text,
+    state: _stateOf(q, i),
+    multiple: q.isMultiple,
+    expand: expand,
+    onTap: _answered ? null : () => _toggle(q, i),
+  );
+
   Widget _buildResult(int total) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     final rate = total == 0 ? 0 : _correctCount / total;
 
     // 分野ごとの出題数と正解数
@@ -534,43 +575,28 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.exam.shortName} 結果'),
+        title: Text('${widget.exam.shortName} ${widget.title}の結果'),
         automaticallyImplyLeading: false,
       ),
       bottomNavigationBar: const SafeArea(child: BannerAdView()),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        padding: EdgeInsets.fromLTRB(t.space5, t.space5, t.space5, t.space6),
         children: [
-          Center(
-            child: Text(
-              '${(rate * 100).round()}%',
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: scheme.primary,
-              ),
-            ),
-          ),
-          Center(
-            child: Text(
-              '$total問中 $_correctCount問正解',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const SizedBox(height: 32),
-          Text('分野ごとの内訳', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
+          Text('${(rate * 100).round()}%', style: t.display),
+          SizedBox(height: t.space1),
+          Text('$total問中 $_correctCount問正解', style: t.caption),
+          SizedBox(height: t.space6),
+          const SectionLabel('分野ごとの内訳'),
           for (final d in widget.exam.domains)
             if (answered[d.id] case final n?)
               DomainAccuracyBar(
                 name: d.name,
                 accuracy: Accuracy(answered: n, correct: correct[d.id] ?? 0),
               ),
-          const SizedBox(height: 24),
+          SizedBox(height: t.space6),
           FilledButton(onPressed: _restart, child: const Text('もう一度解く')),
-          const SizedBox(height: 12),
-          OutlinedButton(
+          SizedBox(height: t.space2),
+          TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('試験トップに戻る'),
           ),

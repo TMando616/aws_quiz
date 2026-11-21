@@ -59,6 +59,15 @@ class AppTokens extends ThemeExtension<AppTokens> {
   double get radiusCard => 20;
   double get radiusControl => 14;
   double get radiusSmall => 8;
+
+  /// 正答率・進捗のバーの太さ
+  double get barHeight => 6;
+
+  /// 「ポイント」に引くマーカーの下線の太さ
+  double get markerUnderline => 3;
+
+  /// スワイプ表示の選択肢の領域の高さ
+  double get swipeChoiceHeight => 160;
   double get borderThin => 1;
   double get borderControl => 1.5;
   double get borderControlSelected => 2;
@@ -69,6 +78,9 @@ class AppTokens extends ThemeExtension<AppTokens> {
   // ---------- モーション ----------
   Duration get answerFeedback => const Duration(milliseconds: 180);
   Duration get cardFlip => const Duration(milliseconds: 220);
+
+  /// カードをめくるときに横にずらす量（画面の幅に対する割合）
+  double get cardFlipShift => 0.12;
 
   // ---------- 文字 ----------
   static const _tabular = [FontFeature.tabularFigures()];

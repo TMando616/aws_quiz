@@ -4,14 +4,15 @@ import 'package:url_launcher/url_launcher.dart';
 import '../config/app_info.dart';
 import '../models/question.dart';
 import '../support/report_mail.dart';
-import '../theme/app_theme.dart';
+import '../theme/app_tokens.dart';
+import 'design_parts.dart';
 
 /// 回答後の解説。練習モードの出題画面と、模試の見直しで使う
 ///
 /// 並び順:
 /// 1. 正解／不正解
 /// 2. 自分が選んだ選択肢の解説（色付きの枠で一番目立たせる）
-/// 3. 正解の選択肢の解説（選んでいなかった場合）
+/// 3. 正解の選択肢の解説（選んでいなかった場合。見出しは「正解の選択肢」）
 /// 4. そのほかの選択肢の解説
 /// 5. まとめの解説
 /// 6. 根拠（タップでブラウザが開く）
@@ -33,7 +34,7 @@ class ExplanationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final t = context.tokens;
     final q = question;
     final isCorrect = q.isCorrect(selected);
 
@@ -50,51 +51,55 @@ class ExplanationView extends StatelessWidget {
         if (!selected.contains(i) && !q.answers.contains(i)) i,
     ];
 
+    // 外側の余白（セクションの間）> 内側の余白（セクションの中）
+    final sectionGap = SizedBox(height: t.space5);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 20),
-        Text(
-          isCorrect ? '⭕ 正解' : '❌ 不正解',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: isCorrect
-                ? AppTheme.correctForeground(context)
-                : AppTheme.wrongForeground(context),
-            fontWeight: FontWeight.bold,
-          ),
+        SizedBox(height: t.space5),
+        Row(
+          children: [
+            Icon(
+              isCorrect ? Icons.check_circle : Icons.cancel,
+              color: isCorrect ? t.correct : t.danger,
+            ),
+            SizedBox(width: t.space2),
+            Text(
+              isCorrect ? '正解' : '不正解',
+              style: t.title.copyWith(color: isCorrect ? t.correct : t.danger),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
+        sectionGap,
         if (picked.isNotEmpty) ...[
-          _SectionLabel('あなたの選択'),
+          const SectionLabel('あなたの選択'),
           for (final i in picked)
             _ChoiceExplanation(question: q, index: i, emphasized: true),
+          sectionGap,
         ],
         if (missedAnswers.isNotEmpty) ...[
-          _SectionLabel('正解'),
+          const SectionLabel('正解の選択肢'),
           for (final i in missedAnswers)
             _ChoiceExplanation(question: q, index: i, emphasized: true),
+          sectionGap,
         ],
         if (others.isNotEmpty) ...[
-          _SectionLabel('ほかの選択肢'),
+          const SectionLabel('ほかの選択肢'),
           for (final i in others)
             _ChoiceExplanation(question: q, index: i, emphasized: false),
+          sectionGap,
         ],
-        const SizedBox(height: 8),
-        _SectionLabel('まとめ'),
-        Text(q.explanation, style: theme.textTheme.bodyMedium),
+        const SectionLabel('まとめ'),
+        Text(q.explanation, style: t.body),
         if (q.references.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          _SectionLabel('根拠'),
+          sectionGap,
+          const SectionLabel('根拠'),
           for (final ref in q.references) _ReferenceLink(reference: ref),
         ],
         ?action,
-        const SizedBox(height: 20),
-        Text(
-          AppInfo.disclaimer,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        SizedBox(height: t.space6),
+        Text(AppInfo.disclaimer, style: t.caption),
         Align(
           alignment: Alignment.centerLeft,
           child: TextButton.icon(
@@ -103,7 +108,11 @@ class ExplanationView extends StatelessWidget {
               questionId: q.id,
               questionText: q.question,
             ),
-            icon: const Icon(Icons.flag_outlined, size: 18),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              foregroundColor: t.textSecondary,
+            ),
+            icon: const Icon(Icons.flag_outlined),
             label: const Text('この問題の誤りを報告'),
           ),
         ),
@@ -112,28 +121,7 @@ class ExplanationView extends StatelessWidget {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 4, bottom: 6),
-      child: Text(
-        text,
-        style: theme.textTheme.labelLarge?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
-/// 選択肢1つ分の解説。[emphasized] なら正誤の色付きの枠で囲む
+/// 選択肢1つ分の解説。[emphasized] なら正誤の色の面で囲む
 class _ChoiceExplanation extends StatelessWidget {
   const _ChoiceExplanation({
     required this.question,
@@ -147,15 +135,17 @@ class _ChoiceExplanation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     final choice = question.choices[index];
     final isAnswer = question.answers.contains(index);
-    final mark = isAnswer ? '○' : '×';
-    final markColor = isAnswer
-        ? AppTheme.correctForeground(context)
-        : AppTheme.wrongForeground(context);
-    final letter = String.fromCharCode(65 + index);
+    // 色を付けるのは強調する選択肢（自分の選択・正解）だけ。ほかの選択肢の印は控えめにする
+    final markColor = !emphasized
+        ? t.textSecondary
+        : (isAnswer ? t.correct : t.danger);
+    final trueFalse =
+        question.choices.length == 2 &&
+        question.choices.first.text.startsWith('○');
+    final letter = trueFalse ? '' : '${String.fromCharCode(65 + index)}  ';
 
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,43 +153,40 @@ class _ChoiceExplanation extends StatelessWidget {
         Text.rich(
           TextSpan(
             children: [
-              TextSpan(
-                text: '$mark $letter  ',
-                style: TextStyle(color: markColor, fontWeight: FontWeight.bold),
+              WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: EdgeInsets.only(right: t.space1),
+                  child: Icon(
+                    isAnswer ? Icons.check : Icons.close,
+                    color: markColor,
+                  ),
+                ),
               ),
-              TextSpan(
-                text: choice.text,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
+              TextSpan(text: '$letter${choice.text}'),
             ],
           ),
-          style: theme.textTheme.bodyMedium,
+          style: t.body.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 4),
-        Text(choice.explanation, style: theme.textTheme.bodyMedium),
+        SizedBox(height: t.space1),
+        Text(choice.explanation, style: t.body),
       ],
     );
 
     if (!emphasized) {
       return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.only(bottom: t.space4),
         child: content,
       );
     }
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: t.space2),
+      padding: EdgeInsets.all(t.space4),
       decoration: BoxDecoration(
-        color: isAnswer
-            ? AppTheme.correctBackground(context)
-            : AppTheme.wrongBackground(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: markColor.withValues(alpha: 0.4)),
+        color: isAnswer ? t.correctSurface : t.dangerSurface,
+        borderRadius: BorderRadius.circular(t.radiusControl),
       ),
-      child: DefaultTextStyle.merge(
-        style: TextStyle(color: scheme.onSurface),
-        child: content,
-      ),
+      child: content,
     );
   }
 }
@@ -223,28 +210,25 @@ class _ReferenceLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     return InkWell(
       onTap: () => _open(context),
-      borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: EdgeInsets.symmetric(vertical: t.space2),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Icon(Icons.open_in_new, size: 16, color: scheme.primary),
+              padding: EdgeInsets.only(top: t.space1),
+              child: Icon(Icons.open_in_new, color: t.textSecondary),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: t.space2),
             Expanded(
               child: Text(
                 reference.title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: scheme.primary,
+                style: t.body.copyWith(
                   decoration: TextDecoration.underline,
-                  decorationColor: scheme.primary,
+                  decorationColor: t.textSecondary,
                 ),
               ),
             ),

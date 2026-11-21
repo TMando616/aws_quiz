@@ -39,7 +39,7 @@ double _y(WidgetTester tester, String text) =>
 void main() {
   testWidgets('不正解のときは、選んだ選択肢→正解→ほかの選択肢の順に並ぶ', (tester) async {
     await _pump(tester, {0});
-    expect(find.text('❌ 不正解'), findsOneWidget);
+    expect(find.text('不正解'), findsOneWidget);
     expect(_y(tester, 'Aの解説'), lessThan(_y(tester, 'Bの解説')));
     expect(_y(tester, 'Bの解説'), lessThan(_y(tester, 'Cの解説')));
     expect(find.text('まとめの解説'), findsOneWidget);
@@ -47,10 +47,10 @@ void main() {
     expect(find.text('この問題の誤りを報告'), findsOneWidget);
   });
 
-  testWidgets('正解のときは「正解」の見出しを出さない（選んだ選択肢と重なるため）', (tester) async {
+  testWidgets('正解のときは「正解の選択肢」の見出しを出さない（選んだ選択肢と重なるため）', (tester) async {
     await _pump(tester, {1});
-    expect(find.text('⭕ 正解'), findsOneWidget);
+    expect(find.text('正解'), findsOneWidget);
     expect(find.text('あなたの選択'), findsOneWidget);
-    expect(find.text('正解'), findsNothing);
+    expect(find.text('正解の選択肢'), findsNothing);
   });
 }
