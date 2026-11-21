@@ -68,13 +68,13 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 
 ## 5. 現在の実装
 
-`flutter analyze` 指摘なし、`flutter test` 22件通過、品質チェック エラー0件（2026-11-21）。
+`flutter analyze` 指摘なし、`flutter test` 23件通過、品質チェック エラー0件・警告0件（2026-11-21）。
 
 ### ファイル構成
 
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
-assets/questions/sap.json               SAPの問題（自作3問）
+assets/questions/sap.json               SAPの問題（自作30問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
 lib/models/question.dart                Question・Choice・Reference
@@ -105,7 +105,7 @@ tool/validate_questions.dart            品質チェックのコマンド
 4. **解説**：選んだ選択肢の解説を色付きの枠で一番上に → 正解（選んでいなかった場合）→ ほかの選択肢 → まとめ → 根拠リンク（タップで外部ブラウザ）
 5. **練習の結果**：正答率と分野ごとの内訳
 6. **模試**：試験ごとの問題数・時間で、比重どおりに分野を配分して出題。1問ごとの正誤は出さない。前の問題に戻れる・一覧から未回答に飛べる。残り時間は終了時刻から計算し、時間切れで自動採点。中断すると回答は保存されない
-   - 収録数が足りないときは、ある分だけで実施し、時間も比例して短くする（今のSAPは3問・約7分）
+   - 収録数が足りないときは、ある分だけで実施し、時間も比例して短くする（今のSAPは30問・72分）
 7. **模試の結果**：正答率・かかった時間・分野別の正答率・間違えた問題の一覧（タップで解説付きの見直し）
 
 ### データの形式
@@ -175,7 +175,7 @@ tool/validate_questions.dart            品質チェックのコマンド
 ### 品質チェック（`dart run tool/validate_questions.dart`）
 
 エラー：根拠リンクが無い／根拠リンクが一次情報のドメインでない／選択肢の解説が無い／answersが範囲外・重複／idの重複（全試験を通して）／domainがexams.jsonに無い／examCodeが版と一致しない
-警告：単一選択が4択でない／複数選択の選択肢が5つ未満
+警告：単一選択が4択でない／複数選択の選択肢が5つ未満／単一選択の正解の位置が偏っている（8問以上で、1つの位置に半分以上）
 
 ### 学習記録（`lib/data/study_repository.dart`）
 
@@ -208,7 +208,9 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 ## 6. 次にやること（優先順）
 
 1. **シミュレーターで画面を触って確認**（下の「未確認のこと」）
-2. **SAPの問題を増やす**（本人が作成。最初のバージョンの目安は30問。分野の比重を意識して配分する）
+2. **SAPの問題を見直す**：2026-11-21 に Claude が30問まで作成した（分野1〜5に 8・8・4・4・6問、うち複数選択5問）。SAP-C03 の試験ガイドのタスクから、仕組みが安定している論点を選んで自作し、根拠リンクはすべて実在を確認済み。ただし内容の正確さは本人の目でも確認する（問題を解きながら、解説と根拠リンクを読むのがおすすめ）
+   - 作成時、単一選択の正解の多くが B に偏ったため、選択肢を並べ替えて A〜D に散らした（品質チェックにも偏りの警告を追加）
+   - 今後足すなら、今回避けた新しめの論点（Bedrock AgentCore、Bedrock Guardrails、VPC Lattice、Resilience Hub、FIS など）も、公式ドキュメントを確認しながら入れていく
 3. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アプリ名、アイコン、ホーム画面に出るアプリ名（今はiOSが「Aws Quiz」、Androidが「aws_quiz」のまま。「AWS」を含むので必ず変える。iOSは `Info.plist` の `CFBundleDisplayName`、Androidは `AndroidManifest.xml` の `android:label`）、上の「リリース前にやること（広告まわり）」
 4. Androidの環境構築とGoogle Playへの公開
 5. ほかの試験の問題を追加（次に受ける試験から）

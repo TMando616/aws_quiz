@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(builder: (_) => ExamScreen(exam: target.exam)),
     );
     if (_debugRoute == 'explanation') {
-      // 1問目で不正解（A）を選んだときの解説
+      // 1問目で、不正解の選択肢のうち最初のものを選んだときの解説
       final q = (await QuestionRepository().load(target.exam.id)).first;
       navigator.push(
         MaterialPageRoute(
@@ -88,7 +88,13 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: AppBar(title: const Text('解説の確認（開発用）')),
             body: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-              child: ExplanationView(question: q, selected: const {0}),
+              child: ExplanationView(
+                question: q,
+                selected: {
+                  [for (var i = 0; i < q.choices.length; i++) i]
+                      .firstWhere((i) => !q.answers.contains(i)),
+                },
+              ),
             ),
           ),
         ),

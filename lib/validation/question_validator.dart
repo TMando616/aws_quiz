@@ -79,6 +79,27 @@ List<ValidationIssue> validateQuestions({
 
     final questions = ((data['questions'] as List?) ?? const [])
         .cast<Map<String, dynamic>>();
+
+    // 単一選択の正解の位置の偏り（「迷ったらB」で正解できてしまうのを防ぐ）
+    final singlePositions = [
+      for (final q in questions)
+        if ((q['answers'] as List?)?.length == 1) (q['answers'] as List).first,
+    ];
+    if (singlePositions.length >= 8) {
+      final counts = <Object?, int>{};
+      for (final p in singlePositions) {
+        counts.update(p, (v) => v + 1, ifAbsent: () => 1);
+      }
+      for (final e in counts.entries) {
+        if (e.value * 2 > singlePositions.length && e.key is int) {
+          final label = String.fromCharCode(65 + (e.key as int));
+          warn(
+            null,
+            '単一選択の正解が$labelに偏っています（${singlePositions.length}問中${e.value}問）。選択肢の順番を入れ替えてください',
+          );
+        }
+      }
+    }
     for (final q in questions) {
       final id = q['id'] as String?;
       if (id == null || id.isEmpty) {

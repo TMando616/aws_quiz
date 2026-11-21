@@ -8,12 +8,12 @@
       "question": "ある企業はAWS Organizationsで50以上のアカウントを管理している。セキュリティチームは、どのアカウントでも特定のリージョン以外にリソースを作成できないようにしたい。各アカウントの管理者がこの制限を外せないようにする必要がある。最も運用負荷が低い方法はどれか。",
       "choices": [
         {
-          "text": "各アカウントのIAMユーザーに、リージョンを制限するIAMポリシーをアタッチする",
-          "explanation": "IAMポリシーはアカウントの中で管理されるため、各アカウントの管理者が外したり書き換えたりできてしまいます。50以上のアカウントに個別に設定するので、運用負荷も高くなります。"
-        },
-        {
           "text": "組織のルートまたはOUに、aws:RequestedRegionで許可リージョン以外を拒否するSCPを適用する",
           "explanation": "SCPは組織側から各アカウントの権限の上限を決めるポリシーで、アカウントの管理者（ルートユーザーを含む）でも外せません。ルートやOUに1つ付けるだけで配下の全アカウントに効くので、運用負荷も最小です。"
+        },
+        {
+          "text": "各アカウントのIAMユーザーに、リージョンを制限するIAMポリシーをアタッチする",
+          "explanation": "IAMポリシーはアカウントの中で管理されるため、各アカウントの管理者が外したり書き換えたりできてしまいます。50以上のアカウントに個別に設定するので、運用負荷も高くなります。"
         },
         {
           "text": "AWS Configルールで許可リージョン外のリソースを検出し、手動で削除する",
@@ -25,7 +25,7 @@
         }
       ],
       "answers": [
-        1
+        0
       ],
       "explanation": "「アカウントの管理者でも外せない制限」を組織全体にかけるなら、SCPが定番です。IAMポリシーはアカウント内で変更でき、ConfigやCloudTrailは検出や記録だけで、作成自体は防げません。",
       "references": [
@@ -49,6 +49,10 @@
           "explanation": "Application Discovery Serviceは、オンプレミスのサーバーの構成・使用率・サーバー間の通信（依存関係）を収集する、移行前の調査のためのサービスです。"
         },
         {
+          "text": "Amazon Inspectorでオンプレミスサーバーの脆弱性を評価する",
+          "explanation": "Inspectorは脆弱性を評価するサービスです。移行計画に必要な依存関係や利用状況は集められません。"
+        },
+        {
           "text": "AWS Snowballでサーバーのディスクイメージを転送する",
           "explanation": "Snowballは物理デバイスで大量のデータを運ぶ転送手段です。依存関係や利用状況の調査には使いません。"
         },
@@ -57,17 +61,13 @@
           "explanation": "Migration Hubは、Application Discovery Serviceで集めた情報を一か所で確認し、移行の計画と進捗の追跡ができるサービスです。"
         },
         {
-          "text": "Amazon Inspectorでオンプレミスサーバーの脆弱性を評価する",
-          "explanation": "Inspectorは脆弱性を評価するサービスです。移行計画に必要な依存関係や利用状況は集められません。"
-        },
-        {
           "text": "AWS DataSyncでサーバー上のファイルをAmazon S3へ転送する",
           "explanation": "DataSyncはオンラインでデータを転送するサービスで、移行の実行段階で使うものです。調査や計画の段階には向きません。"
         }
       ],
       "answers": [
         0,
-        2
+        3
       ],
       "explanation": "移行前の調査は、Application Discovery Serviceで情報を集め、Migration Hubで一元管理するのが定番の組み合わせです。Snowball・DataSyncはデータを運ぶ手段、Inspectorは脆弱性評価のサービスで、調査には使いません。",
       "references": [
@@ -87,12 +87,12 @@
       "question": "あるWebアプリケーションは単一AZのEC2インスタンス1台とAmazon RDS（シングルAZ）で稼働している。アプリケーション層とデータベース層の可用性を、最小限の変更で高めたい。最も適切な組み合わせはどれか。",
       "choices": [
         {
-          "text": "EC2のインスタンスサイズを大きくし、RDSのストレージを増やす",
-          "explanation": "サイズを大きくしても、インスタンスやAZが1つのままなので、そこに障害が起きれば止まります。可用性ではなく性能や容量の対策です。"
-        },
-        {
           "text": "複数AZにまたがるAuto ScalingグループとALBを構成し、RDSをマルチAZ配置に変更する",
           "explanation": "複数AZのAuto ScalingとALBで、アプリ層の単一障害点がなくなります。RDSのマルチAZ配置は、別のAZのスタンバイへ自動でフェイルオーバーします。どちらも既存の構成を活かしたまま変更できます。"
+        },
+        {
+          "text": "EC2のインスタンスサイズを大きくし、RDSのストレージを増やす",
+          "explanation": "サイズを大きくしても、インスタンスやAZが1つのままなので、そこに障害が起きれば止まります。可用性ではなく性能や容量の対策です。"
         },
         {
           "text": "EC2のAMIを定期取得し、RDSのスナップショットを別リージョンにコピーする",
@@ -104,7 +104,7 @@
         }
       ],
       "answers": [
-        1
+        0
       ],
       "explanation": "可用性を高める基本は、単一障害点をなくすことです。アプリ層は複数AZのAuto Scaling＋ALB、データベース層はRDSのマルチAZ配置で、どちらもAZ障害に耐えられる構成になります。",
       "references": [
@@ -157,12 +157,16 @@
       "question": "ある企業はオンプレミスのデータセンターと AWS を AWS Direct Connect で接続している。VPC には Amazon Route 53 のプライベートホストゾーン（aws.example.internal）があり、オンプレミスには社内 DNS サーバー（corp.example.internal）がある。オンプレミスからプライベートホストゾーンの名前を、VPC 内の EC2 インスタンスから社内 DNS の名前を、それぞれ解決できるようにしたい。運用負荷を最小にするには、どの組み合わせを行うべきか。2つ選べ。",
       "choices": [
         {
-          "text": "Route 53 Resolver のインバウンドエンドポイントを作り、オンプレミスの DNS サーバーで aws.example.internal への問い合わせをそのエンドポイントの IP アドレスへ条件付きで転送する",
-          "explanation": "インバウンドエンドポイントは、オンプレミスからの DNS 問い合わせを VPC の Resolver で受け付ける入口です。オンプレミス側で条件付き転送を設定すれば、プライベートホストゾーンの名前を解決できます。"
+          "text": "EC2 インスタンスに BIND をインストールして DNS フォワーダーを構築し、両方向の転送を設定する",
+          "explanation": "技術的には実現できますが、DNS サーバーの冗長化・パッチ適用・監視を自分たちで行う必要があり、運用負荷が高くなります。"
         },
         {
           "text": "プライベートホストゾーンをパブリックホストゾーンに作り直し、インターネット経由で解決させる",
           "explanation": "社内向けの名前をインターネットに公開することになり、セキュリティ上望ましくありません。プライベートな IP アドレスの名前をパブリックに出す理由もありません。"
+        },
+        {
+          "text": "Route 53 Resolver のインバウンドエンドポイントを作り、オンプレミスの DNS サーバーで aws.example.internal への問い合わせをそのエンドポイントの IP アドレスへ条件付きで転送する",
+          "explanation": "インバウンドエンドポイントは、オンプレミスからの DNS 問い合わせを VPC の Resolver で受け付ける入口です。オンプレミス側で条件付き転送を設定すれば、プライベートホストゾーンの名前を解決できます。"
         },
         {
           "text": "Route 53 Resolver のアウトバウンドエンドポイントと、corp.example.internal をオンプレミスの DNS サーバーへ転送するルールを作り、VPC に関連付ける",
@@ -171,15 +175,11 @@
         {
           "text": "VPC の DHCP オプションセットで、DNS サーバーをオンプレミスの DNS サーバーだけに変更する",
           "explanation": "EC2 がオンプレミスの DNS サーバーだけを使うようになり、プライベートホストゾーンや AWS 内部の名前解決を Route 53 Resolver で行えなくなります。オンプレミス側にも転送設定が必要になり、構成が複雑になります。"
-        },
-        {
-          "text": "EC2 インスタンスに BIND をインストールして DNS フォワーダーを構築し、両方向の転送を設定する",
-          "explanation": "技術的には実現できますが、DNS サーバーの冗長化・パッチ適用・監視を自分たちで行う必要があり、運用負荷が高くなります。"
         }
       ],
       "answers": [
-        0,
-        2
+        2,
+        3
       ],
       "explanation": "ハイブリッドの名前解決は、Route 53 Resolver のエンドポイントで行うのが定番です。オンプレミス→AWS はインバウンドエンドポイント、AWS→オンプレミスはアウトバウンドエンドポイントと転送ルールを使います。どちらもマネージドで、DNS サーバーを自前で運用せずに済みます。",
       "references": [
@@ -207,20 +207,20 @@
           "explanation": "VPC ピアリングは推移的なルーティングができないため、全組み合わせ（30 VPC なら435本）の接続が必要です。VPC が増えるたびに接続とルートの管理が爆発的に増えます。"
         },
         {
-          "text": "ネットワーク用アカウントに AWS Transit Gateway を作り、AWS RAM で各アカウントに共有して VPC をアタッチし、Direct Connect ゲートウェイを Transit Gateway に関連付ける",
-          "explanation": "Transit Gateway はハブとして VPC とオンプレミスを相互に接続し、推移的なルーティングができます。RAM で共有すれば各アカウントの VPC をアタッチでき、Direct Connect ゲートウェイ経由でオンプレミスともつながります。VPC が増えてもアタッチを足すだけです。"
-        },
-        {
           "text": "各 VPC からオンプレミスへ Site-to-Site VPN を張り、VPC 間の通信はオンプレミス経由で折り返す",
           "explanation": "VPC 間の通信がすべてオンプレミスを経由するため、遅延と帯域の無駄が大きくなります。VPN の本数も VPC の数だけ増え、管理も煩雑です。"
         },
         {
           "text": "すべての VPC 間の通信を AWS PrivateLink のエンドポイントサービスで公開する",
           "explanation": "PrivateLink は特定のサービスを一方向に公開する仕組みで、VPC どうしを全面的にルーティングする用途には向きません。サービスごとにエンドポイントが必要になります。"
+        },
+        {
+          "text": "ネットワーク用アカウントに AWS Transit Gateway を作り、AWS RAM で各アカウントに共有して VPC をアタッチし、Direct Connect ゲートウェイを Transit Gateway に関連付ける",
+          "explanation": "Transit Gateway はハブとして VPC とオンプレミスを相互に接続し、推移的なルーティングができます。RAM で共有すれば各アカウントの VPC をアタッチでき、Direct Connect ゲートウェイ経由でオンプレミスともつながります。VPC が増えてもアタッチを足すだけです。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "多数の VPC とオンプレミスを相互接続するなら、Transit Gateway をハブにするハブ&スポーク構成が定番です。VPC ピアリングは推移的ルーティングができず、数が増えると管理が破綻します。",
       "references": [
@@ -248,12 +248,12 @@
           "explanation": "VPC ピアリングは CIDR ブロックが重複する VPC どうしでは作成できません。数百の接続の管理も大変です。"
         },
         {
-          "text": "Network Load Balancer の背後に API を置いて VPC エンドポイントサービス（AWS PrivateLink）として公開し、顧客はインターフェイス VPC エンドポイントを作成する",
-          "explanation": "PrivateLink は顧客の VPC 内のエンドポイント（ENI）経由で API に接続するため、CIDR ブロックが重複していても使えます。通信は顧客側からの一方向に限られ、事業者は接続を承認制にすることもできます。"
-        },
-        {
           "text": "AWS Transit Gateway に事業者と顧客の VPC をアタッチし、ルートを伝播させる",
           "explanation": "Transit Gateway はルーティングで VPC をつなぐため、CIDR ブロックが重複していると正しくルーティングできません。顧客の VPC どうしが同じネットワークにつながるリスクもあります。"
+        },
+        {
+          "text": "Network Load Balancer の背後に API を置いて VPC エンドポイントサービス（AWS PrivateLink）として公開し、顧客はインターフェイス VPC エンドポイントを作成する",
+          "explanation": "PrivateLink は顧客の VPC 内のエンドポイント（ENI）経由で API に接続するため、CIDR ブロックが重複していても使えます。通信は顧客側からの一方向に限られ、事業者は接続を承認制にすることもできます。"
         },
         {
           "text": "API をインターネットに公開し、顧客の NAT ゲートウェイの IP アドレスだけを許可する",
@@ -261,7 +261,7 @@
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "「多数の利用者に特定のサービスを一方向でプライベートに公開する」「CIDR の重複がある」という条件は、AWS PrivateLink の典型的な使いどころです。ピアリングや Transit Gateway は CIDR の重複に対応できません。",
       "references": [
@@ -351,12 +351,12 @@
           "explanation": "セッション情報がインスタンスのメモリにある限り、そのインスタンスが終了すれば情報は失われます。有効期間を伸ばしても根本的な解決になりません。"
         },
         {
-          "text": "セッション情報を Amazon ElastiCache に保存し、アプリケーションをステートレスにする",
-          "explanation": "セッション情報をインスタンスの外（ElastiCache などの共有ストア）に置けば、どのインスタンスでも同じセッションを扱えます。スケールインや障害でインスタンスが入れ替わっても、利用者はログインしたままでいられます。"
-        },
-        {
           "text": "各インスタンスに EBS ボリュームを追加し、セッション情報をファイルとして保存する",
           "explanation": "EBS ボリュームは基本的に1つのインスタンスに紐付くため、ほかのインスタンスからは参照できません。インスタンスが終了すると、同じ問題が起きます。"
+        },
+        {
+          "text": "セッション情報を Amazon ElastiCache に保存し、アプリケーションをステートレスにする",
+          "explanation": "セッション情報をインスタンスの外（ElastiCache などの共有ストア）に置けば、どのインスタンスでも同じセッションを扱えます。スケールインや障害でインスタンスが入れ替わっても、利用者はログインしたままでいられます。"
         },
         {
           "text": "Auto Scaling グループのスケールインを無効にし、常に最大台数で運用する",
@@ -364,7 +364,7 @@
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "スケールアウト・スケールインする構成では、セッションなどの状態をインスタンスの外に出して、アプリケーションをステートレスにするのが基本です。ElastiCache や DynamoDB がよく使われます。",
       "references": [
@@ -384,20 +384,20 @@
           "explanation": "ファインチューニングは毎週の学習に時間と費用がかかり、更新の反映が遅れます。どの文書を根拠にしたかを示すことも難しくなります。"
         },
         {
-          "text": "Amazon Bedrock のナレッジベースで S3 の文書をデータソースとして取り込み、質問に関連する文書を検索して回答を生成する（RAG）",
-          "explanation": "ナレッジベースは文書の分割・埋め込み（ベクトル化）・ベクトルストアへの保存を管理し、質問時に関連する部分を検索して回答を生成します。データソースを同期すれば更新が反映され、引用元も示せます。"
-        },
-        {
           "text": "質問のたびに、すべての文書の本文をプロンプトに含めて基盤モデルに送る",
           "explanation": "数万ファイルの本文はモデルが一度に扱える長さを大きく超えます。入力トークンの費用も膨大になり、現実的ではありません。"
         },
         {
           "text": "Amazon SageMaker AI で、自社の文書から言語モデルを一から学習させる",
           "explanation": "大量のデータと計算資源、専門知識が必要で、運用負荷が非常に高くなります。基盤モデルを自社で学習させないという前提にも反します。"
+        },
+        {
+          "text": "Amazon Bedrock のナレッジベースで S3 の文書をデータソースとして取り込み、質問に関連する文書を検索して回答を生成する（RAG）",
+          "explanation": "ナレッジベースは文書の分割・埋め込み（ベクトル化）・ベクトルストアへの保存を管理し、質問時に関連する部分を検索して回答を生成します。データソースを同期すれば更新が反映され、引用元も示せます。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "自社の文書にもとづいて回答させたいときは、モデルを学習し直すのではなく、検索した文書を回答に使う RAG（検索拡張生成）が定番です。Amazon Bedrock のナレッジベースを使えば、取り込み・検索・回答生成をマネージドで構成できます。",
       "references": [
@@ -454,20 +454,20 @@
           "explanation": "長期的なアクセスキーを外部に渡すことになり、漏えいのリスクがあります。ロールの引き受けによる一時的な認証情報を使うべきです。"
         },
         {
-          "text": "IAM ロールの信頼ポリシーで事業者の AWS アカウントを信頼し、事業者が自社ごとに発行する外部 ID を sts:ExternalId の条件として指定する",
-          "explanation": "外部 ID は、事業者が顧客ごとに一意に発行する値です。信頼ポリシーの条件に指定すると、その値を知っている事業者の正しい処理からしかロールを引き受けられず、ほかの顧客が自社のロールを指定しても引き受けに失敗します。"
-        },
-        {
           "text": "IAM ロールの信頼ポリシーで、プリンシパルをすべて（*）にし、MFA を必須にする",
           "explanation": "すべてのプリンシパルを信頼すると、誰でもロールの引き受けを試せる状態になります。事業者のシステムからのアクセスでは MFA も前提にできません。"
         },
         {
           "text": "事業者のアカウントを自社の AWS Organizations の組織に招待する",
           "explanation": "外部の事業者のアカウントを自社の組織に入れるのは、管理の範囲として不適切です。混乱した代理の問題も解決しません。"
+        },
+        {
+          "text": "IAM ロールの信頼ポリシーで事業者の AWS アカウントを信頼し、事業者が自社ごとに発行する外部 ID を sts:ExternalId の条件として指定する",
+          "explanation": "外部 ID は、事業者が顧客ごとに一意に発行する値です。信頼ポリシーの条件に指定すると、その値を知っている事業者の正しい処理からしかロールを引き受けられず、ほかの顧客が自社のロールを指定しても引き受けに失敗します。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "第三者にクロスアカウントのロールを引き受けさせるときは、信頼ポリシーに外部 ID の条件を付けて、混乱した代理の問題を防ぎます。アクセスキーを渡す方法は避けます。",
       "references": [
@@ -590,12 +590,12 @@
           "explanation": "GuardDuty はログをもとに不審な振る舞いや脅威を検出するサービスで、リソースのポリシーによる外部への共有を一覧で把握する用途ではありません。"
         },
         {
-          "text": "IAM Access Analyzer で、組織を信頼ゾーンとするアナライザーを作成する",
-          "explanation": "Access Analyzer はリソースのポリシーを分析し、信頼ゾーン（ここでは組織）の外のプリンシパルや公開アクセスに共有されているリソースを検出結果として示します。新しい共有も継続的に検出できます。"
-        },
-        {
           "text": "Amazon Inspector を組織全体で有効にする",
           "explanation": "Inspector は EC2 やコンテナイメージ、Lambda 関数のソフトウェアの脆弱性などを評価するサービスで、リソースの共有状況は分析しません。"
+        },
+        {
+          "text": "IAM Access Analyzer で、組織を信頼ゾーンとするアナライザーを作成する",
+          "explanation": "Access Analyzer はリソースのポリシーを分析し、信頼ゾーン（ここでは組織）の外のプリンシパルや公開アクセスに共有されているリソースを検出結果として示します。新しい共有も継続的に検出できます。"
         },
         {
           "text": "AWS Config のマネージドルールで、S3 バケットの公開読み取りを検出する",
@@ -603,7 +603,7 @@
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "リソースが組織の外に共有されていないかを継続的に確認するには、IAM Access Analyzer の外部アクセスの分析を使います。信頼ゾーンを組織にすると、組織外への共有だけを検出できます。",
       "references": [
@@ -643,6 +643,445 @@
         {
           "title": "AWS Artifact とは",
           "url": "https://docs.aws.amazon.com/ja_jp/artifact/latest/ug/what-is-aws-artifact.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-019",
+      "domain": "d3",
+      "question": "ある企業は、EC2 インスタンスで常時一定量のコンピューティングを使っている。今後1年の間に、インスタンスファミリーの変更や別のリージョンへの移動を行い、一部のワークロードは AWS Fargate と AWS Lambda に移行する予定である。この変化の中でも、継続して割引を受けたい。最も適切な購入オプションはどれか。",
+      "choices": [
+        {
+          "text": "EC2 Instance Savings Plans を購入する",
+          "explanation": "EC2 Instance Savings Plans は特定のリージョンの特定のインスタンスファミリーに適用されます。ファミリーやリージョンの変更、Fargate と Lambda への移行には対応できません。"
+        },
+        {
+          "text": "スタンダードリザーブドインスタンスを購入する",
+          "explanation": "スタンダード RI は購入時のインスタンスの属性に縛られ、Fargate や Lambda には適用されません。構成の変更が多い今回の計画には向きません。"
+        },
+        {
+          "text": "Compute Savings Plans を購入する",
+          "explanation": "Compute Savings Plans は、インスタンスファミリー・サイズ・リージョン・OS に関係なく EC2 に適用され、Fargate と Lambda の利用にも適用されます。構成が変わっても割引を受け続けられます。"
+        },
+        {
+          "text": "すべてのワークロードをスポットインスタンスで動かす",
+          "explanation": "スポットインスタンスは中断される可能性があり、常時必要な本番のワークロードの土台には向きません。Fargate や Lambda への移行にも関係しません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "利用量は一定でも構成が変わる予定なら、適用範囲が最も広い Compute Savings Plans が合います。EC2 Instance Savings Plans や RI は割引率が高い分、適用範囲が狭くなります。",
+      "references": [
+        {
+          "title": "Savings Plans とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
+        },
+        {
+          "title": "Savings Plans の種類",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-020",
+      "domain": "d3",
+      "question": "あるデータ分析基盤では、プライベートサブネットの EC2 インスタンスが、同じリージョンの Amazon S3 から毎日数 TB のデータを読み込んでいる。インターネットへの通信は NAT ゲートウェイを経由している。請求書を確認したところ、NAT ゲートウェイのデータ処理料金が大きな割合を占めていた。セキュリティを下げずに、最もコスト効率よく料金を減らす方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 用のインターフェイス VPC エンドポイントを作成する",
+          "explanation": "NAT ゲートウェイは経由しなくなりますが、インターフェイスエンドポイントには時間単位の料金とデータ処理料金がかかります。同じリージョンの EC2 から使うなら、無料のゲートウェイエンドポイントの方が安くなります。"
+        },
+        {
+          "text": "EC2 インスタンスをパブリックサブネットに移し、パブリック IP アドレスを割り当てる",
+          "explanation": "インスタンスがインターネットから到達できる場所に置かれ、セキュリティが下がります。"
+        },
+        {
+          "text": "NAT ゲートウェイを、より大きな EC2 インスタンスの NAT インスタンスに置き換える",
+          "explanation": "NAT インスタンスの冗長化・パッチ適用・スケーリングを自分たちで行う必要があり、運用負荷が増えます。S3 への通信が NAT を経由する構成自体は変わりません。"
+        },
+        {
+          "text": "S3 用のゲートウェイ VPC エンドポイントを作成し、プライベートサブネットのルートテーブルに関連付ける",
+          "explanation": "ゲートウェイエンドポイントを使うと、S3 への通信が NAT ゲートウェイを通らなくなります。ゲートウェイエンドポイント自体には追加料金がかからないため、データ処理料金をそのまま削減できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "同じリージョンの S3 や DynamoDB への通信は、無料のゲートウェイ VPC エンドポイントで NAT ゲートウェイを経由させないのが、コスト削減の定番です。",
+      "references": [
+        {
+          "title": "Amazon S3 のゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        },
+        {
+          "title": "NAT ゲートウェイの料金",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/nat-gateway-pricing.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-021",
+      "domain": "d3",
+      "question": "ある企業は、利用者がアップロードした画像や動画（ほとんどが 1 MB 以上）を Amazon S3 に保存している。よく見られるファイルと、ほとんど見られないファイルが混在しているが、どのファイルがいつ見られるかは予測できない。取り出しの料金や表示の遅れを発生させずに、ストレージの費用を自動で最適化したい。最も適切なストレージクラスはどれか。",
+      "choices": [
+        {
+          "text": "S3 Intelligent-Tiering に保存する",
+          "explanation": "Intelligent-Tiering はオブジェクトごとのアクセス状況を監視し、使われていないものを低コストの階層へ自動で移します。取り出しの料金はかからず（少額の監視料金のみ）、アクセスがあれば頻繁なアクセスの階層に戻ります。"
+        },
+        {
+          "text": "S3 Standard に保存し、ライフサイクルルールで30日後に S3 Standard-IA へ移動する",
+          "explanation": "Standard-IA は取り出しのたびに料金がかかります。30日を過ぎても頻繁に見られるファイルがあると、かえって費用が増えます。アクセスが予測できない場合には向きません。"
+        },
+        {
+          "text": "S3 Glacier Flexible Retrieval に保存する",
+          "explanation": "取り出しに数分〜数時間かかるため、利用者がすぐに画像を表示する用途には使えません。"
+        },
+        {
+          "text": "S3 One Zone-IA に保存する",
+          "explanation": "データが1つのアベイラビリティーゾーンにしか保存されず、取り出しの料金もかかります。アクセスが予測できない利用者のデータには向きません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "「アクセスが予測できない」「取り出し料金なしで自動最適化したい」なら S3 Intelligent-Tiering です。なお、128 KB 未満のオブジェクトは自動の階層移動の対象外になる点も押さえておきます。",
+      "references": [
+        {
+          "title": "S3 Intelligent-Tiering の仕組み",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-022",
+      "domain": "d3",
+      "question": "ある企業は AWS Organizations で複数のアカウントを運用しており、事業部ごとに AWS の費用を配賦（チャージバック）したい。リソースには「事業部」のタグを付ける方針だが、現状はタグのキー名や値の表記がばらばらで、コストのレポートでも集計できていない。この問題を解決するために行うべきことはどれか。2つ選べ。",
+      "choices": [
+        {
+          "text": "事業部ごとに VPC を分ける",
+          "explanation": "VPC を分けても、費用が事業部ごとに集計されるわけではありません。配賦には、タグやアカウントの単位での集計が必要です。"
+        },
+        {
+          "text": "AWS Organizations のタグポリシーで、事業部タグのキー名と使える値を定義し、表記を標準化する",
+          "explanation": "タグポリシーで、タグのキー名の大文字・小文字や使える値を組織全体で揃えられます。準拠していないタグの検出や、指定したリソースタイプでの準拠しないタグ付けの防止にも使えます。"
+        },
+        {
+          "text": "請求コンソールで、事業部タグをユーザー定義のコスト配分タグとして有効にする",
+          "explanation": "リソースにタグを付けただけでは、コストのレポートで集計されません。コスト配分タグとして有効にすると、Cost Explorer やコストと使用状況レポートでタグごとに費用を集計できます。"
+        },
+        {
+          "text": "すべてのアカウントで AWS CloudTrail のデータイベントを有効にする",
+          "explanation": "CloudTrail は API 操作の記録で、費用の配賦には関係しません。データイベントを有効にすると記録の費用も増えます。"
+        },
+        {
+          "text": "AWS Compute Optimizer を有効にする",
+          "explanation": "Compute Optimizer はリソースのサイズの最適化を提案するサービスで、費用を事業部ごとに集計する機能はありません。"
+        }
+      ],
+      "answers": [
+        1,
+        2
+      ],
+      "explanation": "タグで費用を配賦するには、①タグの表記を揃える（タグポリシー）、②タグをコスト配分タグとして有効にする、の両方が必要です。アカウントを事業部ごとに分けるのも有効な方法です。",
+      "references": [
+        {
+          "title": "コスト配分タグの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"
+        },
+        {
+          "title": "タグポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_tag-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-023",
+      "domain": "d4",
+      "question": "ある企業は、オンプレミスで稼働する約100台のサーバーの災害対策を AWS で行いたい。目標は RPO が数秒、RTO が数分である。普段は AWS 側でサーバーを稼働させておく費用をできるだけ抑えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Elastic Disaster Recovery でサーバーをブロックレベルで継続的にレプリケーションし、災害時に復旧用のインスタンスを起動する",
+          "explanation": "Elastic Disaster Recovery は、低コストのステージング領域へデータを継続的にレプリケーションし、災害時に完全なインスタンスを数分で起動します。RPO は秒単位、RTO は分単位を実現でき、普段は本番と同じ台数を動かす必要がありません。"
+        },
+        {
+          "text": "毎日サーバーのバックアップを取得して S3 に保存し、災害時にバックアップから EC2 を構築する",
+          "explanation": "バックアップが1日1回なので RPO は最大で約24時間になり、構築にも時間がかかるため RTO も数分にはなりません。"
+        },
+        {
+          "text": "本番と同じ台数・サイズの EC2 インスタンスを AWS で常時稼働させ、データを同期する（ウォームスタンバイ以上）",
+          "explanation": "RPO と RTO は満たせますが、普段から多くのインスタンスを動かすため費用が高くなり、「費用を抑えたい」という要件に合いません。"
+        },
+        {
+          "text": "データベースだけを AWS にレプリケーションし、災害時にほかのサーバーは手作業で構築する",
+          "explanation": "データベース以外のサーバーを手作業で構築するため、100台規模では RTO が数分になりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "「RPO 秒単位・RTO 分単位」と「待機中の費用を抑える」を両立するなら、AWS Elastic Disaster Recovery が合います。災害対策の方式（バックアップ・パイロットライト・ウォームスタンバイ・マルチサイト）の費用と RTO/RPO の関係も押さえておきます。",
+      "references": [
+        {
+          "title": "AWS Elastic Disaster Recovery とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/drs/latest/userguide/what-is-drs.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-024",
+      "domain": "d4",
+      "question": "ある企業は AWS Backup で EC2、EBS、RDS のバックアップを取得している。ランサムウェアに感染したり、管理者の認証情報が悪用されたりしても、バックアップが削除・改ざんされないようにしたい。行うべきことはどれか。2つ選べ。",
+      "choices": [
+        {
+          "text": "バックアップの取得頻度を1時間ごとに増やす",
+          "explanation": "復旧できる時点は増えますが、バックアップそのものが削除・改ざんされるリスクは減りません。"
+        },
+        {
+          "text": "組織内の別のバックアップ専用アカウントのボールトへ、バックアップをクロスアカウントでコピーする",
+          "explanation": "本番アカウントの認証情報が悪用されても、別のアカウントにあるバックアップには手が届きません。Vault Lock と組み合わせると、さらに強固になります。"
+        },
+        {
+          "text": "バックアップを本番と同じアカウントに置き、IAM ポリシーで削除操作を制限する",
+          "explanation": "管理者の認証情報が悪用されると、IAM ポリシー自体を書き換えられて削除される可能性があります。"
+        },
+        {
+          "text": "バックアップボールトに AWS Backup Vault Lock をコンプライアンスモードで設定する",
+          "explanation": "コンプライアンスモードの Vault Lock は、猶予期間が過ぎると、ルートユーザーを含めて誰もロックを解除したり、保持期間内の復旧ポイントを削除したりできなくなります（WORM）。"
+        },
+        {
+          "text": "バックアップ元の S3 バケットでバージョニングだけを有効にする",
+          "explanation": "バージョニングは上書きや削除から以前のバージョンを守りますが、権限のある管理者はバージョンごと削除できます。EC2 や RDS のバックアップの保護にもなりません。"
+        }
+      ],
+      "answers": [
+        1,
+        3
+      ],
+      "explanation": "バックアップをランサムウェアや内部不正から守るには、「書き換えできない状態にする（Vault Lock）」と「別のアカウントに隔離する（クロスアカウントコピー）」を組み合わせます。",
+      "references": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/vault-lock.html"
+        },
+        {
+          "title": "AWS アカウント間でのバックアップの作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/create-cross-account-backup.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-025",
+      "domain": "d5",
+      "question": "ある企業は、AWS Organizations の特定の OU 配下にある全アカウントに、監査用の IAM ロールと通知用の Amazon SNS トピックを同じ構成で作りたい。今後その OU に追加されるアカウントにも、自動的に同じリソースが作られるようにしたい。最も運用負荷が低い方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントにログインし、CloudFormation スタックを手作業で作成する",
+          "explanation": "アカウントが増えるたびに作業が必要で、作成漏れや構成のずれが起きやすくなります。"
+        },
+        {
+          "text": "セルフマネージド型のアクセス許可で CloudFormation StackSets を作成し、アカウント ID を列挙して対象にする",
+          "explanation": "セルフマネージド型は各アカウントに実行用の IAM ロールを事前に作る必要があり、新しいアカウントへの自動デプロイもできません。"
+        },
+        {
+          "text": "AWS Config の適合パックを OU に展開する",
+          "explanation": "適合パックは Config ルールと修復アクションをまとめて展開する仕組みで、IAM ロールや SNS トピックのような任意のリソースを作成する用途には向きません。"
+        },
+        {
+          "text": "サービスマネージド型のアクセス許可で CloudFormation StackSets を作成し、OU を対象にして自動デプロイを有効にする",
+          "explanation": "サービスマネージド型の StackSets は Organizations と連携し、OU 配下のアカウントにまとめてスタックを作成します。自動デプロイを有効にすると、OU に追加されたアカウントにも自動でスタックが作られます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "組織の複数アカウントに同じリソースを展開し、新しいアカウントにも自動で適用するなら、サービスマネージド型の CloudFormation StackSets と自動デプロイを使います。",
+      "references": [
+        {
+          "title": "CloudFormation StackSets とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        },
+        {
+          "title": "StackSets の自動デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-026",
+      "domain": "d5",
+      "question": "あるアプリケーションは Amazon RDS for MySQL に接続するためのユーザー名とパスワードを、設定ファイルに書いて EC2 インスタンスに配置している。セキュリティの方針で、データベースのパスワードを定期的に自動で変更し、アプリケーションのコードにパスワードを持たせないことになった。最も運用負荷が低い方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Secrets Manager に認証情報を保存してローテーションを有効にし、アプリケーションは接続時に Secrets Manager から取得する",
+          "explanation": "Secrets Manager は RDS の認証情報のローテーションに対応しており、スケジュールに従ってパスワードを自動で変更し、データベース側も更新します。アプリケーションは実行時に最新の値を取得するだけで済みます。"
+        },
+        {
+          "text": "Systems Manager Parameter Store の SecureString に保存し、パスワードを変更するたびに手作業で更新する",
+          "explanation": "SecureString で暗号化して保存できますが、Parameter Store には組み込みの自動ローテーションがありません。手作業の更新は運用負荷がかかり、漏れも起きやすくなります。"
+        },
+        {
+          "text": "パスワードを KMS で暗号化したファイルとして S3 に置き、月に1回手作業で更新する",
+          "explanation": "コードからは外せますが、変更は手作業のままで、データベース側のパスワード変更と S3 のファイル更新を揃える手間もかかります。"
+        },
+        {
+          "text": "パスワードを EC2 インスタンスのユーザーデータに書き、インスタンスを月に1回作り直す",
+          "explanation": "ユーザーデータはインスタンスから読み取れるため、機密情報の置き場所に向きません。パスワードの自動変更にもなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "データベースの認証情報の自動ローテーションは、AWS Secrets Manager の代表的な使い方です。Parameter Store は設定値の保存には便利ですが、ローテーションの仕組みは組み込まれていません。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-027",
+      "domain": "d5",
+      "question": "ある企業は、本番環境の AWS Lambda 関数の新しいバージョンを安全にリリースしたい。最初は一部のリクエストだけを新しいバージョンに流し、エラー率が上がった場合は自動で元のバージョンに戻したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS CodeDeploy で Lambda のエイリアスに対してカナリアのデプロイ設定を使い、CloudWatch アラームをロールバックの条件に設定する",
+          "explanation": "CodeDeploy はエイリアスの重み付けで、一部のトラフィックを新しいバージョンに流してから全体に切り替えます。指定した CloudWatch アラームが発報すると、自動で元のバージョンに戻します。"
+        },
+        {
+          "text": "$LATEST を直接更新し、問題があれば以前のコードで再度更新する",
+          "explanation": "全リクエストが一度に新しいコードに切り替わり、問題が起きたときの影響が大きくなります。元に戻すのも手作業です。"
+        },
+        {
+          "text": "新しいバージョンを別の関数としてデプロイし、1日様子を見てからアプリケーションの呼び出し先を手作業で変更する",
+          "explanation": "様子を見ている間は本番のトラフィックが流れないため、新しいバージョンの問題を本番の条件で確認できません。切り替えとロールバックも手作業です。"
+        },
+        {
+          "text": "Lambda 関数の予約済み同時実行数を0にしてから新しいコードに更新し、同時実行数を元に戻す",
+          "explanation": "更新の間は関数が呼び出せなくなり、サービスが止まります。段階的なリリースや自動ロールバックにもなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lambda の段階的なリリース（カナリア・線形）と自動ロールバックは、CodeDeploy とエイリアスのトラフィック移行で実現します。ロールバックの条件に CloudWatch アラームを使うのがポイントです。",
+      "references": [
+        {
+          "title": "CodeDeploy のデプロイ設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployment-configurations.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-028",
+      "domain": "d5",
+      "question": "ある企業のアプリケーションは、Amazon API Gateway の背後で、AWS Lambda と Amazon ECS で動く十数個のマイクロサービスから構成されている。利用者から「ときどき応答が遅い」と報告があるが、どのサービスの処理に時間がかかっているのかを特定できていない。リクエストがサービス間をどう流れ、どこで時間がかかっているかを把握したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各サービスのログを CloudWatch Logs Insights でサービスごとに検索する",
+          "explanation": "サービスごとのログは見られますが、1つのリクエストが複数のサービスをどう通ったかを結び付けるのは難しく、全体のどこで遅れているかを把握しにくくなります。"
+        },
+        {
+          "text": "VPC フローログを有効にして通信量を分析する",
+          "explanation": "フローログはネットワークの通信の記録（送信元・送信先・ポートなど）で、アプリケーションのどの処理に時間がかかっているかは分かりません。"
+        },
+        {
+          "text": "AWS CloudTrail のイベント履歴を確認する",
+          "explanation": "CloudTrail は AWS の API 操作の記録で、アプリケーションのリクエストの処理時間の分析には使えません。"
+        },
+        {
+          "text": "AWS X-Ray（または AWS Distro for OpenTelemetry）で各サービスを計装し、トレースとサービスマップで分析する",
+          "explanation": "分散トレーシングで、1つのリクエストが各サービスを通る流れと、それぞれの処理時間を記録できます。サービスマップやトレースの詳細から、遅れている箇所を特定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "マイクロサービスで「どこが遅いか」を調べるには、分散トレーシング（AWS X-Ray や OpenTelemetry）を使います。ログやメトリクスだけでは、サービスをまたいだリクエストの流れを追いにくくなります。",
+      "references": [
+        {
+          "title": "AWS X-Ray とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/aws-xray.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-029",
+      "domain": "d5",
+      "question": "ある企業のセキュリティ方針では、セキュリティグループで SSH（ポート22）をインターネット全体（0.0.0.0/0）に開放することを禁止している。しかし開発者の設定ミスで、ときどき違反するセキュリティグループが作られてしまう。違反を自動で検出し、人の手を介さずに修正したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Config のルールで違反するセキュリティグループを検出し、Systems Manager Automation のランブックによる自動修復を設定する",
+          "explanation": "Config ルールは設定の違反を継続的に評価し、自動修復を設定すると、違反したリソースに対して Systems Manager Automation のランブックを実行して修正できます。"
+        },
+        {
+          "text": "週に1回、AWS Trusted Advisor のチェック結果を確認して手作業で修正する",
+          "explanation": "確認と修正が週に1回の手作業になり、違反した状態が最大で1週間続きます。「人の手を介さずに修正」という要件も満たしません。"
+        },
+        {
+          "text": "Amazon GuardDuty を有効にし、検出結果を確認する",
+          "explanation": "GuardDuty は不審なアクセスなどの脅威を検出するサービスで、セキュリティグループの設定の違反を評価・修正する機能ではありません。"
+        },
+        {
+          "text": "CloudTrail のログで AuthorizeSecurityGroupIngress の呼び出しを検知し、管理者にメールで通知する",
+          "explanation": "変更の検知はできますが、修正は人の手作業になります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "設定のルール違反を継続的に検出して自動で直すには、AWS Config ルールと自動修復（Systems Manager Automation）の組み合わせが定番です。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠リソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-030",
+      "domain": "d5",
+      "question": "ある企業の AWS Lambda 関数は、外部のパートナーが提供する API を呼び出している。この API には1秒あたりのリクエスト数の上限があり、アクセスが集中する時間帯にスロットリングのエラーが多発して、処理が失敗している。処理を確実に完了させつつ、パートナーの API に負荷をかけすぎないようにしたい。行うべきことはどれか。2つ選べ。",
+      "choices": [
+        {
+          "text": "エラーが返ったら、成功するまで待たずにすぐ再試行するループを入れる",
+          "explanation": "上限を超えている状態でさらにリクエストを送ることになり、スロットリングが悪化します。"
+        },
+        {
+          "text": "Lambda 関数の予約済み同時実行数を増やし、より多く並列で呼び出す",
+          "explanation": "並列の呼び出しが増えると、API の上限をさらに超えてスロットリングが増えます。"
+        },
+        {
+          "text": "リクエストを Amazon SQS キューにいったん入れ、同時実行数を制限した Lambda 関数で順に処理する",
+          "explanation": "キューがアクセスの急増を吸収し、同時実行数の上限でパートナーの API への呼び出しペースを抑えられます。失敗したメッセージは再処理やデッドレターキューで扱えます。"
+        },
+        {
+          "text": "Lambda 関数のタイムアウトを最大の15分にする",
+          "explanation": "タイムアウトを伸ばしても、API の上限を超えている状況は変わりません。待ち時間の分だけ費用も増えます。"
+        },
+        {
+          "text": "スロットリングのエラーが返ったら、ジッター（ランダムな揺らぎ）付きのエクスポネンシャルバックオフで再試行する",
+          "explanation": "待ち時間を少しずつ長くしながら再試行し、ジッターで再試行のタイミングをばらけさせることで、一斉に再試行が集中するのを防げます。"
+        }
+      ],
+      "answers": [
+        2,
+        4
+      ],
+      "explanation": "流量の上限がある相手を呼び出すときは、「ジッター付きのエクスポネンシャルバックオフで再試行する」と「キューで負荷を平準化し、並列数を制御する」を組み合わせます。すぐに再試行したり並列数を増やしたりすると、かえって悪化します。",
+      "references": [
+        {
+          "title": "AWS でのエラーの再試行とエクスポネンシャルバックオフ",
+          "url": "https://docs.aws.amazon.com/ja_jp/general/latest/gr/api-retries.html"
+        },
+        {
+          "title": "タイムアウト、再試行、およびジッターによるバックオフ（Amazon Builders' Library）",
+          "url": "https://aws.amazon.com/jp/builders-library/timeouts-retries-and-backoff-with-jitter/"
+        },
+        {
+          "title": "Amazon SQS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
         }
       ]
     }

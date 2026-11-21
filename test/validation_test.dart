@@ -101,4 +101,19 @@ void main() {
     final q = _validQuestion('xxx-001')..['domain'] = 'd9';
     expect(_errorsOf([q]).single.message, contains('d9'));
   });
+
+  test('単一選択の正解の位置が偏っていたら警告する', () {
+    final issues = validateQuestions(
+      examsJson: _exams,
+      questionFiles: {
+        'assets/questions/xxx.json': {
+          'examId': 'xxx',
+          'examCode': 'XXX-C01',
+          'questions': [for (var i = 0; i < 8; i++) _validQuestion('xxx-$i')],
+        },
+      },
+    );
+    expect(issues.where((i) => i.isError), isEmpty);
+    expect(issues.single.message, contains('Aに偏って'));
+  });
 }
