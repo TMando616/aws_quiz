@@ -14,11 +14,14 @@ void main() {
 
   testWidgets('ホームに試験の一覧が出る', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
-    // アセットの読み込みは実際の非同期処理なので、runAsyncで完了を待つ
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 300)),
-    );
-    await tester.pump();
+    // アセットの読み込みは実際の非同期処理なので、runAsyncで少しずつ待つ。
+    // 問題データが増えると読み込みに時間がかかるため、固定の時間ではなく表示されるまで待つ
+    for (var i = 0; i < 50 && find.text('全冠への進捗').evaluate().isEmpty; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pump();
+    }
     // 全冠への進捗（まだ1つも取得していない）
     expect(find.text('全冠への進捗'), findsOneWidget);
     expect(find.textContaining('取得'), findsWidgets);
