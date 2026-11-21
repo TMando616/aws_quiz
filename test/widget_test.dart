@@ -19,6 +19,9 @@ void main() {
       () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
     await tester.pump();
+    // 全冠への進捗（まだ1つも取得していない）
+    expect(find.text('全冠への進捗'), findsOneWidget);
+    expect(find.textContaining('取得'), findsWidgets);
     // リストの上のほうにある試験（下のほうは画面外なので描画されない）
     expect(find.text('Foundational'), findsOneWidget);
     expect(find.text('CLF'), findsOneWidget);

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../data/certification_repository.dart';
 import '../data/question_repository.dart';
 import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
@@ -36,11 +37,21 @@ class _ExamData {
 
 class _ExamScreenState extends State<ExamScreen> {
   late Future<_ExamData> _future;
+  final _certRepo = CertificationRepository();
+  bool _certified = false;
 
   @override
   void initState() {
     super.initState();
     _future = _load();
+    _certRepo.load().then((map) {
+      if (mounted) setState(() => _certified = map.containsKey(widget.exam.id));
+    });
+  }
+
+  Future<void> _setCertified(bool value) async {
+    setState(() => _certified = value);
+    await _certRepo.set(widget.exam.id, value);
   }
 
   Future<_ExamData> _load() async {
@@ -169,7 +180,18 @@ class _ExamScreenState extends State<ExamScreen> {
                   color: scheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _certified,
+                onChanged: _setCertified,
+                title: const Text('この試験は取得済み'),
+                secondary: Icon(
+                  _certified ? Icons.verified : Icons.check_circle_outline,
+                  color: _certified ? scheme.primary : scheme.outline,
+                ),
+              ),
+              const SizedBox(height: 12),
               FilledButton(
                 onPressed: () => _start(questions, '全分野'),
                 child: Text('全分野から出題（${questions.length}問）'),
