@@ -6,6 +6,8 @@ import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
+import '../theme/app_tokens.dart';
+import '../widgets/design_parts.dart';
 import 'mock_screen.dart';
 import 'quiz_screen.dart';
 
@@ -155,8 +157,7 @@ class _ExamScreenState extends State<ExamScreen> {
   @override
   Widget build(BuildContext context) {
     final exam = widget.exam;
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
 
     return Scaffold(
       appBar: AppBar(title: Text(exam.shortName)),
@@ -172,83 +173,48 @@ class _ExamScreenState extends State<ExamScreen> {
           final data = snapshot.data!;
           final questions = data.examFormat;
           final drills = data.drills;
+          final lastMock = data.lastMock;
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+            padding: EdgeInsets.fromLTRB(t.space5, t.space3, t.space5, t.space7),
             children: [
-              Text(
-                exam.code,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: scheme.primary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(exam.nameJa, style: theme.textTheme.headlineSmall),
-              Text(
-                exam.name,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 12),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                value: _certified,
-                onChanged: _setCertified,
-                title: const Text('この試験は取得済み'),
-                secondary: Icon(
-                  _certified ? Icons.verified : Icons.check_circle_outline,
-                  color: _certified ? scheme.primary : scheme.outline,
-                ),
-              ),
-              const SizedBox(height: 12),
-              // 一問一答で理解 → 本番形式で確認 → 模試で仕上げる、の順に並べる
+              Text(exam.code, style: t.numeric(t.label)),
+              SizedBox(height: t.space1),
+              // 「ソリューションアーキテクト - アソシエイト」を単語の途中で折り返さないよう、ハイフンで改行する
+              Text(exam.nameJa.replaceAll(' - ', '\n'), style: t.title),
+              SizedBox(height: t.space6),
+              // 主ボタンは1つだけ。一問一答で理解 → 本番形式で確認 → 模試、の流れの入口
               if (drills.isNotEmpty) ...[
                 FilledButton.icon(
                   onPressed: () => _start(drills, '一問一答'),
                   icon: const Icon(Icons.bolt),
-                  label: Text('一問一答（${drills.length}問）'),
+                  label: Text('一問一答を始める（${drills.length}問）'),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: t.space6),
               ],
-              (drills.isNotEmpty ? OutlinedButton.new : FilledButton.new)(
-                onPressed: () => _start(questions, '本番形式'),
-                child: Text('本番形式で全分野から出題（${questions.length}問）'),
+              const SectionLabel('ほかの解き方'),
+              ListRow(
+                title: '本番形式で全分野から',
+                subtitle: '${questions.length}問',
+                onTap: questions.isEmpty ? null : () => _start(questions, '本番形式'),
               ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () => _pickDomains(data),
-                child: const Text('分野を選んで出題'),
+              ListRow(
+                title: '分野を選んで解く',
+                subtitle: '本番形式',
+                onTap: () => _pickDomains(data),
               ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: questions.isEmpty ? null : () => _startMock(data),
-                child: Text(
-                  '模試（${exam.mock.questionCount}問・${exam.mock.timeLimitMinutes}分）',
-                ),
+              ListRow(
+                title: '模試',
+                subtitle: [
+                  '${exam.mock.questionCount}問・${exam.mock.timeLimitMinutes}分',
+                  if (lastMock != null)
+                    '前回 ${(lastMock.rate * 100).round()}%'
+                        '（${lastMock.takenAt.month}/${lastMock.takenAt.day}）',
+                ].join('・'),
+                onTap: questions.isEmpty ? null : () => _startMock(data),
               ),
-              if (data.lastMock case final last?)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    '前回の模試：${(last.rate * 100).round()}%'
-                    '（${last.takenAt.month}/${last.takenAt.day}・${last.questionCount}問）',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 32),
-              Text('出題分野', style: theme.textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Text(
-                'タップすると、その分野の本番形式の問題だけを出題します',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 8),
+              SizedBox(height: t.space6),
+              const SectionLabel('分野ごとの正答率', trailing: 'タップでその分野を解く'),
               for (final domain in exam.domains)
                 _DomainRow(
                   domain: domain,
@@ -257,6 +223,14 @@ class _ExamScreenState extends State<ExamScreen> {
                   accuracy: data.accuracy[domain.id] ?? Accuracy.empty,
                   onTap: () => _startDomains(data, {domain.id}),
                 ),
+              SizedBox(height: t.space6),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _certified,
+                onChanged: _setCertified,
+                title: Text('この試験は取得済み', style: t.body),
+                subtitle: Text('ホームの全冠の進捗に数えます', style: t.caption),
+              ),
             ],
           );
         },
@@ -265,7 +239,7 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 }
 
-/// 分野1つ分の行。問題数・正答率・比重を出す
+/// 分野1つ分の行。分野名・正答率・バー・問題数を出す
 class _DomainRow extends StatelessWidget {
   const _DomainRow({
     required this.domain,
@@ -287,68 +261,51 @@ class _DomainRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     final rate = accuracy.rate;
     final enabled = count > 0;
 
-    return Opacity(
-      opacity: enabled ? 1 : 0.5,
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 8),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: enabled ? onTap : null,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-            child: Column(
+    return InkWell(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: t.space4),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: t.hairline, width: t.borderThin),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        domain.name,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      rate == null ? '未回答' : '${(rate * 100).round()}%',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: rate == null
-                            ? scheme.onSurfaceVariant
-                            : scheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: rate ?? 0,
-                    minHeight: 6,
-                    backgroundColor: scheme.surfaceContainerHighest,
-                  ),
-                ),
-                const SizedBox(height: 6),
+                Expanded(child: Text(domain.name, style: t.body)),
+                SizedBox(width: t.space3),
                 Text(
-                  [
-                    '$count問',
-                    if (drillCount > 0) '一問一答 $drillCount問',
-                    '解いた ${accuracy.answered}問',
-                    '比重 ${domain.weight}%',
-                  ].join('・'),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
+                  rate == null ? '未回答' : '${(rate * 100).round()}%',
+                  style: t.numeric(
+                    t.body.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: rate == null ? t.textSecondary : t.textPrimary,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
+            SizedBox(height: t.space2),
+            ThinBar(value: rate ?? 0),
+            SizedBox(height: t.space2),
+            Text(
+              [
+                '比重 ${domain.weight}%',
+                '本番形式 $count問',
+                if (drillCount > 0) '一問一答 $drillCount問',
+                if (accuracy.answered > 0) '解いた ${accuracy.answered}問',
+              ].join('・'),
+              style: t.caption,
+            ),
+          ],
         ),
       ),
     );
@@ -371,20 +328,20 @@ class _DomainPickerState extends State<_DomainPicker> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final t = context.tokens;
     final total = widget.data.questions
         .where((q) => _picked.contains(q.domainId))
         .length;
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        padding: EdgeInsets.fromLTRB(t.space5, 0, t.space5, t.space4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('出題する分野を選ぶ', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
+            Text('解く分野を選ぶ', style: t.title),
+            SizedBox(height: t.space2),
             Flexible(
               child: ListView(
                 shrinkWrap: true,
@@ -400,18 +357,18 @@ class _DomainPickerState extends State<_DomainPicker> {
                                   ? _picked.add(d.id)
                                   : _picked.remove(d.id),
                             ),
-                      title: Text(d.name, style: theme.textTheme.bodyMedium),
-                      subtitle: Text('${widget.data.countOf(d.id)}問'),
+                      title: Text(d.name, style: t.body),
+                      subtitle: Text('${widget.data.countOf(d.id)}問', style: t.caption),
                     ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: t.space3),
             FilledButton(
               onPressed: total == 0
                   ? null
                   : () => Navigator.of(context).pop(_picked),
-              child: Text(total == 0 ? '分野を選んでください' : '$total問を出題'),
+              child: Text(total == 0 ? '分野を選んでください' : '$total問を解く'),
             ),
           ],
         ),
