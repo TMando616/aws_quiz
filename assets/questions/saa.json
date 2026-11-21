@@ -339,6 +339,696 @@
           "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
         }
       ]
+    },
+    {
+      "id": "saa-011",
+      "domain": "d1",
+      "question": "ある企業の VPC のパブリックサブネットにある Web サーバーに、特定の IP アドレスの範囲から不審なアクセスが続いている。この範囲からの通信を、サブネット内のすべてのインスタンスに対してまとめて拒否したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各インスタンスのセキュリティグループに、その IP アドレスの範囲を拒否するルールを追加する",
+          "explanation": "セキュリティグループに書けるのは許可のルールだけで、拒否のルールは作れません。"
+        },
+        {
+          "text": "サブネットのネットワーク ACL に、その IP アドレスの範囲を拒否するルールを追加する",
+          "explanation": "ネットワーク ACL はサブネット単位で適用され、許可と拒否の両方のルールを書けます。サブネット内のすべてのインスタンスへの通信をまとめて拒否できます。"
+        },
+        {
+          "text": "インターネットゲートウェイをデタッチする",
+          "explanation": "その範囲だけでなく、すべての利用者がアクセスできなくなります。"
+        },
+        {
+          "text": "Web サーバーを別のアベイラビリティーゾーンに移す",
+          "explanation": "AZ を変えても、同じ IP アドレスの範囲からのアクセスは止まりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "特定の IP アドレスを「拒否」したいときはネットワーク ACL を使います。セキュリティグループはインスタンス単位・許可のみ・ステートフル、ネットワーク ACL はサブネット単位・許可と拒否・ステートレス、という違いを押さえておきます。",
+      "references": [
+        {
+          "title": "VPC のインフラストラクチャセキュリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/infrastructure-security.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-012",
+      "domain": "d1",
+      "question": "ある EC2 インスタンス上のアプリケーションは、Amazon S3 のバケットを読み書きしている。現在は IAM ユーザーのアクセスキーを設定ファイルに書いて使っている。アクセスキーの漏えいのリスクをなくしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "アクセスキーを毎月手作業で更新する",
+          "explanation": "漏えいしたときの影響の期間は短くなりますが、長期的な認証情報をインスタンスに置くことは変わりません。"
+        },
+        {
+          "text": "設定ファイルのアクセス権限を、root ユーザーだけが読めるように変更する",
+          "explanation": "インスタンスに侵入されれば読み取られる可能性があり、長期的な認証情報を置くことは変わりません。"
+        },
+        {
+          "text": "アクセスキーをユーザーデータに書き、起動時に環境変数へ設定する",
+          "explanation": "ユーザーデータはインスタンスから読み取れるため、認証情報の置き場所に向きません。"
+        },
+        {
+          "text": "S3 へのアクセス権限を持つ IAM ロールを作成し、インスタンスプロファイルとして EC2 インスタンスに関連付ける",
+          "explanation": "IAM ロールを使えば、長期的な認証情報をインスタンスに配る必要がありません。インスタンスプロファイルを通じて一時的な認証情報が提供され、自動的に更新されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EC2 上のアプリケーションから AWS のサービスを使うときは、アクセスキーではなく IAM ロール（インスタンスプロファイル）を使います。一時的な認証情報が自動で更新されるので、キーの管理も不要です。",
+      "references": [
+        {
+          "title": "EC2 インスタンスで IAM ロールを使用する",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-013",
+      "domain": "d1",
+      "question": "ある企業は、スマートフォン向けの写真共有アプリを開発している。利用者は、メールアドレスや Google アカウントでサインアップ・サインインできるようにしたい。サインインした利用者は、アプリから自分の写真を Amazon S3 に直接アップロードする。行うべきことはどれか。2つ選べ。",
+      "choices": [
+        {
+          "text": "利用者ごとに IAM ユーザーを作成し、アクセスキーをアプリに配布する",
+          "explanation": "IAM ユーザーは利用者が増えると管理しきれず、長期的な認証情報をアプリに配ることになり危険です。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープールで、サインアップ・サインインと Google でのサインインを提供する",
+          "explanation": "ユーザープールは、Web やモバイルアプリの利用者のためのユーザーディレクトリです。サインアップ・サインインの機能があり、Google などのソーシャル ID でのサインインにも対応しています。"
+        },
+        {
+          "text": "IAM Identity Center で利用者を管理する",
+          "explanation": "IAM Identity Center は、従業員などが AWS アカウントやアプリケーションにアクセスするための仕組みで、一般のアプリの利用者向けではありません。"
+        },
+        {
+          "text": "AWS のアクセスキーをアプリのコードに埋め込み、すべての利用者で共有する",
+          "explanation": "アプリを解析されるとキーが漏れ、誰でも S3 にアクセスできてしまいます。"
+        },
+        {
+          "text": "Amazon Cognito のアイデンティティプールで、サインインした利用者に S3 へアクセスするための一時的な認証情報を発行する",
+          "explanation": "アイデンティティプールは、S3 などの AWS のサービスにアクセスするための認証情報を利用者に提供します。権限を絞った一時的な認証情報を使えば、アプリから直接安全にアップロードできます。"
+        }
+      ],
+      "answers": [
+        1,
+        4
+      ],
+      "explanation": "アプリの利用者の認証は Cognito のユーザープール、AWS のサービスへのアクセスは Cognito のアイデンティティプールで一時的な認証情報を発行する、という組み合わせが定番です。",
+      "references": [
+        {
+          "title": "Amazon Cognito ユーザープール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-user-pools.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-014",
+      "domain": "d1",
+      "question": "ある企業は、Amazon S3 に保存する機密データを暗号化する。セキュリティの方針で、暗号鍵のキーポリシーを自社で管理し、必要なときには鍵を無効にでき、鍵がいつ誰に使われたかを監査できる必要がある。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 マネージドキーによるサーバー側の暗号化（SSE-S3）を使う",
+          "explanation": "鍵は S3 が管理するため、キーポリシーの管理や鍵の無効化はできません。"
+        },
+        {
+          "text": "AWS マネージドキー（aws/s3）による SSE-KMS を使う",
+          "explanation": "AWS マネージドキーは AWS のサービスが作成・管理する鍵で、キーポリシーを自社で管理できません。2021年以降、新しいサービス向けには作られなくなったレガシーな鍵の種類です。"
+        },
+        {
+          "text": "AWS KMS のカスタマーマネージドキーによる SSE-KMS を使う",
+          "explanation": "カスタマーマネージドキーは、キーポリシー・有効化と無効化・ローテーションなどを自社で管理できます。KMS の API の呼び出しはすべて CloudTrail に記録されるため、鍵の使用状況も監査できます。"
+        },
+        {
+          "text": "アプリケーションのソースコードに書いた鍵で、アップロード前に暗号化する",
+          "explanation": "鍵がコードに含まれるため漏えいのリスクが高く、鍵の無効化や使用状況の監査もできません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "鍵の管理（キーポリシー・無効化・ローテーション）を自社で行いたいなら、AWS KMS のカスタマーマネージドキーを使います。KMS の操作は CloudTrail に記録されるので監査にも対応できます。",
+      "references": [
+        {
+          "title": "AWS KMS の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/concepts.html"
+        },
+        {
+          "title": "AWS CloudTrail による AWS KMS の API 呼び出しのログ記録",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/logging-using-cloudtrail.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-015",
+      "domain": "d1",
+      "question": "ある Web アプリケーションは Application Load Balancer の背後で動いている。ログイン画面に、一部の IP アドレスから短い時間に大量のリクエストが送られ、パスワードを総当たりで試されている。送信元の IP アドレスは日によって変わる。最も運用負荷が低い対策はどれか。",
+      "choices": [
+        {
+          "text": "Auto Scaling グループの最大台数を増やして、リクエストを処理しきる",
+          "explanation": "大量のリクエストを受け続けることになり、総当たりの攻撃そのものは止まりません。費用も増えます。"
+        },
+        {
+          "text": "AWS WAF のウェブ ACL を ALB に関連付け、レートベースのルールで、一定の時間に多くのリクエストを送る IP アドレスを制限する",
+          "explanation": "AWS WAF は ALB を保護できます。レートベースのルールは受信したリクエストを数え、速すぎる送信元からのリクエストを制限します。IP アドレスが変わっても、ルールが自動で対応します。"
+        },
+        {
+          "text": "攻撃に気づくたびに、ネットワーク ACL にその IP アドレスを拒否するルールを手作業で追加する",
+          "explanation": "送信元が日によって変わるため、手作業の追加では追いつかず、運用負荷も高くなります。"
+        },
+        {
+          "text": "ログイン画面の URL を変更する",
+          "explanation": "一時的に避けられても、新しい URL が見つかれば同じ攻撃が続きます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "特定の送信元からの大量のリクエストを自動で制限するには、AWS WAF のレートベースのルールを使います。WAF は ALB、CloudFront、API Gateway などに関連付けられます。",
+      "references": [
+        {
+          "title": "レートベースのルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+        },
+        {
+          "title": "AWS WAF とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-chapter.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-016",
+      "domain": "d1",
+      "question": "ある企業の AWS アカウントでは、多くの開発者が S3 バケットを作成している。設定ミスでバケットのポリシーや ACL が公開になってしまっても、アカウント内のどのバケットも公開されないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットを作成するたびに、セキュリティ担当者がポリシーを確認する",
+          "explanation": "確認の漏れや遅れが起きる可能性があり、運用負荷も高くなります。"
+        },
+        {
+          "text": "すべてのバケットでバージョニングを有効にする",
+          "explanation": "バージョニングは誤って削除・上書きしたデータを戻すための機能で、公開を防ぐものではありません。"
+        },
+        {
+          "text": "すべてのバケットで SSE-KMS による暗号化を有効にする",
+          "explanation": "暗号化されていても、公開設定によってはアクセスされる可能性があります。公開そのものを防ぐ設定ではありません。"
+        },
+        {
+          "text": "アカウントのレベルで S3 のブロックパブリックアクセスを有効にする",
+          "explanation": "ブロックパブリックアクセスは、パブリックアクセスを許可するポリシーや ACL を上書きして、公開を制限します。アカウント全体に設定すれば、すべてのバケットに効きます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "S3 の公開を確実に防ぐには、ブロックパブリックアクセスをアカウントのレベルで有効にします。個々のバケットのポリシーや ACL の設定ミスがあっても、公開のアクセスは拒否されます。",
+      "references": [
+        {
+          "title": "S3 のブロックパブリックアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-017",
+      "domain": "d2",
+      "question": "ある Web アプリケーションは、1つの AZ にある1台の EC2 インスタンスで動いている。インスタンスや AZ に障害が起きても、サービスを続けられるようにしたい。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "複数の AZ にまたがる Auto Scaling グループでインスタンスを動かし、Application Load Balancer のヘルスチェックで正常なインスタンスにだけ振り分ける",
+          "explanation": "ALB は、有効な AZ の正常なターゲットにだけリクエストを振り分けます。複数の AZ に分散した Auto Scaling グループと組み合わせれば、インスタンスや AZ に障害が起きてもサービスを続けられます。"
+        },
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "性能は上がりますが、インスタンスも AZ も1つのままなので、障害が起きれば止まります。"
+        },
+        {
+          "text": "毎日 AMI を取得し、障害が起きたら手作業で新しいインスタンスを起動する",
+          "explanation": "復旧に手作業と時間がかかり、その間サービスが止まります。"
+        },
+        {
+          "text": "同じ AZ に2台目のインスタンスを起動しておく",
+          "explanation": "インスタンスの障害には備えられますが、AZ の障害では2台とも止まります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "可用性を高める基本は、複数の AZ に分散させて単一障害点をなくすことです。ALB のヘルスチェックで、異常なインスタンスへの振り分けを避けます。",
+      "references": [
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        },
+        {
+          "title": "Auto Scaling グループに Elastic Load Balancing を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-018",
+      "domain": "d2",
+      "question": "ある企業は、Amazon Aurora MySQL のクラスターでアプリケーションのデータベースを運用している。プライマリインスタンスに障害が起きたとき、手作業なしで、できるだけ短い時間で書き込みを再開できるようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎日スナップショットを取得し、障害時にスナップショットから復元する",
+          "explanation": "復元に時間がかかり、最後のスナップショット以降のデータも失われます。"
+        },
+        {
+          "text": "インスタンスクラスを大きくする",
+          "explanation": "性能は上がりますが、インスタンスの障害への備えにはなりません。"
+        },
+        {
+          "text": "別の AZ に Aurora レプリカを追加しておく",
+          "explanation": "プライマリに障害が起きると、Aurora は既存の Aurora レプリカを新しいプライマリに昇格させて、自動でフェイルオーバーします。レプリカがない場合は新しいプライマリを作成するため、より時間がかかります。"
+        },
+        {
+          "text": "データを1時間ごとに Amazon S3 へエクスポートしておく",
+          "explanation": "データの退避にはなりますが、データベースとしての自動のフェイルオーバーにはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Aurora では、別の AZ に Aurora レプリカを置いておくと、プライマリの障害時にレプリカが自動で昇格し、短時間で書き込みを再開できます。なお、データ自体はストレージの6つのノードに同期で複製されています。",
+      "references": [
+        {
+          "title": "Aurora の高可用性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-019",
+      "domain": "d2",
+      "question": "ある企業は、契約書のファイルを Amazon S3 に保存している。担当者が誤ってファイルを削除したり、古い内容で上書きしたりしても、元に戻せるようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ライフサイクルルールで、ファイルを S3 Glacier Deep Archive に移動する",
+          "explanation": "保存の費用は下がりますが、削除や上書きから守る仕組みにはなりません。"
+        },
+        {
+          "text": "バケットでバージョニングを有効にする",
+          "explanation": "バージョニングを有効にすると、オブジェクトの複数のバージョンが保持されます。削除しても削除マーカーが追加されるだけで、以前のバージョンから復元できます。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を有効にする",
+          "explanation": "長距離の転送を速くする機能で、削除や上書きからの保護には関係ありません。"
+        },
+        {
+          "text": "バケットのサーバー側の暗号化を有効にする",
+          "explanation": "暗号化は第三者に読まれないための対策で、削除や上書きからの保護にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "誤った削除や上書きから S3 のデータを守るには、バージョニングを有効にします。バージョニングはデフォルトでは無効なので、明示的に有効にする必要があります。",
+      "references": [
+        {
+          "title": "S3 バケットでのバージョニングの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Versioning.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-020",
+      "domain": "d2",
+      "question": "ある EC サイトでは、注文が入るたびに「在庫の引き当て」「請求」「配送の手配」の3つのシステムで処理を行う。3つの処理はそれぞれ独立して並行に進めてよく、どれか1つのシステムが一時的に止まっていても、復旧後にその注文を処理できるようにしたい。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "注文のたびに、Web サーバーから3つのシステムの API を順番に同期的に呼び出す",
+          "explanation": "1つのシステムが止まっていると、その注文の処理が失敗します。システム間の結び付きも強くなります。"
+        },
+        {
+          "text": "1つの SQS キューに注文を入れ、3つのシステムがそのキューから取り出す",
+          "explanation": "1つのメッセージは基本的にどれか1つのシステムが取り出して処理するため、3つのシステムすべてに同じ注文を届けられません。"
+        },
+        {
+          "text": "注文を Amazon S3 に保存し、各システムが1日1回まとめて読み込む",
+          "explanation": "並行には処理できますが、1日待つことになり、すぐに処理するという流れに合いません。"
+        },
+        {
+          "text": "Amazon SNS のトピックに注文を発行し、システムごとの SQS キューをトピックにサブスクライブする",
+          "explanation": "SNS のトピックからサブスクライブした複数の SQS キューへ、同じメッセージをファンアウトできます。メッセージはキューに保持されるので、システムが止まっていても復旧後に処理できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "1つのイベントを複数のシステムで独立して処理するなら、SNS から複数の SQS キューへファンアウトする構成が定番です。キューがあるので、受け取る側が一時的に止まっていてもメッセージは失われません。",
+      "references": [
+        {
+          "title": "SNS から SQS キューへのファンアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-sqs-as-subscriber.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-021",
+      "domain": "d2",
+      "question": "ある企業は、Amazon EBS、Amazon RDS、Amazon DynamoDB、Amazon EFS のバックアップを、サービスごとに別々のスクリプトで取得している。バックアップの方針を一か所で管理して自動化し、災害に備えて別のリージョンにもコピーしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Backup でバックアッププランを作成し、対象のリソースを割り当てて、別のリージョンへのコピーを設定する",
+          "explanation": "AWS Backup は、複数のサービスのデータ保護を一元化して自動化できるサービスです。バックアッププランでスケジュールや保持期間を決め、別のリージョンへのコピーも行えます。EBS・RDS・DynamoDB・EFS に対応しています。"
+        },
+        {
+          "text": "サービスごとのスクリプトを1台の EC2 インスタンスにまとめ、cron で実行する",
+          "explanation": "スクリプトの保守は残り、そのインスタンスが止まるとバックアップも止まります。"
+        },
+        {
+          "text": "すべてのデータを Amazon S3 にエクスポートし、S3 のバージョニングで世代を管理する",
+          "explanation": "エクスポートの仕組みをサービスごとに作る必要があり、復元の手順も複雑になります。"
+        },
+        {
+          "text": "各サービスのコンソールで、担当者が毎日手作業でバックアップを取得する",
+          "explanation": "手作業のため漏れが起きやすく、運用負荷も高くなります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "複数のサービスのバックアップを一元的に管理・自動化するなら AWS Backup を使います。バックアッププランで方針を統一でき、別のリージョンへのコピーで災害対策にもなります。",
+      "references": [
+        {
+          "title": "AWS Backup とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/whatisbackup.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-022",
+      "domain": "d3",
+      "question": "ある企業は、東京リージョンの Amazon S3 に置いた画像を使って Web サイトを公開している。海外の利用者から、画像の表示が遅いという声が多い。最も適切な改善策はどれか。",
+      "choices": [
+        {
+          "text": "S3 のストレージクラスを S3 Standard-IA に変更する",
+          "explanation": "保存の費用は変わりますが、利用者までの距離による遅延は改善しません。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を有効にする",
+          "explanation": "Transfer Acceleration は主に S3 への長距離のアップロードやダウンロードの転送を速くする機能で、同じ画像を多くの利用者に配信してキャッシュする仕組みではありません。"
+        },
+        {
+          "text": "Amazon CloudFront のディストリビューションを作成し、S3 をオリジンにする",
+          "explanation": "CloudFront は世界中のエッジロケーションからコンテンツを配信します。リクエストは遅延の最も小さいエッジロケーションに送られ、キャッシュがあればすぐに返されます。"
+        },
+        {
+          "text": "東京リージョンの S3 バケットを大阪リージョンに作り直す",
+          "explanation": "日本国内での場所が変わるだけで、海外の利用者までの距離はほとんど変わりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "世界中の利用者に静的なコンテンツを速く届けるには、Amazon CloudFront を使います。エッジロケーションのキャッシュから配信するので、遅延が小さくなり、オリジンへのリクエストも減ります。",
+      "references": [
+        {
+          "title": "Amazon CloudFront とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-023",
+      "domain": "d3",
+      "question": "あるゲームのランキング機能は Amazon DynamoDB を使っており、読み込みが非常に多い。読み込みの応答時間をマイクロ秒単位まで短くしたい。数秒前のデータが返ってもよい（結果整合性で問題ない）。アプリケーションのコードの変更はできるだけ少なくしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "DynamoDB のテーブルをオンデマンドキャパシティモードに変更する",
+          "explanation": "キャパシティの管理は楽になりますが、応答時間がマイクロ秒単位になるわけではありません。"
+        },
+        {
+          "text": "DynamoDB Accelerator（DAX）のクラスターを作成し、アプリケーションの接続先を DAX にする",
+          "explanation": "DAX は DynamoDB のためのインメモリのキャッシュで、結果整合性のある読み込みの応答時間をマイクロ秒単位まで短くします。DynamoDB と API の互換性があるため、コードの変更も少なくて済みます。"
+        },
+        {
+          "text": "Amazon ElastiCache を前に置き、キャッシュの読み書きの処理をアプリケーションに追加する",
+          "explanation": "キャッシュによる高速化はできますが、キャッシュの処理をアプリケーションに作り込む必要があり、コードの変更が多くなります。"
+        },
+        {
+          "text": "データを Amazon RDS に移行する",
+          "explanation": "データベースの移行とアプリケーションの大きな変更が必要で、応答時間の短縮にもつながりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DynamoDB の読み込みを高速化するなら、DynamoDB Accelerator（DAX）が第一の候補です。API の互換性があるのでコードの変更が少なく済みます。ただし、強い整合性の読み込みが必要な場合には向きません。",
+      "references": [
+        {
+          "title": "DynamoDB Accelerator（DAX）",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-024",
+      "domain": "d3",
+      "question": "ある企業は、Web サイトの閲覧履歴（クリックストリーム）を大量にリアルタイムで集めたい。集めたデータは、リアルタイムの分析用のアプリケーションと、不正の検知用のアプリケーションの両方で、それぞれ読み取って処理する。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon RDS のテーブルに、クリックのたびに1行ずつ書き込む",
+          "explanation": "大量の書き込みが続くとデータベースの負荷が高くなり、リアルタイムに複数のアプリケーションへ流す仕組みにもなりません。"
+        },
+        {
+          "text": "Amazon S3 にファイルとしてためて、1日1回まとめて処理する",
+          "explanation": "リアルタイムに処理するという要件を満たしません。"
+        },
+        {
+          "text": "1つの Amazon SQS 標準キューにデータを入れる",
+          "explanation": "キューのメッセージは基本的に1つのアプリケーションが取り出して処理すると削除されるため、2つのアプリケーションで同じデータを読み取る用途には向きません。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams にデータを送り、それぞれのアプリケーションがストリームから読み取る",
+          "explanation": "Kinesis Data Streams は、大量のデータレコードのストリームをリアルタイムで収集・処理するサービスです。複数のアプリケーションが同じストリームからデータを読み取れます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "大量のデータをリアルタイムに集めて、複数のアプリケーションで処理するなら Amazon Kinesis Data Streams が合います。SQS はメッセージを1つの処理に渡すためのキューで、用途が異なります。",
+      "references": [
+        {
+          "title": "Amazon Kinesis Data Streams とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-025",
+      "domain": "d3",
+      "question": "ある企業は、世界各地の拠点から、数 GB の動画ファイルを東京リージョンの1つの S3 バケットにアップロードしている。東京から遠い拠点では、アップロードに時間がかかっている。アップロードの仕組みを大きく変えずに速くしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットで S3 Transfer Acceleration を有効にし、高速化用のエンドポイントにアップロードする",
+          "explanation": "Transfer Acceleration は、CloudFront の世界中のエッジロケーションを使って、S3 への長距離の転送を速くします。エンドポイントを変えるだけで使えます（追加の料金がかかります）。"
+        },
+        {
+          "text": "アップロードの前に、ファイルを S3 Glacier Deep Archive に保存する",
+          "explanation": "Glacier Deep Archive はアーカイブ用のストレージクラスで、転送の速さには関係ありません。"
+        },
+        {
+          "text": "東京リージョンに大きな EC2 インスタンスを置き、アップロードを中継させる",
+          "explanation": "東京までの距離は変わらないため、遠い拠点からの転送の遅さは改善しません。"
+        },
+        {
+          "text": "S3 バケットのストレージクラスを S3 One Zone-IA に変更する",
+          "explanation": "保存先の冗長性と料金が変わるだけで、転送の速さには関係ありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "遠くの拠点から S3 への転送を速くするには、S3 Transfer Acceleration を使います。エッジロケーションから AWS のネットワークを通って転送されます。",
+      "references": [
+        {
+          "title": "S3 Transfer Acceleration",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/transfer-acceleration.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-026",
+      "domain": "d3",
+      "question": "ある研究機関は、多数の EC2 インスタンスが互いに頻繁に通信しながら計算を進めるシミュレーションを実行する。インスタンス間の通信の遅延をできるだけ小さくし、スループットを高めたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "スプレッドプレイスメントグループでインスタンスを起動する",
+          "explanation": "スプレッドプレイスメントグループは、インスタンスをそれぞれ異なるハードウェアに配置して、障害の影響を分けるためのものです。通信の遅延を小さくする目的には向きません。"
+        },
+        {
+          "text": "インスタンスを複数のリージョンに分けて起動する",
+          "explanation": "リージョンをまたぐと距離が遠くなり、通信の遅延は大きくなります。"
+        },
+        {
+          "text": "クラスタープレイスメントグループでインスタンスを起動する",
+          "explanation": "クラスタープレイスメントグループは、1つの AZ の中でインスタンスを近くに配置します。低いネットワークの遅延や高いスループットが必要なアプリケーションに推奨されています。"
+        },
+        {
+          "text": "EBS ボリュームのサイズを大きくする",
+          "explanation": "ディスクの性能は変わることがありますが、インスタンス間の通信の遅延には関係ありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "インスタンス間の通信の遅延を小さくしたいならクラスタープレイスメントグループ、障害の影響を分けたいならスプレッドプレイスメントグループ、と目的で使い分けます。",
+      "references": [
+        {
+          "title": "プレイスメント戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-027",
+      "domain": "d4",
+      "question": "ある企業は、アプリケーションのログを Amazon S3 に保存している。ログは保存してから30日間はよく参照されるが、その後はほとんど参照されない。ただし、まれに参照するときはすぐに（ミリ秒単位で）取り出せる必要があり、1つの AZ の障害でデータが失われてはならない。最もコスト効率のよい方法はどれか。",
+      "choices": [
+        {
+          "text": "ライフサイクルルールで、30日後に S3 Glacier Deep Archive に移動する",
+          "explanation": "保存の費用は最も安くなりますが、取り出しに時間がかかるため、すぐに取り出すという要件を満たしません。"
+        },
+        {
+          "text": "ライフサイクルルールで、30日後に S3 Standard-IA に移動する",
+          "explanation": "Standard-IA はアクセスの頻度が低いデータ向けで、ミリ秒単位で取り出せます。取り出しの料金はかかりますが、ほとんど参照しないなら保存の費用の安さが上回ります。最低保存期間は30日です。"
+        },
+        {
+          "text": "ライフサイクルルールで、30日後に S3 One Zone-IA に移動する",
+          "explanation": "保存の費用は安くなりますが、データが1つの AZ にしか保存されないため、AZ の障害でデータが失われてはならないという要件を満たしません。"
+        },
+        {
+          "text": "すべてのログを S3 Standard のまま保存し続ける",
+          "explanation": "すぐに取り出せますが、ほとんど参照しないデータにも高い保存の費用がかかり続けます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アクセスの頻度が下がるデータは、ライフサイクルルールで安いストレージクラスへ自動で移します。すぐに取り出す必要があり、AZ の障害にも耐えたいなら S3 Standard-IA が合います。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-028",
+      "domain": "d4",
+      "question": "ある企業の社内システムは、平日の日中だけ使われ、夜間と休日はほとんどアクセスがない。データベースは Amazon Aurora MySQL を使っており、負荷に合わせて容量を自動で増減させ、使っていない時間の費用をできるだけ抑えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "日中のピークに合わせた大きなインスタンスクラスで、プロビジョニングされたインスタンスを常時動かす",
+          "explanation": "夜間や休日も大きなインスタンスの料金がかかり続けます。"
+        },
+        {
+          "text": "Aurora レプリカを5台追加する",
+          "explanation": "読み込みの性能や可用性は上がりますが、台数分の費用が増え、使っていない時間の費用は下がりません。"
+        },
+        {
+          "text": "データベースを毎晩手作業で削除し、朝にスナップショットから作り直す",
+          "explanation": "手作業の負担が大きく、復元のたびに時間がかかります。"
+        },
+        {
+          "text": "Aurora Serverless v2 を使い、最小の容量を 0 ACU に設定して自動一時停止を有効にする",
+          "explanation": "Aurora Serverless v2 は、アプリケーションの需要に合わせて容量を自動で調整します。最小の容量を 0 ACU にすると、接続がない状態が続いたときに一時停止し、その間はインスタンスの容量の料金がかかりません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "負荷が変動する、または使わない時間が長いデータベースには Aurora Serverless v2 が合います。容量を自動で調整し、最小 0 ACU の設定で使っていない時間は一時停止できます。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        },
+        {
+          "title": "Aurora Serverless v2 の自動一時停止",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-029",
+      "domain": "d4",
+      "question": "ある Web アプリケーションは、24時間ずっと EC2 インスタンス10台分の負荷があり、平日の日中だけさらに10台分の負荷が増える。今後3年間はこの使い方が続く見込みである。コストを最適化するために行うべきことはどれか。2つ選べ。",
+      "choices": [
+        {
+          "text": "常時必要な10台分の利用量に対して、Savings Plans を購入する",
+          "explanation": "Savings Plans は、1年または3年の一定の利用量を約束する代わりに、オンデマンドより安い料金になります。24時間続く10台分に当てると、割引を無駄なく受けられます。"
+        },
+        {
+          "text": "ピーク時の20台分のリザーブドインスタンスを購入する",
+          "explanation": "日中以外は10台分しか使わないため、残りの10台分の割引が無駄になります。"
+        },
+        {
+          "text": "常に20台のインスタンスを動かし続ける",
+          "explanation": "日中以外の時間も、使っていない10台分の料金がかかり続けます。"
+        },
+        {
+          "text": "日中の増える分は、Auto Scaling グループで必要なときだけインスタンスを追加する",
+          "explanation": "増える分は必要な時間だけ動かせば、使っていない時間の料金がかかりません。"
+        },
+        {
+          "text": "すべてのインスタンスを Dedicated Hosts で動かす",
+          "explanation": "物理サーバーを専有するための選択肢で、コストを下げる目的には向きません。"
+        }
+      ],
+      "answers": [
+        0,
+        3
+      ],
+      "explanation": "常に使う分は Savings Plans などの割引で安くし、変動する分は Auto Scaling で必要なときだけ動かす、という組み合わせがコスト最適化の基本です。",
+      "references": [
+        {
+          "title": "Savings Plans とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-030",
+      "domain": "d4",
+      "question": "ある企業は、1日に数回、アップロードされたファイルを数十秒で変換する処理を、24時間稼働する EC2 インスタンスで動かしている。インスタンスはほとんどの時間何もしていない。サーバーの管理もなくし、コストを最も下げたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "処理を AWS Lambda 関数にして、ファイルのアップロードをきっかけに実行する",
+          "explanation": "Lambda はサーバーをプロビジョニング・管理せずにコードを実行でき、使ったリソースに対してだけ料金がかかります。処理が1日に数回なら、待っている時間の費用がなくなります。"
+        },
+        {
+          "text": "EC2 インスタンスを3年間のリザーブドインスタンスで購入する",
+          "explanation": "料金は下がりますが、ほとんど何もしていないインスタンスの料金を払い続けることは変わらず、サーバーの管理も残ります。"
+        },
+        {
+          "text": "EC2 インスタンスのタイプを大きくして、処理を速く終わらせる",
+          "explanation": "処理時間は短くなっても、24時間の料金は高くなります。"
+        },
+        {
+          "text": "EC2 インスタンスを2台にして、可用性を高める",
+          "explanation": "可用性は上がりますが、費用は2倍になります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ときどきしか動かない短い処理は、AWS Lambda のようなサーバーレスのサービスに移すと、待っている時間の費用とサーバーの管理がなくなります。",
+      "references": [
+        {
+          "title": "AWS Lambda とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/welcome.html"
+        }
+      ]
     }
   ]
 }
