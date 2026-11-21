@@ -9,6 +9,8 @@ import '../data/question_repository.dart';
 import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
+import '../theme/app_tokens.dart';
+import '../widgets/design_parts.dart';
 import '../widgets/explanation_view.dart';
 import '../widgets/related_questions_buttons.dart';
 import 'about_screen.dart';
@@ -107,7 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
             body: SingleChildScrollView(
               // reverse にすると、並び順はそのままで末尾までスクロールした状態で開く
               reverse: _debugRoute == 'explanation-end',
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+              padding: EdgeInsets.fromLTRB(
+                context.tokens.space5,
+                0,
+                context.tokens.space5,
+                context.tokens.space6,
+              ),
               child: ExplanationView(
                 action: RelatedQuestionsButtons(exam: target.exam, question: q),
                 question: q,
@@ -269,28 +276,43 @@ class _HomeScreenState extends State<HomeScreen> {
           final certifiedCount = summaries
               .where((s) => _certified.containsKey(s.exam.id))
               .length;
+          final t = context.tokens;
           return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+            padding: EdgeInsets.fromLTRB(
+              t.space5,
+              t.space3,
+              t.space5,
+              t.space7,
+            ),
             children: [
               _ProgressCard(certified: certifiedCount, total: summaries.length),
-              for (final level in ExamLevel.values) ...[
-                _LevelHeader(level.label),
-                for (final s in summaries.where((s) => s.exam.level == level))
-                  _ExamCard(
-                    summary: s,
-                    certified: _certified.containsKey(s.exam.id),
-                    onTap: s.ready ? () => _openExam(s.exam) : null,
-                    onToggleCertified: () => _toggleCertified(s.exam),
-                  ),
-              ],
-              const SizedBox(height: 24),
-              Text(
-                AppInfo.trademarkNotice,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+              // 一番大事なのは「問題を解く」ことなので、問題のある試験を先に出す
+              const _LevelHeader('解ける試験'),
+              for (final s in summaries.where((s) => s.ready))
+                _ExamCard(
+                  summary: s,
+                  certified: _certified.containsKey(s.exam.id),
+                  onTap: () => _openExam(s.exam),
+                  onToggleCertified: () => _toggleCertified(s.exam),
                 ),
-              ),
+              // 準備中の試験はレベル別に並べる（全冠の一覧として、取得済みの印は付けられる）
+              for (final level in ExamLevel.values)
+                if (summaries.any(
+                  (s) => !s.ready && s.exam.level == level,
+                )) ...[
+                  _LevelHeader('準備中・${level.label}'),
+                  for (final s in summaries.where(
+                    (s) => !s.ready && s.exam.level == level,
+                  ))
+                    _ExamCard(
+                      summary: s,
+                      certified: _certified.containsKey(s.exam.id),
+                      onTap: null,
+                      onToggleCertified: () => _toggleCertified(s.exam),
+                    ),
+                ],
+              SizedBox(height: t.space6),
+              Text(AppInfo.trademarkNotice, style: t.caption),
             ],
           );
         },
@@ -308,64 +330,30 @@ class _ProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     final done = total > 0 && certified >= total;
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: scheme.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            done ? '全冠達成！' : '全冠への進捗',
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+    // カードにせず、背景の上に数字とバーを直接置く（カードは問題のカードだけ）
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(done ? '全冠達成' : '全冠への進捗', style: t.label),
+        SizedBox(height: t.space1),
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: '$certified', style: t.display),
+              TextSpan(
+                text: ' / $total 試験を取得',
+                style: t.numeric(t.body.copyWith(fontWeight: FontWeight.w700)),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '$certified',
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: scheme.primary,
-                  ),
-                ),
-                TextSpan(
-                  text: ' / $total 取得',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: scheme.onSurface,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: total == 0 ? 0 : certified / total,
-              minHeight: 8,
-              backgroundColor: scheme.surfaceContainerHighest,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '取得済みの試験は、右の ✓ をタップして印をつけられます',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
+        ),
+        SizedBox(height: t.space3),
+        ThinBar(value: total == 0 ? 0 : certified / total),
+        SizedBox(height: t.space2),
+        Text('取得した試験は、右の印をタップして記録できます', style: t.caption),
+      ],
     );
   }
 }
@@ -377,17 +365,10 @@ class _LevelHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final t = context.tokens;
     return Padding(
-      padding: const EdgeInsets.only(top: 24, bottom: 8),
-      child: Text(
-        label,
-        style: theme.textTheme.titleSmall?.copyWith(
-          color: theme.colorScheme.primary,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.5,
-        ),
-      ),
+      padding: EdgeInsets.only(top: t.space6),
+      child: SectionLabel(label),
     );
   }
 }
@@ -409,81 +390,69 @@ class _ExamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     final exam = summary.exam;
     final ready = summary.ready;
     final rate = summary.accuracy.rate;
 
     final retire = exam.retireDate;
     final status = [
-      ready ? '${summary.questionCount}問' : '準備中',
+      if (ready) exam.level.label,
+      if (ready) '本番形式 ${summary.questionCount}問',
       if (summary.drillCount > 0) '一問一答 ${summary.drillCount}問',
       if (rate != null) '正答率 ${(rate * 100).round()}%',
       if (exam.isRetiring && retire != null)
         '${retire.year}年${retire.month}月で終了',
     ].join('・');
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
-          child: Row(
-            children: [
-              // 準備中の試験は薄く表示する（取得済みの印だけは付けられる）
-              Expanded(
-                child: Opacity(
-                  opacity: ready ? 1 : 0.55,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 56,
-                        child: Text(
-                          exam.shortName,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: ready
-                                ? scheme.primary
-                                : scheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              exam.nameJa,
-                              style: theme.textTheme.titleSmall,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              status,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: scheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: onToggleCertified,
-                tooltip: certified ? '取得済みの印を外す' : '取得済みにする',
-                icon: Icon(
-                  certified ? Icons.verified : Icons.check_circle_outline,
-                  color: certified ? scheme.primary : scheme.outline,
-                ),
-              ),
-            ],
+    // 準備中の試験は、透明にせず文字色を控えめにする（取得済みの印だけは付けられる）
+    final nameColor = ready ? t.textPrimary : t.textSecondary;
+
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        constraints: BoxConstraints(minHeight: t.tapTarget),
+        padding: EdgeInsets.symmetric(vertical: t.space3),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: t.hairline, width: t.borderThin),
           ),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: t.space7,
+              child: Text(
+                exam.shortName,
+                style: t.body.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: nameColor,
+                ),
+              ),
+            ),
+            SizedBox(width: t.space2),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // レベル（アソシエイトなど）は見出しや試験コードで分かるので、名前の前半だけにして折り返しを防ぐ
+                  Text(
+                    exam.nameJa.split(' - ').first,
+                    style: t.body.copyWith(color: nameColor),
+                  ),
+                  if (status.isNotEmpty) Text(status, style: t.caption),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: onToggleCertified,
+              tooltip: certified ? '取得済みの印を外す' : '取得済みにする',
+              icon: Icon(
+                certified ? Icons.verified : Icons.check_circle_outline,
+                color: certified ? t.ink : t.hairline,
+              ),
+            ),
+          ],
         ),
       ),
     );

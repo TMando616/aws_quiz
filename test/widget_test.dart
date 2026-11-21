@@ -25,10 +25,11 @@ void main() {
     // 全冠への進捗（まだ1つも取得していない）
     expect(find.text('全冠への進捗'), findsOneWidget);
     expect(find.textContaining('取得'), findsWidgets);
-    // リストの上のほうにある試験（下のほうは画面外なので描画されない）
-    expect(find.text('Foundational'), findsOneWidget);
-    expect(find.text('CLF'), findsOneWidget);
-    // 問題ファイルが無い試験は「準備中」
-    expect(find.textContaining('準備中'), findsWidgets);
+    // 問題のある試験を先に出す（下のほうは画面外なので描画されない）
+    expect(find.text('解ける試験'), findsOneWidget);
+    expect(find.text('SAA'), findsOneWidget);
+    expect(find.text('SAP'), findsOneWidget);
+    // 問題ファイルが無い試験は「準備中」としてレベル別に並ぶ
+    expect(find.text('準備中・Foundational'), findsOneWidget);
   });
 }
