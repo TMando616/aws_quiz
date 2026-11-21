@@ -44,6 +44,7 @@ void main() {
     expect(_y(tester, 'Bの解説'), lessThan(_y(tester, 'Cの解説')));
     expect(find.text('まとめの解説'), findsOneWidget);
     expect(find.text('公式ドキュメント'), findsOneWidget);
+    expect(find.text('この問題の誤りを報告'), findsOneWidget);
   });
 
   testWidgets('正解のときは「正解」の見出しを出さない（選んだ選択肢と重なるため）', (tester) async {

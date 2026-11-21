@@ -1,7 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../config/app_info.dart';
 import '../models/question.dart';
+import '../support/report_mail.dart';
 import '../theme/app_theme.dart';
 
 /// 回答後の解説。練習モードの出題画面と、模試の見直しで使う
@@ -13,6 +15,7 @@ import '../theme/app_theme.dart';
 /// 4. そのほかの選択肢の解説
 /// 5. まとめの解説
 /// 6. 根拠（タップでブラウザが開く）
+/// 7. 注意書きと、誤りの報告ボタン
 class ExplanationView extends StatelessWidget {
   const ExplanationView({
     super.key,
@@ -79,6 +82,25 @@ class ExplanationView extends StatelessWidget {
           _SectionLabel('根拠'),
           for (final ref in q.references) _ReferenceLink(reference: ref),
         ],
+        const SizedBox(height: 20),
+        Text(
+          AppInfo.disclaimer,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () => ReportMail.reportQuestion(
+              context,
+              questionId: q.id,
+              questionText: q.question,
+            ),
+            icon: const Icon(Icons.flag_outlined, size: 18),
+            label: const Text('この問題の誤りを報告'),
+          ),
+        ),
       ],
     );
   }

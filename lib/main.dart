@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import 'ads/ad_consent.dart';
+import 'config/app_info.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // アプリ名に「AWS」を前面に出さない（商標の都合）
-      title: 'クラウド認定 学習',
+      title: AppInfo.appName,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: _themeMode, // 端末の設定に合わせてダークモードに切り替える

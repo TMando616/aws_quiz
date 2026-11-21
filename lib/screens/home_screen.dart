@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../ads/ad_consent.dart';
+import '../config/app_info.dart';
 import '../data/certification_repository.dart';
 import '../data/exam_repository.dart';
 import '../data/question_repository.dart';
@@ -9,6 +10,7 @@ import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../widgets/explanation_view.dart';
+import 'about_screen.dart';
 import 'exam_screen.dart';
 import 'mock_result_screen.dart';
 import 'mock_screen.dart';
@@ -67,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
-  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`mock` で模試、`mock-result` で模試の結果まで進む
+  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」まで進む
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
 
   Future<void> _openDebugRoute(_HomeData data) async {
@@ -76,10 +78,14 @@ class _HomeScreenState extends State<HomeScreen> {
         .firstOrNull;
     if (target == null || !mounted) return;
     final navigator = Navigator.of(context);
+    if (_debugRoute == 'about') {
+      navigator.push(MaterialPageRoute(builder: (_) => const AboutScreen()));
+      return;
+    }
     navigator.push(
       MaterialPageRoute(builder: (_) => ExamScreen(exam: target.exam)),
     );
-    if (_debugRoute == 'explanation') {
+    if (_debugRoute == 'explanation' || _debugRoute == 'explanation-end') {
       // 1問目で、不正解の選択肢のうち最初のものを選んだときの解説
       final q = (await QuestionRepository().load(target.exam.id)).first;
       navigator.push(
@@ -87,6 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (_) => Scaffold(
             appBar: AppBar(title: const Text('解説の確認（開発用）')),
             body: SingleChildScrollView(
+              // reverse にすると、並び順はそのままで末尾までスクロールした状態で開く
+              reverse: _debugRoute == 'explanation-end',
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
               child: ExplanationView(
                 question: q,
@@ -188,17 +196,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('クラウド認定 学習'),
+        title: const Text(AppInfo.appName),
         actions: [
-          if (_privacyOptionsRequired)
-            PopupMenuButton<void>(
-              itemBuilder: (context) => [
+          PopupMenuButton<void>(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const AboutScreen()),
+                ),
+                child: const Text('このアプリについて'),
+              ),
+              if (_privacyOptionsRequired)
                 const PopupMenuItem(
                   onTap: AdConsent.showPrivacyOptions,
                   child: Text('広告のプライバシー設定'),
                 ),
-              ],
-            ),
+            ],
+          ),
         ],
       ),
       body: FutureBuilder<_HomeData>(
