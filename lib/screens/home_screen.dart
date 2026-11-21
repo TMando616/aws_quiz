@@ -245,6 +245,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     onToggleCertified: () => _toggleCertified(s.exam),
                   ),
               ],
+              const SizedBox(height: 24),
+              Text(
+                AppInfo.trademarkNotice,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           );
         },
