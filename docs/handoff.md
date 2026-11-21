@@ -75,6 +75,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
 assets/questions/sap.json               SAPの問題（自作38問）
+assets/questions/saa.json               SAAの問題（自作10問。分野1〜4に 3・3・2・2問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
 lib/models/question.dart                Question・Choice・Reference

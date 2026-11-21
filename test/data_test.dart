@@ -25,7 +25,8 @@ void main() {
   test('問題ファイルがある試験だけを「収録あり」と判定する', () async {
     final ids = await ExamRepository().examIdsWithQuestions();
     expect(ids, contains('sap'));
-    expect(ids, isNot(contains('saa')));
+    expect(ids, contains('saa'));
+    expect(ids, isNot(contains('clf')));
   });
 
   test('SAPの問題を新しい形式で読み込める', () async {
