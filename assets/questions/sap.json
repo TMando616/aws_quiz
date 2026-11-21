@@ -3712,6 +3712,1006 @@
           "url": "https://aws.amazon.com/jp/disaster-recovery/"
         }
       ]
+    },
+    {
+      "id": "sap-d057",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-024",
+      "point": "コンプライアンスモードの Vault Lock",
+      "question": "AWS Backup のコンプライアンスモードの Vault Lock は、猶予期間が過ぎると、利用者も AWS もボールトの設定を変更・削除できなくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。猶予期間が終わると、復旧ポイントが含まれている限り、顧客・データの所有者・AWS のいずれもボールトの設定を変更・削除できません（WORM）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ランサムウェアや管理者の認証情報の悪用からバックアップを守るには、Vault Lock と別アカウントへのコピーを組み合わせます。",
+      "references": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d058",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-024",
+      "point": "猶予期間の長さ",
+      "question": "Vault Lock の猶予期間は、最短1時間に設定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。猶予期間は自分で選べますが、少なくとも3日間（72時間）が必要です。猶予期間中はロックの解除や設定の変更ができます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "猶予期間はロックの設定を試すための期間です。期間が過ぎるとコンプライアンスモードのロックは変更できなくなるため、慎重に設定します。",
+      "references": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d059",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-024",
+      "point": "バックアップを別の場所に隔離する",
+      "question": "本番アカウントの管理者の認証情報が悪用されても、バックアップに手が届かないようにしたい。最も効果的なのはどれか。",
+      "choices": [
+        {
+          "text": "バックアップの取得の頻度を上げる",
+          "explanation": "復旧できる時点は増えますが、バックアップそのものが削除されるリスクは減りません。"
+        },
+        {
+          "text": "同じアカウントで、IAM ポリシーで削除の操作を制限する",
+          "explanation": "管理者の認証情報が悪用されると、IAM ポリシー自体を書き換えられるおそれがあります。"
+        },
+        {
+          "text": "バックアップ元の S3 バケットでバージョニングを有効にする",
+          "explanation": "権限のある管理者はバージョンごと削除でき、EC2 や RDS のバックアップの保護にもなりません。"
+        },
+        {
+          "text": "組織内の別のバックアップ専用アカウントのボールトへコピーする",
+          "explanation": "AWS Backup は、同じ組織の別のアカウントへバックアップをコピーできます。本番アカウントの認証情報では、別のアカウントのバックアップに手が届きません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "「別のアカウントに隔離する」と「書き換えできない状態にする（Vault Lock）」の組み合わせで、バックアップを守ります。",
+      "references": [
+        {
+          "title": "AWS アカウント間でのバックアップの作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/create-cross-account-backup.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d060",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-025",
+      "point": "OU のアカウントに自動で展開する",
+      "question": "特定の OU の全アカウントと、今後その OU に追加されるアカウントに、同じ IAM ロールと SNS トピックを自動で作りたい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントで CloudFormation のスタックを手作業で作る",
+          "explanation": "アカウントが増えるたびに作業が必要で、漏れやずれが起きやすくなります。"
+        },
+        {
+          "text": "セルフマネージド型のアクセス許可の StackSets で、アカウント ID を列挙する",
+          "explanation": "各アカウントに実行用のロールを用意する必要があり、新しいアカウントへの自動の展開もできません。"
+        },
+        {
+          "text": "サービスマネージド型のアクセス許可の StackSets で OU を対象にし、自動デプロイを有効にする",
+          "explanation": "Organizations と連携して OU を対象にでき、自動デプロイを有効にすると、OU に追加された新しいアカウントにも自動でスタックが作られます。"
+        },
+        {
+          "text": "AWS Config の適合パックを OU に展開する",
+          "explanation": "Config のルールと修復をまとめて展開する仕組みで、任意のリソースを作る用途には向きません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "組織の複数のアカウントに同じリソースを展開し、新しいアカウントにも自動で適用するなら、サービスマネージド型の StackSets と自動デプロイを使います。",
+      "references": [
+        {
+          "title": "CloudFormation StackSets とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        },
+        {
+          "title": "StackSets の自動デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d061",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-025",
+      "point": "セルフマネージド型の準備",
+      "question": "セルフマネージド型のアクセス許可の StackSets では、スタックを作る各アカウントに実行用の IAM ロールを用意する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。セルフマネージド型では、管理者のアカウントに AWSCloudFormationStackSetAdministrationRole、スタックを作るすべてのアカウントに AWSCloudFormationStackSetExecutionRole を用意します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Organizations を使っているなら、ロールの準備が不要で自動デプロイもできるサービスマネージド型の方が運用は楽になります。",
+      "references": [
+        {
+          "title": "CloudFormation StackSets とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        },
+        {
+          "title": "StackSets の自動デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d062",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-026",
+      "point": "Parameter Store のローテーション",
+      "question": "Systems Manager Parameter Store には、データベースの認証情報を自動でローテーションする機能が組み込まれている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Parameter Store には、認証情報の自動ローテーションの機能はありません。データベースの認証情報などのシークレットには Secrets Manager が推奨されています。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Secrets Manager は、データベースとの統合による自動ローテーションに対応しています。Parameter Store は設定値の保存に向いています。",
+      "references": [
+        {
+          "title": "Parameter Store",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d063",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-026",
+      "point": "認証情報の自動ローテーション",
+      "question": "Amazon RDS のパスワードを定期的に自動で変更し、アプリケーションのコードにパスワードを持たせないようにしたい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "Parameter Store の SecureString に保存し、手作業で更新する",
+          "explanation": "暗号化して保存できますが、自動のローテーションはなく、手作業の更新が必要です。"
+        },
+        {
+          "text": "KMS で暗号化したファイルを S3 に置き、毎月手作業で更新する",
+          "explanation": "変更は手作業のままで、データベース側の変更と揃える手間もかかります。"
+        },
+        {
+          "text": "ユーザーデータにパスワードを書き、インスタンスを毎月作り直す",
+          "explanation": "ユーザーデータはインスタンスから読み取れ、機密情報の置き場所に向きません。"
+        },
+        {
+          "text": "Secrets Manager に保存してローテーションを有効にし、実行時に取得する",
+          "explanation": "Secrets Manager のローテーションは、シークレットとデータベースの認証情報の両方を更新します。スケジュールに従って自動で実行できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "データベースの認証情報の自動ローテーションは、Secrets Manager の代表的な使い方です。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        },
+        {
+          "title": "マネージドローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotate-secrets_managed.html"
+        },
+        {
+          "title": "Parameter Store",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d064",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-027",
+      "point": "Lambda の段階的なリリース",
+      "question": "CodeDeploy で Lambda の新しいバージョンをリリースする。最初にトラフィックの10%だけを移し、5分後に残りの90%を移したい。使うデプロイ設定の種類はどれか。",
+      "choices": [
+        {
+          "text": "一度にすべて（AllAtOnce）",
+          "explanation": "すべてのトラフィックを一度に新しいバージョンへ移します。"
+        },
+        {
+          "text": "線形（Linear）",
+          "explanation": "一定の割合ずつ、決めた間隔で同じ量のトラフィックを移していきます。"
+        },
+        {
+          "text": "カナリア（Canary）",
+          "explanation": "最初の増分で一部のトラフィックを移し、決めた時間のあとに残りを移します。例：CodeDeployDefault.LambdaCanary10Percent5Minutes。"
+        },
+        {
+          "text": "Lambda の $LATEST を直接更新する",
+          "explanation": "CodeDeploy のデプロイ設定ではなく、すべてのリクエストが一度に新しいコードに切り替わります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lambda のデプロイ設定には、カナリア・線形・一度にすべて、の3種類があります。最初に一部だけ流して様子を見るのがカナリアです。",
+      "references": [
+        {
+          "title": "CodeDeploy のデプロイ設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployment-configurations.html"
+        },
+        {
+          "title": "ロールバックと再デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployments-rollback-and-redeploy.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d065",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-027",
+      "point": "自動のロールバック",
+      "question": "CodeDeploy では、デプロイが失敗したときや、指定した監視のしきい値に達したときに、自動でロールバックする設定にできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。デプロイが失敗した場合や、指定した監視のしきい値に達した場合に、自動でロールバックするように設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "段階的なリリースと自動のロールバックを組み合わせると、問題があったときの影響を小さくできます。",
+      "references": [
+        {
+          "title": "ロールバックと再デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployments-rollback-and-redeploy.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d066",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-028",
+      "point": "X-Ray の SDK の状況",
+      "question": "AWS X-Ray の SDK とデーモンは、2026年2月25日にメンテナンスモードに入り、OpenTelemetry への移行が推奨されている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。X-Ray の SDK とデーモンは2026年2月25日にメンテナンスモードに入り、リリースはセキュリティの修正に限られます。OpenTelemetry（AWS Distro for OpenTelemetry）への移行が推奨されています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "新しく計装するなら OpenTelemetry を使います。X-Ray はトレースを受け取って分析する側として引き続き使えます。",
+      "references": [
+        {
+          "title": "アプリケーションの計装",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-instrumenting-your-app.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d067",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-028",
+      "point": "どのサービスが遅いかを調べる",
+      "question": "十数個のマイクロサービスのうち、どこで時間がかかっているかを、リクエストの流れに沿って調べたい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "VPC フローログを分析する",
+          "explanation": "ネットワークの通信の記録で、アプリケーションのどの処理に時間がかかっているかは分かりません。"
+        },
+        {
+          "text": "CloudTrail のイベント履歴を確認する",
+          "explanation": "AWS の API 操作の記録で、アプリケーションのリクエストの処理時間の分析には使えません。"
+        },
+        {
+          "text": "各サービスのログを、サービスごとに検索する",
+          "explanation": "1つのリクエストが複数のサービスをどう通ったかを結び付けにくく、全体のどこで遅れているかが分かりにくくなります。"
+        },
+        {
+          "text": "OpenTelemetry や X-Ray で計装し、トレースとトレースマップで分析する",
+          "explanation": "リクエストに関するデータを集めてサービス間の流れを追い、トレースマップでボトルネックやレイテンシーの急増を特定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "マイクロサービスで「どこが遅いか」を調べるには、分散トレーシングを使います。",
+      "references": [
+        {
+          "title": "AWS X-Ray とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/aws-xray.html"
+        },
+        {
+          "title": "アプリケーションの計装",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-instrumenting-your-app.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d068",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-029",
+      "point": "設定の違反を自動で直す",
+      "question": "セキュリティグループで SSH を 0.0.0.0/0 に開けた違反を自動で検出し、人の手を介さずに修正したい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "週に1回、Trusted Advisor の結果を見て手作業で直す",
+          "explanation": "手作業で、違反の状態が最大1週間続きます。"
+        },
+        {
+          "text": "GuardDuty を有効にする",
+          "explanation": "脅威を検出するサービスで、設定の違反を評価・修正するものではありません。"
+        },
+        {
+          "text": "AWS Config のルールで検出し、Systems Manager Automation による自動修復を設定する",
+          "explanation": "Config のルールで違反を評価し、自動修復で Systems Manager の Automation ドキュメントを実行して修正できます。"
+        },
+        {
+          "text": "CloudTrail で変更を検知してメールで通知する",
+          "explanation": "検知はできますが、修正は手作業になります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "設定のルール違反を継続的に検出して自動で直すには、AWS Config のルールと自動修復の組み合わせが定番です。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠リソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d069",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-029",
+      "point": "Config の修復の仕組み",
+      "question": "AWS Config の修復は、Systems Manager の Automation ドキュメントを使って修正を適用する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。AWS Config は、Systems Manager の自動化ドキュメントを使って修復を適用します。手動の修復と自動の修復を設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "修復のアクションに対応しているかはリージョンによって異なる点に注意します。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠リソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d070",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-030",
+      "point": "スロットリングのときの再試行",
+      "question": "相手の API からスロットリングのエラーが返ったら、待たずにすぐ再試行するのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。過負荷が原因のときに負荷を増やす再試行をすると、事態が大きく悪化するおそれがあります。待ち時間を少しずつ長くしながら再試行します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "すぐに何度も再試行するのではなく、エクスポネンシャルバックオフとジッターで間隔を空けて再試行します。",
+      "references": [
+        {
+          "title": "タイムアウト、再試行、およびジッターによるバックオフ（Amazon Builders' Library）",
+          "url": "https://aws.amazon.com/jp/builders-library/timeouts-retries-and-backoff-with-jitter/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d071",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-030",
+      "point": "ジッターの役割",
+      "question": "ジッターは、再試行の待ち時間にランダムな揺らぎを加えて、多くのクライアントの再試行が同じタイミングに集中するのを防ぐ。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ジッターはバックオフにランダムさを加えて、再試行を時間的に分散させます。すべての呼び出しが同じ時間だけ待つと、再試行のときにまた競合や過負荷が起きます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "流量に上限がある相手には、ジッター付きのエクスポネンシャルバックオフで再試行し、キューで負荷を平準化します。",
+      "references": [
+        {
+          "title": "タイムアウト、再試行、およびジッターによるバックオフ（Amazon Builders' Library）",
+          "url": "https://aws.amazon.com/jp/builders-library/timeouts-retries-and-backoff-with-jitter/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d072",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-031",
+      "point": "Glacier Deep Archive の最低保存期間",
+      "question": "S3 Glacier Deep Archive の最低保存期間は180日である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Glacier Deep Archive の最低保存期間は180日です（Glacier Flexible Retrieval は90日、Standard-IA は30日）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "最低保存期間より前に削除しても、その期間分の料金がかかります。長期保存のデータに向いています。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d073",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-031",
+      "point": "長期保存で取り出しが遅くてよいデータ",
+      "question": "監査用のログを7年保存する。ほとんど参照せず、必要なときも取り出しに2日かかってよい。保存の費用が最も安いのはどれか。",
+      "choices": [
+        {
+          "text": "S3 Standard-IA",
+          "explanation": "すぐに取り出せる分、アーカイブ用のクラスより保存の費用が高くなります。"
+        },
+        {
+          "text": "S3 Glacier Instant Retrieval",
+          "explanation": "ミリ秒単位で取り出せるクラスで、取り出しの速さが不要なら、より安いクラスを選べます。"
+        },
+        {
+          "text": "S3 Glacier Flexible Retrieval",
+          "explanation": "要件は満たせますが、取り出しに12〜48時間かかってよいなら、さらに安いクラスがあります。"
+        },
+        {
+          "text": "S3 Glacier Deep Archive",
+          "explanation": "クラウドで最も低コストのストレージで、取り出しは12〜48時間です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "「ほぼ参照しない」「取り出しに時間がかかってよい」「長期保存」なら S3 Glacier Deep Archive が最も安くなります。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "S3 Glacier ストレージクラス",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/glacier/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d074",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-032",
+      "point": "スポットインスタンスの中断の通知",
+      "question": "スポットインスタンスは、中断される2分前に通知が届く。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Amazon EC2 は、スポットインスタンスが中断される2分前に、中断を警告する通知を送ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "通知を受けたら処理の途中経過を保存するなど、中断に備えた作りにしておくと、スポットインスタンスを安心して使えます。",
+      "references": [
+        {
+          "title": "スポットインスタンス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d075",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-032",
+      "point": "スポットの中断を減らす",
+      "question": "Auto Scaling グループでスポットインスタンスを使う。中断される可能性をできるだけ低く、価格もできるだけ低くしたい。適した設定はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスタイプを1種類だけ指定する",
+          "explanation": "選べるスポットのプールが少なくなり、キャパシティが足りないときに起動できなかったり中断されたりしやすくなります。"
+        },
+        {
+          "text": "すべてオンデマンドインスタンスにする",
+          "explanation": "中断はなくなりますが、スポットの割引は受けられません。"
+        },
+        {
+          "text": "複数のインスタンスタイプを指定し、price-capacity-optimized の配分戦略にする",
+          "explanation": "price-capacity-optimized は、中断される可能性が最も低く、価格ができるだけ低いスポットのプールを選びます。"
+        },
+        {
+          "text": "Dedicated Hosts で起動する",
+          "explanation": "物理サーバーを専有するための選択肢で、スポットの中断の対策にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "スポットを使うときは、複数のインスタンスタイプを指定し、price-capacity-optimized などの配分戦略で中断されにくいプールを選びます。",
+      "references": [
+        {
+          "title": "Auto Scaling の配分戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d076",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-033",
+      "point": "Compute Optimizer の分析",
+      "question": "AWS Compute Optimizer は、CloudWatch の使用率のメトリクスを分析して、適切なサイズの推奨事項を出す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Compute Optimizer は、有効にすると過去14日間の CloudWatch のリソースの仕様と使用率のメトリクスの分析を始め、適切なサイズの推奨事項を出します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "大きすぎるインスタンスを見つけてサイズを適正にすると、費用を下げられます。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d077",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-033",
+      "point": "Compute Optimizer の対象",
+      "question": "Compute Optimizer の推奨事項の対象は、EC2 インスタンスだけである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。EC2 インスタンスのほか、Auto Scaling グループ、Lambda 関数、Fargate 上の ECS のサービス、Aurora と RDS のデータベースなども対象です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Compute Optimizer は、さまざまなリソースのサイズの適正化（ライトサイジング）に使えます。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d078",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-034",
+      "point": "予算アクションでできること",
+      "question": "AWS Budgets の予算アクションでは、しきい値を超えたときに IAM ポリシーや SCP を自動で適用できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。予算アクションでは、IAM ポリシーの適用、SCP のアタッチ、特定の EC2 や RDS のインスタンスを対象にしたアクションを選べます。自動で実行するか、手動で承認してから実行するかを設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "予算を超えたときに、通知だけでなく自動で制御したいなら、予算アクションを使います。",
+      "references": [
+        {
+          "title": "予算アクションの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-action-configure.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d079",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-034",
+      "point": "SCP を適用できるアカウント",
+      "question": "予算アクションで SCP を適用する設定は、組織のメンバーアカウントからも行える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP を適用できるのは管理アカウントだけです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織全体の制御に使う SCP は、管理アカウントで扱います。メンバーアカウントでは IAM ポリシーなどのアクションを使います。",
+      "references": [
+        {
+          "title": "予算アクションの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-action-configure.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d080",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-035",
+      "point": "エンジンが違う DB のスキーマの変換",
+      "question": "Oracle のデータベースを Aurora PostgreSQL に移行する。テーブルなどのスキーマを、移行先のエンジンに合わせて変換するのに使うのはどれか。",
+      "choices": [
+        {
+          "text": "AWS DMS の全ロード",
+          "explanation": "データの移行を行うもので、スキーマを別のエンジン向けに変換する機能ではありません。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "ファイルの転送に使うサービスで、データベースのスキーマの変換はできません。"
+        },
+        {
+          "text": "AWS Transform MGN",
+          "explanation": "サーバーをそのまま移すリホストのサービスで、データベースのエンジンは変わりません。"
+        },
+        {
+          "text": "AWS SCT または DMS Schema Conversion",
+          "explanation": "SCT はデータベースエンジン間で既存のスキーマを変換します。DMS Schema Conversion も、スキーマとコードオブジェクトを移行先と互換性のある形式に変換できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "エンジンが異なる移行は、スキーマの変換（SCT や DMS Schema Conversion）とデータの移行（DMS）の組み合わせです。",
+      "references": [
+        {
+          "title": "AWS DMS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "AWS SCT とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d081",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-035",
+      "point": "継続的なレプリケーション",
+      "question": "AWS DMS は、全データのロードのあとも変更を継続的にレプリケーションして、移行元と移行先を同期しておける。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。DMS は、変更を継続的にレプリケーションして、ソースとターゲットの同期を保てます。異なるエンジンの間の移行にも対応しています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "同期した状態で切り替えれば、元のデータベースを使い続けたまま、短い停止時間で移行できます。",
+      "references": [
+        {
+          "title": "AWS DMS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/Welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d082",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-036",
+      "point": "Transform MGN のレプリケーション",
+      "question": "AWS Transform MGN（旧 Application Migration Service）は、ソースサーバーをブロックレベルで継続的にレプリケーションする。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Transform MGN は、ソースサーバーをブロックレベルで継続的にレプリケーションし、AWS で起動できる形に変換します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "切り替え前にテスト用のインスタンスで動作を確かめられ、切り替えの停止時間は通常数分です。",
+      "references": [
+        {
+          "title": "AWS Transform MGN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/mgn/latest/ug/what-is-mgn.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d083",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-036",
+      "point": "サーバーをそのまま早く移す",
+      "question": "約200台のサーバーを、OS やアプリケーションに手を加えずにできるだけ早く AWS へ移したい。切り替えの停止時間は数分にしたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS DMS",
+          "explanation": "データベースの移行のためのサービスで、サーバー全体は移行できません。"
+        },
+        {
+          "text": "CloudFormation で環境を作り、手作業でインストールし直す",
+          "explanation": "200台分の作業に時間がかかり、「できるだけ早く」に合いません。"
+        },
+        {
+          "text": "AWS Transform MGN",
+          "explanation": "物理・仮想・クラウドのサーバーを、最小限の停止時間（通常は数分の切り替え）で AWS へ移行するのを自動化します。"
+        },
+        {
+          "text": "毎月サーバーのイメージを取得して、切り替えの日に最新のイメージから起動する",
+          "explanation": "最後のイメージ以降の変更が失われるか、長い停止が必要になります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "サーバーを手を加えずに移すリホストには AWS Transform MGN を使います。リホストのあとで、リプラットフォームやリファクタリングを進められます。",
+      "references": [
+        {
+          "title": "AWS Transform MGN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/mgn/latest/ug/what-is-mgn.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d084",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-037",
+      "point": "NFS のまま S3 に保存する",
+      "question": "オンプレミスのアプリケーションを変えずに、NFS のファイル共有のデータを S3 に保存したい。よく使うデータには低い遅延でアクセスしたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "AWS DataSync で毎晩 S3 にコピーする",
+          "explanation": "アプリケーションはオンプレミスのファイル共有を使い続けるため、コピーまでの間は S3 にありません。"
+        },
+        {
+          "text": "Amazon EFS を Direct Connect 経由でマウントする",
+          "explanation": "NFS で使えますが、データは EFS に保存され、S3 には入りません。"
+        },
+        {
+          "text": "AWS Transfer Family の SFTP でアップロードする",
+          "explanation": "NFS から SFTP に変えるため、アプリケーションの変更が必要です。"
+        },
+        {
+          "text": "S3 File Gateway",
+          "explanation": "NFS や SMB でファイルを保存・取得でき、データは S3 に保存されます。ローカルのキャッシュで、低い遅延のアクセスができます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "オンプレミスのアプリケーションを変えずにファイルを S3 に保存したいときは、S3 File Gateway が合います。",
+      "references": [
+        {
+          "title": "S3 File Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d085",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-037",
+      "point": "S3 File Gateway のプロトコル",
+      "question": "S3 File Gateway は、NFS だけでなく SMB のファイル共有としても使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。S3 File Gateway は、NFS（バージョン3・4.1）と SMB（バージョン2・3）のどちらでもファイルを保存・取得できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Windows のファイル共有（SMB）を使うアプリケーションでも、S3 File Gateway で S3 にデータを置けます。",
+      "references": [
+        {
+          "title": "S3 File Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d086",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-038",
+      "point": "FIS の停止条件",
+      "question": "AWS Fault Injection Service では、CloudWatch アラームを停止条件にして、しきい値に達したら実験を自動で止められる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。停止条件は、CloudWatch アラームとして定義したしきい値に達した場合に実験を止める仕組みです。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "本番に近い環境で障害を注入するときは、停止条件を設定して影響が大きくなる前に止められるようにします。",
+      "references": [
+        {
+          "title": "AWS Fault Injection Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fis/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d087",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-038",
+      "point": "障害を起こして回復力を確かめる",
+      "question": "Web アプリケーションが一部のインスタンスの障害から回復できるかを、実際に障害を起こして確かめたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Resilience Hub",
+          "explanation": "目標に対する回復力を評価して推奨事項を出すサービスで、実際に障害を起こすものではありません。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "リソースの設定がルールに沿っているかを評価するサービスです。"
+        },
+        {
+          "text": "AWS Fault Injection Service",
+          "explanation": "カオスエンジニアリングの考え方にもとづいて、ワークロードに障害を注入する実験を行うサービスです。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "ソフトウェアの脆弱性などを評価するサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "実際に障害を起こして確かめるなら Fault Injection Service、回復力を評価して改善の推奨を受けるなら Resilience Hub、と役割で使い分けます。",
+      "references": [
+        {
+          "title": "AWS Fault Injection Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fis/latest/userguide/what-is.html"
+        },
+        {
+          "title": "AWS Resilience Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/what-is.html"
+        }
+      ]
     }
   ]
 }
