@@ -39,6 +39,7 @@ class Question {
     required this.answers,
     required this.explanation,
     required this.references,
+    this.group,
   });
 
   /// このバージョンのアプリが表示できる問題の種類。
@@ -60,6 +61,10 @@ class Question {
   final String explanation;
   final List<Reference> references;
 
+  /// 類題のグループ（例: s3-storage-class）。条件を変えて同じ論点を問う問題どうしに同じ値を付ける。
+  /// 解説の「類題に挑戦」と、模試で似た問題が重ならないようにするために使う
+  final String? group;
+
   bool get isMultiple => answers.length > 1;
 
   /// 選んだ選択肢が正解と完全に一致しているか
@@ -80,6 +85,7 @@ class Question {
       references: ((json['references'] as List?) ?? const [])
           .map((e) => Reference.fromJson(e as Map<String, dynamic>))
           .toList(),
+      group: json['group'] as String?,
     );
   }
 }

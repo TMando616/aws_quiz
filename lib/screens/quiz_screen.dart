@@ -10,6 +10,7 @@ import '../settings/quiz_layout.dart';
 import '../theme/app_theme.dart';
 import '../widgets/domain_accuracy_bar.dart';
 import '../widgets/explanation_view.dart';
+import '../widgets/similar_questions_button.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({
@@ -402,8 +403,11 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  Widget _buildExplanation(Question q) =>
-      ExplanationView(question: q, selected: _selected);
+  Widget _buildExplanation(Question q) => ExplanationView(
+    question: q,
+    selected: _selected,
+    action: SimilarQuestionsButton(exam: widget.exam, question: q),
+  );
 
   /// 選択肢のカード。[expand] がtrueならカードの高さいっぱいに広げ、長い文はカード内でスクロールする
   Widget _buildChoice(Question q, int i, {bool expand = false}) {

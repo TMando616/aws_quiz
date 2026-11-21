@@ -15,16 +15,21 @@ import '../theme/app_theme.dart';
 /// 4. そのほかの選択肢の解説
 /// 5. まとめの解説
 /// 6. 根拠（タップでブラウザが開く）
-/// 7. 注意書きと、誤りの報告ボタン
+/// 7. [action]（「類題に挑戦」ボタンなど）
+/// 8. 注意書きと、誤りの報告ボタン
 class ExplanationView extends StatelessWidget {
   const ExplanationView({
     super.key,
     required this.question,
     required this.selected,
+    this.action,
   });
 
   final Question question;
   final Set<int> selected;
+
+  /// 根拠の下に置く部品（例: 類題に挑戦ボタン）
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +87,7 @@ class ExplanationView extends StatelessWidget {
           _SectionLabel('根拠'),
           for (final ref in q.references) _ReferenceLink(reference: ref),
         ],
+        ?action,
         const SizedBox(height: 20),
         Text(
           AppInfo.disclaimer,

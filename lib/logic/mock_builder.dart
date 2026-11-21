@@ -30,14 +30,33 @@ class MockSet {
 /// 2. 収録数が足りない分野があれば、ほかの分野の残りから補う
 /// 3. それでも足りなければ、ある分だけで実施する
 /// 最後に全体の順番をシャッフルする
+///
+/// 類題（同じ [Question.group] の問題）は、グループごとに1問を優先して選ぶ。
+/// 似た問題が並ぶと前の問題がヒントになるため。ただし問題数が足りないときは、
+/// 同じグループの2問目以降でも補う
 MockSet buildMockSet(Exam exam, List<Question> pool, {Random? random}) {
   final rng = random ?? Random();
   final target = exam.mock.questionCount;
 
-  // 分野ごとの問題（シャッフル済み）
+  // 類題のグループごとに、ランダムに1問を「優先する問題」にする。
+  // グループの無い問題はすべて優先する問題
+  final shuffled = pool.toList()..shuffle(rng);
+  final seenGroups = <String>{};
+  final primary = <Question>[];
+  final secondary = <Question>[];
+  for (final q in shuffled) {
+    final g = q.group;
+    if (g == null || seenGroups.add(g)) {
+      primary.add(q);
+    } else {
+      secondary.add(q);
+    }
+  }
+
+  // 分野ごとの優先する問題（シャッフル済み）
   final byDomain = <String, List<Question>>{
     for (final d in exam.domains)
-      d.id: (pool.where((q) => q.domainId == d.id).toList()..shuffle(rng)),
+      d.id: primary.where((q) => q.domainId == d.id).toList(),
   };
 
   final picked = <Question>[];
@@ -49,8 +68,12 @@ MockSet buildMockSet(Exam exam, List<Question> pool, {Random? random}) {
     list.removeRange(0, take);
   }
 
-  // 比重の丸めや、収録数が足りない分野の分を、残りから補う
-  final rest = byDomain.values.expand((l) => l).toList()..shuffle(rng);
+  // 比重の丸めや、収録数が足りない分野の分を、残りの優先する問題から補う。
+  // それでも足りなければ、類題の2問目以降で補う
+  final rest = [
+    ...secondary..shuffle(rng),
+    ...byDomain.values.expand((l) => l).toList()..shuffle(rng),
+  ];
   while (picked.length < target && rest.isNotEmpty) {
     picked.add(rest.removeLast());
   }

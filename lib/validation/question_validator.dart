@@ -100,11 +100,34 @@ List<ValidationIssue> validateQuestions({
         }
       }
     }
+    // 類題のグループ → そのグループの問題の id と、正解の選択肢の文
+    final groups = <String, List<(String, Set<String>)>>{};
+
     for (final q in questions) {
       final id = q['id'] as String?;
       if (id == null || id.isEmpty) {
         error(null, 'id がない問題があります');
         continue;
+      }
+
+      // 類題のグループ（任意）
+      final group = q['group'];
+      if (group != null) {
+        if (group is! String || !_groupPattern.hasMatch(group)) {
+          error(
+            id,
+            'group "$group" は英小文字・数字・ハイフンで書いてください（例: s3-storage-class）',
+          );
+        } else {
+          final answerTexts = <String>{
+            for (final a in (q['answers'] as List? ?? const []))
+              if (a is int &&
+                  a >= 0 &&
+                  a < ((q['choices'] as List?)?.length ?? 0))
+                ((q['choices'] as List)[a] as Map)['text'] as String? ?? '',
+          };
+          groups.putIfAbsent(group, () => []).add((id, answerTexts));
+        }
       }
 
       // id の重複
@@ -189,6 +212,33 @@ List<ValidationIssue> validateQuestions({
         }
       }
     }
+
+    // 類題のグループの確認（警告）
+    for (final e in groups.entries) {
+      final members = e.value;
+      if (members.length == 1) {
+        warn(
+          members.first.$1,
+          '類題のグループ "${e.key}" の問題がこの1問だけです（類題に挑戦のボタンが出ません）',
+        );
+      }
+      // 正解の選択肢の文がまったく同じ類題は、言い回しを変えただけの可能性がある
+      for (var i = 0; i < members.length; i++) {
+        for (var j = i + 1; j < members.length; j++) {
+          if (_sameSet(members[i].$2, members[j].$2)) {
+            warn(
+              members[j].$1,
+              '類題の ${members[i].$1} と正解の選択肢が同じです。条件を変えて正解が変わる類題にしてください',
+            );
+          }
+        }
+      }
+    }
   }
   return issues;
 }
+
+final _groupPattern = RegExp(r'^[a-z0-9]+(-[a-z0-9]+)*$');
+
+bool _sameSet(Set<String> a, Set<String> b) =>
+    a.length == b.length && a.containsAll(b);

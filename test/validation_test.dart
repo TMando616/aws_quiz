@@ -116,4 +116,39 @@ void main() {
     expect(issues.where((i) => i.isError), isEmpty);
     expect(issues.single.message, contains('Aに偏って'));
   });
+
+  List<ValidationIssue> issuesOf(List<Map<String, dynamic>> questions) =>
+      validateQuestions(
+        examsJson: _exams,
+        questionFiles: {
+          'assets/questions/xxx.json': {
+            'examId': 'xxx',
+            'examCode': 'XXX-C01',
+            'questions': questions,
+          },
+        },
+      );
+
+  test('類題のグループの書き方が違えばエラーにする', () {
+    final q = _validQuestion('xxx-001')..['group'] = 'S3 Storage';
+    expect(_errorsOf([q]).single.message, contains('group'));
+  });
+
+  test('類題のグループが1問だけなら警告する', () {
+    final q = _validQuestion('xxx-001')..['group'] = 's3-class';
+    final issues = issuesOf([q]);
+    expect(issues.where((i) => i.isError), isEmpty);
+    expect(issues.single.message, contains('この1問だけ'));
+  });
+
+  test('類題どうしで正解の選択肢が同じなら警告する', () {
+    final a = _validQuestion('xxx-001')..['group'] = 's3-class';
+    final b = _validQuestion('xxx-002')..['group'] = 's3-class';
+    expect(issuesOf([a, b]).single.message, contains('正解の選択肢が同じ'));
+    // 正解が違えば警告しない
+    final c = _validQuestion('xxx-003')
+      ..['group'] = 's3-class'
+      ..['answers'] = [1];
+    expect(issuesOf([a, c]), isEmpty);
+  });
 }

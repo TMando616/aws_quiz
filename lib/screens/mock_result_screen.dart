@@ -6,6 +6,7 @@ import '../models/exam.dart';
 import '../models/question.dart';
 import '../widgets/domain_accuracy_bar.dart';
 import '../widgets/explanation_view.dart';
+import '../widgets/similar_questions_button.dart';
 
 /// 模試の結果。総合の正答率・分野別の正答率・間違えた問題の見直し
 ///
@@ -174,7 +175,11 @@ class _ReviewScreen extends StatelessWidget {
                 ),
               ),
             ],
-            ExplanationView(question: question, selected: selected),
+            ExplanationView(
+              question: question,
+              selected: selected,
+              action: SimilarQuestionsButton(exam: exam, question: question),
+            ),
           ],
         ),
       ),
