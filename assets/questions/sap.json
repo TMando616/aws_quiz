@@ -2736,6 +2736,982 @@
           "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html"
         }
       ]
+    },
+    {
+      "id": "sap-d028",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-002",
+      "point": "移行の調査と計画のサービス",
+      "question": "オンプレミスのサーバーの一覧と依存関係を把握し、移行ウェーブを計画する作業を、新しく始めたい。推奨されているサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を評価するサービスで、移行の計画に必要なサーバーの一覧や依存関係は集められません。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "データをオンラインで転送するサービスで、移行の実行段階で使うものです。"
+        },
+        {
+          "text": "AWS Transform",
+          "explanation": "複数のソースからオンプレミスのサーバーの一覧を集めて分析し、アプリケーションのグループ化・依存関係の特定・移行ウェーブの作成まで行えます。"
+        },
+        {
+          "text": "AWS Transfer Family",
+          "explanation": "ファイル転送のためのサービスで、依存関係の分析や移行の計画は行いません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "移行前の調査と計画は AWS Transform で行えます。SAP-C03 の試験ガイドの範囲内のサービスにも入っています。",
+      "references": [
+        {
+          "title": "AWS Transform とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/transform/latest/userguide/what-is-service.html"
+        },
+        {
+          "title": "Application Discovery Service の提供状況の変更",
+          "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/application-discovery-service-availability-change.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d029",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-002",
+      "point": "Application Discovery Service の提供状況",
+      "question": "AWS Application Discovery Service は、今からでも新規の利用者として使い始められる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Application Discovery Service は、2025年11月7日から新規の利用者を受け付けていません。新しく始める場合は AWS Transform が推奨されています（既存の利用者は引き続き使えます）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "以前の定番だった Application Discovery Service と Migration Hub は、SAP-C03 の試験ガイドの範囲内のサービスに入っていません。",
+      "references": [
+        {
+          "title": "AWS Transform とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/transform/latest/userguide/what-is-service.html"
+        },
+        {
+          "title": "Application Discovery Service の提供状況の変更",
+          "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/application-discovery-service-availability-change.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d030",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-003",
+      "point": "マルチ AZ のスタンバイは読み込みに使えるか",
+      "question": "RDS のマルチ AZ 配置（スタンバイが1つ）のスタンバイは、読み込みのトラフィックの処理にも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。マルチ AZ 配置のスタンバイは、読み込みのトラフィックを処理できません。読み込みを分散したいときは、リードレプリカなどを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "マルチ AZ 配置は可用性のため、リードレプリカは読み込みの分散のため、と目的で使い分けます。",
+      "references": [
+        {
+          "title": "マルチ AZ DB インスタンスのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d031",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-003",
+      "point": "アプリ層の単一障害点をなくす",
+      "question": "1つの AZ にある1台の EC2 インスタンスで動くアプリケーションの、単一障害点をなくしたい。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "インスタンスも AZ も1つのままなので、障害が起きれば止まります。"
+        },
+        {
+          "text": "毎日 AMI を取得しておき、障害時に手作業で起動する",
+          "explanation": "復旧に手作業と時間がかかり、その間は止まります。"
+        },
+        {
+          "text": "同じ AZ に2台目のインスタンスを置く",
+          "explanation": "インスタンスの障害には備えられますが、AZ の障害では2台とも止まります。"
+        },
+        {
+          "text": "複数の AZ にまたがる Auto Scaling グループと Application Load Balancer にする",
+          "explanation": "ELB は実行中のインスタンスにトラフィックを分散し、Auto Scaling グループと組み合わせれば、インスタンスや AZ の障害に耐えられます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "単一障害点をなくすには、複数の AZ に分散させます。ALB のヘルスチェックで、異常なインスタンスへの振り分けも避けられます。",
+      "references": [
+        {
+          "title": "Elastic Load Balancing を使用して Auto Scaling グループ内のインスタンスにトラフィックを分散する",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d032",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-010",
+      "point": "セッション情報の置き場所",
+      "question": "Auto Scaling グループの EC2 インスタンスで、スケールインのたびに利用者がログアウトされてしまう。セッション情報の置き場所として最も適切なのはどれか。",
+      "choices": [
+        {
+          "text": "各インスタンスのインスタンスストア",
+          "explanation": "インスタンスを終了するとデータが失われ、ほかのインスタンスからも参照できません。"
+        },
+        {
+          "text": "各インスタンスの EBS ボリューム",
+          "explanation": "基本的に1つのインスタンスに紐付くため、ほかのインスタンスからは参照できません。"
+        },
+        {
+          "text": "Amazon ElastiCache などの共有のストア",
+          "explanation": "セッション情報をインスタンスの外の共有のストアに置けば、どのインスタンスでも同じセッションを扱えます。インスタンスが入れ替わってもログインは保たれます。"
+        },
+        {
+          "text": "ALB のスティッキーセッションの有効期間を長くする",
+          "explanation": "セッション情報がインスタンスのメモリにある限り、そのインスタンスが終了すれば失われます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "スケールする構成では、セッションなどの状態をインスタンスの外に出して、アプリケーションをステートレスにします。",
+      "references": [
+        {
+          "title": "セッション管理（AWS）",
+          "url": "https://aws.amazon.com/jp/caching/session-management/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d033",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-010",
+      "point": "ステートレスにする理由",
+      "question": "セッション情報を ElastiCache などの共有のストアに置くと、どのインスタンスがリクエストを受けても同じセッションを扱える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。セッション情報を一元的なストアに置くと、Web サーバーが増減しても、どのサーバーでも同じセッションを扱えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "スケールイン・スケールアウトや障害でインスタンスが入れ替わっても、利用者はログインしたままでいられます。",
+      "references": [
+        {
+          "title": "セッション管理（AWS）",
+          "url": "https://aws.amazon.com/jp/caching/session-management/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d034",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-011",
+      "point": "社内文書にもとづく回答",
+      "question": "社内の数万の文書（S3 に保存済み）にもとづいて回答し、根拠の文書も示すチャットボットを作りたい。基盤モデルは学習させない。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "毎週、すべての文書で基盤モデルをファインチューニングする",
+          "explanation": "学習に時間と費用がかかり、どの文書を根拠にしたかを示すのも難しくなります。"
+        },
+        {
+          "text": "質問のたびに、すべての文書の本文をプロンプトに入れる",
+          "explanation": "モデルが一度に扱える長さを大きく超え、費用も膨大になります。"
+        },
+        {
+          "text": "SageMaker AI で言語モデルを一から学習させる",
+          "explanation": "大量のデータと計算資源が必要で、「学習させない」という前提にも反します。"
+        },
+        {
+          "text": "Amazon Bedrock のナレッジベースで文書を取り込み、検索した内容で回答を生成する（RAG）",
+          "explanation": "ナレッジベースは、データソースの情報を使って回答の関連性と正確さを高める RAG を構成できます。回答に元の文書への引用を含められます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "自社の文書にもとづいて回答させるなら、モデルを学習し直すのではなく RAG を使います。Amazon Bedrock のナレッジベースでマネージドに構成できます。",
+      "references": [
+        {
+          "title": "Amazon Bedrock ナレッジベース",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/knowledge-base.html"
+        },
+        {
+          "title": "データソースの同期",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/kb-data-source-sync-ingest.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d035",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-011",
+      "point": "文書の更新の反映",
+      "question": "Bedrock のナレッジベースで文書の更新を反映するには、基盤モデルを学習し直す必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。データソースを同期すると、追加された文書が取り込まれ、変更された文書は解析・チャンク分割・埋め込み・インデックス作成をやり直して取り込み直されます。モデルの再学習は不要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "文書を更新したら、データソースを同期するだけで回答に反映されます。削除した文書はベクトルストアから削除されます。",
+      "references": [
+        {
+          "title": "データソースの同期",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/kb-data-source-sync-ingest.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d036",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-011",
+      "point": "回答の根拠を示せるか",
+      "question": "Bedrock のナレッジベースでは、生成した回答に、元のデータソースへの引用を含められる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。生成した回答に引用を含めて、元のデータソースを参照して正確さを確認できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "根拠を示せることは、社内向けのチャットボットで RAG を選ぶ理由の1つです。",
+      "references": [
+        {
+          "title": "Amazon Bedrock ナレッジベース",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/knowledge-base.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d037",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-015",
+      "point": "新しいアカウントも対象になるか",
+      "question": "CloudTrail の組織の証跡は、あとから組織に追加されたアカウントも自動で記録の対象になる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。アカウントが組織に追加されると、組織の証跡がそのアカウントにも追加されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "組織の証跡は、管理アカウントとすべてのメンバーアカウントのイベントを記録します。マルチリージョンの証跡にしておけば、すべてのリージョンが対象になります。",
+      "references": [
+        {
+          "title": "組織の証跡の作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d038",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-015",
+      "point": "メンバーアカウントからの変更",
+      "question": "組織の証跡は、メンバーアカウントの管理者がログ記録を止めたり削除したりできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。メンバーアカウントのユーザーには、組織の証跡の削除、ログ記録のオン・オフの切り替えなどの変更を行う権限がありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織の証跡は、管理アカウント（または委任管理者）だけが変更・削除できます。メンバーアカウントからは確認だけができます。",
+      "references": [
+        {
+          "title": "組織の証跡の作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d039",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-016",
+      "point": "シングルテナントの HSM",
+      "question": "暗号鍵を、自社だけが管理するシングルテナントの HSM に保管する必要がある。アプリケーションは PKCS#11 で暗号処理を行う。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS KMS のカスタマーマネージドキー",
+          "explanation": "キーポリシーなどは自社で管理できますが、鍵は KMS が管理する HSM のフリートで保護され、利用者が専有するものではありません。"
+        },
+        {
+          "text": "AWS KMS の AWS マネージドキー",
+          "explanation": "AWS のサービスが作成・管理する鍵で、自社で管理するという要件を満たしません。"
+        },
+        {
+          "text": "AWS CloudHSM",
+          "explanation": "CloudHSM はシングルテナントの HSM を提供し、HSM のユーザーと鍵は顧客が管理します。PKCS#11、JCE、CNG/KSP などの標準的なインターフェイスに対応しています。"
+        },
+        {
+          "text": "S3 マネージドキー（SSE-S3）",
+          "explanation": "S3 が管理する鍵で、鍵の管理には関与できず、アプリケーションの暗号処理にも使えません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "「シングルテナントの HSM」「鍵を自社だけで管理」「PKCS#11」は AWS CloudHSM の特徴です。",
+      "references": [
+        {
+          "title": "AWS CloudHSM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cloudhsm/latest/userguide/introduction.html"
+        },
+        {
+          "title": "AWS KMS のキーストア",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-store-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d040",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-016",
+      "point": "KMS の HSM",
+      "question": "標準の AWS KMS キーは、利用者ごとに専有されたシングルテナントの HSM で保護される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。標準の KMS キーは、KMS が管理する、テナントに依存しない HSM のフリートで保護されます。シングルテナントの HSM が必要なら CloudHSM（または CloudHSM のキーストア）を使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "KMS は鍵の管理を簡単にでき、CloudHSM は HSM を専有して自社で管理できる、という違いがあります。",
+      "references": [
+        {
+          "title": "AWS KMS のキーストア",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-store-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d041",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-017",
+      "point": "組織外への共有の検出",
+      "question": "組織内のすべてのアカウントで、S3 バケット・IAM ロール・KMS キーなどが組織外や公開に共有されていないかを継続的に把握したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "Amazon GuardDuty",
+          "explanation": "ログから不審な振る舞いを検出するサービスで、ポリシーによる外部への共有を一覧で把握する用途ではありません。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "ソフトウェアの脆弱性などを評価するサービスで、共有の状況は分析しません。"
+        },
+        {
+          "text": "S3 の公開読み取りを検出する AWS Config のマネージドルール",
+          "explanation": "公開の S3 バケットは検出できますが、特定の外部アカウントへの共有や、ほかの種類のリソースは対象になりません。"
+        },
+        {
+          "text": "IAM Access Analyzer の外部アクセスの分析",
+          "explanation": "外部のエンティティと共有されている組織やアカウントのリソースを特定します。ポリシーが追加・変更されると、新しいポリシーを分析します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "リソースが組織の外に共有されていないかの確認は、IAM Access Analyzer の外部アクセスの分析で行います。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d042",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-017",
+      "point": "信頼ゾーン",
+      "question": "IAM Access Analyzer の外部アクセスのアナライザーでは、信頼ゾーンを組織にできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。選んだ組織またはアカウントが、アナライザーの信頼ゾーンになります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "信頼ゾーンを組織にすると、組織の外への共有だけが検出結果として示されます。外部アクセスの分析は、有効にしたリージョンで行われます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d043",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-018",
+      "point": "VPN なしのアクセス",
+      "question": "AWS Verified Access を使うと、VPN を使わずに社内アプリケーションへの安全なアクセスを提供できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Verified Access は、VPN を使うことなくアプリケーションへの安全なアクセスを提供します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Verified Access は、リクエストごとにユーザーとデバイスを検証し、セキュリティの要件を満たす場合にだけアクセスを許可します。",
+      "references": [
+        {
+          "title": "AWS Verified Access とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verified-access/latest/ug/what-is-verified-access.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d044",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-018",
+      "point": "リクエストごとにユーザーとデバイスを確認",
+      "question": "社内の Web アプリケーションへのリクエストのたびに、利用者の ID とデバイスの状態を確かめてアクセスを許可したい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Client VPN",
+          "explanation": "VPN で社内のネットワークにつなぐ仕組みで、接続後のリクエストごとの確認にはなりません。"
+        },
+        {
+          "text": "AWS WAF の地理的一致ルール",
+          "explanation": "国による制限はできますが、ID やデバイスの状態は確認できません。"
+        },
+        {
+          "text": "AWS Verified Access",
+          "explanation": "各アプリケーションのリクエストを評価し、ユーザーとデバイスの信頼性を検証したうえで、要件を満たす場合にだけアクセスを許可します。"
+        },
+        {
+          "text": "セキュリティグループで自宅の IP アドレスを許可する",
+          "explanation": "IP アドレスでは、誰がどのデバイスでアクセスしているかを確認できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ゼロトラストの考え方で社内アプリケーションへのアクセスを守るなら AWS Verified Access です。",
+      "references": [
+        {
+          "title": "AWS Verified Access とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verified-access/latest/ug/what-is-verified-access.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d045",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-019",
+      "point": "構成が変わっても割引を受ける",
+      "question": "EC2 のインスタンスファミリーやリージョンを変え、一部を Fargate と Lambda に移す予定がある。利用量は一定で、割引を受け続けたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "EC2 Instance Savings Plans",
+          "explanation": "特定のリージョンの特定のインスタンスファミリーに適用されるため、変更や移行に対応できません。"
+        },
+        {
+          "text": "スタンダードリザーブドインスタンス",
+          "explanation": "購入時のインスタンスの属性に縛られ、Fargate や Lambda にも適用されません。"
+        },
+        {
+          "text": "スポットインスタンス",
+          "explanation": "中断される可能性があり、常に必要な本番の利用の割引には向きません。"
+        },
+        {
+          "text": "Compute Savings Plans",
+          "explanation": "インスタンスファミリー・サイズ・OS・テナンシー・リージョンに関係なく EC2 に適用され、Fargate と Lambda にも適用されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "構成が変わる予定なら、適用範囲が最も広い Compute Savings Plans が合います。割引率は EC2 Instance Savings Plans の方が高い（最大72%）代わりに、適用範囲が狭くなります。",
+      "references": [
+        {
+          "title": "Savings Plans とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
+        },
+        {
+          "title": "Savings Plans の種類",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d046",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-019",
+      "point": "EC2 Instance Savings Plans の適用範囲",
+      "question": "EC2 Instance Savings Plans は、リージョンやインスタンスファミリーを変えても割引が続く。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。EC2 Instance Savings Plans は、選んだリージョンの特定のインスタンスファミリー（例：バージニアの m5）に適用されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "変更が多いなら Compute Savings Plans、変えないなら割引率の高い EC2 Instance Savings Plans、と使い分けます。",
+      "references": [
+        {
+          "title": "Savings Plans とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
+        },
+        {
+          "title": "Savings Plans の種類",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d047",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-019",
+      "point": "Fargate と Lambda への適用",
+      "question": "Compute Savings Plans は、Fargate と Lambda の利用にも適用される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Compute Savings Plans は EC2 のほか、Fargate と Lambda の利用にも適用されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "サーバーレスやコンテナへの移行を予定しているなら、Compute Savings Plans を選んでおくと割引が無駄になりません。",
+      "references": [
+        {
+          "title": "Savings Plans とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
+        },
+        {
+          "title": "Savings Plans の種類",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d048",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-020",
+      "point": "ゲートウェイエンドポイントの料金",
+      "question": "S3 のゲートウェイ VPC エンドポイントは、追加料金なしで使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ゲートウェイエンドポイントは追加料金なしで使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "NAT ゲートウェイを通すと、処理したデータ 1 GB ごとに料金がかかります。同じリージョンの S3 への通信はゲートウェイエンドポイントに通すと、その分を減らせます。",
+      "references": [
+        {
+          "title": "Amazon S3 のゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        },
+        {
+          "title": "NAT ゲートウェイの料金",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/nat-gateway-pricing.html"
+        },
+        {
+          "title": "AWS PrivateLink の料金",
+          "url": "https://aws.amazon.com/jp/privatelink/pricing/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d049",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-020",
+      "point": "ゲートウェイエンドポイントの制限",
+      "question": "S3 のゲートウェイエンドポイントは、オンプレミスのネットワークや他のリージョンからもアクセスできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ゲートウェイエンドポイントは、オンプレミスのネットワーク、他のリージョンのピア接続された VPC、Transit Gateway からのアクセスを許可しません。作成したリージョンでだけ使えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オンプレミスなどから S3 にプライベートにアクセスしたい場合は、追加料金のかかるインターフェイスエンドポイントを使います。",
+      "references": [
+        {
+          "title": "Amazon S3 のゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        },
+        {
+          "title": "NAT ゲートウェイの料金",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/nat-gateway-pricing.html"
+        },
+        {
+          "title": "AWS PrivateLink の料金",
+          "url": "https://aws.amazon.com/jp/privatelink/pricing/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d050",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-020",
+      "point": "NAT ゲートウェイの料金を減らす",
+      "question": "プライベートサブネットの EC2 が、同じリージョンの S3 から毎日大量のデータを読み込み、NAT ゲートウェイのデータ処理料金が大きい。最もコスト効率のよい対策はどれか。",
+      "choices": [
+        {
+          "text": "S3 用のインターフェイス VPC エンドポイントを作る",
+          "explanation": "NAT は通らなくなりますが、インターフェイスエンドポイントには追加の料金がかかります。"
+        },
+        {
+          "text": "EC2 をパブリックサブネットに移す",
+          "explanation": "インスタンスがインターネットから到達できる場所に置かれ、セキュリティが下がります。"
+        },
+        {
+          "text": "S3 用のゲートウェイ VPC エンドポイントを作り、ルートテーブルに関連付ける",
+          "explanation": "S3 への通信が NAT ゲートウェイを通らなくなり、ゲートウェイエンドポイント自体は追加料金なしで使えます。"
+        },
+        {
+          "text": "NAT ゲートウェイを NAT インスタンスに置き換える",
+          "explanation": "運用の負荷が増え、S3 への通信が NAT を経由する構成は変わりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "同じリージョンの S3 や DynamoDB への通信は、無料のゲートウェイエンドポイントで NAT を経由させないのがコスト削減の定番です。",
+      "references": [
+        {
+          "title": "Amazon S3 のゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        },
+        {
+          "title": "NAT ゲートウェイの料金",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/nat-gateway-pricing.html"
+        },
+        {
+          "title": "AWS PrivateLink の料金",
+          "url": "https://aws.amazon.com/jp/privatelink/pricing/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d051",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-021",
+      "point": "取り出しの料金",
+      "question": "S3 Intelligent-Tiering では、データの取り出しの料金がかからない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Intelligent-Tiering ではデータの取得料金は発生しません。代わりに、オブジェクトのモニタリングとオートメーションの少額の月額料金がかかります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アクセスのパターンが予測できないデータは、取り出しの料金のかからない Intelligent-Tiering に置くと、費用が自動で最適化されます。",
+      "references": [
+        {
+          "title": "S3 Intelligent-Tiering の仕組み",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        },
+        {
+          "title": "S3 Intelligent-Tiering（ストレージクラス）",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/intelligent-tiering/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d052",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-021",
+      "point": "小さいオブジェクトの扱い",
+      "question": "128 KB 未満のオブジェクトも、S3 Intelligent-Tiering の自動の階層移動の対象になる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。128 KB 未満のオブジェクトは自動階層化の対象にならず、常に高頻度アクセス階層の料金で課金されます（モニタリングの料金はかかりません）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "小さいオブジェクトが多い場合は、Intelligent-Tiering にしても費用が下がらない点に注意します。",
+      "references": [
+        {
+          "title": "S3 Intelligent-Tiering の仕組み",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        },
+        {
+          "title": "S3 Intelligent-Tiering（ストレージクラス）",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/intelligent-tiering/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d053",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-022",
+      "point": "タグを付けるだけで集計できるか",
+      "question": "リソースにタグを付ければ、それだけで Cost Explorer でタグごとに費用を集計できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Cost Explorer やコスト配分レポートで使うには、事前にタグをコスト配分タグとして有効にしておく必要があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "タグで費用を配賦するには、タグの表記を揃え（タグポリシー）、コスト配分タグとして有効にする、の両方が必要です。有効にしてから表示されるまで最大24時間かかることがあります。",
+      "references": [
+        {
+          "title": "コスト配分タグの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"
+        },
+        {
+          "title": "タグポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_tag-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d054",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-022",
+      "point": "タグの表記を組織全体で揃える",
+      "question": "組織の全アカウントで、「事業部」タグのキー名の大文字・小文字や、使える値を揃えたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "AWS Budgets",
+          "explanation": "予算を設定して費用を管理するサービスで、タグの表記を揃える機能ではありません。"
+        },
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "API の操作を記録するサービスで、タグの表記の標準化には使いません。"
+        },
+        {
+          "text": "AWS Compute Optimizer",
+          "explanation": "リソースのサイズの推奨を出すサービスで、タグとは関係ありません。"
+        },
+        {
+          "text": "AWS Organizations のタグポリシー",
+          "explanation": "タグポリシーで、タグのキーや値の大文字・小文字などを含めた一貫したタグの方針を組織で維持できます。指定したリソースタイプで準拠しないタグ付けを防ぐこともできます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "タグの表記の標準化は、AWS Organizations のタグポリシーで行います（組織のすべての機能を有効にしている必要があります）。",
+      "references": [
+        {
+          "title": "コスト配分タグの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"
+        },
+        {
+          "title": "タグポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_tag-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d055",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-023",
+      "point": "RPO 秒・RTO 分を低コストで",
+      "question": "オンプレミスの約100台のサーバーの災害対策で、RPO は数秒、RTO は数分にしたい。普段の AWS 側の費用はできるだけ抑えたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "毎日バックアップを S3 に取り、災害時に EC2 を構築する",
+          "explanation": "RPO が最大約24時間になり、構築にも時間がかかります。"
+        },
+        {
+          "text": "本番と同じ台数・サイズの EC2 を常に動かしておく",
+          "explanation": "RPO と RTO は満たせますが、普段の費用が高くなります。"
+        },
+        {
+          "text": "AWS Elastic Disaster Recovery",
+          "explanation": "低コストのステージング領域へ継続的にレプリケーションし、災害時は復旧用のインスタンスを数分で起動します。数秒の RPO と数分の RTO を実現できます。"
+        },
+        {
+          "text": "データベースだけをレプリケーションし、ほかは手作業で構築する",
+          "explanation": "100台規模では、手作業の構築で RTO が数分になりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "「RPO 秒・RTO 分」と「待機中の費用を抑える」を両立するなら AWS Elastic Disaster Recovery です。",
+      "references": [
+        {
+          "title": "AWS Elastic Disaster Recovery とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/drs/latest/userguide/what-is-drs.html"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery",
+          "url": "https://aws.amazon.com/jp/disaster-recovery/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d056",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-023",
+      "point": "待機中の構成",
+      "question": "AWS Elastic Disaster Recovery では、普段から本番と同じ台数・サイズのインスタンスを AWS で動かしておく必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。データは、手頃な料金のストレージと最小限のコンピューティングリソースを使うステージング領域へレプリケーションされます。本番と同じ規模のインスタンスは、災害時に起動します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ステージング領域の設計で、待機中の費用を抑えられるのが Elastic Disaster Recovery の特徴です。",
+      "references": [
+        {
+          "title": "AWS Elastic Disaster Recovery とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/drs/latest/userguide/what-is-drs.html"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery",
+          "url": "https://aws.amazon.com/jp/disaster-recovery/"
+        }
+      ]
     }
   ]
 }
