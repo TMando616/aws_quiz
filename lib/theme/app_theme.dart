@@ -64,10 +64,9 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        titleTextStyle: t.numeric(t.label.copyWith(
-          fontSize: 15,
-          color: t.textPrimary,
-        )),
+        titleTextStyle: t.numeric(
+          t.label.copyWith(fontSize: 15, color: t.textPrimary),
+        ),
       ),
       // カードは問題のカード専用の見た目にするので、Card は線だけの控えめなものにする
       cardTheme: CardThemeData(
@@ -142,6 +141,7 @@ class AppTheme {
       context.tokens.correctSurface;
   static Color wrongBackground(BuildContext context) =>
       context.tokens.dangerSurface;
-  static Color correctForeground(BuildContext context) => context.tokens.correct;
+  static Color correctForeground(BuildContext context) =>
+      context.tokens.correct;
   static Color wrongForeground(BuildContext context) => context.tokens.danger;
 }

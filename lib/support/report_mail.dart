@@ -20,7 +20,8 @@ class ReportMail {
     return _open(
       context,
       subject: '問題の誤りの報告（$questionId）',
-      body: '問題ID: $questionId\n問題文: $head\n\n'
+      body:
+          '問題ID: $questionId\n問題文: $head\n\n'
           '誤りだと思う箇所と、その理由（根拠のURLがあれば）を書いてください。\n\n',
     );
   }
@@ -44,14 +45,13 @@ class ReportMail {
       scheme: 'mailto',
       path: AppInfo.supportEmail,
       // queryParameters だと空白が + になるため、自分でエンコードする
-      query: 'subject=${Uri.encodeComponent(subject)}'
+      query:
+          'subject=${Uri.encodeComponent(subject)}'
           '&body=${Uri.encodeComponent(body)}',
     );
     final ok = await launchUrl(uri);
     if (!ok) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('メールアプリを開けませんでした')),
-      );
+      messenger.showSnackBar(const SnackBar(content: Text('メールアプリを開けませんでした')));
     }
   }
 }

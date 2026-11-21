@@ -81,11 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
-  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`drill` で一問一答まで進む
+  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`drill` で一問一答まで進む（`drill-answered` はさらに1問目に自動で回答する）
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
 
   Future<void> _openDebugRoute(_HomeData data) async {
-    if (_debugRoute == 'drill') return _openDebugDrill(data);
+    if (_debugRoute == 'drill' || _debugRoute == 'drill-answered') {
+      return _openDebugDrill(data);
+    }
     final target = data.summaries
         .where((s) => (s.questionCount ?? 0) > 0)
         .firstOrNull;
@@ -186,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
           exam: target.exam,
           questions: questions.where((q) => q.isDrill).toList(),
           title: '一問一答',
+          debugAutoAnswer: _debugRoute == 'drill-answered',
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../ads/ad_consent.dart';
@@ -19,6 +20,7 @@ class QuizScreen extends StatefulWidget {
     required this.exam,
     required this.questions,
     required this.title,
+    this.debugAutoAnswer = false,
   });
 
   final Exam exam;
@@ -28,6 +30,9 @@ class QuizScreen extends StatefulWidget {
 
   /// AppBarに出す出題範囲の名前（例: 全分野）
   final String title;
+
+  /// 開発用：開いたら1問目の最初の選択肢を自動で選んで回答する（`DEBUG_ROUTE=drill-answered`）
+  final bool debugAutoAnswer;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -65,6 +70,12 @@ class _QuizScreenState extends State<QuizScreen> {
       if (mounted) setState(() => _layout = layout);
     });
     _checkPrivacyOptions();
+    if (kDebugMode && widget.debugAutoAnswer) {
+      // カードの表示とバナーの読み込みが落ち着いてから回答する
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) _toggle(widget.questions[_index], 0);
+      });
+    }
   }
 
   Future<void> _checkPrivacyOptions() async {
@@ -243,14 +254,9 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: KeyedSubtree(key: ValueKey(_index), child: body),
               ),
             ),
-            // 一問一答は選択肢をタップした時点で回答するので、答えるまではボタンを見せない。
-            // ただし場所は空けておき、ボタンが出ても選択肢の位置が動かないようにする
-            Visibility(
-              visible: !q.isDrill || _answered,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              child: Padding(
+            // 一問一答は選択肢をタップした時点で回答するので、答えるまではボタンを出さない
+            if (!q.isDrill || _answered)
+              Padding(
                 padding: EdgeInsets.fromLTRB(
                   t.space5,
                   t.space3,
@@ -268,7 +274,6 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
               ),
-            ),
             const BannerAdView(),
           ],
         ),

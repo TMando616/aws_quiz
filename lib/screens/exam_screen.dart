@@ -176,7 +176,12 @@ class _ExamScreenState extends State<ExamScreen> {
           final lastMock = data.lastMock;
 
           return ListView(
-            padding: EdgeInsets.fromLTRB(t.space5, t.space3, t.space5, t.space7),
+            padding: EdgeInsets.fromLTRB(
+              t.space5,
+              t.space3,
+              t.space5,
+              t.space7,
+            ),
             children: [
               Text(exam.code, style: t.numeric(t.label)),
               SizedBox(height: t.space1),
@@ -196,7 +201,9 @@ class _ExamScreenState extends State<ExamScreen> {
               ListRow(
                 title: '本番形式で全分野から',
                 subtitle: '${questions.length}問',
-                onTap: questions.isEmpty ? null : () => _start(questions, '本番形式'),
+                onTap: questions.isEmpty
+                    ? null
+                    : () => _start(questions, '本番形式'),
               ),
               ListRow(
                 title: '分野を選んで解く',
@@ -358,7 +365,10 @@ class _DomainPickerState extends State<_DomainPicker> {
                                   : _picked.remove(d.id),
                             ),
                       title: Text(d.name, style: t.body),
-                      subtitle: Text('${widget.data.countOf(d.id)}問', style: t.caption),
+                      subtitle: Text(
+                        '${widget.data.countOf(d.id)}問',
+                        style: t.caption,
+                      ),
                     ),
                 ],
               ),

@@ -62,19 +62,6 @@ void main() {
     expect(find.byTooltip('表示の切り替え'), findsNothing);
   });
 
-  testWidgets('一問一答で回答して「次へ」が出ても、選択肢の位置は変わらない', (tester) async {
-    await _pump(tester, [_drill, _drill]);
-    // 枠線は外側に描くので、選択肢の枠の位置で比べる
-    final tile = find.byType(ChoiceTile).first;
-    final before = tester.getRect(tile);
-
-    await tester.tap(find.text('○ 正しい'));
-    await tester.pump(); // 回答直後の1フレーム（自動スクロールが始まる前）
-
-    expect(find.text('次へ'), findsOneWidget);
-    expect(tester.getRect(tile), before);
-  });
-
   testWidgets('一問一答で回答すると、選択肢が上に来るまでスクロールして解説が見える', (tester) async {
     await _pump(tester, [_drill, _drill]);
     final tile = find.byType(ChoiceTile).first;

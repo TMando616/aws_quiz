@@ -1,4 +1,3 @@
-
 import 'package:material_ui/material_ui.dart';
 
 /// デザインのトークン（DESIGN.md の値をそのままコードにしたもの）
@@ -187,6 +186,8 @@ extension AppTokensContext on BuildContext {
   AppTokens get tokens {
     final theme = Theme.of(this);
     return theme.extension<AppTokens>() ??
-        (theme.brightness == Brightness.dark ? AppTokens.dark : AppTokens.light);
+        (theme.brightness == Brightness.dark
+            ? AppTokens.dark
+            : AppTokens.light);
   }
 }
