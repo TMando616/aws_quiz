@@ -50,9 +50,9 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 
 このFlutterのバージョンでは、テンプレートが`package:flutter/material.dart`ではなく`package:material_ui/material_ui.dart`をimportしている（`pubspec.yaml`の依存にも`material_ui`がある）。既存のコードに合わせること。
 
-## 5. 現在の実装（初期実装・未ビルド）
+## 5. 現在の実装（初期実装・ビルド確認済み）
 
-**注意：以下はClaudeアプリから書いたコードで、まだ一度もビルドしていない。最初に`flutter analyze`と`flutter run`で確認すること。**
+**2026-11-21 確認済み：`flutter analyze` 指摘なし、`flutter test` 通過、iOSシミュレーター（iPhone 18 Pro）で起動と1問目の表示を確認。回答・結果画面までのタップ操作は未確認。**
 
 ```
 assets/questions/sap.json          問題データ（仮の自作3問。うち1問は複数選択）
@@ -96,7 +96,7 @@ lib/main.dart.orig                 元のテンプレートのバックアップ
 
 ## 6. 次にやること（優先順）
 
-1. **ビルドして動作確認**：`flutter analyze` → `flutter run`。エラーがあれば修正
+1. ~~**ビルドして動作確認**~~：2026-11-21 起動まで確認済み。回答→解説→結果画面の流れは実機操作で要確認
 2. ~~**gitの初期化**~~：2026-11-21 済（`main` ブランチ、リモートは未設定）
 3. **SAPの問題を30問程度まで増やす**（本人が作成。目安は最初のバージョンで30問）
 4. **AdMobの組み込み**：`google_mobile_ads`。まずはテスト用の広告ユニットIDで、問題の切り替え時や結果画面に表示
