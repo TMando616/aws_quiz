@@ -8,7 +8,6 @@ import 'package:aws_quiz/models/exam.dart';
 import 'package:aws_quiz/models/question.dart';
 import 'package:aws_quiz/screens/quiz_screen.dart';
 import 'package:aws_quiz/theme/app_theme.dart';
-import 'package:aws_quiz/widgets/design_parts.dart';
 
 const _exam = Exam(
   id: 'saa', // 類題ボタンが問題ファイルを読むので、実在する試験にする
@@ -62,15 +61,15 @@ void main() {
     expect(find.byTooltip('表示の切り替え'), findsNothing);
   });
 
-  testWidgets('一問一答で回答すると、選択肢が上に来るまでスクロールして解説が見える', (tester) async {
+  testWidgets('一問一答で回答すると、正解・不正解の見出しまでスクロールする', (tester) async {
     await _pump(tester, [_drill, _drill]);
-    final tile = find.byType(ChoiceTile).first;
-    final before = tester.getRect(tile);
 
     await tester.tap(find.text('○ 正しい'));
     await tester.pumpAndSettle();
 
-    expect(tester.getRect(tile).top, lessThan(before.top));
-    expect(find.text('正しいの解説').hitTestable(), findsOneWidget);
+    // 見出しが画面の上のほう（AppBar と進捗の少し下）に来ている
+    final heading = find.text('正解').hitTestable();
+    expect(heading, findsOneWidget);
+    expect(tester.getTopLeft(heading).dy, lessThan(200));
   });
 }

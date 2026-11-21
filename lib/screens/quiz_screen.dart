@@ -58,9 +58,9 @@ class _QuizScreenState extends State<QuizScreen> {
   PageController _choicePager = PageController(viewportFraction: 0.88);
   int _choicePage = 0;
 
-  // 一問一答で、回答後に選択肢の位置までスクロールするための目印。
+  // 一問一答で、回答後に解説（正解・不正解の見出し）までスクロールするための目印。
   // カードをめくる間は前の問題と同時に描画されるので、問題ごとに作り直す（同じ GlobalKey が2つあるとエラーになる）
-  GlobalKey _drillChoicesKey = GlobalKey();
+  GlobalKey _drillExplanationKey = GlobalKey();
 
   @override
   void initState() {
@@ -127,10 +127,10 @@ class _QuizScreenState extends State<QuizScreen> {
       _results[_index] = correct;
     });
     _record(q, correct);
-    // 一問一答は解説が選択肢の下に出るので、選択肢が画面の上に来るまでスクロールし、解説の頭を見せる
+    // 一問一答は解説が選択肢の下に出るので、正解・不正解の見出しが画面の上に来るまでスクロールする
     if (q.isDrill) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final target = _drillChoicesKey.currentContext;
+        final target = _drillExplanationKey.currentContext;
         if (target == null || !target.mounted) return;
         Scrollable.ensureVisible(
           target,
@@ -198,7 +198,7 @@ class _QuizScreenState extends State<QuizScreen> {
     _selected.clear();
     _answered = false;
     _choicePage = 0;
-    _drillChoicesKey = GlobalKey();
+    _drillExplanationKey = GlobalKey();
     // PageControllerは位置を持っているので作り直す（古い方は描画後に破棄）
     final old = _choicePager;
     _choicePager = PageController(viewportFraction: 0.88);
@@ -344,15 +344,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 QuestionCard(child: _buildQuestionText(q)),
                 SizedBox(height: t.space5),
                 const Spacer(),
-                // 上の余白も目印に含め、スクロール後に選択肢が画面の端に貼り付かないようにする
-                Padding(
-                  key: _drillChoicesKey,
-                  padding: EdgeInsets.only(top: t.space3),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: _buildChoiceList(q),
-                  ),
-                ),
+                ..._buildChoiceList(q),
               ],
             ),
           ),
@@ -360,7 +352,11 @@ class _QuizScreenState extends State<QuizScreen> {
         if (_answered)
           SliverPadding(
             padding: EdgeInsets.fromLTRB(t.space5, 0, t.space5, t.space6),
-            sliver: SliverToBoxAdapter(child: _buildExplanation(q)),
+            // 解説の上の余白も目印に含まれるので、スクロール後に見出しが画面の端に貼り付かない
+            sliver: SliverToBoxAdapter(
+              key: _drillExplanationKey,
+              child: _buildExplanation(q),
+            ),
           ),
       ],
     );
