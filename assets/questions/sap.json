@@ -46,42 +46,33 @@
     {
       "id": "sap-002",
       "domain": "d4",
-      "question": "ある企業はオンプレミスのデータセンターにある約500台のサーバーをAWSへ移行する計画を立てている。まず、サーバー間の依存関係と利用状況を把握し、移行計画を立てたい。この目的に適したものを2つ選べ。",
+      "question": "ある企業は、オンプレミスのデータセンターにある約500台のサーバー（VMware の仮想サーバーと物理サーバー）を AWS へ移行する計画を新しく立てている。まず、サーバーの一覧と依存関係を把握し、依存し合うアプリケーションをまとめた移行の順番（移行ウェーブ）を計画したい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "AWS Application Discovery Serviceでサーバー情報と依存関係を収集する",
-          "explanation": "Application Discovery Serviceは、オンプレミスのサーバーの構成・使用率・サーバー間の通信（依存関係）を収集する、移行前の調査のためのサービスです。"
+          "text": "Amazon Inspector でオンプレミスのサーバーの脆弱性を評価する",
+          "explanation": "Inspector は脆弱性を評価するサービスです。移行の計画に必要なサーバーの一覧や依存関係は集められません。"
         },
         {
-          "text": "Amazon Inspectorでオンプレミスサーバーの脆弱性を評価する",
-          "explanation": "Inspectorは脆弱性を評価するサービスです。移行計画に必要な依存関係や利用状況は集められません。"
+          "text": "AWS Transform で、オンプレミスのサーバーの情報を検出・分析し、依存関係をもとに移行ウェーブを計画する",
+          "explanation": "AWS Transform は、複数のソースからオンプレミスのサーバーの一覧を集めて分析し、アプリケーションのグループ化・依存関係の特定・優先順位を付けた移行ウェーブの作成まで行えます。"
         },
         {
-          "text": "AWS Snowballでサーバーのディスクイメージを転送する",
-          "explanation": "Snowballは物理デバイスで大量のデータを運ぶ転送手段です。依存関係や利用状況の調査には使いません。"
+          "text": "AWS DataSync でサーバー上のファイルを Amazon S3 へ転送する",
+          "explanation": "DataSync はオンラインでデータを転送するサービスで、移行の実行段階で使うものです。調査や計画には使いません。"
         },
         {
-          "text": "AWS Migration Hubで収集した情報を一元的に確認し、移行の進捗を追跡する",
-          "explanation": "Migration Hubは、Application Discovery Serviceで集めた情報を一か所で確認し、移行の計画と進捗の追跡ができるサービスです。"
-        },
-        {
-          "text": "AWS DataSyncでサーバー上のファイルをAmazon S3へ転送する",
-          "explanation": "DataSyncはオンラインでデータを転送するサービスで、移行の実行段階で使うものです。調査や計画の段階には向きません。"
+          "text": "AWS Transfer Family で SFTP のエンドポイントを作り、サーバーの設定ファイルを集める",
+          "explanation": "Transfer Family はファイル転送のためのサービスです。設定ファイルを集めても、依存関係の分析や移行ウェーブの計画は自分たちで行う必要があります。"
         }
       ],
       "answers": [
-        0,
-        3
+        1
       ],
-      "explanation": "移行前の調査は、Application Discovery Serviceで情報を集め、Migration Hubで一元管理するのが定番の組み合わせです。Snowball・DataSyncはデータを運ぶ手段、Inspectorは脆弱性評価のサービスで、調査には使いません。なお、Application Discovery Service は2025年11月7日から新規の利用者の受け付けを停止しており、新しく始める場合は AWS Transform が推奨されています。",
+      "explanation": "移行前の調査と計画には AWS Transform が使えます。サーバーの検出から、依存関係の特定、移行ウェーブの計画までをまとめて行えます。以前の定番だった AWS Application Discovery Service は、2025年11月7日から新規の利用者を受け付けていません。",
       "references": [
         {
-          "title": "AWS Application Discovery Service とは",
-          "url": "https://docs.aws.amazon.com/ja_jp/application-discovery/latest/userguide/what-is-appdiscovery.html"
-        },
-        {
-          "title": "AWS Migration Hub とは",
-          "url": "https://docs.aws.amazon.com/ja_jp/migrationhub/latest/ug/whatishub.html"
+          "title": "AWS Transform とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/transform/latest/userguide/what-is-service.html"
         },
         {
           "title": "Application Discovery Service の提供状況の変更",
@@ -664,33 +655,33 @@
     {
       "id": "sap-018",
       "domain": "d2",
-      "question": "ある企業は、クレジットカード情報を扱うシステムを AWS 上で運用している。外部の監査人から、AWS 自体が PCI DSS に準拠していることを示す証明書と、AWS の SOC 2 レポートの提出を求められた。最も迅速にこれらの資料を入手する方法はどれか。",
+      "question": "ある企業の社内 Web アプリケーションは、VPC 内の Application Load Balancer の背後で動いている。リモートで働く従業員は、現在 VPN で社内ネットワークに接続してから利用している。VPN の運用をやめつつ、リクエストのたびに利用者の ID とデバイスの状態を確認し、条件を満たす場合にだけアクセスを許可したい。最も適切な方法はどれか。",
       "choices": [
         {
-          "text": "AWS サポートにケースを作成し、資料の送付を依頼する",
-          "explanation": "これらの資料はセルフサービスで入手できるため、サポートに依頼する必要はありません。依頼すると入手までに時間がかかります。"
+          "text": "AWS Client VPN のエンドポイントを増やし、同時接続数の上限を上げる",
+          "explanation": "VPN の運用が続くため、「VPN の運用をやめる」という要件を満たしません。接続後のリクエストごとに ID やデバイスを確認する仕組みでもありません。"
         },
         {
-          "text": "AWS Artifact から該当するレポートをダウンロードする",
-          "explanation": "AWS Artifact は、SOC レポートや PCI DSS の準拠証明など、AWS のコンプライアンスに関する資料をオンデマンドで入手できるポータルです。"
+          "text": "ALB をインターネットに公開し、セキュリティグループで従業員の自宅の IP アドレスだけを許可する",
+          "explanation": "自宅の IP アドレスは変わることがあり、管理が大変です。IP アドレスでは、利用者の ID やデバイスの状態を確認できません。"
         },
         {
-          "text": "AWS Security Hub で PCI DSS のセキュリティ標準を有効にし、その結果を提出する",
-          "explanation": "Security Hub のセキュリティ標準は、自社の AWS リソースの設定がベストプラクティスに沿っているかをチェックするものです。AWS 自体の準拠を証明する資料にはなりません。"
+          "text": "AWS Verified Access でアプリケーションを公開し、ID とデバイスの状態にもとづくポリシーでアクセスを許可する",
+          "explanation": "Verified Access は、VPN を使わずに社内アプリケーションへ安全にアクセスさせるサービスです。リクエストごとに利用者とデバイスを検証し、セキュリティの要件を満たす場合にだけアクセスを許可します。"
         },
         {
-          "text": "AWS Audit Manager で評価を作成し、レポートを出力する",
-          "explanation": "Audit Manager は自社の AWS の利用状況から監査用の証跡を集めるサービスです。AWS 自体の第三者認証のレポートは提供しません。"
+          "text": "AWS WAF の地理的一致ルールで、日本以外からのアクセスをブロックする",
+          "explanation": "国による制限はできますが、利用者の ID やデバイスの状態は確認できません。"
         }
       ],
       "answers": [
-        1
+        2
       ],
-      "explanation": "AWS 自体のコンプライアンスの証明書や監査レポートは AWS Artifact で入手します。Security Hub や Audit Manager は、自社の利用状況を確認するためのサービスです（責任共有モデルの「クラウドの中」の部分）。",
+      "explanation": "「VPN なし」「リクエストごとに ID とデバイスを確認」という条件は、ゼロトラストの考え方にもとづく AWS Verified Access の使いどころです。IP アドレスや国による制限では、誰がどのデバイスでアクセスしているかを確認できません。",
       "references": [
         {
-          "title": "AWS Artifact とは",
-          "url": "https://docs.aws.amazon.com/ja_jp/artifact/latest/ug/what-is-aws-artifact.html"
+          "title": "AWS Verified Access とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verified-access/latest/ug/what-is-verified-access.html"
         }
       ]
     },
@@ -1158,6 +1149,299 @@
         {
           "title": "Amazon SQS とは",
           "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-031",
+      "domain": "d3",
+      "question": "ある企業は、監査のためにアプリケーションのログを Amazon S3 に7年間保存する必要がある。ログは保存後ほとんど参照されず、監査で必要になったときも、取り出しに2日程度かかってよい。7年を過ぎたログは削除する。最もコストが低い方法はどれか。",
+      "choices": [
+        {
+          "text": "ライフサイクルルールで、30日後に S3 Standard-IA へ移動する",
+          "explanation": "Standard-IA はすぐに取り出せる分、アーカイブ用のストレージクラスより保存の料金が高くなります。取り出しに時間がかかってよいなら、もっと安いクラスがあります。"
+        },
+        {
+          "text": "最初から S3 Glacier Instant Retrieval に保存する",
+          "explanation": "Instant Retrieval はミリ秒単位で取り出せるクラスです。今回は取り出しの速さが不要なので、より安いクラスを選べます。"
+        },
+        {
+          "text": "ライフサイクルルールで S3 Glacier Flexible Retrieval へ移動する",
+          "explanation": "要件は満たせますが、取り出しに12〜48時間かかってよいなら、さらに安い Glacier Deep Archive を選べます。"
+        },
+        {
+          "text": "ライフサイクルルールで S3 Glacier Deep Archive へ移動し、7年後に削除する有効期限を設定する",
+          "explanation": "Glacier Deep Archive は最も低コストのストレージクラスで、取り出しは12〜48時間です。ライフサイクルルールで移動と削除を自動化できます。最低保存期間は180日ですが、7年保存するので問題になりません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "「ほぼ参照しない」「取り出しに時間がかかってよい」「長期保存」なら S3 Glacier Deep Archive が最も安くなります。ライフサイクルルールで、ストレージクラスの移動と期限切れの削除を自動化します。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "S3 Glacier ストレージクラス",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/glacier/"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-032",
+      "domain": "d3",
+      "question": "ある企業は、毎晩数百本の動画を変換するバッチ処理を EC2 で実行している。処理は1本ずつ独立しており、途中で中断されても、その動画を最初からやり直せば問題ない。翌朝までに終わればよい。コストを最も下げられる方法はどれか。",
+      "choices": [
+        {
+          "text": "3年間のスタンダードリザーブドインスタンスを、ピーク時の台数分購入する",
+          "explanation": "夜間の数時間しか使わないのに、1日中の料金を3年分約束することになり、昼間の分が無駄になります。"
+        },
+        {
+          "text": "Auto Scaling グループで複数のインスタンスタイプを指定し、price-capacity-optimized の配分戦略でスポットインスタンスを使う",
+          "explanation": "スポットインスタンスは使われていない EC2 のキャパシティを大幅な割引価格で使えます。中断されることはありますが、やり直せる処理なら問題ありません。複数のインスタンスタイプと price-capacity-optimized の戦略で、中断されにくく安いプールが選ばれます。"
+        },
+        {
+          "text": "1種類のインスタンスタイプのオンデマンドインスタンスだけで実行する",
+          "explanation": "確実に動きますが、割引がないため、中断を許容できる処理としては割高です。"
+        },
+        {
+          "text": "Dedicated Hosts を確保し、その上でバッチ処理を実行する",
+          "explanation": "Dedicated Hosts は物理サーバーを専有するための選択肢で、ライセンスや規制の要件があるときに使います。コストを下げる目的には向きません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "「中断されてもやり直せる」「終わる時間に余裕がある」処理は、スポットインスタンスの典型的な使いどころです。複数のインスタンスタイプを使い、price-capacity-optimized の配分戦略にすると中断されにくくなります。",
+      "references": [
+        {
+          "title": "スポットインスタンス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        },
+        {
+          "title": "Auto Scaling の配分戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-033",
+      "domain": "d3",
+      "question": "ある企業は、複数のアカウントで数百台の EC2 インスタンスを運用している。多くのインスタンスが必要以上に大きいタイプで動いている可能性があるが、どれをどのタイプに変えればよいかが分からない。手間をかけずに、使用率にもとづいた適切なサイズの提案を受けたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Compute Optimizer を有効にし、インスタンスごとの推奨事項を確認する",
+          "explanation": "Compute Optimizer は CloudWatch の使用率のメトリクスを分析し、適切なサイズの推奨事項を出します。EC2 のほか、Auto Scaling グループ、Lambda、Fargate 上の ECS、RDS なども対象です。"
+        },
+        {
+          "text": "コストと使用状況レポートで、インスタンスタイプごとの費用を集計する",
+          "explanation": "どのタイプにいくらかかっているかは分かりますが、使用率に対して大きすぎるかどうかや、どのタイプに変えればよいかは分かりません。"
+        },
+        {
+          "text": "すべてのインスタンスを、一段小さいインスタンスタイプに一斉に変更する",
+          "explanation": "使用率を確認せずに小さくすると、性能が足りなくなるインスタンスが出るおそれがあります。"
+        },
+        {
+          "text": "Compute Savings Plans を購入して、EC2 の料金を割り引く",
+          "explanation": "割引は受けられますが、大きすぎるインスタンスはそのままです。サイズを適正にしてから購入する方が効果的です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リソースのサイズの適正化（ライトサイジング）には AWS Compute Optimizer を使います。使用率のメトリクスにもとづいて、どのリソースをどのサイズに変えるとよいかを提案してくれます。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-034",
+      "domain": "d3",
+      "question": "ある企業は AWS Organizations で複数のアカウントを運用している。開発用のアカウントで月の費用があらかじめ決めた金額を超えたら、管理者の操作を待たずに、そのアカウントで新しい EC2 インスタンスを起動できないようにしたい。管理アカウントのチームが設定する。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Cost Explorer で毎週費用を確認し、超えていたら担当者が手作業で権限を外す",
+          "explanation": "確認が週に1回の手作業になり、超えてから対応するまでに時間がかかります。「管理者の操作を待たずに」という要件も満たしません。"
+        },
+        {
+          "text": "AWS Budgets で予算を作成し、しきい値を超えたら EC2 インスタンスの起動を拒否する SCP を自動で適用する予算アクションを設定する",
+          "explanation": "予算アクションを使うと、予算のしきい値を超えたときに IAM ポリシーや SCP の適用を自動で実行できます（承認後に実行する設定も可能）。SCP を適用できるのは管理アカウントです。"
+        },
+        {
+          "text": "CloudWatch で請求額のアラームを作成し、Amazon SNS でメールを送る",
+          "explanation": "超えたことは通知できますが、インスタンスの起動を止める仕組みにはなりません。"
+        },
+        {
+          "text": "AWS Compute Optimizer で推奨事項を確認する",
+          "explanation": "Compute Optimizer はリソースのサイズの推奨事項を出すサービスで、予算を超えたときの制御はできません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "予算を超えたときに通知だけでなく自動で制御したいなら、AWS Budgets の予算アクションを使います。IAM ポリシーや SCP を自動で適用し、それ以上の支出につながる操作を止められます。",
+      "references": [
+        {
+          "title": "予算アクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-controls.html"
+        },
+        {
+          "title": "予算アクションの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-action-configure.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-035",
+      "domain": "d4",
+      "question": "ある企業は、オンプレミスの Oracle データベースを Amazon Aurora PostgreSQL に移行したい。移行の作業中もオンプレミスのデータベースは使い続け、切り替えのときの停止時間をできるだけ短くしたい。行うべきことはどれか。2つ選べ。",
+      "choices": [
+        {
+          "text": "AWS Transform MGN で Oracle のサーバーを EC2 にリホストする",
+          "explanation": "サーバーをそのまま EC2 へ移すため、データベースは Oracle のままです。Aurora PostgreSQL への移行にはなりません。"
+        },
+        {
+          "text": "AWS SCT（または DMS Schema Conversion）で、Oracle のスキーマを Aurora PostgreSQL 向けに変換する",
+          "explanation": "エンジンが異なる移行では、テーブルなどのスキーマをそのまま持っていけません。SCT や DMS Schema Conversion で、移行先のエンジンに合わせて変換します。"
+        },
+        {
+          "text": "AWS DataSync で Oracle のデータファイルを Amazon S3 にコピーし、Aurora に取り込む",
+          "explanation": "Oracle のデータファイルは Aurora PostgreSQL ではそのまま読み込めません。DataSync はファイルの転送に使うサービスです。"
+        },
+        {
+          "text": "AWS DMS で全データをロードし、その後も変更を継続的にレプリケーションして、同期した状態で切り替える",
+          "explanation": "DMS はエンジンが異なるデータベース間の移行に対応しています。全データのロードのあとも変更を継続的にレプリケーションして同期を保てるので、切り替えのときの停止時間を短くできます。"
+        },
+        {
+          "text": "Oracle のバックアップファイルを S3 に置き、Aurora PostgreSQL のスナップショットとして復元する",
+          "explanation": "Oracle のバックアップは Aurora PostgreSQL のスナップショットとして復元できません。エンジンが違うため、スキーマの変換とデータの移行が必要です。"
+        }
+      ],
+      "answers": [
+        1,
+        3
+      ],
+      "explanation": "エンジンが異なるデータベースの移行は、「スキーマの変換（SCT や DMS Schema Conversion）」と「データの移行（DMS）」の組み合わせが定番です。DMS で変更を継続的にレプリケーションすれば、元のデータベースを使い続けたまま、短い停止時間で切り替えられます。",
+      "references": [
+        {
+          "title": "AWS DMS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "AWS SCT とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-036",
+      "domain": "d4",
+      "question": "ある企業は、オンプレミスの約200台のサーバーを、OS やアプリケーションに手を加えずにできるだけ早く AWS へ移したい（リホスト）。移行前に AWS 上で動作を確認し、本番の切り替えのときの停止時間は数分程度に抑えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudFormation で同じ構成の EC2 を作り、アプリケーションを手作業でインストールし直す",
+          "explanation": "200台分の構築とインストールに時間がかかり、設定の漏れも起きやすくなります。「できるだけ早く」という要件に合いません。"
+        },
+        {
+          "text": "AWS DMS で各サーバーのデータを移行する",
+          "explanation": "DMS はデータベースの移行のためのサービスで、サーバー全体（OS やアプリケーション）は移行できません。"
+        },
+        {
+          "text": "AWS Transform MGN でソースサーバーを継続的にレプリケーションし、テスト用のインスタンスで確認してから切り替え用のインスタンスを起動する",
+          "explanation": "Transform MGN は、ソースサーバーをブロックレベルで継続的にレプリケーションし、AWS で起動できる形に変換します。切り替え前にテスト用のインスタンスで動作を確認でき、切り替えの停止時間は通常数分です。"
+        },
+        {
+          "text": "毎月サーバーのイメージを取得して S3 にアップロードし、切り替えの日に最新のイメージから EC2 を作る",
+          "explanation": "最後にイメージを取得してから切り替えまでの変更が失われるか、切り替えの前に長い停止が必要になります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "サーバーを手を加えずに移すリホストには、AWS Transform MGN（旧 AWS Application Migration Service）を使います。継続的なレプリケーションで、テストと短い停止時間での切り替えができます。",
+      "references": [
+        {
+          "title": "AWS Transform MGN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/mgn/latest/ug/what-is-mgn.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-037",
+      "domain": "d4",
+      "question": "ある企業のオンプレミスのアプリケーションは、NFS のファイル共有にファイルを書き込んでいる。アプリケーションを変更せずに、ファイルを Amazon S3 に保存して耐久性を高め、AWS での分析にも使いたい。よく使うファイルには、オンプレミスから低い遅延でアクセスしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS DataSync で、毎晩ファイル共有の内容を S3 にコピーする",
+          "explanation": "S3 にデータは入りますが、アプリケーションは引き続きオンプレミスのファイル共有を使うため、コピーされるまでの最大1日分は S3 にありません。"
+        },
+        {
+          "text": "Amazon EFS を作成し、Direct Connect 経由でオンプレミスからマウントする",
+          "explanation": "NFS で使えますが、データは EFS に保存され、S3 には入りません。「S3 に保存する」という要件を満たしません。"
+        },
+        {
+          "text": "AWS Transfer Family で SFTP のエンドポイントを作り、アプリケーションから SFTP でアップロードする",
+          "explanation": "NFS から SFTP に変えるため、アプリケーションの変更が必要になります。"
+        },
+        {
+          "text": "S3 File Gateway を導入し、アプリケーションから NFS のファイル共有としてマウントする",
+          "explanation": "S3 File Gateway は、NFS や SMB のファイル共有として S3 にファイルを保存・取得できるようにします。ローカルのキャッシュで、よく使うデータに低い遅延でアクセスできます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "オンプレミスのアプリケーションを変えずに、ファイルを S3 に保存したいときは S3 File Gateway が合います。NFS や SMB のままで使え、ローカルのキャッシュで遅延も抑えられます。",
+      "references": [
+        {
+          "title": "S3 File Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-038",
+      "domain": "d4",
+      "question": "ある企業は、複数の AZ にまたがって動く Web アプリケーションが、一部のインスタンスの障害から自動で回復できるかを、本番に近い環境で実際に障害を起こして確かめたい。エラー率が一定を超えたら、実験を自動で止められるようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Config のルールで、各リソースの設定を評価する",
+          "explanation": "Config はリソースの設定がルールに沿っているかを評価するサービスで、障害を起こして回復を確かめることはできません。"
+        },
+        {
+          "text": "AWS Fault Injection Service で障害を注入する実験を作成し、CloudWatch アラームを停止条件に設定する",
+          "explanation": "Fault Injection Service は、カオスエンジニアリングの考え方にもとづいて、ワークロードに障害を注入する実験を行うサービスです。停止条件に CloudWatch アラームを指定すると、しきい値に達したときに実験を自動で止められます。"
+        },
+        {
+          "text": "AWS Resilience Hub でアプリケーションを評価し、推奨事項を確認する",
+          "explanation": "Resilience Hub は、目標に対する回復力を評価して改善の推奨事項を出すサービスです。評価には役立ちますが、実際に障害を起こして確かめることはできません。"
+        },
+        {
+          "text": "担当者がコンソールからインスタンスを手作業で停止し、様子を見る",
+          "explanation": "障害は起こせますが、再現性がなく、エラー率が上がったときに自動で止める仕組みもありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "実際に障害を起こして回復力を確かめるには、AWS Fault Injection Service を使います。CloudWatch アラームを停止条件にすると、影響が大きくなる前に実験を自動で止められます。Resilience Hub は評価と推奨のためのサービスで、役割が異なります。",
+      "references": [
+        {
+          "title": "AWS Fault Injection Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fis/latest/userguide/what-is.html"
+        },
+        {
+          "title": "AWS Resilience Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/what-is.html"
         }
       ]
     }
