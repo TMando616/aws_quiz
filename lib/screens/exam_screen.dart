@@ -31,8 +31,17 @@ class _ExamData {
   /// 前回の模試の結果（まだ受けていなければ null）
   final MockResult? lastMock;
 
+  /// 本番形式の問題（分野別の出題・模試に使う）
+  List<Question> get examFormat => questions.where((q) => !q.isDrill).toList();
+
+  /// 一問一答
+  List<Question> get drills => questions.where((q) => q.isDrill).toList();
+
   int countOf(String domainId) =>
-      questions.where((q) => q.domainId == domainId).length;
+      examFormat.where((q) => q.domainId == domainId).length;
+
+  int drillCountOf(String domainId) =>
+      drills.where((q) => q.domainId == domainId).length;
 }
 
 class _ExamScreenState extends State<ExamScreen> {
@@ -83,7 +92,7 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 
   void _startDomains(_ExamData data, Set<String> domainIds) {
-    final questions = data.questions
+    final questions = data.examFormat
         .where((q) => domainIds.contains(q.domainId))
         .toList();
     final title = domainIds.length == 1
@@ -161,7 +170,8 @@ class _ExamScreenState extends State<ExamScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           final data = snapshot.data!;
-          final questions = data.questions;
+          final questions = data.examFormat;
+          final drills = data.drills;
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
@@ -192,9 +202,18 @@ class _ExamScreenState extends State<ExamScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              FilledButton(
-                onPressed: () => _start(questions, '全分野'),
-                child: Text('全分野から出題（${questions.length}問）'),
+              // 一問一答で理解 → 本番形式で確認 → 模試で仕上げる、の順に並べる
+              if (drills.isNotEmpty) ...[
+                FilledButton.icon(
+                  onPressed: () => _start(drills, '一問一答'),
+                  icon: const Icon(Icons.bolt),
+                  label: Text('一問一答（${drills.length}問）'),
+                ),
+                const SizedBox(height: 12),
+              ],
+              (drills.isNotEmpty ? OutlinedButton.new : FilledButton.new)(
+                onPressed: () => _start(questions, '本番形式'),
+                child: Text('本番形式で全分野から出題（${questions.length}問）'),
               ),
               const SizedBox(height: 12),
               OutlinedButton(
@@ -224,7 +243,7 @@ class _ExamScreenState extends State<ExamScreen> {
               Text('出題分野', style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
-                'タップすると、その分野だけを出題します',
+                'タップすると、その分野の本番形式の問題だけを出題します',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,
                 ),
@@ -234,6 +253,7 @@ class _ExamScreenState extends State<ExamScreen> {
                 _DomainRow(
                   domain: domain,
                   count: data.countOf(domain.id),
+                  drillCount: data.drillCountOf(domain.id),
                   accuracy: data.accuracy[domain.id] ?? Accuracy.empty,
                   onTap: () => _startDomains(data, {domain.id}),
                 ),
@@ -250,12 +270,18 @@ class _DomainRow extends StatelessWidget {
   const _DomainRow({
     required this.domain,
     required this.count,
+    required this.drillCount,
     required this.accuracy,
     required this.onTap,
   });
 
   final Domain domain;
+
+  /// 本番形式の問題数
   final int count;
+
+  /// 一問一答の問題数
+  final int drillCount;
   final Accuracy accuracy;
   final VoidCallback onTap;
 
@@ -310,7 +336,12 @@ class _DomainRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '$count問・解いた ${accuracy.answered}問・比重 ${domain.weight}%',
+                  [
+                    '$count問',
+                    if (drillCount > 0) '一問一答 $drillCount問',
+                    '解いた ${accuracy.answered}問',
+                    '比重 ${domain.weight}%',
+                  ].join('・'),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),

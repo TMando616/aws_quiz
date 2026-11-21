@@ -40,11 +40,19 @@ class Question {
     required this.explanation,
     required this.references,
     this.group,
+    this.source,
+    this.point,
   });
 
   /// このバージョンのアプリが表示できる問題の種類。
   /// 並べ替えなど新しい種類を足したとき、古いアプリはそれ以外を読み飛ばす
-  static const supportedTypes = {'choice'};
+  static const supportedTypes = {typeChoice, typeDrill};
+
+  /// 本番形式（シナリオ＋4択／複数選択）
+  static const typeChoice = 'choice';
+
+  /// 一問一答（設計判断のポイントを1つだけ問う短い問題。4択か○×）
+  static const typeDrill = 'drill';
 
   final String id;
 
@@ -65,6 +73,14 @@ class Question {
   /// 解説の「類題に挑戦」と、模試で似た問題が重ならないようにするために使う
   final String? group;
 
+  /// 一問一答の分解元になった本番形式の問題のID（一問一答だけ）
+  final String? source;
+
+  /// 一問一答で問う設計判断のポイント（見出し。一問一答だけ）
+  final String? point;
+
+  bool get isDrill => type == typeDrill;
+
   bool get isMultiple => answers.length > 1;
 
   /// 選んだ選択肢が正解と完全に一致しているか
@@ -74,7 +90,7 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       id: json['id'] as String,
-      type: json['type'] as String? ?? 'choice',
+      type: json['type'] as String? ?? typeChoice,
       domainId: json['domain'] as String,
       question: json['question'] as String,
       choices: (json['choices'] as List)
@@ -86,6 +102,8 @@ class Question {
           .map((e) => Reference.fromJson(e as Map<String, dynamic>))
           .toList(),
       group: json['group'] as String?,
+      source: json['source'] as String?,
+      point: json['point'] as String?,
     );
   }
 }

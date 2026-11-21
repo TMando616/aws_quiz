@@ -10,7 +10,7 @@ import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../widgets/explanation_view.dart';
-import '../widgets/similar_questions_button.dart';
+import '../widgets/related_questions_buttons.dart';
 import 'about_screen.dart';
 import 'exam_screen.dart';
 import 'mock_result_screen.dart';
@@ -27,12 +27,21 @@ class HomeScreen extends StatefulWidget {
 
 /// ホームに出す1試験分の情報
 class _ExamSummary {
-  const _ExamSummary(this.exam, this.questionCount, this.accuracy);
+  const _ExamSummary(
+    this.exam,
+    this.questionCount,
+    this.accuracy, {
+    this.drillCount = 0,
+  });
 
   final Exam exam;
 
   /// 収録している問題数。null なら問題ファイルが無い（準備中）
+  /// 本番形式の問題数（問題ファイルが無ければ null）
   final int? questionCount;
+
+  /// 一問一答の問題数
+  final int drillCount;
 
   /// この試験の正答率
   final Accuracy accuracy;
@@ -70,10 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
-  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」まで進む
+  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`drill` で一問一答まで進む
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
 
   Future<void> _openDebugRoute(_HomeData data) async {
+    if (_debugRoute == 'drill') return _openDebugDrill(data);
     final target = data.summaries
         .where((s) => (s.questionCount ?? 0) > 0)
         .firstOrNull;
@@ -99,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
               reverse: _debugRoute == 'explanation-end',
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
               child: ExplanationView(
-                action: SimilarQuestionsButton(exam: target.exam, question: q),
+                action: RelatedQuestionsButtons(exam: target.exam, question: q),
                 question: q,
                 selected: {
                   [for (var i = 0; i < q.choices.length; i++) i]
@@ -147,11 +157,31 @@ class _HomeScreenState extends State<HomeScreen> {
       final questions = await QuestionRepository().load(target.exam.id);
       navigator.push(
         MaterialPageRoute(
-          builder: (_) =>
-              QuizScreen(exam: target.exam, questions: questions, title: '全分野'),
+          builder: (_) => QuizScreen(
+            exam: target.exam,
+            questions: questions.where((q) => !q.isDrill).toList(),
+            title: '全分野',
+          ),
         ),
       );
     }
+  }
+
+  /// 開発用：一問一答のある最初の試験で、一問一答を始める
+  Future<void> _openDebugDrill(_HomeData data) async {
+    final target = data.summaries.where((s) => s.drillCount > 0).firstOrNull;
+    if (target == null || !mounted) return;
+    final navigator = Navigator.of(context);
+    final questions = await QuestionRepository().load(target.exam.id);
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => QuizScreen(
+          exam: target.exam,
+          questions: questions.where((q) => q.isDrill).toList(),
+          title: '一問一答',
+        ),
+      ),
+    );
   }
 
   Future<_HomeData> _load() async {
@@ -176,7 +206,15 @@ class _HomeScreenState extends State<HomeScreen> {
       final questions = await questionRepo.load(exam.id);
       final accuracy =
           await study?.accuracyOfExam(exam.id, questions) ?? Accuracy.empty;
-      summaries.add(_ExamSummary(exam, questions.length, accuracy));
+      final drillCount = questions.where((q) => q.isDrill).length;
+      summaries.add(
+        _ExamSummary(
+          exam,
+          questions.length - drillCount,
+          accuracy,
+          drillCount: drillCount,
+        ),
+      );
     }
     _certified = await _certRepo.load();
     return _HomeData(summaries, _certified);
@@ -204,9 +242,9 @@ class _HomeScreenState extends State<HomeScreen> {
           PopupMenuButton<void>(
             itemBuilder: (context) => [
               PopupMenuItem(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const AboutScreen()),
-                ),
+                onTap: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const AboutScreen())),
                 child: const Text('このアプリについて'),
               ),
               if (_privacyOptionsRequired)
@@ -380,6 +418,7 @@ class _ExamCard extends StatelessWidget {
     final retire = exam.retireDate;
     final status = [
       ready ? '${summary.questionCount}問' : '準備中',
+      if (summary.drillCount > 0) '一問一答 ${summary.drillCount}問',
       if (rate != null) '正答率 ${(rate * 100).round()}%',
       if (exam.isRetiring && retire != null)
         '${retire.year}年${retire.month}月で終了',

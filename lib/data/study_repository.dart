@@ -6,7 +6,8 @@ import 'package:sqflite/sqflite.dart';
 import '../models/question.dart';
 
 /// 出題のモード。回答の記録に残す
-enum StudyMode { practice, mock }
+/// 回答したときのモード。practice=本番形式の練習、drill=一問一答、mock=模試
+enum StudyMode { practice, drill, mock }
 
 /// 正答率の集計結果
 class Accuracy {

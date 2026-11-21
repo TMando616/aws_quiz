@@ -31,6 +31,8 @@ class MockSet {
 /// 3. それでも足りなければ、ある分だけで実施する
 /// 最後に全体の順番をシャッフルする
 ///
+/// 一問一答（[Question.isDrill]）は使わない。
+///
 /// 類題（同じ [Question.group] の問題）は、グループごとに1問を優先して選ぶ。
 /// 似た問題が並ぶと前の問題がヒントになるため。ただし問題数が足りないときは、
 /// 同じグループの2問目以降でも補う
@@ -40,7 +42,8 @@ MockSet buildMockSet(Exam exam, List<Question> pool, {Random? random}) {
 
   // 類題のグループごとに、ランダムに1問を「優先する問題」にする。
   // グループの無い問題はすべて優先する問題
-  final shuffled = pool.toList()..shuffle(rng);
+  // 模試は本番形式の問題だけで組む（一問一答は入れない）
+  final shuffled = pool.where((q) => !q.isDrill).toList()..shuffle(rng);
   final seenGroups = <String>{};
   final primary = <Question>[];
   final secondary = <Question>[];

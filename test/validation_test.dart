@@ -151,4 +151,58 @@ void main() {
       ..['answers'] = [1];
     expect(issuesOf([a, c]), isEmpty);
   });
+
+  Map<String, dynamic> drill(String id, {Object? source}) => {
+    ..._validQuestion(id),
+    'type': 'drill',
+    'point': 'ポイント',
+    'question': '短い問い',
+    'choices': [
+      {'text': '○', 'explanation': '正しい理由'},
+      {'text': '×', 'explanation': '誤りの理由'},
+    ],
+    'source': ?source,
+  };
+
+  test('正しい一問一答はエラーにも警告にもならない', () {
+    expect(
+      issuesOf([_validQuestion('xxx-001'), drill('xxx-d1', source: 'xxx-001')]),
+      isEmpty,
+    );
+  });
+
+  test('一問一答の source が無い問題や一問一答を指していたらエラーにする', () {
+    expect(
+      _errorsOf([drill('xxx-d1', source: 'xxx-999')]).single.message,
+      contains('ありません'),
+    );
+    expect(
+      _errorsOf([drill('xxx-d1'), drill('xxx-d2', source: 'xxx-d1')])
+          .single
+          .message,
+      contains('本番形式'),
+    );
+  });
+
+  test('一問一答の選択肢が5つ以上・正解が2つならエラーにする', () {
+    final q = drill('xxx-d1')
+      ..['choices'] = [
+        for (final t in ['A', 'B', 'C', 'D', 'E'])
+          {'text': t, 'explanation': t},
+      ]
+      ..['answers'] = [0, 1];
+    final messages = _errorsOf([q]).map((e) => e.message).join();
+    expect(messages, contains('2〜4つ'));
+    expect(messages, contains('正解は1つ'));
+  });
+
+  test('一問一答の問題文が長すぎたら警告する', () {
+    final q = drill('xxx-d1')..['question'] = 'あ' * 121;
+    expect(issuesOf([q]).single.message, contains('長すぎます'));
+  });
+
+  test('対応していない type はエラーにする', () {
+    final q = _validQuestion('xxx-001')..['type'] = 'sort';
+    expect(_errorsOf([q]).single.message, contains('対応していない'));
+  });
 }

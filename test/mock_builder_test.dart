@@ -104,4 +104,26 @@ void main() {
     final set = buildMockSet(_exam, pool, random: Random(1));
     expect(set.questions, hasLength(7));
   });
+
+  test('模試には一問一答を入れない', () {
+    final drills = [
+      for (var i = 0; i < 5; i++)
+        Question(
+          id: 'drill-$i',
+          type: Question.typeDrill,
+          domainId: 'd1',
+          question: '',
+          choices: const [],
+          answers: const [0],
+          explanation: '',
+          references: const [],
+        ),
+    ];
+    final set = buildMockSet(_exam, [
+      ..._pool('d1', 3),
+      ...drills,
+    ], random: Random(1));
+    expect(set.questions.where((q) => q.isDrill), isEmpty);
+    expect(set.questions, hasLength(3));
+  });
 }

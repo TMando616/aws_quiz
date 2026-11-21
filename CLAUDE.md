@@ -16,7 +16,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 # 開発用のビルドオプション（組み合わせ可）
 #   --dart-define=ADS=false            広告と同意画面を出さない
 #   --dart-define=THEME=dark|light     テーマを固定する
-#   --dart-define=DEBUG_ROUTE=exam|quiz|explanation|explanation-end|mock|mock-result|about
+#   --dart-define=DEBUG_ROUTE=exam|quiz|drill|explanation|explanation-end|mock|mock-result|about
 #                                      起動後、その画面まで自動で進む（デバッグビルドのみ）
 ```
 

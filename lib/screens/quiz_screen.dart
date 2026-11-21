@@ -10,7 +10,7 @@ import '../settings/quiz_layout.dart';
 import '../theme/app_theme.dart';
 import '../widgets/domain_accuracy_bar.dart';
 import '../widgets/explanation_view.dart';
-import '../widgets/similar_questions_button.dart';
+import '../widgets/related_questions_buttons.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({
@@ -84,6 +84,14 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _toggle(Question q, int i) {
     if (_answered) return;
+    // 一問一答はテンポを優先し、選択肢をタップした時点で回答する
+    if (q.isDrill) {
+      _selected
+        ..clear()
+        ..add(i);
+      _submit(q);
+      return;
+    }
     setState(() {
       if (q.isMultiple) {
         _selected.contains(i) ? _selected.remove(i) : _selected.add(i);
@@ -104,7 +112,7 @@ class _QuizScreenState extends State<QuizScreen> {
     });
     _record(q, correct);
     // スワイプモードでは解説が問題文の下に出るので、そこまでスクロールする
-    if (_layout == QuizLayout.swipeChoices) {
+    if (_layout == QuizLayout.swipeChoices && !q.isDrill) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!_questionScroll.hasClients) return;
         _questionScroll.animateTo(
@@ -124,7 +132,7 @@ class _QuizScreenState extends State<QuizScreen> {
         examId: widget.exam.id,
         questionId: q.id,
         correct: correct,
-        mode: StudyMode.practice,
+        mode: q.isDrill ? StudyMode.drill : StudyMode.practice,
       );
     } catch (e) {
       debugPrint('回答の記録に失敗: $e');
@@ -181,10 +189,13 @@ class _QuizScreenState extends State<QuizScreen> {
         ? _selected.length == q.answers.length
         : _selected.isNotEmpty;
 
-    final body = switch (_layout) {
-      QuizLayout.tabs => _buildTabsBody(q),
-      QuizLayout.swipeChoices => _buildSwipeBody(q),
-    };
+    // 一問一答は短いので、表示モードに関係なく1画面にまとめる
+    final body = q.isDrill
+        ? _buildDrillBody(q)
+        : switch (_layout) {
+            QuizLayout.tabs => _buildTabsBody(q),
+            QuizLayout.swipeChoices => _buildSwipeBody(q),
+          };
 
     return Scaffold(
       appBar: AppBar(
@@ -208,7 +219,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       : (canSubmit ? () => _submit(q) : null),
                   child: Text(
                     !_answered
-                        ? '回答する'
+                        ? (q.isDrill ? '選択肢をタップして回答' : '回答する')
                         : (_index + 1 >= total ? '結果を見る' : '次の問題へ'),
                   ),
                 ),
@@ -242,6 +253,24 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ],
       ],
+    );
+  }
+
+  // ---------- 一問一答 ----------
+
+  Widget _buildDrillBody(Question q) {
+    return SingleChildScrollView(
+      key: ValueKey('drill-$_index'),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildQuestionText(q),
+          const SizedBox(height: 16),
+          for (var i = 0; i < q.choices.length; i++) _buildChoice(q, i),
+          if (_answered) _buildExplanation(q),
+        ],
+      ),
     );
   }
 
@@ -388,11 +417,23 @@ class _QuizScreenState extends State<QuizScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          widget.exam.domainById(q.domainId)?.name ?? '',
+          [
+            if (q.isDrill) '一問一答',
+            widget.exam.domainById(q.domainId)?.name ?? '',
+          ].join('・'),
           style: theme.textTheme.labelMedium?.copyWith(
             color: theme.colorScheme.primary,
           ),
         ),
+        if (q.point case final point?) ...[
+          const SizedBox(height: 4),
+          Text(
+            point,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
         const SizedBox(height: 8),
         Text(q.question, style: theme.textTheme.bodyLarge),
         if (q.isMultiple) ...[
@@ -406,7 +447,7 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget _buildExplanation(Question q) => ExplanationView(
     question: q,
     selected: _selected,
-    action: SimilarQuestionsButton(exam: widget.exam, question: q),
+    action: RelatedQuestionsButtons(exam: widget.exam, question: q),
   );
 
   /// 選択肢のカード。[expand] がtrueならカードの高さいっぱいに広げ、長い文はカード内でスクロールする
