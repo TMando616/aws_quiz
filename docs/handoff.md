@@ -209,6 +209,8 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 
 1. **シミュレーターで画面を触って確認**（下の「未確認のこと」）
 2. **SAPの問題を見直す**：2026-11-21 に Claude が30問まで作成した（分野1〜5に 8・8・4・4・6問、うち複数選択5問）。SAP-C03 の試験ガイドのタスクから、仕組みが安定している論点を選んで自作し、根拠リンクはすべて実在を確認済み。ただし内容の正確さは本人の目でも確認する（問題を解きながら、解説と根拠リンクを読むのがおすすめ）
+   - 2026-11-21 に品質チェック済み：全問の解説の主張を根拠ページと照合し（主張と引用の対応表を作成）、食い違い・古い情報を修正、根拠リンクを18件追加した。正解が1つに決まるかのレビューも実施。根拠ページに直接の記述が見つからず残っているのは sap-007（PrivateLink は CIDR が重複しても使える）と sap-010（スティッキーセッションでセッションが消える）
+   - 期限・変化に注意：sap-002 の Application Discovery Service は2025-11-07から新規受付停止（AWS Transform が推奨）。試験の出題が AWS Transform 中心に変わっていれば作り直す
    - 作成時、単一選択の正解の多くが B に偏ったため、選択肢を並べ替えて A〜D に散らした（品質チェックにも偏りの警告を追加）
    - 今後足すなら、今回避けた新しめの論点（Bedrock AgentCore、Bedrock Guardrails、VPC Lattice、Resilience Hub、FIS など）も、公式ドキュメントを確認しながら入れていく
 3. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アプリ名、アイコン、ホーム画面に出るアプリ名（今はiOSが「Aws Quiz」、Androidが「aws_quiz」のまま。「AWS」を含むので必ず変える。iOSは `Info.plist` の `CFBundleDisplayName`、Androidは `AndroidManifest.xml` の `android:label`）、上の「リリース前にやること（広告まわり）」
