@@ -5460,6 +5460,2436 @@
           "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
         }
       ]
+    },
+    {
+      "id": "sap-051",
+      "domain": "d1",
+      "question": "ある動画配信サービスは、ライセンスの関係で、特定の国の利用者にだけ番組を配信できる。それ以外の国からのアクセスには、配信できない旨のページを表示したい。DNS で振り分ける。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Route 53 の位置情報ルーティングで、配信できる国のレコードを作り、それ以外はデフォルトのレコードでお知らせのページに向ける",
+          "explanation": "位置情報ルーティングは、DNS クエリの送信元の場所（大陸・国・米国の州）にもとづいてリソースを選びます。配信の権限がある場所だけにコンテンツを制限でき、どの場所にも当てはまらないクエリはデフォルトのレコードで扱えます。"
+        },
+        {
+          "text": "Route 53 のレイテンシーベースルーティングで振り分ける",
+          "explanation": "遅延の小さいリージョンを選ぶ方式で、利用者の国にもとづいて配信を制限する仕組みではありません。"
+        },
+        {
+          "text": "Route 53 の加重ルーティングで、国ごとの割合を設定する",
+          "explanation": "割合で振り分ける方式で、利用者の場所は考慮しません。"
+        },
+        {
+          "text": "Route 53 のフェイルオーバールーティングで、お知らせのページをセカンダリにする",
+          "explanation": "障害時に切り替える方式で、場所による振り分けはできません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "利用者の場所で振り分けたいなら、Route 53 の位置情報ルーティングを使います。デフォルトのレコードを作らないと、当てはまらない場所からのクエリには「応答なし」が返ります。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-052",
+      "domain": "d1",
+      "question": "ある企業は、有料の API を Amazon API Gateway で提供している。契約のプランごとに、顧客のアプリケーションが送れるリクエストのレートと、1か月のリクエスト数の上限を決めたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS WAF のレートベースのルールで、IP アドレスごとにリクエストを制限する",
+          "explanation": "IP アドレス単位の制限で、顧客や契約のプランごとの上限の管理には向きません。"
+        },
+        {
+          "text": "使用量プランを作成してスロットリングとクォータを設定し、顧客ごとの API キーを関連付ける",
+          "explanation": "使用量プランでは、API キーごとにスロットリング（リクエストのレート）とクォータ（期間内のリクエスト数の上限）を設定できます。API キーを顧客に配布して、プランごとに管理します。"
+        },
+        {
+          "text": "Lambda 関数の予約済み同時実行数で制限する",
+          "explanation": "関数全体の同時実行を制限するもので、顧客ごとのレートや月の上限は決められません。"
+        },
+        {
+          "text": "API の前に CloudFront を置いてキャッシュする",
+          "explanation": "オリジンへのリクエストは減りますが、顧客ごとの上限の管理にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "顧客ごとのレートや上限は、API Gateway の使用量プランと API キーで管理します。ただし、API キーを認証や認可に使ってはいけません。アクセスの制御には IAM や Cognito、Lambda オーソライザーなどを使います。また、使用量プランの制限はベストエフォートで適用されます。",
+      "references": [
+        {
+          "title": "使用量プランと API キー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-053",
+      "domain": "d1",
+      "question": "ある企業の注文処理は Amazon SQS の標準キューを使っている。一部のメッセージは形式が壊れていて何度処理しても失敗し、キューに残り続けて調査もしにくい。失敗を繰り返すメッセージを分けて保管し、あとで調べたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "可視性タイムアウトを長くする",
+          "explanation": "再処理までの時間が延びるだけで、失敗し続けるメッセージはキューに残ったままです。"
+        },
+        {
+          "text": "メッセージの保持期間を短くして、早く消えるようにする",
+          "explanation": "調べる前にメッセージが消えてしまい、原因を調べられません。"
+        },
+        {
+          "text": "デッドレターキューを設定し、maxReceiveCount を超えたメッセージをそこへ移す",
+          "explanation": "デッドレターキューは、正常に処理されなかったメッセージの移動先になるキューです。maxReceiveCount の回数だけ受信されても処理できなかったメッセージが移され、あとで調べたり、再処理（リドライブ）したりできます。"
+        },
+        {
+          "text": "キューを FIFO キューに作り直す",
+          "explanation": "順番の保証や重複の排除はできますが、失敗し続けるメッセージを分ける仕組みにはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "処理に失敗し続けるメッセージは、デッドレターキューに分けます。デッドレターキューはソースキューと同じアカウント・リージョンに置きます。順番を厳密に守る必要がある FIFO キューでは、デッドレターキューの使い方に注意が必要です。",
+      "references": [
+        {
+          "title": "デッドレターキュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-054",
+      "domain": "d1",
+      "question": "ある企業は、Web アプリケーションをコンテナにして Amazon ECS で動かしたい。運用チームは少人数で、EC2 インスタンスのパッチ適用や台数の管理はしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ECS の EC2 起動タイプで、Auto Scaling グループのインスタンスを使う",
+          "explanation": "コンテナは動かせますが、EC2 インスタンスのパッチ適用や台数の管理が必要です。"
+        },
+        {
+          "text": "EC2 インスタンスに Docker をインストールして動かす",
+          "explanation": "インスタンスの管理に加え、コンテナの配置や再起動の仕組みも自分で用意する必要があります。"
+        },
+        {
+          "text": "Amazon EKS で、セルフマネージドのノードを使う",
+          "explanation": "ノードとなる EC2 インスタンスの管理が必要です。"
+        },
+        {
+          "text": "ECS で AWS Fargate を使う",
+          "explanation": "Fargate を使うと、サーバーや EC2 インスタンスのクラスターを管理せずにコンテナを実行できます。CPU とメモリの要件を指定して起動するだけです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "サーバーの管理なしでコンテナを動かしたいなら、AWS Fargate を使います。中断を許容できる処理なら、割引のある Fargate Spot も選べます。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-055",
+      "domain": "d1",
+      "question": "ある企業は、オンプレミスの Windows のアプリケーションを AWS へ移行する。アプリケーションは SMB のファイル共有を使い、アクセス権は社内の Active Directory で管理している。ファイルサーバーの運用はしたくなく、AZ の障害にも備えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon FSx for Windows File Server をマルチ AZ で作成し、Active Directory と連携させる",
+          "explanation": "FSx for Windows File Server はフルマネージドの Windows のファイルサーバーで、SMB に対応し、Active Directory と連携してユーザーの認証とアクセスの制御を行います。マルチ AZ では別の AZ にスタンバイが用意されます。"
+        },
+        {
+          "text": "Amazon EFS を作成し、Windows のインスタンスからマウントする",
+          "explanation": "EFS は Windows ベースの EC2 インスタンスでの利用に対応していません。"
+        },
+        {
+          "text": "Windows の EC2 インスタンスにファイルサーバーを構築する",
+          "explanation": "動かすことはできますが、ファイルサーバーのパッチ適用や冗長化を自分で行う必要があります。"
+        },
+        {
+          "text": "Amazon S3 にファイルを置き、アプリケーションから S3 の API で読み書きするように作り直す",
+          "explanation": "アプリケーションの大きな改修が必要で、SMB や Active Directory のアクセス権もそのままでは使えません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Windows のファイル共有（SMB）と Active Directory をそのまま使いたいなら、Amazon FSx for Windows File Server が合います。Linux のインスタンスで共有するなら EFS、と使い分けます。",
+      "references": [
+        {
+          "title": "FSx for Windows File Server とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html"
+        },
+        {
+          "title": "Amazon EFS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/efs/latest/ug/whatisefs.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-056",
+      "domain": "d1",
+      "question": "ある EC サイトは、注文を Amazon DynamoDB のテーブルに書き込んでいる。注文が書き込まれたら、ポイントの付与を別の処理で非同期に行いたい。注文を書き込むアプリケーションは変更したくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "数分ごとにテーブル全体をスキャンして、新しい注文を探す",
+          "explanation": "読み込みの費用がかかり、テーブルが大きくなるほど遅くなります。"
+        },
+        {
+          "text": "DynamoDB Streams を有効にし、ストリームを Lambda 関数のトリガーにする",
+          "explanation": "DynamoDB Streams は、項目レベルの変更を時間順にとらえて最大24時間保存します。新しいストリームのレコードがあると Lambda 関数が呼び出されるので、アプリケーションを変えずに後続の処理を行えます。"
+        },
+        {
+          "text": "アプリケーションを改修して、注文のたびに SNS にも通知させる",
+          "explanation": "実現はできますが、アプリケーションの変更が必要です。"
+        },
+        {
+          "text": "DynamoDB のバックアップを毎日取り、前日との差分を計算する",
+          "explanation": "1日遅れの処理になり、すぐにポイントを付与できません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DynamoDB の変更をきっかけに処理を行うなら、DynamoDB Streams と Lambda の組み合わせが定番です。順番は同じ項目（同じプライマリキー）の変更について保証されます。",
+      "references": [
+        {
+          "title": "DynamoDB Streams",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.html"
+        },
+        {
+          "title": "DynamoDB Streams と Lambda",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.Lambda.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-057",
+      "domain": "d1",
+      "question": "ある企業は、オンプレミスの Apache ActiveMQ を使っている業務アプリケーションを AWS へ移行する。メッセージングのコードは書き換えたくなく、メッセージブローカーの運用もしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon SQS を使うようにアプリケーションを書き換える",
+          "explanation": "マネージドで運用は楽になりますが、メッセージングのコードの書き換えが必要です。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams にメッセージを送るよう書き換える",
+          "explanation": "ストリーミングのデータ向けのサービスで、コードの書き換えも必要です。"
+        },
+        {
+          "text": "Amazon MQ で ActiveMQ のブローカーを作成する",
+          "explanation": "Amazon MQ は Apache ActiveMQ と RabbitMQ 向けのマネージドのメッセージブローカーです。業界標準のプロトコルに対応しており、既存のブローカーからメッセージングのコードを書き換えずに移行できます。"
+        },
+        {
+          "text": "EC2 インスタンスに ActiveMQ をインストールして動かす",
+          "explanation": "コードは変えずに済みますが、ブローカーの運用や冗長化が必要です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "既存の ActiveMQ や RabbitMQ のアプリケーションをそのまま移すなら Amazon MQ、新しく作るなら SQS や SNS、と使い分けます。",
+      "references": [
+        {
+          "title": "Amazon MQ とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-058",
+      "domain": "d2",
+      "question": "ある企業は、東京リージョンで KMS で暗号化したデータを、災害に備えて大阪リージョンにコピーしている。大阪リージョンでも、データを再暗号化したり、リージョンをまたいで KMS を呼び出したりせずに復号したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "リージョンごとに別の KMS キーを作り、コピーのたびに大阪のキーで再暗号化する",
+          "explanation": "復号はできますが、コピーのたびに再暗号化の処理が必要です。"
+        },
+        {
+          "text": "大阪から、東京の KMS キーを毎回呼び出して復号する",
+          "explanation": "リージョンをまたいだ呼び出しになり、東京リージョンに障害が起きると復号できません。"
+        },
+        {
+          "text": "S3 マネージドキー（SSE-S3）に切り替える",
+          "explanation": "S3 が管理する鍵に変えると、KMS キーで暗号化するという前提が変わります。KMS キーを使い続けたまま大阪で復号する、という要件の解決にはなりません。"
+        },
+        {
+          "text": "KMS のマルチリージョンキーを作成し、大阪リージョンにレプリカキーを作る",
+          "explanation": "マルチリージョンキーは、異なるリージョンで同じキー ID とキーマテリアルを持つ相互運用可能なキーです。あるリージョンで暗号化したデータを、再暗号化やリージョンをまたいだ呼び出しなしで別のリージョンで復号できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "複数のリージョンで同じ鍵を使いたいなら、KMS のマルチリージョンキーを使います。災害対策やグローバルなアプリケーションで役立ちます。",
+      "references": [
+        {
+          "title": "マルチリージョンキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/multi-region-keys-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-059",
+      "domain": "d2",
+      "question": "ある企業は、ALB と CloudFront で使う TLS 証明書の更新を忘れ、サイトが一時的に表示できなくなったことがある。証明書の更新を自動化して、同じことが起きないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Certificate Manager で DNS 検証の証明書を発行し、ALB と CloudFront に関連付ける",
+          "explanation": "ACM が発行した証明書は、DNS 検証を使っていれば自動で更新されます。ELB や CloudFront などのサービスに関連付けた証明書が対象で、更新しても ARN は変わりません。"
+        },
+        {
+          "text": "外部で購入した証明書を ACM にインポートし、更新日をカレンダーで管理する",
+          "explanation": "インポートした証明書は、ACM のマネージドな更新の対象外です。更新は手作業のままです。"
+        },
+        {
+          "text": "自己署名の証明書を使う",
+          "explanation": "利用者のブラウザで警告が出るため、公開サイトには使えません。"
+        },
+        {
+          "text": "EC2 インスタンスで証明書を更新するスクリプトを定期的に実行する",
+          "explanation": "仕組みを自分で作って運用する必要があり、失敗に気づけないおそれもあります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "証明書の更新忘れを防ぐなら、ACM が発行した証明書を使い、DNS 検証にしておきます。インポートした証明書は自動で更新されない点に注意します。",
+      "references": [
+        {
+          "title": "ACM のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-060",
+      "domain": "d2",
+      "question": "ある企業のセキュリティチームは、組織の全アカウントのセキュリティの検出結果（GuardDuty や Inspector など）を1か所にまとめて確認し、AWS のベストプラクティスに沿っているかのチェックも自動で行いたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "API の操作を記録するサービスで、検出結果の集約やベストプラクティスのチェックは行いません。"
+        },
+        {
+          "text": "AWS Security Hub（CSPM）",
+          "explanation": "アカウントやサードパーティの製品のセキュリティのデータを集め、AWS Foundational Security Best Practices などのセキュリティ標準でチェックできます。リージョンをまたいだ集約にも対応しています。"
+        },
+        {
+          "text": "AWS Config のアグリゲーターだけを使う",
+          "explanation": "Config の設定とコンプライアンスのデータは集められますが、GuardDuty などの検出結果をまとめて扱うものではありません。"
+        },
+        {
+          "text": "Amazon CloudWatch のダッシュボード",
+          "explanation": "メトリクスの可視化はできますが、セキュリティの検出結果の集約やベストプラクティスのチェックの仕組みはありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織全体のセキュリティの状況を1か所で確認するなら AWS Security Hub（現在の名称は Security Hub CSPM）です。FSBP や CIS などの標準でのチェックも行えます。",
+      "references": [
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-061",
+      "domain": "d2",
+      "question": "ある企業は、共通のデータを置いた S3 バケットを、組織内のすべてのアカウントから読み取れるようにしたい。アカウントは頻繁に増えるが、そのたびにバケットポリシーを書き換えたくない。組織外からは読み取れないようにする。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットポリシーに、組織内のすべてのアカウント ID を列挙する",
+          "explanation": "アカウントが増えるたびにポリシーを書き換える必要があります。"
+        },
+        {
+          "text": "バケットを公開し、URL を社内にだけ知らせる",
+          "explanation": "URL を知っていれば誰でも読み取れてしまいます。"
+        },
+        {
+          "text": "バケットポリシーで aws:PrincipalOrgID の条件に自社の組織 ID を指定する",
+          "explanation": "aws:PrincipalOrgID は、リクエスト元のプリンシパルが属する組織の ID と比べる条件キーです。組織内のすべてのアカウント ID を列挙する代わりに使えるので、アカウントが増えてもポリシーを変えずに済みます。"
+        },
+        {
+          "text": "SCP で、各アカウントにバケットの読み取りを許可する",
+          "explanation": "SCP は権限の上限を決めるもので、権限そのものは与えません。バケットのポリシーでの許可も必要です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "リソースベースのポリシーで「自社の組織のアカウントだけ」を許可するには、aws:PrincipalOrgID の条件キーが便利です。",
+      "references": [
+        {
+          "title": "AWS グローバル条件コンテキストキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-062",
+      "domain": "d2",
+      "question": "ある企業は、従業員が社内のオンプレミスの Microsoft Active Directory の認証情報で、AWS のアプリケーションにサインインできるようにしたい。ディレクトリの情報をクラウドに複製・キャッシュしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "IAM に従業員ごとのユーザーを作る",
+          "explanation": "社内の認証情報とは別の認証情報を管理することになります。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープールに従業員を登録する",
+          "explanation": "アプリの利用者向けのユーザーディレクトリで、社内の AD の認証情報をそのまま使う仕組みではありません。"
+        },
+        {
+          "text": "Active Directory を EC2 インスタンスに移行する",
+          "explanation": "ディレクトリの情報がクラウドに置かれ、AD の運用も必要になります。"
+        },
+        {
+          "text": "AWS Directory Service の AD Connector を使う",
+          "explanation": "AD Connector は、クラウドに情報をキャッシュせずに、ディレクトリのリクエストをオンプレミスの Active Directory へ転送するディレクトリゲートウェイです。既存の社内の認証情報でサインインできます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "オンプレミスの AD をそのまま使い、クラウドに情報を置きたくないなら AD Connector が合います。",
+      "references": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-063",
+      "domain": "d2",
+      "question": "ある金融機関は、取引の記録を S3 に保存しており、規制により7年間、誰も（ルートユーザーも含めて）削除や上書きができない状態で保管する必要がある。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 Object Lock をコンプライアンスモードで設定し、保持期間を7年にする",
+          "explanation": "コンプライアンスモードでは、ルートユーザーを含めて、保護されたオブジェクトのバージョンを上書きしたり削除したりできません。Object Lock はバージョニングを有効にしたバケットで使います。"
+        },
+        {
+          "text": "S3 Object Lock をガバナンスモードで設定する",
+          "explanation": "ガバナンスモードでは、特別なアクセス許可を持つユーザーは削除やロックの設定の変更ができるため、「誰も削除できない」という要件を満たしません。"
+        },
+        {
+          "text": "バケットポリシーで、削除の操作をすべて拒否する",
+          "explanation": "権限のある管理者はバケットポリシー自体を書き換えられます。"
+        },
+        {
+          "text": "ライフサイクルルールで Glacier Deep Archive に移動する",
+          "explanation": "保存の費用は下がりますが、削除や上書きを防ぐ仕組みにはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "規制で WORM（書き込みは1回、読み取りは何度でも）が必要なら、S3 Object Lock のコンプライアンスモードを使います。ガバナンスモードとの違い（特別な権限で解除できるか）がよく問われます。",
+      "references": [
+        {
+          "title": "S3 Object Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-064",
+      "domain": "d2",
+      "question": "ある企業では、多くのアカウントで開発者が S3 バケットを作成している。誤ってバケットのポリシーや ACL を公開にしても、データが公開されないようにしたい。各アカウントで確実に効く方法として最も適切なのはどれか。",
+      "choices": [
+        {
+          "text": "バケットの作成のたびに、セキュリティチームがポリシーを確認する",
+          "explanation": "確認の漏れや遅れが起きる可能性があり、運用負荷も高くなります。"
+        },
+        {
+          "text": "各アカウントで、アカウントのレベルの S3 のブロックパブリックアクセスを有効にする",
+          "explanation": "ブロックパブリックアクセスは、パブリックアクセスを許可するポリシーや ACL を上書きして公開を制限します。アカウント全体に設定すれば、そのアカウントのすべてのバケットに効きます。"
+        },
+        {
+          "text": "すべてのバケットで SSE-KMS の暗号化を有効にする",
+          "explanation": "暗号化は公開そのものを防ぐ設定ではありません。"
+        },
+        {
+          "text": "すべてのバケットでバージョニングを有効にする",
+          "explanation": "誤った削除や上書きから戻すための機能で、公開を防ぐものではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "S3 の公開を確実に防ぐには、アカウントのレベルでブロックパブリックアクセスを有効にします。既存のポリシーや ACL は変更されず、パブリックなアクセスのリクエストが拒否されます。",
+      "references": [
+        {
+          "title": "S3 のブロックパブリックアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-065",
+      "domain": "d3",
+      "question": "ある企業の社内システムのデータベース（Aurora PostgreSQL）は、月末の数日だけ負荷が高く、ほかの日はほとんど使われない。夜間や休日はアクセスがない。負荷に合わせて容量を自動で変え、使っていない時間の費用を抑えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "月末の負荷に合わせた大きなインスタンスクラスを常に使う",
+          "explanation": "ほとんど使わない日にも、大きなインスタンスの料金がかかり続けます。"
+        },
+        {
+          "text": "Aurora レプリカを追加して、月末だけ読み込みを分散する",
+          "explanation": "レプリカの分の費用がかかり、使っていない時間の費用は下がりません。"
+        },
+        {
+          "text": "Aurora Serverless v2 を使い、最小の容量を 0 ACU にして自動一時停止を有効にする",
+          "explanation": "Aurora Serverless v2 は、需要に合わせて容量を自動で調整し、変動が大きいワークロードに向いています。最小を 0 ACU にすると、使われていないときに一時停止し、その間はインスタンスの容量の料金がかかりません。"
+        },
+        {
+          "text": "毎晩データベースを削除し、朝にスナップショットから復元する",
+          "explanation": "手作業や仕組みづくりの負担が大きく、復元のたびに時間がかかります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "変動が大きく、使わない時間が長いデータベースには Aurora Serverless v2 が合います。一時停止からの再開には少し時間がかかる点も押さえておきます。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        },
+        {
+          "title": "自動一時停止",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-066",
+      "domain": "d3",
+      "question": "ある企業の DynamoDB のテーブルは、何年も前から安定したトラフィックがあり、増減も予測できる。アクセスの量に合わせて容量を自動で調整しつつ、コストを最適化したい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "オンデマンドキャパシティモードにする",
+          "explanation": "キャパシティの計画が不要で多くのワークロードで推奨される設定ですが、安定していて予測できるトラフィックなら、プロビジョンドモードを選ぶ選択肢もあります。"
+        },
+        {
+          "text": "プロビジョンドキャパシティモードで、ピークに合わせた固定の値にする",
+          "explanation": "アクセスが少ない時間帯もピークの分の料金がかかります。"
+        },
+        {
+          "text": "プロビジョンドキャパシティモードで、最小の固定の値にする",
+          "explanation": "アクセスが増えるとスロットリングが起きます。"
+        },
+        {
+          "text": "プロビジョンドキャパシティモードで Auto Scaling を有効にし、ターゲット使用率を設定する",
+          "explanation": "予測できる安定したワークロードなら、プロビジョンドキャパシティを選べます。Auto Scaling を使えば、トラフィックの変化に合わせてキャパシティを自動で調整できます（ターゲット使用率は70%が推奨）。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DynamoDB は、多くのワークロードでオンデマンドモードがおすすめですが、安定していて予測できるワークロードならプロビジョンドモードと Auto Scaling の組み合わせも選べます。",
+      "references": [
+        {
+          "title": "DynamoDB のキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
+        },
+        {
+          "title": "プロビジョンドキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-067",
+      "domain": "d3",
+      "question": "ある企業は、世界中の利用者に CloudFront で画像を配信している。オリジンのサーバーへのリクエストが多く、オリジンの負荷と費用が大きい。オリジンへのリクエストを減らすために行うべきことはどれか。2つ選べ。",
+      "choices": [
+        {
+          "text": "CloudFront のキャッシュを無効にして、常に最新の画像をオリジンから返す",
+          "explanation": "すべてのリクエストがオリジンに届き、負荷がさらに増えます。"
+        },
+        {
+          "text": "画像のキャッシュの期間を長くして、キャッシュヒット率を上げる",
+          "explanation": "キャッシュから直接返すリクエストの比率が上がるほど、オリジンへのリクエストは減ります。キャッシュの期間が短いほど、オリジンへのリクエストが増えます。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を有効にする",
+          "explanation": "S3 への長距離の転送を速くする機能で、オリジンへのリクエストを減らすものではありません。"
+        },
+        {
+          "text": "CloudFront Origin Shield を有効にする",
+          "explanation": "Origin Shield は、オリジンの前に追加のキャッシュの層を置きます。すべてのキャッシュの層からオリジンへのリクエストが1か所から送られるようになり、キャッシュヒット率の向上に役立ちます。"
+        },
+        {
+          "text": "オリジンのサーバーの台数を増やす",
+          "explanation": "負荷には耐えやすくなりますが、オリジンへのリクエストの数は減らず、費用も増えます。"
+        }
+      ],
+      "answers": [
+        1,
+        3
+      ],
+      "explanation": "オリジンの負荷を下げるには、キャッシュヒット率を上げる（キャッシュの期間を適切に長くする）ことと、Origin Shield で追加のキャッシュの層を置くことが効果的です。",
+      "references": [
+        {
+          "title": "キャッシュヒット率の向上",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-068",
+      "domain": "d4",
+      "question": "ある企業は、Aurora MySQL のデータベースをリージョン全体の障害に備えたい。別のリージョンにほぼ遅れなくデータを複製し、そのリージョンでは普段から読み取りにも使いたい。障害時には別のリージョンに切り替える。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Aurora Global Database を作成し、別のリージョンにセカンダリクラスターを置く",
+          "explanation": "Aurora Global Database は、書き込みを行う1つのプライマリリージョンと、読み取り専用のセカンダリリージョンで構成されます。通常1秒未満の遅延で複製し、リージョン全体の障害からの回復のためのフェイルオーバーやスイッチオーバーができます。"
+        },
+        {
+          "text": "毎日スナップショットを別のリージョンにコピーする",
+          "explanation": "最後のスナップショット以降のデータが失われ、復元にも時間がかかります。普段の読み取りにも使えません。"
+        },
+        {
+          "text": "同じリージョンでマルチ AZ にする",
+          "explanation": "AZ の障害には備えられますが、リージョン全体の障害には備えられません。"
+        },
+        {
+          "text": "AWS DMS で、別のリージョンの別のデータベースに毎晩データを移す",
+          "explanation": "1日分のデータが失われるおそれがあり、切り替えの仕組みもありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リージョン障害への備えと、別のリージョンでの読み取りを両立するなら Aurora Global Database です。書き込み転送を使えば、セカンダリからの書き込みをプライマリに送ることもできます。",
+      "references": [
+        {
+          "title": "Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-069",
+      "domain": "d4",
+      "question": "ある企業は、オンプレミスの NFS のファイルサーバーにある大量のファイルを、Amazon EFS へオンラインで移行したい。転送の仕組みを自分で作りたくなく、データが正しく転送されたかの確認も自動で行いたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "rsync のスクリプトを作り、EC2 インスタンス経由で転送する",
+          "explanation": "転送の仕組みや再試行、確認の処理を自分で作って運用する必要があります。"
+        },
+        {
+          "text": "AWS DataSync で、NFS から EFS への転送のタスクを作る",
+          "explanation": "DataSync は、オンプレミスの NFS・SMB などと、S3・EFS・FSx の間のデータの転送を自動化します。専用のプロトコルと並列の処理で転送を速くし、データの整合性の検証も行います。"
+        },
+        {
+          "text": "AWS Transform MGN でファイルサーバーをリホストする",
+          "explanation": "サーバーごと移すサービスで、EFS にファイルを移す用途ではありません。"
+        },
+        {
+          "text": "S3 File Gateway を導入する",
+          "explanation": "ファイルは S3 に保存されるため、EFS への移行にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ファイルのオンラインでの大量の移行は、AWS DataSync が定番です。転送の管理とインフラの両方を自動化し、整合性の検証も行います。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-070",
+      "domain": "d4",
+      "question": "ある企業は、重要なアプリケーションが、決めた RTO と RPO の目標を満たせる構成になっているかを評価し、足りない点と改善の方法を知りたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Fault Injection Service",
+          "explanation": "実際に障害を注入する実験を行うサービスです。RTO と RPO の目標に対する評価と改善の推奨を出すものではありません。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "リソースの設定がルールに沿っているかを評価するサービスです。"
+        },
+        {
+          "text": "AWS Resilience Hub",
+          "explanation": "ポリシーで RTO と RPO の目標を決め、アプリケーションがそれを満たせるかを評価します。ギャップと対策の一覧で、改善の方法も示します。"
+        },
+        {
+          "text": "Amazon CloudWatch",
+          "explanation": "メトリクスやログを監視するサービスで、RTO と RPO の目標に対する評価は行いません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "RTO・RPO の目標に対する回復力の評価と改善の推奨は AWS Resilience Hub、実際に障害を起こして確かめるのは Fault Injection Service、と使い分けます。",
+      "references": [
+        {
+          "title": "AWS Resilience Hub の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/concepts-terms.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-071",
+      "domain": "d5",
+      "question": "ある企業は、AWS CodePipeline でアプリケーションを本番環境へデプロイしている。本番へのデプロイの前に、責任者が内容を確認して承認したときだけ進むようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "デプロイのあとに、責任者が本番環境を確認する",
+          "explanation": "確認がデプロイの後になり、問題のある変更を止められません。"
+        },
+        {
+          "text": "本番のステージを無効にしておき、責任者が手作業で有効にする",
+          "explanation": "運用でカバーすることになり、漏れや誤りが起きやすくなります。"
+        },
+        {
+          "text": "パイプラインを本番用と検証用の2つに分ける",
+          "explanation": "分けても、承認したときだけ進むという仕組みにはなりません。"
+        },
+        {
+          "text": "本番のデプロイの前に、手動承認のアクションを追加する",
+          "explanation": "手動承認のアクションでパイプラインが止まり、承認されると再開し、拒否されるとステージが失敗します。SNS のトピックで通知もできます。7日以内に承認または拒否されないと失敗になります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "パイプラインの途中で人の確認を入れるには、CodePipeline の手動承認のアクションを使います。",
+      "references": [
+        {
+          "title": "手動承認アクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/approvals.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-072",
+      "domain": "d5",
+      "question": "ある企業は、AWS Elastic Beanstalk で Web アプリケーションを運用している。新しいバージョンのデプロイのときに、アプリケーションが一時的に使えなくなるのを避け、問題があればすぐに元に戻したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "新しいバージョンを別の環境にデプロイし、2つの環境の URL（CNAME）を入れ替える",
+          "explanation": "Blue/Green デプロイで、別の環境に新しいバージョンをデプロイしてから、CNAME を入れ替えてトラフィックを新しいバージョンに向けます。問題があれば、もう一度入れ替えれば元に戻せます。"
+        },
+        {
+          "text": "今の環境に、新しいバージョンをそのまま上書きでデプロイする",
+          "explanation": "その場での更新では、アプリケーションが一時的に使えなくなることがあります。"
+        },
+        {
+          "text": "デプロイの前に環境を削除し、新しく作り直す",
+          "explanation": "作り直しの間、サービスが止まります。"
+        },
+        {
+          "text": "深夜にデプロイして、利用者への影響を減らす",
+          "explanation": "影響を受ける利用者は減りますが、止まること自体は避けられません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Elastic Beanstalk で停止時間を避けるなら、環境の URL を入れ替える Blue/Green デプロイを使います。",
+      "references": [
+        {
+          "title": "Elastic Beanstalk の Blue/Green デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-073",
+      "domain": "d5",
+      "question": "ある企業は、組織の数十のアカウント・複数のリージョンで AWS Config を有効にしている。すべてのアカウントとリージョンのリソースの設定とルールへの準拠の状況を、1つのアカウントでまとめて確認したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントの Config のコンソールを順番に確認する",
+          "explanation": "アカウントとリージョンの数だけ確認が必要で、手間がかかります。"
+        },
+        {
+          "text": "AWS Config のアグリゲーターを作成し、組織のアカウントのデータを集める",
+          "explanation": "アグリゲーターは、複数のアカウント・リージョン、または組織内のアカウントから、Config の設定とコンプライアンスのデータを集めます。アグリゲーターを作ったアカウントでまとめて確認できます。"
+        },
+        {
+          "text": "すべてのアカウントで CloudTrail の組織の証跡を作る",
+          "explanation": "API の操作の記録は集まりますが、設定のルールへの準拠の状況はまとめられません。"
+        },
+        {
+          "text": "各アカウントの設定を毎日 CSV に出力して共有フォルダに置く",
+          "explanation": "手作業で漏れが起きやすく、すぐには確認できません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "複数のアカウントの Config のデータをまとめて見るなら、Config のアグリゲーターを使います。",
+      "references": [
+        {
+          "title": "AWS Config のデータの集約",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/aggregate-data.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-074",
+      "domain": "d5",
+      "question": "ある企業は、Amazon GuardDuty で重大度の高い検出結果が出たら、対象の EC2 インスタンスのセキュリティグループを隔離用のものに自動で切り替えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "GuardDuty のコンソールを担当者が毎朝確認し、手作業で切り替える",
+          "explanation": "対応が翌朝になるおそれがあり、自動にもなりません。"
+        },
+        {
+          "text": "CloudTrail のログを1日1回分析して、検出結果を探す",
+          "explanation": "CloudTrail は API の操作の記録で、GuardDuty の検出結果をすぐに受け取る仕組みではありません。"
+        },
+        {
+          "text": "Amazon EventBridge のルールで GuardDuty の検出結果のイベントを受け、Lambda 関数で隔離の処理を行う",
+          "explanation": "GuardDuty は検出結果をイベントとして EventBridge に自動で送ります。ルールで条件に合う検出結果を Lambda 関数や SNS トピックに送れば、自動で対応できます。"
+        },
+        {
+          "text": "GuardDuty の検出結果を S3 にエクスポートし、月に1回確認する",
+          "explanation": "すぐに対応できず、自動の隔離にもなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "セキュリティの検出結果への自動の対応は、EventBridge のルールと Lambda の組み合わせが定番です。",
+      "references": [
+        {
+          "title": "GuardDuty の検出結果と EventBridge",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_findings_eventbridge.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-075",
+      "domain": "d5",
+      "question": "ある企業は、アプリケーションの設定値を Systems Manager Parameter Store に保存している。本番・検証などの環境ごとに設定値を整理し、アプリケーションの起動時に自分の環境の設定値だけをまとめて取得したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "設定値ごとに、環境名を含めた長い名前を付けて1つずつ取得する",
+          "explanation": "動きますが、設定値が増えるほど取得の処理が増え、管理もしにくくなります。"
+        },
+        {
+          "text": "環境ごとに別の AWS アカウントの Parameter Store を使う",
+          "explanation": "アカウントを分ける理由がほかになければ、管理が複雑になるだけです。"
+        },
+        {
+          "text": "すべての設定値を1つの大きなパラメータに JSON で入れる",
+          "explanation": "一部の値だけを変えにくく、値ごとのアクセスの制御もしにくくなります。"
+        },
+        {
+          "text": "/prod/app/… のような階層の名前を付け、GetParametersByPath でパスの配下をまとめて取得する",
+          "explanation": "パラメータの階層を使うと、パラメータを整理しやすくなり、階層の特定のレベル以下のすべてのパラメータをまとめて取得できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Parameter Store の階層（パス）で設定値を整理し、GetParametersByPath でまとめて取得するのが定番です。データベースの認証情報などのシークレットは Secrets Manager を使います。",
+      "references": [
+        {
+          "title": "パラメータの階層",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-paramstore-hierarchies.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d112",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-051",
+      "point": "デフォルトのレコード",
+      "question": "Route 53 の位置情報ルーティングで、どの場所にも当てはまらないクエリは、デフォルトのレコードを作らないと「応答なし」になる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。デフォルトのレコードを作らない場合、当てはまる場所のレコードがないクエリには「応答なし」が返ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "位置情報ルーティングでは、どこにも当てはまらない利用者のためにデフォルトのレコードを用意しておくのが基本です。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d113",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-051",
+      "point": "場所で振り分ける",
+      "question": "利用者のいる国にもとづいて、DNS の応答を変えたい。使う Route 53 のルーティングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "加重ルーティング",
+          "explanation": "割合で振り分ける方式で、利用者の場所は考慮しません。"
+        },
+        {
+          "text": "フェイルオーバールーティング",
+          "explanation": "障害時に切り替える方式です。"
+        },
+        {
+          "text": "位置情報ルーティング",
+          "explanation": "DNS クエリの送信元の場所（大陸・国・米国の州）にもとづいて応答するリソースを選びます。"
+        },
+        {
+          "text": "シンプルルーティング",
+          "explanation": "1つのリソースを返す基本の方式で、場所による振り分けはしません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "利用者の場所で振り分けるなら位置情報ルーティングです。コンテンツの配信を特定の国に制限したり、利用者の言語のコンテンツを出したりできます。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d114",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-052",
+      "point": "API キーの使い方",
+      "question": "API Gateway の API キーは、API へのアクセスの認証や認可に使ってよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。API キーを、API へのアクセスを制御するための認証や認可に使ってはいけません。アクセスの制御には IAM、Cognito、Lambda オーソライザーなどを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "API キーは、使用量プランで顧客ごとのスロットリングやクォータを管理するためのものです。",
+      "references": [
+        {
+          "title": "使用量プランと API キー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d115",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-052",
+      "point": "顧客ごとのリクエストの上限",
+      "question": "API Gateway で、顧客ごとにリクエストのレートと1か月のリクエスト数の上限を決めたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "AWS WAF のレートベースのルール",
+          "explanation": "IP アドレス単位の制限で、顧客や契約ごとの上限の管理には向きません。"
+        },
+        {
+          "text": "Lambda の予約済み同時実行数",
+          "explanation": "関数全体の同時実行の制限です。"
+        },
+        {
+          "text": "CloudFront のキャッシュ",
+          "explanation": "オリジンへのリクエストは減りますが、顧客ごとの上限にはなりません。"
+        },
+        {
+          "text": "使用量プランと API キー",
+          "explanation": "使用量プランで、API キーごとにスロットリングとクォータを設定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "顧客ごとの上限は使用量プランで管理します。制限はベストエフォートで適用され、厳密な上限ではない点にも注意します。",
+      "references": [
+        {
+          "title": "使用量プランと API キー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d116",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-053",
+      "point": "デッドレターキューへの移動",
+      "question": "SQS では、maxReceiveCount の回数だけ受信されても処理されなかったメッセージを、デッドレターキューに移せる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。maxReceiveCount は、メッセージがデッドレターキューに移動するまでに、コンシューマがソースキューからメッセージを受信できる回数です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "デッドレターキューに移したメッセージは、原因を調べたあとで、ソースキューへ再処理（リドライブ）できます。",
+      "references": [
+        {
+          "title": "デッドレターキュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d117",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-053",
+      "point": "デッドレターキューの場所",
+      "question": "SQS のデッドレターキューは、ソースキューと別のリージョンに置ける。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。デッドレターキューは、ソースキューと同じアカウント・同じリージョンにある必要があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "デッドレターキューは、処理に失敗し続けるメッセージを分けて調べるためのキューです。",
+      "references": [
+        {
+          "title": "デッドレターキュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d118",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-054",
+      "point": "Fargate とサーバーの管理",
+      "question": "AWS Fargate を使うと、EC2 インスタンスのクラスターを管理せずにコンテナを実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Fargate では、サーバーや EC2 インスタンスのクラスターを管理することなく、コンテナを実行できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CPU とメモリの要件を指定し、ネットワークと IAM のポリシーを決めて起動するだけです。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d119",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-054",
+      "point": "サーバーを管理せずにコンテナを動かす",
+      "question": "ECS でコンテナを動かしたい。EC2 インスタンスのパッチ適用や台数の管理はしたくない。適した起動の方法はどれか。",
+      "choices": [
+        {
+          "text": "EC2 起動タイプ",
+          "explanation": "EC2 インスタンスの管理が必要です。"
+        },
+        {
+          "text": "EC2 に Docker を入れる",
+          "explanation": "インスタンスの管理に加え、コンテナの管理の仕組みも自分で用意します。"
+        },
+        {
+          "text": "AWS Fargate",
+          "explanation": "サーバーやクラスターを管理せずにコンテナを実行できます。"
+        },
+        {
+          "text": "EKS のセルフマネージドのノード",
+          "explanation": "ノードの EC2 インスタンスの管理が必要です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "サーバーを管理しないコンテナの実行環境は Fargate です。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d120",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-055",
+      "point": "EFS と Windows",
+      "question": "Amazon EFS は、Windows ベースの EC2 インスタンスからも利用できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Microsoft Windows ベースの EC2 インスタンスでの EFS の利用はサポートされていません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Windows のファイル共有が必要なら、Amazon FSx for Windows File Server を使います。",
+      "references": [
+        {
+          "title": "FSx for Windows File Server とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html"
+        },
+        {
+          "title": "Amazon EFS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/efs/latest/ug/whatisefs.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d121",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-055",
+      "point": "Windows のファイル共有",
+      "question": "SMB のファイル共有と Active Directory によるアクセス権を、フルマネージドで使いたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon EFS",
+          "explanation": "NFS のファイルストレージで、Windows のインスタンスでは使えません。"
+        },
+        {
+          "text": "Amazon S3",
+          "explanation": "オブジェクトストレージで、SMB のファイル共有ではありません。"
+        },
+        {
+          "text": "Amazon EBS",
+          "explanation": "1つのインスタンスに付けるブロックストレージで、ファイル共有ではありません。"
+        },
+        {
+          "text": "Amazon FSx for Windows File Server",
+          "explanation": "フルマネージドの Windows のファイルサーバーで、SMB に対応し、Active Directory と連携します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Windows のファイル共有は FSx for Windows File Server、Linux のファイル共有は EFS、と使い分けます。",
+      "references": [
+        {
+          "title": "FSx for Windows File Server とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html"
+        },
+        {
+          "title": "Amazon EFS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/efs/latest/ug/whatisefs.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d122",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-056",
+      "point": "DynamoDB Streams の保存期間",
+      "question": "DynamoDB Streams のストリームのレコードは、最大24時間保存される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。DynamoDB Streams は、項目レベルの変更を時間順にとらえ、最大24時間保存します。24時間を過ぎたレコードは自動で削除されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ストリームのレコードは、Lambda などで24時間以内に処理する必要があります。",
+      "references": [
+        {
+          "title": "DynamoDB Streams",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.html"
+        },
+        {
+          "title": "DynamoDB Streams と Lambda",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.Lambda.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d123",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-056",
+      "point": "DynamoDB Streams の順番",
+      "question": "DynamoDB Streams は、テーブル全体のすべての変更について、発生した順番を保証する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。順番が保証されるのは、同じ項目（同じプライマリキー）の変更についてです。パーティションやテーブル全体の順番ではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "同じ項目への変更は順番どおりに処理できますが、項目をまたいだ順番は前提にできません。",
+      "references": [
+        {
+          "title": "DynamoDB Streams",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.html"
+        },
+        {
+          "title": "DynamoDB Streams と Lambda",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.Lambda.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d124",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-057",
+      "point": "Amazon MQ と既存のコード",
+      "question": "Amazon MQ を使うと、既存のメッセージブローカーから、メッセージングのコードを書き換えずに移行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Amazon MQ は Apache ActiveMQ と RabbitMQ 向けのマネージドのメッセージブローカーで、既存のブローカーからコードを書き換えずに移行できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "既存のアプリケーションをそのまま移すなら Amazon MQ、新しく作るなら SQS や SNS が候補です。",
+      "references": [
+        {
+          "title": "Amazon MQ とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d125",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-057",
+      "point": "ActiveMQ のアプリケーションの移行",
+      "question": "オンプレミスの ActiveMQ を使うアプリケーションを、コードを書き換えずに AWS へ移し、ブローカーの運用もなくしたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon SQS",
+          "explanation": "マネージドのキューですが、ActiveMQ から移すにはコードの書き換えが必要です。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "ストリーミングのデータ向けで、コードの書き換えも必要です。"
+        },
+        {
+          "text": "Amazon MQ",
+          "explanation": "ActiveMQ と RabbitMQ 向けのマネージドのメッセージブローカーで、コードを書き換えずに移行できます。"
+        },
+        {
+          "text": "EC2 上の ActiveMQ",
+          "explanation": "コードは変えずに済みますが、ブローカーの運用が残ります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "既存の ActiveMQ・RabbitMQ からの移行は Amazon MQ です。",
+      "references": [
+        {
+          "title": "Amazon MQ とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d126",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-058",
+      "point": "マルチリージョンキーの仕組み",
+      "question": "KMS のマルチリージョンキーは、異なるリージョンで同じキー ID とキーマテリアルを持つ。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。マルチリージョンキーは、異なるリージョンで同じキー ID とキーマテリアルを持つ、相互運用可能なキーです。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "あるリージョンで暗号化したデータを、再暗号化やリージョンをまたいだ呼び出しなしで、別のリージョンで復号できます。",
+      "references": [
+        {
+          "title": "マルチリージョンキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/multi-region-keys-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d127",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-058",
+      "point": "別のリージョンで復号する",
+      "question": "東京で KMS で暗号化したデータを、大阪でも再暗号化せずに復号したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "リージョンごとに別の KMS キーを作る",
+          "explanation": "別の鍵なので、コピーのたびに再暗号化が必要です。"
+        },
+        {
+          "text": "東京の KMS キーを大阪から呼び出す",
+          "explanation": "リージョンをまたいだ呼び出しになり、東京の障害時に使えません。"
+        },
+        {
+          "text": "SSE-S3",
+          "explanation": "S3 が管理する鍵で、自社の KMS キーの要件を満たしません。"
+        },
+        {
+          "text": "KMS のマルチリージョンキー",
+          "explanation": "同じキー ID とキーマテリアルのキーを複数のリージョンに置けるので、別のリージョンでそのまま復号できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "複数のリージョンで同じ鍵を使うなら、KMS のマルチリージョンキーです。",
+      "references": [
+        {
+          "title": "マルチリージョンキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/multi-region-keys-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d128",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-059",
+      "point": "インポートした証明書の更新",
+      "question": "ACM にインポートした証明書も、ACM が自動で更新する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。インポートした証明書は、ACM のマネージドな更新の対象外です。自動で更新されるのは、ACM が発行した証明書（DNS 検証を使っている場合など）です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "更新忘れを防ぐには、ACM が発行した証明書を DNS 検証で使います。",
+      "references": [
+        {
+          "title": "ACM のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d129",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-059",
+      "point": "更新後の ARN",
+      "question": "ACM のマネージドな更新で証明書が更新されても、証明書の ARN は変わらない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ACM の更新では、証明書の ARN は変わりません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ARN が変わらないので、ELB や CloudFront に関連付けた設定を変える必要がありません。",
+      "references": [
+        {
+          "title": "ACM のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d130",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-060",
+      "point": "Security Hub の標準",
+      "question": "AWS Security Hub では、AWS Foundational Security Best Practices などのセキュリティ標準で、設定をチェックできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Security Hub（CSPM）では、AWS Foundational Security Best Practices（FSBP）、CIS、PCI DSS、NIST などの標準でチェックできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "検出結果の集約と、ベストプラクティスに沿っているかのチェックを、1つのサービスで行えます。",
+      "references": [
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d131",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-060",
+      "point": "セキュリティの状況を1か所で見る",
+      "question": "組織の全アカウントのセキュリティの検出結果を集め、ベストプラクティスのチェックも自動で行いたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "API の操作を記録するサービスです。"
+        },
+        {
+          "text": "Amazon CloudWatch のダッシュボード",
+          "explanation": "メトリクスの可視化のための機能です。"
+        },
+        {
+          "text": "AWS Security Hub（CSPM）",
+          "explanation": "アカウントやサードパーティの製品のセキュリティのデータを集め、セキュリティ標準でチェックできます。"
+        },
+        {
+          "text": "AWS Config のアグリゲーター",
+          "explanation": "Config の設定とコンプライアンスのデータを集めますが、GuardDuty などの検出結果をまとめるものではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "組織全体のセキュリティの状況の把握は Security Hub です。",
+      "references": [
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d132",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-061",
+      "point": "aws:PrincipalOrgID の使いどころ",
+      "question": "aws:PrincipalOrgID の条件キーを使うと、リソースベースのポリシーで、組織内のすべてのアカウント ID を列挙する代わりに組織 ID で許可できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。aws:PrincipalOrgID は、組織内のすべてのアカウント ID を一覧で指定する代わりに使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アカウントが増えても、ポリシーを書き換えずに済みます。",
+      "references": [
+        {
+          "title": "AWS グローバル条件コンテキストキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d133",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-061",
+      "point": "組織のアカウントだけに許可する",
+      "question": "S3 バケットを、組織内のすべてのアカウントから読み取れるようにし、アカウントが増えてもポリシーを変えたくない。使う条件キーはどれか。",
+      "choices": [
+        {
+          "text": "aws:RequestedRegion",
+          "explanation": "リクエスト先のリージョンの条件です。"
+        },
+        {
+          "text": "aws:SourceIp",
+          "explanation": "送信元の IP アドレスの条件で、組織のアカウントかどうかは分かりません。"
+        },
+        {
+          "text": "aws:SecureTransport",
+          "explanation": "暗号化された通信かどうかの条件です。"
+        },
+        {
+          "text": "aws:PrincipalOrgID",
+          "explanation": "リクエスト元のプリンシパルが属する組織の ID と比べる条件キーです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "「自社の組織のアカウントだけ」を許可するなら aws:PrincipalOrgID です。",
+      "references": [
+        {
+          "title": "AWS グローバル条件コンテキストキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d134",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-062",
+      "point": "AD Connector とキャッシュ",
+      "question": "AD Connector は、オンプレミスの Active Directory の情報をクラウドにキャッシュする。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AD Connector は、クラウドに情報をキャッシュせずに、ディレクトリのリクエストをオンプレミスの Active Directory へ転送するディレクトリゲートウェイです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "既存の社内の認証情報で、AWS のアプリケーションにサインインできます。",
+      "references": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d135",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-062",
+      "point": "オンプレミスの AD をそのまま使う",
+      "question": "社内の Active Directory の認証情報で AWS のアプリケーションにサインインさせたい。ディレクトリの情報はクラウドに置きたくない。適したものはどれか。",
+      "choices": [
+        {
+          "text": "IAM ユーザー",
+          "explanation": "社内の認証情報とは別のものを管理することになります。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープール",
+          "explanation": "アプリの利用者向けのディレクトリです。"
+        },
+        {
+          "text": "AD Connector",
+          "explanation": "クラウドに情報をキャッシュせずに、リクエストをオンプレミスの AD に転送します。"
+        },
+        {
+          "text": "EC2 上の Active Directory",
+          "explanation": "ディレクトリの情報がクラウドに置かれます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "オンプレミスの AD をそのまま使い、クラウドに情報を置きたくないなら AD Connector です。",
+      "references": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d136",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-063",
+      "point": "ガバナンスモード",
+      "question": "S3 Object Lock のガバナンスモードでは、特別なアクセス許可を持つユーザーなら、保護されたオブジェクトを削除できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ガバナンスモードでは、特別なアクセス許可を持たない限り、上書きや削除、ロックの設定の変更はできません。逆に、特別な許可があれば削除できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "誰にも削除させたくないなら、コンプライアンスモードを使います。",
+      "references": [
+        {
+          "title": "S3 Object Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d137",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-063",
+      "point": "Object Lock の前提",
+      "question": "S3 Object Lock は、バージョニングを無効にしたバケットでも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Object Lock は、S3 のバージョニングを有効にしたバケットでだけ使えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Object Lock は、オブジェクトのバージョンごとに保持期間やリーガルホールドを設定します。リーガルホールドには有効期限がありません。",
+      "references": [
+        {
+          "title": "S3 Object Lock",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d138",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-064",
+      "point": "ブロックパブリックアクセスと既存のポリシー",
+      "question": "S3 のブロックパブリックアクセスを有効にすると、既存のバケットポリシーや ACL の内容が書き換えられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ブロックパブリックアクセスの設定は、既存のポリシーや ACL を変更しません。パブリックなアクセスを許可する設定を上書きして、そのアクセスを拒否します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "設定を外すと、元のポリシーや ACL の内容に戻ります。",
+      "references": [
+        {
+          "title": "S3 のブロックパブリックアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d139",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-064",
+      "point": "アカウントのすべてのバケットの公開を防ぐ",
+      "question": "設定ミスでバケットのポリシーが公開になっても、アカウント内のどのバケットも公開されないようにしたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "バケットのバージョニング",
+          "explanation": "誤った削除や上書きから戻すための機能です。"
+        },
+        {
+          "text": "SSE-KMS の暗号化",
+          "explanation": "公開そのものを防ぐ設定ではありません。"
+        },
+        {
+          "text": "S3 のライフサイクルルール",
+          "explanation": "ストレージクラスの移動や削除のための機能です。"
+        },
+        {
+          "text": "アカウントのレベルのブロックパブリックアクセス",
+          "explanation": "パブリックアクセスを許可するポリシーや ACL を上書きして公開を制限します。アカウント全体に設定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "S3 の公開を確実に防ぐなら、アカウントのレベルのブロックパブリックアクセスです。",
+      "references": [
+        {
+          "title": "S3 のブロックパブリックアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d140",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-065",
+      "point": "Aurora Serverless v2 の向き不向き",
+      "question": "Aurora Serverless v2 は、負荷の変動が大きいワークロードに向いている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Aurora Serverless v2 は、可変または「スパイキー」なワークロードを対象にしており、容量は需要に応じて自動で調整されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "最小の容量を 0 ACU にすると、使われていないときに一時停止でき、その間はインスタンスの容量の料金がかかりません。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        },
+        {
+          "title": "自動一時停止",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d141",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-065",
+      "point": "一時停止のタイミング",
+      "question": "Aurora Serverless v2 の自動一時停止は、ユーザーの接続が開いたままでも一時停止する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ユーザーの接続が開いている間は、一時停止しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "一時停止までの時間は最短300秒（5分）から設定できます。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        },
+        {
+          "title": "自動一時停止",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d142",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-066",
+      "point": "ターゲット使用率",
+      "question": "DynamoDB のプロビジョンドキャパシティの Auto Scaling では、ターゲット使用率を70%にすることが推奨されている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ドキュメントでは、ターゲット使用率を70%に設定することが推奨されています。最小と最大のキャパシティも設定します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Auto Scaling で、トラフィックの変化に合わせてキャパシティを自動で調整できます。",
+      "references": [
+        {
+          "title": "DynamoDB のキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
+        },
+        {
+          "title": "プロビジョンドキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d143",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-066",
+      "point": "安定したトラフィックの DynamoDB",
+      "question": "何年も安定していて予測できるトラフィックの DynamoDB のテーブルで、容量を自動で調整しつつコストを最適化したい。適した設定はどれか。",
+      "choices": [
+        {
+          "text": "プロビジョンドモードで、ピークに合わせた固定の値",
+          "explanation": "少ない時間帯もピーク分の料金がかかります。"
+        },
+        {
+          "text": "プロビジョンドモードで、最小の固定の値",
+          "explanation": "アクセスが増えるとスロットリングが起きます。"
+        },
+        {
+          "text": "プロビジョンドモードと Auto Scaling",
+          "explanation": "予測できる安定したワークロードならプロビジョンドモードを選べ、Auto Scaling でトラフィックに合わせて自動で調整できます。"
+        },
+        {
+          "text": "テーブルを毎晩作り直す",
+          "explanation": "運用の負担が大きく、コストの最適化にもなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "多くのワークロードではオンデマンドモードが推奨されますが、予測できる安定したワークロードなら、プロビジョンドモードと Auto Scaling も選べます。",
+      "references": [
+        {
+          "title": "DynamoDB のキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
+        },
+        {
+          "title": "プロビジョンドキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d144",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-067",
+      "point": "キャッシュの期間とオリジンへのリクエスト",
+      "question": "CloudFront のキャッシュの期間を短くするほど、オリジンへのリクエストは減る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。キャッシュの期間が短いほど、最新のバージョンを取得するために CloudFront がオリジンにリクエストを送る頻度は高くなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オリジンへのリクエストを減らすには、キャッシュヒット率を上げます。",
+      "references": [
+        {
+          "title": "キャッシュヒット率の向上",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d145",
+      "type": "drill",
+      "domain": "d3",
+      "source": "sap-067",
+      "point": "追加のキャッシュの層",
+      "question": "CloudFront で、オリジンの前に追加のキャッシュの層を置き、キャッシュヒット率を上げたい。使う機能はどれか。",
+      "choices": [
+        {
+          "text": "S3 Transfer Acceleration",
+          "explanation": "S3 への長距離の転送を速くする機能です。"
+        },
+        {
+          "text": "署名付き URL",
+          "explanation": "コンテンツへのアクセスを制限する機能です。"
+        },
+        {
+          "text": "AWS WAF",
+          "explanation": "Web アプリケーションのファイアウォールです。"
+        },
+        {
+          "text": "CloudFront Origin Shield",
+          "explanation": "オリジンの前に追加のキャッシュの層を置き、キャッシュヒット率の向上に役立ちます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "オリジンの負荷を下げるには、キャッシュヒット率を上げることと、Origin Shield の利用が効果的です。",
+      "references": [
+        {
+          "title": "キャッシュヒット率の向上",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d146",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-068",
+      "point": "Aurora Global Database の書き込み",
+      "question": "Aurora Global Database では、通常、書き込みはプライマリリージョンで行い、セカンダリリージョンは読み取り専用である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Aurora Global Database は、データが書き込まれる1つのプライマリリージョンと、最大10の読み取り専用のセカンダリリージョンで構成されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "書き込み転送を設定すれば、セカンダリからの書き込みのリクエストをプライマリに送ることもできます。",
+      "references": [
+        {
+          "title": "Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d147",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-068",
+      "point": "複製の遅延",
+      "question": "Aurora Global Database のセカンダリリージョンへの複製は、通常数分の遅延がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。通常1秒未満の遅延で、データをセカンダリリージョンに複製します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "リージョン全体の障害に備えつつ、データの損失を小さくできます。",
+      "references": [
+        {
+          "title": "Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d148",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-069",
+      "point": "DataSync の転送先",
+      "question": "AWS DataSync は、オンプレミスの NFS から Amazon EFS への転送にも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。DataSync はオンプレミスの NFS・SMB・HDFS・オブジェクトストレージと連携し、S3・EFS・FSx などに転送できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "転送の管理とインフラを自動化し、データの整合性の検証も行います。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d149",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-069",
+      "point": "ファイルのオンラインでの大量の移行",
+      "question": "オンプレミスの NFS の大量のファイルを、整合性を確かめながら Amazon EFS に移したい。転送の仕組みは作りたくない。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "rsync のスクリプト",
+          "explanation": "仕組みや確認の処理を自分で作る必要があります。"
+        },
+        {
+          "text": "AWS Transform MGN",
+          "explanation": "サーバーごと移すサービスです。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "NFS などから EFS などへの転送を自動化し、整合性の検証も行います。"
+        },
+        {
+          "text": "S3 File Gateway",
+          "explanation": "ファイルは S3 に保存されるため、EFS への移行にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ファイルのオンラインでの移行は AWS DataSync です。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d150",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-070",
+      "point": "Resilience Hub の評価",
+      "question": "AWS Resilience Hub は、ポリシーで決めた RTO と RPO の目標を、アプリケーションが満たせるかを評価する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Resilience Hub は、ポリシーで定義した RTO と RPO の目標を達成できるかを推定し、ギャップと対策の一覧を示します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "中断の種類（アプリケーション、インフラ、AZ、リージョン）ごとに目標を決めます。",
+      "references": [
+        {
+          "title": "AWS Resilience Hub の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/concepts-terms.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d151",
+      "type": "drill",
+      "domain": "d4",
+      "source": "sap-070",
+      "point": "目標に対する回復力の評価",
+      "question": "アプリケーションが RTO と RPO の目標を満たせるかを評価し、改善の方法を知りたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Fault Injection Service",
+          "explanation": "実際に障害を注入する実験を行うサービスです。"
+        },
+        {
+          "text": "Amazon CloudWatch",
+          "explanation": "メトリクスやログを監視するサービスです。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "設定のルールへの準拠を評価するサービスです。"
+        },
+        {
+          "text": "AWS Resilience Hub",
+          "explanation": "RTO と RPO の目標に対して回復力を評価し、改善の推奨を出します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "目標に対する評価は Resilience Hub、障害を起こして確かめるのは FIS、と使い分けます。",
+      "references": [
+        {
+          "title": "AWS Resilience Hub の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/concepts-terms.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d152",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-071",
+      "point": "手動承認の期限",
+      "question": "CodePipeline の手動承認のアクションは、承認か拒否がされるまで無期限に待つ。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。7日以内に承認または拒否されないと、そのアクションは失敗になります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "承認が必要なときは SNS のトピックで担当者に通知できます。",
+      "references": [
+        {
+          "title": "手動承認アクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/approvals.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d153",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-071",
+      "point": "デプロイの前に人の確認を入れる",
+      "question": "CodePipeline で、本番へのデプロイの前に責任者が承認したときだけ進めたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "本番のステージを手作業で有効・無効にする",
+          "explanation": "運用でカバーする方法で、漏れが起きやすくなります。"
+        },
+        {
+          "text": "パイプラインを2つに分ける",
+          "explanation": "分けても承認の仕組みにはなりません。"
+        },
+        {
+          "text": "手動承認のアクション",
+          "explanation": "パイプラインを止め、承認されると再開し、拒否されるとステージが失敗します。"
+        },
+        {
+          "text": "デプロイ後に本番を確認する",
+          "explanation": "問題のある変更を止められません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "パイプラインの途中で人の確認を入れるなら、手動承認のアクションです。",
+      "references": [
+        {
+          "title": "手動承認アクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/approvals.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d154",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-072",
+      "point": "その場での更新の影響",
+      "question": "Elastic Beanstalk で、今の環境にその場でアプリケーションを更新すると、アプリケーションが一時的に使えなくなることがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。その場での更新では、アプリケーションが短い間使えなくなることがあります。これを避けるには、Blue/Green デプロイを使います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "別の環境に新しいバージョンをデプロイしてから、2つの環境の CNAME を入れ替えます。",
+      "references": [
+        {
+          "title": "Elastic Beanstalk の Blue/Green デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d155",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-072",
+      "point": "停止時間を避けるデプロイ",
+      "question": "Elastic Beanstalk で、停止時間を避けて新しいバージョンをデプロイし、すぐに戻せるようにしたい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "今の環境に上書きでデプロイする",
+          "explanation": "一時的に使えなくなることがあります。"
+        },
+        {
+          "text": "環境を削除して作り直す",
+          "explanation": "作り直しの間、止まります。"
+        },
+        {
+          "text": "深夜にデプロイする",
+          "explanation": "影響は減っても、止まること自体は避けられません。"
+        },
+        {
+          "text": "別の環境にデプロイし、環境の URL（CNAME）を入れ替える",
+          "explanation": "Blue/Green デプロイで、CNAME を入れ替えてトラフィックを新しいバージョンへ向けます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Elastic Beanstalk の Blue/Green デプロイは、環境の URL の入れ替えで行います。",
+      "references": [
+        {
+          "title": "Elastic Beanstalk の Blue/Green デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d156",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-073",
+      "point": "アグリゲーターの集める範囲",
+      "question": "AWS Config のアグリゲーターは、組織内のアカウントから Config の設定とコンプライアンスのデータを集められる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。アグリゲーターは、複数のアカウント・リージョン、または組織内の Config が有効なすべてのアカウントから、データを集めます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アグリゲーターを作ったアカウントで、まとめて確認できます。",
+      "references": [
+        {
+          "title": "AWS Config のデータの集約",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/aggregate-data.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d157",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-073",
+      "point": "複数のアカウントの Config のデータをまとめる",
+      "question": "組織の数十のアカウント・複数のリージョンの Config のデータを、1つのアカウントで確認したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "CloudTrail の組織の証跡",
+          "explanation": "API の操作の記録で、設定のルールへの準拠の状況はまとめられません。"
+        },
+        {
+          "text": "Config のアグリゲーター",
+          "explanation": "複数のアカウント・リージョンや組織から、Config のデータを集めます。"
+        },
+        {
+          "text": "各アカウントのコンソールを順番に見る",
+          "explanation": "手間がかかります。"
+        },
+        {
+          "text": "CloudWatch のダッシュボード",
+          "explanation": "メトリクスの可視化の機能です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "複数のアカウントの Config のデータの集約は、アグリゲーターで行います。",
+      "references": [
+        {
+          "title": "AWS Config のデータの集約",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/aggregate-data.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d158",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-074",
+      "point": "GuardDuty の検出結果の送り先",
+      "question": "GuardDuty は、検出結果をイベントとして Amazon EventBridge に自動で送る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。GuardDuty は検出結果をイベントとして自動で公開します。EventBridge のルールとターゲットを作れば、Lambda 関数や SNS トピックに送れます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "検出結果への自動の対応は、EventBridge のルールで始めます。",
+      "references": [
+        {
+          "title": "GuardDuty の検出結果と EventBridge",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_findings_eventbridge.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d159",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-074",
+      "point": "検出結果への自動の対応",
+      "question": "GuardDuty の重大な検出結果が出たら、自動でインスタンスを隔離したい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "担当者が毎朝コンソールを確認する",
+          "explanation": "自動の対応になりません。"
+        },
+        {
+          "text": "CloudTrail のログを1日1回分析する",
+          "explanation": "すぐには対応できません。"
+        },
+        {
+          "text": "EventBridge のルールで検出結果を受け、Lambda 関数で隔離する",
+          "explanation": "GuardDuty の検出結果のイベントを EventBridge で受け、Lambda で自動で対応できます。"
+        },
+        {
+          "text": "検出結果を S3 に出力して月に1回確認する",
+          "explanation": "すぐには対応できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "セキュリティの検出結果への自動の対応は、EventBridge と Lambda の組み合わせです。",
+      "references": [
+        {
+          "title": "GuardDuty の検出結果と EventBridge",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_findings_eventbridge.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d160",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-075",
+      "point": "階層でまとめて取得",
+      "question": "Parameter Store では、階層の特定のレベル以下のパラメータを、GetParametersByPath でまとめて取得できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。階層内の特定のレベル以下のすべてのパラメータをクエリでき、API は GetParametersByPath です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "/prod/app/… のように環境ごとに階層を分けておくと、自分の環境の設定値だけをまとめて取得できます。",
+      "references": [
+        {
+          "title": "パラメータの階層",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-paramstore-hierarchies.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d161",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-075",
+      "point": "環境ごとの設定値の整理",
+      "question": "Parameter Store で、環境ごとに設定値を整理し、起動時に自分の環境の設定値だけをまとめて取得したい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "1つの大きなパラメータに JSON で入れる",
+          "explanation": "一部の値だけを変えにくくなります。"
+        },
+        {
+          "text": "環境ごとに別のアカウントを使う",
+          "explanation": "ほかに理由がなければ管理が複雑になるだけです。"
+        },
+        {
+          "text": "設定値を1つずつ取得する",
+          "explanation": "設定値が増えるほど処理が増えます。"
+        },
+        {
+          "text": "階層の名前を付け、パスの配下をまとめて取得する",
+          "explanation": "パラメータの階層で整理し、GetParametersByPath で特定のレベル以下をまとめて取得できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Parameter Store の階層で設定値を整理するのが定番です。",
+      "references": [
+        {
+          "title": "パラメータの階層",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/sysman-paramstore-hierarchies.html"
+        }
+      ]
     }
   ]
 }
