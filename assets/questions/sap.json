@@ -5,7 +5,7 @@
     {
       "id": "sap-001",
       "domain": "d2",
-      "question": "ある企業はAWS Organizationsで50以上のアカウントを管理している。セキュリティチームは、どのアカウントでも特定のリージョン以外にリソースを作成できないようにしたい。各アカウントの管理者がこの制限を外せないようにする必要がある。最も運用負荷が低い方法はどれか。",
+      "question": "ある企業はAWS Organizationsで50以上のアカウントを管理している。セキュリティチームは、どのメンバーアカウントでも特定のリージョン以外にリソースを作成できないようにしたい。各アカウントの管理者がこの制限を外せないようにする必要がある。最も運用負荷が低い方法はどれか。",
       "choices": [
         {
           "text": "組織のルートまたはOUに、aws:RequestedRegionで許可リージョン以外を拒否するSCPを適用する",
@@ -27,7 +27,7 @@
       "answers": [
         0
       ],
-      "explanation": "「アカウントの管理者でも外せない制限」を組織全体にかけるなら、SCPが定番です。IAMポリシーはアカウント内で変更でき、ConfigやCloudTrailは検出や記録だけで、作成自体は防げません。",
+      "explanation": "「アカウントの管理者でも外せない制限」を組織全体にかけるなら、SCPが定番です。IAMポリシーはアカウント内で変更でき、ConfigやCloudTrailは検出や記録だけで、作成自体は防げません。なお、SCPは管理アカウントには効かないため、管理アカウントでは別の対策が必要です。",
       "references": [
         {
           "title": "サービスコントロールポリシー (SCP)",
@@ -36,6 +36,10 @@
         {
           "title": "AWS グローバル条件コンテキストキー（aws:RequestedRegion）",
           "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        },
+        {
+          "title": "SCP の評価",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html"
         }
       ]
     },
@@ -69,7 +73,7 @@
         0,
         3
       ],
-      "explanation": "移行前の調査は、Application Discovery Serviceで情報を集め、Migration Hubで一元管理するのが定番の組み合わせです。Snowball・DataSyncはデータを運ぶ手段、Inspectorは脆弱性評価のサービスで、調査には使いません。",
+      "explanation": "移行前の調査は、Application Discovery Serviceで情報を集め、Migration Hubで一元管理するのが定番の組み合わせです。Snowball・DataSyncはデータを運ぶ手段、Inspectorは脆弱性評価のサービスで、調査には使いません。なお、Application Discovery Service は2025年11月7日から新規の利用者の受け付けを停止しており、新しく始める場合は AWS Transform が推奨されています。",
       "references": [
         {
           "title": "AWS Application Discovery Service とは",
@@ -78,6 +82,10 @@
         {
           "title": "AWS Migration Hub とは",
           "url": "https://docs.aws.amazon.com/ja_jp/migrationhub/latest/ug/whatishub.html"
+        },
+        {
+          "title": "Application Discovery Service の提供状況の変更",
+          "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/application-discovery-service-availability-change.html"
         }
       ]
     },
@@ -88,7 +96,7 @@
       "choices": [
         {
           "text": "複数AZにまたがるAuto ScalingグループとALBを構成し、RDSをマルチAZ配置に変更する",
-          "explanation": "複数AZのAuto ScalingとALBで、アプリ層の単一障害点がなくなります。RDSのマルチAZ配置は、別のAZのスタンバイへ自動でフェイルオーバーします。どちらも既存の構成を活かしたまま変更できます。"
+          "explanation": "複数AZのAuto ScalingとALBで、アプリ層の単一障害点がなくなります。RDSのマルチAZ配置は、別のAZに同期スタンバイを持ち、障害時はスタンバイへフェイルオーバーします。どちらも既存の構成を活かしたまま変更できます。"
         },
         {
           "text": "EC2のインスタンスサイズを大きくし、RDSのストレージを増やす",
@@ -115,6 +123,10 @@
         {
           "title": "Elastic Load Balancing を使用して Auto Scaling グループ内のインスタンスにトラフィックを分散する",
           "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        },
+        {
+          "title": "マルチ AZ DB インスタンスのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
         }
       ]
     },
@@ -148,6 +160,18 @@
         {
           "title": "Amazon SQS FIFO キュー",
           "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html"
+        },
+        {
+          "title": "FIFO キューのメッセージグループの考え方",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-understanding-logic.html"
+        },
+        {
+          "title": "FIFO キューの1回だけの処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html"
+        },
+        {
+          "title": "標準キュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html"
         }
       ]
     },
@@ -235,6 +259,10 @@
         {
           "title": "Direct Connect ゲートウェイ",
           "url": "https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/direct-connect-gateways-intro.html"
+        },
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
         }
       ]
     },
@@ -272,13 +300,17 @@
         {
           "title": "AWS PrivateLink を使用してサービスを共有する",
           "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/privatelink-share-your-services.html"
+        },
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
         }
       ]
     },
     {
       "id": "sap-008",
       "domain": "d1",
-      "question": "あるオンラインゲームの会社は、UDP で通信するゲームサーバーを2つのリージョンで運用している。世界中のプレイヤーに低遅延で接続させたい。また、法人の利用者はファイアウォールで接続先の IP アドレスを許可リストに登録するため、接続先の IP アドレスは変わってはならない。リージョンで障害が起きたときは、DNS のキャッシュに左右されずに数十秒で別のリージョンへ切り替えたい。最も適切なサービスはどれか。",
+      "question": "あるオンラインゲームの会社は、UDP で通信するゲームサーバーを2つのリージョンで運用している。世界中のプレイヤーに低遅延で接続させたい。また、法人の利用者はファイアウォールで接続先の IP アドレスを許可リストに登録するため、接続先の IP アドレスは変わってはならない。リージョンで障害が起きたときは、DNS のキャッシュに左右されずに1分以内に別のリージョンへ切り替えたい。最も適切なサービスはどれか。",
       "choices": [
         {
           "text": "Amazon CloudFront のディストリビューションを作成し、各リージョンのゲームサーバーをオリジンにする",
@@ -305,6 +337,10 @@
         {
           "title": "AWS Global Accelerator とは",
           "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        },
+        {
+          "title": "AWS Global Accelerator のよくある質問",
+          "url": "https://aws.amazon.com/jp/global-accelerator/faqs/"
         }
       ]
     },
@@ -404,6 +440,10 @@
         {
           "title": "Amazon Bedrock ナレッジベース",
           "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/knowledge-base.html"
+        },
+        {
+          "title": "データソースの同期",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/kb-data-source-sync-ingest.html"
         }
       ]
     },
@@ -441,6 +481,10 @@
         {
           "title": "自動プロビジョニング（SCIM）",
           "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/provision-automatically.html"
+        },
+        {
+          "title": "許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
         }
       ]
     },
@@ -558,7 +602,7 @@
         },
         {
           "text": "AWS KMS のカスタマーマネージドキーを作成し、自動ローテーションを有効にする",
-          "explanation": "カスタマーマネージドキーは鍵のポリシーやローテーションを自社で管理できますが、鍵は AWS が運用する共有の HSM で保護されます。シングルテナントの HSM という要件は満たしません。"
+          "explanation": "カスタマーマネージドキーは鍵のポリシーやローテーションを自社で管理できますが、鍵は AWS KMS が管理する、特定の利用者に専有されない HSM のフリートで保護されます。シングルテナントの HSM という要件は満たしません。"
         },
         {
           "text": "AWS CloudHSM のクラスターを作成し、HSM のユーザーと鍵を自社で管理する",
@@ -572,11 +616,15 @@
       "answers": [
         2
       ],
-      "explanation": "「シングルテナントの HSM」「鍵を自社だけが管理」「PKCS#11 などの標準インターフェイス」という要件は AWS CloudHSM の特徴です。KMS は鍵の管理を簡単にできる一方で、HSM は AWS が運用する共有のものです。",
+      "explanation": "「シングルテナントの HSM」「鍵を自社だけが管理」「PKCS#11 などの標準インターフェイス」という要件は AWS CloudHSM の特徴です。KMS は鍵の管理を簡単にできる一方で、HSM は AWS KMS が管理し、利用者が専有するものではありません。",
       "references": [
         {
           "title": "AWS CloudHSM とは",
           "url": "https://docs.aws.amazon.com/ja_jp/cloudhsm/latest/userguide/introduction.html"
+        },
+        {
+          "title": "AWS KMS のキーストア",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-store-overview.html"
         }
       ]
     },
@@ -717,6 +765,10 @@
         {
           "title": "NAT ゲートウェイの料金",
           "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/nat-gateway-pricing.html"
+        },
+        {
+          "title": "AWS PrivateLink の料金",
+          "url": "https://aws.amazon.com/jp/privatelink/pricing/"
         }
       ]
     },
@@ -745,11 +797,15 @@
       "answers": [
         0
       ],
-      "explanation": "「アクセスが予測できない」「取り出し料金なしで自動最適化したい」なら S3 Intelligent-Tiering です。なお、128 KB 未満のオブジェクトは自動の階層移動の対象外になる点も押さえておきます。",
+      "explanation": "「アクセスが予測できない」「取り出し料金なしで自動最適化したい」なら S3 Intelligent-Tiering です。なお、128 KB 未満のオブジェクトは自動の階層移動の対象外（常に高頻度アクセス階層の料金で、監視料金はかからない）になる点も押さえておきます。",
       "references": [
         {
           "title": "S3 Intelligent-Tiering の仕組み",
           "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        },
+        {
+          "title": "S3 Intelligent-Tiering（ストレージクラス）",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/intelligent-tiering/"
         }
       ]
     },
@@ -801,7 +857,7 @@
       "question": "ある企業は、オンプレミスで稼働する約100台のサーバーの災害対策を AWS で行いたい。目標は RPO が数秒、RTO が数分である。普段は AWS 側でサーバーを稼働させておく費用をできるだけ抑えたい。最も適切な方法はどれか。",
       "choices": [
         {
-          "text": "AWS Elastic Disaster Recovery でサーバーをブロックレベルで継続的にレプリケーションし、災害時に復旧用のインスタンスを起動する",
+          "text": "AWS Elastic Disaster Recovery でサーバーを継続的にレプリケーションし、災害時に復旧用のインスタンスを起動する",
           "explanation": "Elastic Disaster Recovery は、低コストのステージング領域へデータを継続的にレプリケーションし、災害時に完全なインスタンスを数分で起動します。RPO は秒単位、RTO は分単位を実現でき、普段は本番と同じ台数を動かす必要がありません。"
         },
         {
@@ -825,6 +881,10 @@
         {
           "title": "AWS Elastic Disaster Recovery とは",
           "url": "https://docs.aws.amazon.com/ja_jp/drs/latest/userguide/what-is-drs.html"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery",
+          "url": "https://aws.amazon.com/jp/disaster-recovery/"
         }
       ]
     },
@@ -937,6 +997,14 @@
         {
           "title": "AWS Secrets Manager のシークレットのローテーション",
           "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        },
+        {
+          "title": "マネージドローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotate-secrets_managed.html"
+        },
+        {
+          "title": "Parameter Store",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html"
         }
       ]
     },
@@ -970,6 +1038,10 @@
         {
           "title": "CodeDeploy のデプロイ設定",
           "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployment-configurations.html"
+        },
+        {
+          "title": "ロールバックと再デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployments-rollback-and-redeploy.html"
         }
       ]
     },
@@ -998,11 +1070,15 @@
       "answers": [
         3
       ],
-      "explanation": "マイクロサービスで「どこが遅いか」を調べるには、分散トレーシング（AWS X-Ray や OpenTelemetry）を使います。ログやメトリクスだけでは、サービスをまたいだリクエストの流れを追いにくくなります。",
+      "explanation": "マイクロサービスで「どこが遅いか」を調べるには、分散トレーシング（AWS X-Ray や OpenTelemetry）を使います。ログやメトリクスだけでは、サービスをまたいだリクエストの流れを追いにくくなります。なお、X-Ray の SDK とデーモンは2026年2月25日にメンテナンスモードに入っており、新しく計装するなら OpenTelemetry（AWS Distro for OpenTelemetry）が推奨されています。",
       "references": [
         {
           "title": "AWS X-Ray とは",
           "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/aws-xray.html"
+        },
+        {
+          "title": "アプリケーションの計装",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-instrumenting-your-app.html"
         }
       ]
     },
