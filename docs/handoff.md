@@ -82,7 +82,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
 assets/questions/sap.json               SAPの問題（本番形式75問＋一問一答161問）
-assets/questions/saa.json               SAAの問題（本番形式35問。分野1〜4に 9・9・7・10問、うち複数選択2問。＋一問一答70問）
+assets/questions/saa.json               SAAの問題（本番形式65問。分野1〜4に 20・17・15・13問で本番の比重どおり、うち複数選択2問。＋一問一答130問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
 lib/models/question.dart                Question・Choice・Reference
@@ -240,7 +240,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - 本番形式の解説の下に「ポイント別の一問一答（n問）」、一問一答の解説の下に「元の問題（本番形式）に挑戦」が出る
 - 模試・分野別の出題・ホームの問題数（「n問」）は本番形式だけ。一問一答の数は「一問一答 n問」と別に出す
 - 学習記録は `mode = 'drill'` で記録する。分野ごとの正答率は本番形式と一問一答を合わせて計算
-- 今あるもの：SAP の本番形式75問をすべて分解し161問（sap-d001〜d161）、SAA の本番形式35問をすべて分解し70問（saa-d001〜d070）。どちらも4択と○×の混在。本番形式の問題を足したら、一問一答への分解もセットで行う
+- 今あるもの：SAP の本番形式75問をすべて分解し161問（sap-d001〜d161）、SAA の本番形式65問をすべて分解し130問（saa-d001〜d130）。どちらも4択と○×の混在。本番形式の問題を足したら、一問一答への分解もセットで行う
 
 ## 6. 次にやること（優先順）
 
@@ -248,7 +248,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 2. **SAPの問題を見直す**：2026-11-21 に Claude が本番と同じ75問まで作成した（分野1〜5に 19・19・11・11・15問で、本番の比重どおり。うち複数選択6問）。SAP-C03 の試験ガイドのタスクから、仕組みが安定している論点を選んで自作し、根拠リンクはすべて実在を確認済み。ただし内容の正確さは本人の目でも確認する（問題を解きながら、解説と根拠リンクを読むのがおすすめ）
    - 2026-11-21 に品質チェック済み：全問の解説の主張を根拠ページと照合し（主張と引用の対応表を作成）、食い違い・古い情報を修正、根拠リンクを18件追加した。正解が1つに決まるかのレビューも実施。根拠ページに直接の記述が見つからず残っているのは sap-007（PrivateLink は CIDR が重複しても使える）と sap-010（スティッキーセッションでセッションが消える）
    - 試験ガイドの「範囲内のサービス」に入っていないサービスを正解にしていた2問を作り直した（sap-002：Application Discovery Service → AWS Transform、sap-018：AWS Artifact → AWS Verified Access）。問題を作るときは、正解のサービスが試験ガイドの範囲内のサービスの一覧にあるかを確認する
-   - sap-031〜075 と saa-001〜035 は根拠ページで事実を確かめてから作成した。Shield Advanced は根拠ページで確認できなかったため、問題にしていない。sap-031〜038（Glacier Deep Archive、スポット、Compute Optimizer、Budgets の予算アクション、DMS＋SCT、Transform MGN、S3 File Gateway、FIS）
+   - sap-031〜075 と saa-001〜065 は根拠ページで事実を確かめてから作成した。SAA の問題は、SAA-C03 の範囲内のサービスの一覧で確認した（Elastic Disaster Recovery は SAA の範囲に入っていないので使っていない）。Shield Advanced は根拠ページで確認できなかったため、問題にしていない。sap-031〜038（Glacier Deep Archive、スポット、Compute Optimizer、Budgets の予算アクション、DMS＋SCT、Transform MGN、S3 File Gateway、FIS）
    - 作成時、単一選択の正解の多くが B に偏ったため、選択肢を並べ替えて A〜D に散らした（品質チェックにも偏りの警告を追加）
    - 今後足すなら、まだ入れていない論点（Bedrock Guardrails、Resilience Hub、Elastic Beanstalk、Lake Formation、EKS など）も、公式ドキュメントを確認しながら入れていく
 3. **v1 に入れる機能の実装**：苦手分野のレーダーチャート（分野ごとの正答率はすでにあるので描画を足す。依存パッケージなしで描く案）、間違えた問題だけ解き直す（学習記録の最新の正誤を使う）

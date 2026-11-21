@@ -4946,6 +4946,1465 @@
           "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
         }
       ]
+    },
+    {
+      "id": "saa-051",
+      "domain": "d2",
+      "question": "ある EC サイトでは、注文が確定すると「在庫」「ポイント」「メール送信」の3つの処理を、それぞれ独立して動かしたい。今後、処理の種類が増えても、注文の処理側のコードは変えたくない。イベントの内容で振り分け先を決めたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "注文の処理から、3つの処理の API を順番に呼び出す",
+          "explanation": "処理が増えるたびに注文の処理側の変更が必要で、1つが止まると影響を受けます。"
+        },
+        {
+          "text": "すべての処理を1つの Lambda 関数にまとめる",
+          "explanation": "処理の独立性がなくなり、保守もしにくくなります。"
+        },
+        {
+          "text": "注文の内容をデータベースに書き、各処理が定期的に確認する",
+          "explanation": "すぐに処理されず、確認の処理も必要になります。"
+        },
+        {
+          "text": "注文の確定のイベントを Amazon EventBridge のイベントバスに送り、ルールで各処理へ振り分ける",
+          "explanation": "イベントバスは、ルールに従ってイベントを複数のターゲットに送ります。処理を増やすときはルールとターゲットを足すだけで、注文の処理側は変えずに済みます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "イベントの内容で複数の処理に振り分け、送る側と受ける側を疎結合にするなら Amazon EventBridge です。",
+      "references": [
+        {
+          "title": "Amazon EventBridge とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-052",
+      "domain": "d2",
+      "question": "あるオンラインゲームは、UDP で通信するゲームサーバーを2つのリージョンで動かしている。利用者には固定の IP アドレスで接続させ、リージョンに障害が起きたら、DNS のキャッシュに左右されずに別のリージョンへ切り替えたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "Web コンテンツの配信のためのサービスで、UDP のゲームの通信には使いません。"
+        },
+        {
+          "text": "AWS Global Accelerator",
+          "explanation": "固定のエニーキャストの IP アドレスを提供し、TCP と UDP に対応しています。ヘルスにもとづいて正常なリージョンへ転送し、クライアントの IP アドレスのキャッシュに依存しません。"
+        },
+        {
+          "text": "Route 53 のレイテンシーベースルーティング",
+          "explanation": "DNS で切り替えるため、キャッシュに左右されます。返す IP アドレスもリージョンで変わります。"
+        },
+        {
+          "text": "Application Load Balancer",
+          "explanation": "HTTP/HTTPS 用で、UDP を扱えません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "「固定 IP」「TCP/UDP」「DNS のキャッシュに左右されない切り替え」なら AWS Global Accelerator です。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        },
+        {
+          "title": "AWS Global Accelerator のよくある質問",
+          "url": "https://aws.amazon.com/jp/global-accelerator/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "saa-053",
+      "domain": "d2",
+      "question": "ある企業は、東京リージョンの S3 バケットに保存したファイルを、災害に備えて大阪リージョンにも自動で複製したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎晩、EC2 のスクリプトで大阪のバケットにコピーする",
+          "explanation": "スクリプトの運用が必要で、コピーまでの間のファイルは大阪にありません。"
+        },
+        {
+          "text": "S3 のライフサイクルルールで大阪に移動する",
+          "explanation": "ライフサイクルルールは同じバケットの中のストレージクラスの移動や削除のためのもので、別のリージョンへの複製はできません。"
+        },
+        {
+          "text": "S3 のクロスリージョンレプリケーション（CRR）を設定する",
+          "explanation": "レプリケーションを使うと、S3 バケット間でオブジェクトを自動で非同期にコピーできます。異なるリージョンのバケットへの複製には CRR を使います。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を有効にする",
+          "explanation": "長距離の転送を速くする機能で、別のリージョンへの複製ではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "別のリージョンへの S3 のデータの自動の複製は、クロスリージョンレプリケーション（CRR）で行います。",
+      "references": [
+        {
+          "title": "S3 のレプリケーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/replication.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-054",
+      "domain": "d2",
+      "question": "ある企業は、重要な少数の EC2 インスタンスを、1つのハードウェアの障害で同時に止まらないように配置したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "スプレッドプレイスメントグループでインスタンスを起動する",
+          "explanation": "スプレッドプレイスメントグループは、インスタンスをそれぞれ異なるハードウェアに配置します。1つのハードウェアの障害で複数のインスタンスが同時に止まるのを避けられます。"
+        },
+        {
+          "text": "クラスタープレイスメントグループでインスタンスを起動する",
+          "explanation": "1つの AZ の中で近くに配置して通信の遅延を小さくするためのもので、障害の影響を分ける目的には向きません。"
+        },
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "1台あたりの性能は上がりますが、障害の影響は分けられません。"
+        },
+        {
+          "text": "すべて同じ AZ で起動する",
+          "explanation": "同じ場所に集まり、障害の影響を受けやすくなります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "障害の影響を分けたいならスプレッド、通信の遅延を小さくしたいならクラスター、と目的でプレイスメントグループを選びます。",
+      "references": [
+        {
+          "title": "プレイスメント戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-055",
+      "domain": "d3",
+      "question": "ある企業は、世界中の利用者に CloudFront で画像を配信している。オリジンへのリクエストが多く、オリジンの負荷が高い。オリジンの前にキャッシュの層を1つ追加して、キャッシュヒット率を上げたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudFront のキャッシュを無効にする",
+          "explanation": "すべてのリクエストがオリジンに届き、負荷が増えます。"
+        },
+        {
+          "text": "オリジンのサーバーの台数を増やす",
+          "explanation": "負荷には耐えやすくなりますが、オリジンへのリクエストは減りません。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を有効にする",
+          "explanation": "S3 への転送を速くする機能で、オリジンへのリクエストは減りません。"
+        },
+        {
+          "text": "CloudFront Origin Shield を有効にする",
+          "explanation": "Origin Shield は、オリジンの前に追加のキャッシュの層を置き、キャッシュヒット率の向上に役立ちます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "オリジンの負荷を下げるには、キャッシュヒット率を上げます。CloudFront Origin Shield は、そのための追加のキャッシュの層です。",
+      "references": [
+        {
+          "title": "キャッシュヒット率の向上",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-056",
+      "domain": "d3",
+      "question": "ある企業は、DynamoDB のテーブルに書き込まれた変更をきっかけに、検索用のデータを更新する処理を動かしたい。書き込むアプリケーションは変えたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "数分ごとにテーブル全体をスキャンする",
+          "explanation": "読み込みの費用がかかり、テーブルが大きくなるほど遅くなります。"
+        },
+        {
+          "text": "DynamoDB Streams を有効にし、Lambda 関数のトリガーにする",
+          "explanation": "DynamoDB Streams は項目レベルの変更を時間順にとらえ、最大24時間保存します。新しいストリームのレコードがあると Lambda 関数が呼び出されます。"
+        },
+        {
+          "text": "アプリケーションを改修して、別の処理も呼び出す",
+          "explanation": "アプリケーションの変更が必要です。"
+        },
+        {
+          "text": "毎日バックアップを取って比較する",
+          "explanation": "1日遅れの処理になります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DynamoDB の変更をきっかけに処理を行うなら、DynamoDB Streams と Lambda の組み合わせです。",
+      "references": [
+        {
+          "title": "DynamoDB Streams",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.html"
+        },
+        {
+          "title": "DynamoDB Streams と Lambda",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.Lambda.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-057",
+      "domain": "d3",
+      "question": "ある企業の Windows のアプリケーションは、SMB のファイル共有を使い、アクセス権を Active Directory で管理している。AWS へ移行するにあたり、ファイルサーバーの運用はしたくない。最も適切なストレージはどれか。",
+      "choices": [
+        {
+          "text": "Amazon EFS",
+          "explanation": "EFS は Windows ベースの EC2 インスタンスでの利用に対応していません。"
+        },
+        {
+          "text": "Amazon EBS",
+          "explanation": "1つのインスタンスに付けるブロックストレージで、ファイル共有ではありません。"
+        },
+        {
+          "text": "Amazon FSx for Windows File Server",
+          "explanation": "フルマネージドの Windows のファイルサーバーで、SMB に対応し、Active Directory と連携してユーザーの認証とアクセスの制御を行います。"
+        },
+        {
+          "text": "S3 Glacier Deep Archive",
+          "explanation": "アーカイブ用のストレージで、ファイル共有には使えません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Windows のファイル共有と Active Directory をそのまま使うなら FSx for Windows File Server、Linux なら EFS、と使い分けます。",
+      "references": [
+        {
+          "title": "FSx for Windows File Server とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-058",
+      "domain": "d3",
+      "question": "ある企業は、オンプレミスの NFS のファイルサーバーにある大量のファイルを、Amazon S3 へオンラインで移行したい。転送を速くし、データが正しく転送されたかの確認も自動で行いたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS DataSync で転送のタスクを作る",
+          "explanation": "DataSync は、オンプレミスの NFS などと S3・EFS・FSx の間の転送を自動化します。専用のプロトコルと並列の処理で転送を速くし、データの整合性の検証も行います。"
+        },
+        {
+          "text": "EC2 経由の rsync のスクリプトで転送する",
+          "explanation": "転送の仕組みや確認の処理を自分で作る必要があります。"
+        },
+        {
+          "text": "AWS DMS で移行する",
+          "explanation": "データベースの移行のためのサービスで、ファイルの転送には使いません。"
+        },
+        {
+          "text": "S3 のライフサイクルルールを設定する",
+          "explanation": "S3 の中のストレージクラスの移動や削除の機能です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ファイルのオンラインでの大量の移行は AWS DataSync です。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-059",
+      "domain": "d3",
+      "question": "ある企業は、Web アプリケーションをコンテナにして Amazon ECS で動かしたい。少人数のチームで、EC2 インスタンスのパッチ適用や台数の管理はしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ECS の EC2 起動タイプを使う",
+          "explanation": "EC2 インスタンスの管理が必要です。"
+        },
+        {
+          "text": "EC2 に Docker を入れて動かす",
+          "explanation": "インスタンスとコンテナの管理を自分で行います。"
+        },
+        {
+          "text": "EKS のセルフマネージドのノードを使う",
+          "explanation": "ノードの EC2 インスタンスの管理が必要です。"
+        },
+        {
+          "text": "ECS で AWS Fargate を使う",
+          "explanation": "Fargate では、サーバーや EC2 インスタンスのクラスターを管理せずにコンテナを実行できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "サーバーを管理せずにコンテナを動かすなら AWS Fargate です。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-060",
+      "domain": "d3",
+      "question": "ある企業のオンプレミスのアプリケーションは NFS のファイル共有を使っている。アプリケーションを変えずに、ファイルを Amazon S3 に保存したい。よく使うファイルには、オンプレミスから低い遅延でアクセスしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS DataSync で毎晩 S3 にコピーする",
+          "explanation": "アプリケーションはオンプレミスのファイル共有を使い続けるため、コピーまでの間は S3 にありません。"
+        },
+        {
+          "text": "S3 File Gateway を導入し、NFS のファイル共有としてマウントする",
+          "explanation": "S3 File Gateway は、NFS や SMB で S3 にファイルを保存・取得できるようにします。ローカルのキャッシュで、よく使うデータに低い遅延でアクセスできます。"
+        },
+        {
+          "text": "Amazon EFS を Direct Connect 経由でマウントする",
+          "explanation": "データは EFS に保存され、S3 には入りません。"
+        },
+        {
+          "text": "AWS Transfer Family の SFTP でアップロードする",
+          "explanation": "NFS から SFTP に変えるため、アプリケーションの変更が必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アプリケーションを変えずにファイルを S3 に保存するなら S3 File Gateway です。",
+      "references": [
+        {
+          "title": "S3 File Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-061",
+      "domain": "d3",
+      "question": "ある企業は、オンプレミスの RabbitMQ を使う業務アプリケーションを AWS へ移行する。メッセージングのコードは書き換えたくなく、ブローカーの運用もしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon SQS に書き換える",
+          "explanation": "マネージドですが、コードの書き換えが必要です。"
+        },
+        {
+          "text": "Amazon SNS に書き換える",
+          "explanation": "コードの書き換えが必要です。"
+        },
+        {
+          "text": "Amazon MQ で RabbitMQ のブローカーを作る",
+          "explanation": "Amazon MQ は Apache ActiveMQ と RabbitMQ 向けのマネージドのメッセージブローカーで、既存のブローカーからメッセージングのコードを書き換えずに移行できます。"
+        },
+        {
+          "text": "EC2 に RabbitMQ をインストールする",
+          "explanation": "コードは変えずに済みますが、ブローカーの運用が残ります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "既存の ActiveMQ・RabbitMQ からの移行は Amazon MQ、新しく作るなら SQS や SNS、と使い分けます。",
+      "references": [
+        {
+          "title": "Amazon MQ とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-062",
+      "domain": "d3",
+      "question": "ある企業は、日本・米国・ドイツの利用者に、それぞれの国の言語で作った Web サイトを DNS で出し分けたい。どの国にも当てはまらない利用者には英語のサイトを出す。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Route 53 の位置情報ルーティングで国ごとのレコードを作り、デフォルトのレコードに英語のサイトを設定する",
+          "explanation": "位置情報ルーティングは、DNS クエリの送信元の場所にもとづいてリソースを選びます。利用者の言語でコンテンツを出すのに使え、当てはまらない場所はデフォルトのレコードで扱えます。"
+        },
+        {
+          "text": "Route 53 の加重ルーティングで国ごとの割合を決める",
+          "explanation": "割合で振り分ける方式で、利用者の場所は考慮しません。"
+        },
+        {
+          "text": "Route 53 のフェイルオーバールーティングを使う",
+          "explanation": "障害時の切り替えのための方式です。"
+        },
+        {
+          "text": "Route 53 のシンプルルーティングで、すべてのサイトを1つのレコードに入れる",
+          "explanation": "場所による振り分けはできません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "利用者の場所で出し分けるなら位置情報ルーティングです。デフォルトのレコードがないと、当てはまらない場所からのクエリには「応答なし」が返ります。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-063",
+      "domain": "d4",
+      "question": "ある企業は数百台の EC2 インスタンスを運用している。多くが必要以上に大きいタイプで動いている可能性がある。使用率にもとづいて、どのインスタンスをどのタイプに変えるとよいかの提案を受けたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "API の操作の記録で、サイズの提案はしません。"
+        },
+        {
+          "text": "AWS Budgets",
+          "explanation": "予算を管理するサービスで、サイズの提案はしません。"
+        },
+        {
+          "text": "Savings Plans",
+          "explanation": "割引は受けられますが、大きすぎるインスタンスはそのままです。"
+        },
+        {
+          "text": "AWS Compute Optimizer",
+          "explanation": "CloudWatch の使用率のメトリクスを分析し、適切なサイズの推奨事項を出します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "リソースのサイズの適正化（ライトサイジング）には Compute Optimizer を使います。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-064",
+      "domain": "d4",
+      "question": "ある企業は、開発用のアカウントの月の費用が決めた金額を超えそうになったら、超える前に担当者にメールで知らせたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎週、担当者が Cost Explorer を確認する",
+          "explanation": "手作業で、気づくのが遅れることがあります。"
+        },
+        {
+          "text": "AWS Budgets でコストの予算を作り、予測の支出がしきい値を超えたらメールや SNS で通知する",
+          "explanation": "Budgets では、実際の支出と予測の支出の両方についてアラートを出せます。通知は SNS のトピックやメールに送れます。"
+        },
+        {
+          "text": "Compute Optimizer を有効にする",
+          "explanation": "サイズの推奨を出すサービスで、費用の通知はしません。"
+        },
+        {
+          "text": "CloudTrail を有効にする",
+          "explanation": "API の操作の記録です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "予算を超えそう・超えたときの通知は AWS Budgets で行います。予測の支出でアラートを出せば、超える前に気づけます。",
+      "references": [
+        {
+          "title": "AWS Budgets によるコストの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-065",
+      "domain": "d4",
+      "question": "ある企業は、ECS で夜間のバッチ処理のコンテナを Fargate で動かしている。処理は途中で中断されてもやり直せる。サーバーの管理なしのまま、コストを下げたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ECS の EC2 起動タイプに変える",
+          "explanation": "インスタンスの管理が必要になります。"
+        },
+        {
+          "text": "タスクの CPU とメモリを大きくする",
+          "explanation": "費用が増えます。"
+        },
+        {
+          "text": "Fargate Spot で実行する",
+          "explanation": "Fargate Spot は、中断を許容できるタスクを、Fargate の料金より割引された料金で実行できます。"
+        },
+        {
+          "text": "常にタスクを動かしておく",
+          "explanation": "使わない時間も費用がかかります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "中断されてもやり直せるコンテナの処理は、Fargate Spot で費用を下げられます。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d101",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-051",
+      "point": "イベントバスの役割",
+      "question": "EventBridge のイベントバスは、ルールに従ってイベントを複数のターゲットに送れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。イベントバスは、指定したルールに従ってイベントを複数のターゲットに送信します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "処理を増やすときは、ルールとターゲットを足すだけで済みます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d102",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-051",
+      "point": "イベントで処理を振り分ける",
+      "question": "注文のイベントの内容で、複数の独立した処理に振り分けたい。注文の処理側のコードは変えずに、処理を増やせるようにしたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "API を順番に同期的に呼ぶ",
+          "explanation": "処理が増えるたびに変更が必要です。"
+        },
+        {
+          "text": "1つの大きな Lambda 関数",
+          "explanation": "処理の独立性がなくなります。"
+        },
+        {
+          "text": "Amazon EventBridge のイベントバスとルール",
+          "explanation": "ルールでイベントを複数のターゲットに振り分けられます。"
+        },
+        {
+          "text": "データベースを定期的に確認する",
+          "explanation": "すぐに処理されません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "イベントの内容で振り分けるなら EventBridge です。",
+      "references": [
+        {
+          "title": "Amazon EventBridge とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d103",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-052",
+      "point": "Global Accelerator のプロトコル",
+      "question": "AWS Global Accelerator は、TCP と UDP の両方に対応している。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Global Accelerator は TCP と UDP の両方のプロトコルをサポートしています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "固定の IP アドレスで、最寄りの正常なリージョンへ転送できます。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator のよくある質問",
+          "url": "https://aws.amazon.com/jp/global-accelerator/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "saa-d104",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-052",
+      "point": "固定 IP で最寄りのリージョンへ",
+      "question": "UDP の通信を、固定の IP アドレスで受け付け、正常なリージョンへ転送したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "CloudFront",
+          "explanation": "Web コンテンツの配信のためのサービスです。"
+        },
+        {
+          "text": "ALB",
+          "explanation": "HTTP/HTTPS 用で UDP を扱えません。"
+        },
+        {
+          "text": "Route 53 のレイテンシーベースルーティング",
+          "explanation": "DNS で切り替えるため、IP アドレスが固定になりません。"
+        },
+        {
+          "text": "AWS Global Accelerator",
+          "explanation": "固定のエニーキャストの IP アドレスを提供し、TCP と UDP に対応しています。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "固定 IP と TCP/UDP なら Global Accelerator です。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        },
+        {
+          "title": "AWS Global Accelerator のよくある質問",
+          "url": "https://aws.amazon.com/jp/global-accelerator/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "saa-d105",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-053",
+      "point": "レプリケーションの方式",
+      "question": "S3 のレプリケーションでは、オブジェクトがバケット間で自動かつ非同期にコピーされる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。レプリケーションを使うと、S3 バケット間でオブジェクトを自動で非同期にコピーできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "異なるリージョンへの複製は CRR（クロスリージョンレプリケーション）です。",
+      "references": [
+        {
+          "title": "S3 のレプリケーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/replication.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d106",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-053",
+      "point": "ライフサイクルルールでできること",
+      "question": "S3 のライフサイクルルールで、オブジェクトを別のリージョンのバケットに複製できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ライフサイクルルールは、オブジェクトを別のストレージクラスに移すタイミングや、有効期限（削除）を決める機能です。別のリージョンへの複製はレプリケーションで行います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ストレージクラスの移動はライフサイクルルール、別のバケットへの複製はレプリケーション、と使い分けます。",
+      "references": [
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d107",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-054",
+      "point": "スプレッドプレイスメントグループ",
+      "question": "スプレッドプレイスメントグループでは、インスタンスがそれぞれ異なるハードウェアに配置される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。スプレッドプレイスメントグループは、それぞれ異なるハードウェアに配置されるインスタンスのグループです。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "1つのハードウェアの障害で、複数のインスタンスが同時に止まるのを避けられます。",
+      "references": [
+        {
+          "title": "プレイスメント戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d108",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-054",
+      "point": "障害の影響を分ける配置",
+      "question": "重要なインスタンスを、1つのハードウェアの障害で同時に止まらないように配置したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "クラスタープレイスメントグループ",
+          "explanation": "通信の遅延を小さくするための配置です。"
+        },
+        {
+          "text": "スプレッドプレイスメントグループ",
+          "explanation": "インスタンスをそれぞれ異なるハードウェアに配置します。"
+        },
+        {
+          "text": "同じ AZ にまとめる",
+          "explanation": "障害の影響を受けやすくなります。"
+        },
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "障害の影響は分けられません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "障害の影響を分けるならスプレッドプレイスメントグループです。",
+      "references": [
+        {
+          "title": "プレイスメント戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d109",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-055",
+      "point": "Origin Shield の役割",
+      "question": "CloudFront Origin Shield を使うと、すべてのキャッシュの層からオリジンへのリクエストが1か所から送られるようになる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Origin Shield を使うと、CloudFront のすべてのキャッシュレイヤーからオリジンへのリクエストは、1つの場所から送信されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "オリジンの前に追加のキャッシュの層を置くことで、キャッシュヒット率の向上に役立ちます。",
+      "references": [
+        {
+          "title": "キャッシュヒット率の向上",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d110",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-055",
+      "point": "キャッシュの期間",
+      "question": "CloudFront のキャッシュの期間を短くするほど、オリジンへのリクエストは減る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。キャッシュの期間が短いほど、CloudFront が最新のバージョンを取得するためにオリジンにリクエストを送る頻度は高くなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オリジンへのリクエストを減らすには、キャッシュヒット率を上げます。",
+      "references": [
+        {
+          "title": "キャッシュヒット率の向上",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d111",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-056",
+      "point": "DynamoDB Streams の保存期間",
+      "question": "DynamoDB Streams のレコードは、最大24時間保存される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。DynamoDB Streams は、項目レベルの変更を時間順にとらえ、最大24時間保存します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "24時間を過ぎたレコードは自動で削除されるので、それまでに処理します。",
+      "references": [
+        {
+          "title": "DynamoDB Streams",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.html"
+        },
+        {
+          "title": "DynamoDB Streams と Lambda",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.Lambda.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d112",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-056",
+      "point": "DynamoDB の変更で処理を動かす",
+      "question": "DynamoDB のテーブルの変更をきっかけに、アプリケーションを変えずに別の処理を動かしたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "テーブルの定期的なスキャン",
+          "explanation": "費用がかかり、遅くなります。"
+        },
+        {
+          "text": "アプリケーションの改修",
+          "explanation": "アプリケーションの変更が必要です。"
+        },
+        {
+          "text": "毎日のバックアップの比較",
+          "explanation": "1日遅れになります。"
+        },
+        {
+          "text": "DynamoDB Streams と Lambda のトリガー",
+          "explanation": "項目レベルの変更をとらえ、新しいレコードがあると Lambda 関数が呼び出されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DynamoDB の変更で処理を動かすなら DynamoDB Streams と Lambda です。",
+      "references": [
+        {
+          "title": "DynamoDB Streams",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.html"
+        },
+        {
+          "title": "DynamoDB Streams と Lambda",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.Lambda.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d113",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-057",
+      "point": "FSx for Windows と AD",
+      "question": "Amazon FSx for Windows File Server は、Microsoft Active Directory と連携して、ユーザーの認証とアクセスの制御を行える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。FSx は Microsoft Active Directory と連携して、ユーザー認証とアクセスコントロールを実行します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SMB のファイル共有も使え、マルチ AZ にすれば別の AZ にスタンバイが用意されます。",
+      "references": [
+        {
+          "title": "FSx for Windows File Server とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d114",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-057",
+      "point": "Windows のファイル共有",
+      "question": "SMB のファイル共有と Active Directory のアクセス権を、フルマネージドで使いたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "Amazon EFS",
+          "explanation": "Windows のインスタンスでは使えません。"
+        },
+        {
+          "text": "Amazon FSx for Windows File Server",
+          "explanation": "フルマネージドの Windows のファイルサーバーで、SMB と Active Directory に対応しています。"
+        },
+        {
+          "text": "Amazon EBS",
+          "explanation": "1つのインスタンスに付けるブロックストレージです。"
+        },
+        {
+          "text": "Amazon S3",
+          "explanation": "オブジェクトストレージで、SMB のファイル共有ではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Windows のファイル共有は FSx for Windows File Server です。",
+      "references": [
+        {
+          "title": "FSx for Windows File Server とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d115",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-058",
+      "point": "DataSync の整合性の検証",
+      "question": "AWS DataSync には、データの整合性の検証が含まれている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。DataSync には、自動の暗号化やデータの整合性の検証が含まれています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "転送の管理とインフラの両方を自動化してくれます。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d116",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-058",
+      "point": "ファイルのオンラインでの移行",
+      "question": "オンプレミスの NFS の大量のファイルを、整合性を確かめながら S3 に移したい。転送の仕組みは作りたくない。使うのはどれか。",
+      "choices": [
+        {
+          "text": "rsync のスクリプト",
+          "explanation": "仕組みを自分で作る必要があります。"
+        },
+        {
+          "text": "AWS DMS",
+          "explanation": "データベースの移行のためのサービスです。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "NFS などから S3・EFS・FSx への転送を自動化し、整合性の検証も行います。"
+        },
+        {
+          "text": "S3 のライフサイクルルール",
+          "explanation": "S3 の中のストレージクラスの移動の機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ファイルのオンラインでの移行は AWS DataSync です。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d117",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-059",
+      "point": "Fargate とサーバーの管理",
+      "question": "AWS Fargate では、サーバーや EC2 インスタンスのクラスターを管理せずにコンテナを実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Fargate を使うと、サーバーや Amazon EC2 インスタンスのクラスターを管理することなくコンテナを実行できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CPU とメモリの要件を指定して起動するだけです。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d118",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-059",
+      "point": "サーバーを管理せずにコンテナを動かす",
+      "question": "ECS でコンテナを動かし、EC2 インスタンスの管理はしたくない。使うのはどれか。",
+      "choices": [
+        {
+          "text": "EC2 起動タイプ",
+          "explanation": "EC2 インスタンスの管理が必要です。"
+        },
+        {
+          "text": "EC2 に Docker",
+          "explanation": "インスタンスとコンテナの管理が必要です。"
+        },
+        {
+          "text": "EKS のセルフマネージドのノード",
+          "explanation": "ノードの管理が必要です。"
+        },
+        {
+          "text": "AWS Fargate",
+          "explanation": "サーバーやクラスターを管理せずにコンテナを実行できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "サーバーを管理しないコンテナの実行は Fargate です。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d119",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-060",
+      "point": "S3 File Gateway のキャッシュ",
+      "question": "S3 File Gateway は、ローカルのキャッシュで、データへの低い遅延のアクセスを提供する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。S3 File Gateway は、透過的なローカルキャッシュを通じてデータへの低レイテンシーのアクセスを提供します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "NFS や SMB のままで、データは S3 に保存されます。",
+      "references": [
+        {
+          "title": "S3 File Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d120",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-060",
+      "point": "NFS のまま S3 に保存する",
+      "question": "オンプレミスのアプリケーションを変えずに、NFS のファイル共有のデータを S3 に保存したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "AWS DataSync の毎晩のコピー",
+          "explanation": "コピーまでの間は S3 にありません。"
+        },
+        {
+          "text": "Amazon EFS",
+          "explanation": "データは EFS に保存されます。"
+        },
+        {
+          "text": "S3 File Gateway",
+          "explanation": "NFS や SMB で S3 にファイルを保存・取得でき、ローカルのキャッシュもあります。"
+        },
+        {
+          "text": "Transfer Family の SFTP",
+          "explanation": "アプリケーションの変更が必要です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "アプリケーションを変えずに S3 に保存するなら S3 File Gateway です。",
+      "references": [
+        {
+          "title": "S3 File Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d121",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-061",
+      "point": "Amazon MQ が対応するブローカー",
+      "question": "Amazon MQ は、Apache ActiveMQ と RabbitMQ 向けのマネージドのメッセージブローカーである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Amazon MQ は、Apache ActiveMQ Classic と RabbitMQ 向けのマネージドのメッセージブローカーです。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "既存のブローカーから、メッセージングのコードを書き換えずに移行できます。",
+      "references": [
+        {
+          "title": "Amazon MQ とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d122",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-061",
+      "point": "RabbitMQ のアプリケーションの移行",
+      "question": "RabbitMQ を使うアプリケーションを、コードを書き換えずに AWS へ移し、ブローカーの運用もなくしたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "Amazon SQS",
+          "explanation": "コードの書き換えが必要です。"
+        },
+        {
+          "text": "Amazon MQ",
+          "explanation": "RabbitMQ 向けのマネージドのブローカーで、コードを書き換えずに移行できます。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "ストリーミングのデータ向けです。"
+        },
+        {
+          "text": "EC2 上の RabbitMQ",
+          "explanation": "ブローカーの運用が残ります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "既存の RabbitMQ・ActiveMQ からの移行は Amazon MQ です。",
+      "references": [
+        {
+          "title": "Amazon MQ とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d123",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-062",
+      "point": "デフォルトのレコード",
+      "question": "Route 53 の位置情報ルーティングで、デフォルトのレコードを作らないと、当てはまらない場所からのクエリには「応答なし」が返る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。デフォルトのレコードを作らない場合、そのような場所からのクエリには「応答なし」が返ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "どこにも当てはまらない利用者のために、デフォルトのレコードを用意しておきます。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d124",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-062",
+      "point": "国ごとに出し分ける",
+      "question": "利用者の国ごとに、その国の言語のサイトを DNS で出し分けたい。使う Route 53 のルーティングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "位置情報ルーティング",
+          "explanation": "DNS クエリの送信元の場所（大陸・国・米国の州）にもとづいてリソースを選びます。"
+        },
+        {
+          "text": "加重ルーティング",
+          "explanation": "割合で振り分けます。"
+        },
+        {
+          "text": "フェイルオーバールーティング",
+          "explanation": "障害時に切り替えます。"
+        },
+        {
+          "text": "シンプルルーティング",
+          "explanation": "場所による振り分けはしません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "利用者の場所で出し分けるなら位置情報ルーティングです。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d125",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-063",
+      "point": "Compute Optimizer の分析期間",
+      "question": "AWS Compute Optimizer は、有効にすると過去14日間の CloudWatch のメトリクスの分析を始める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Compute Optimizer は、過去14日間の CloudWatch のリソースの仕様と使用率のメトリクスの分析を始めます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "EC2 のほか、Auto Scaling グループ、Lambda、Fargate 上の ECS、RDS なども対象です。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d126",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-063",
+      "point": "適切なサイズの提案",
+      "question": "EC2 インスタンスが大きすぎないかを、使用率にもとづいて提案してほしい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "AWS Budgets",
+          "explanation": "予算の管理のサービスです。"
+        },
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "操作の記録です。"
+        },
+        {
+          "text": "AWS Compute Optimizer",
+          "explanation": "使用率のメトリクスを分析して、適切なサイズの推奨事項を出します。"
+        },
+        {
+          "text": "Savings Plans",
+          "explanation": "割引の仕組みです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ライトサイジングは Compute Optimizer です。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d127",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-064",
+      "point": "予測の支出でのアラート",
+      "question": "AWS Budgets では、実際の支出だけでなく、予測の支出についてもアラートを出せる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。実際（発生後）の支出と予測（発生前）の支出の両方について、アラートを出すように選べます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "予測でアラートを出せば、予算を超える前に気づけます。",
+      "references": [
+        {
+          "title": "AWS Budgets によるコストの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d128",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-064",
+      "point": "予算を超える前に知らせる",
+      "question": "月の費用が予算を超えそうになったら、超える前にメールで知らせたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "Cost Explorer を毎週確認する",
+          "explanation": "手作業で、気づくのが遅れます。"
+        },
+        {
+          "text": "Compute Optimizer",
+          "explanation": "サイズの推奨のサービスです。"
+        },
+        {
+          "text": "CloudTrail",
+          "explanation": "操作の記録です。"
+        },
+        {
+          "text": "AWS Budgets の予測のアラート",
+          "explanation": "予測の支出がしきい値を超えたら、SNS やメールで通知できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "費用の通知は AWS Budgets で行います。",
+      "references": [
+        {
+          "title": "AWS Budgets によるコストの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d129",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-065",
+      "point": "Fargate Spot",
+      "question": "Fargate Spot では、中断を許容できるタスクを、Fargate の料金より割引された料金で実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Fargate Spot では、中断を許容できるタスクを、AWS Fargate の料金と比べて割引された料金で実行します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "中断されてもやり直せるバッチ処理などに向いています。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d130",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-065",
+      "point": "中断できるコンテナの費用を下げる",
+      "question": "Fargate で動かしている、中断されてもやり直せるバッチ処理の費用を、サーバーの管理なしのまま下げたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "EC2 起動タイプ",
+          "explanation": "インスタンスの管理が必要になります。"
+        },
+        {
+          "text": "タスクの CPU とメモリを増やす",
+          "explanation": "費用が増えます。"
+        },
+        {
+          "text": "Fargate Spot",
+          "explanation": "中断を許容できるタスクを割引された料金で実行できます。"
+        },
+        {
+          "text": "タスクを常に動かす",
+          "explanation": "使わない時間も費用がかかります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "中断できるコンテナの処理は Fargate Spot で安くできます。",
+      "references": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ]
     }
   ]
 }
