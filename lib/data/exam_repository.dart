@@ -10,11 +10,15 @@ class ExamRepository {
 
   final AssetBundle _bundle;
 
-  Future<List<Exam>> loadAll() async {
+  /// 受験できる試験の一覧。終了日を過ぎた試験は外す
+  /// （アプリを更新しなくても、終了した試験が一覧から消えるようにするため）
+  Future<List<Exam>> loadAll({DateTime? now}) async {
     final raw = await _bundle.loadString('assets/exams.json');
     final data = jsonDecode(raw) as Map<String, dynamic>;
+    final today = now ?? DateTime.now();
     return (data['exams'] as List)
         .map((e) => Exam.fromJson(e as Map<String, dynamic>))
+        .where((e) => e.isOpenOn(today))
         .toList();
   }
 

@@ -82,6 +82,14 @@ class Exam {
   final MockSetting mock;
   final String guideUrl;
 
+  /// [now] の時点でまだ受験できるか。終了日の当日いっぱいまでは受験できる扱いにする
+  bool isOpenOn(DateTime now) {
+    final retire = retireDate;
+    if (retire == null) return true;
+    final lastMoment = DateTime(retire.year, retire.month, retire.day + 1);
+    return now.isBefore(lastMoment);
+  }
+
   Domain? domainById(String id) {
     for (final d in domains) {
       if (d.id == id) return d;
