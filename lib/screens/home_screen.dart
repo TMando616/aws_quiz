@@ -396,14 +396,20 @@ class _ExamCard extends StatelessWidget {
     final rate = summary.accuracy.rate;
 
     final retire = exam.retireDate;
-    final status = [
-      if (ready) exam.level.label,
-      if (ready) '本番形式 ${summary.questionCount}問',
-      if (summary.drillCount > 0) '一問一答 ${summary.drillCount}問',
-      if (rate != null) '正答率 ${(rate * 100).round()}%',
-      if (exam.isRetiring && retire != null)
-        '${retire.year}年${retire.month}月で終了',
-    ].join('・');
+    // 補足は意味の切れ目で最初から2行に分ける（成り行きの折り返しで「問」だけ次の行に落ちないように）
+    // 1行目：レベル・正答率・終了予定、2行目：問題数
+    final statusLines = [
+      [
+        if (ready) exam.level.label,
+        if (rate != null) '正答率 ${(rate * 100).round()}%',
+        if (exam.isRetiring && retire != null)
+          '${retire.year}年${retire.month}月で終了',
+      ].join('・'),
+      [
+        if (ready) '本番形式 ${summary.questionCount}問',
+        if (summary.drillCount > 0) '一問一答 ${summary.drillCount}問',
+      ].join('・'),
+    ].where((line) => line.isNotEmpty).toList();
 
     // 準備中の試験は、透明にせず文字色を控えめにする（取得済みの印だけは付けられる）
     final nameColor = ready ? t.textPrimary : t.textSecondary;
@@ -440,7 +446,7 @@ class _ExamCard extends StatelessWidget {
                     exam.nameJa.split(' - ').first,
                     style: t.body.copyWith(color: nameColor),
                   ),
-                  if (status.isNotEmpty) Text(status, style: t.caption),
+                  for (final line in statusLines) Text(line, style: t.caption),
                 ],
               ),
             ),
