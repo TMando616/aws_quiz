@@ -1444,6 +1444,414 @@
           "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/what-is.html"
         }
       ]
+    },
+    {
+      "id": "sap-039",
+      "domain": "d1",
+      "question": "ある企業は、複数のアカウントの複数の VPC で動く数十のマイクロサービスを、互いに HTTP で呼び出せるようにしたい。一部の VPC は CIDR ブロックが重複している。サービスごとに、どのサービスからの呼び出しを許可するかを IAM のポリシーで細かく制御したい。ネットワークの経路の管理はできるだけ減らしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon VPC Lattice のサービスネットワークにサービスを登録し、各 VPC を関連付けて、認証ポリシーで呼び出しを制御する",
+          "explanation": "VPC Lattice は、サービス間の通信の接続・保護・監視を行うフルマネージドのアプリケーションネットワーキングサービスで、複数のアカウントの複数の VPC で使えます。CIDR の重複にも対応しており、認証ポリシーでサービスへのアクセスを細かく制御できます。"
+        },
+        {
+          "text": "すべての VPC の組み合わせで VPC ピアリングを作成し、セキュリティグループで制御する",
+          "explanation": "VPC ピアリングは CIDR ブロックが重複する VPC 間では作成できません。数が増えると接続とルートの管理も大変になります。"
+        },
+        {
+          "text": "AWS Transit Gateway にすべての VPC をアタッチし、ルートテーブルで制御する",
+          "explanation": "Transit Gateway はルーティングで VPC をつなぐため、CIDR の重複があると正しく経路を作れません。サービス単位で IAM のポリシーによる制御もできません。"
+        },
+        {
+          "text": "各サービスをインターネットに公開し、API キーで呼び出しを制御する",
+          "explanation": "通信がインターネットを経由し、API キーの管理も必要になります。IAM のポリシーによる制御にもなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "複数の VPC・アカウントにまたがるサービス間の通信を、経路を意識せずにつなぎ、IAM のポリシーで制御したいなら Amazon VPC Lattice が合います。CIDR が重複していても使えるのが大きな特徴です。",
+      "references": [
+        {
+          "title": "Amazon VPC Lattice とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc-lattice/latest/ug/what-is-vpc-lattice.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-040",
+      "domain": "d1",
+      "question": "あるグローバル企業は、世界の複数のリージョンにある多数の VPC と、各国のオンプレミスの拠点を1つのネットワークでつなぎたい。本番・開発などの環境ごとに通信できる範囲を分け、ネットワーク全体の構成を1つのポリシーで一元的に定義・展開したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "リージョンごとに VPC ピアリングを作り、リージョン間もピアリングでつなぐ",
+          "explanation": "接続の数が大きく増え、推移的なルーティングもできません。環境ごとの分離も個別に管理することになります。"
+        },
+        {
+          "text": "各リージョンに Site-to-Site VPN を張り、拠点ごとに個別に経路を設定する",
+          "explanation": "拠点やリージョンが増えるたびに設定が増え、全体を1つのポリシーで管理することもできません。"
+        },
+        {
+          "text": "AWS Cloud WAN でコアネットワークを作成し、コアネットワークポリシーでセグメントを定義する",
+          "explanation": "Cloud WAN は、クラウドとオンプレミスの資源をつなぐ統合されたグローバルネットワークを作るサービスです。コアネットワークポリシーという1つのドキュメントで構成を定義・展開でき、セグメントで環境ごとに通信できる範囲を分けられます。"
+        },
+        {
+          "text": "AWS PrivateLink で、すべての VPC のサービスを相互に公開する",
+          "explanation": "PrivateLink は特定のサービスを公開するための仕組みで、拠点や VPC を全体としてつなぐネットワークの構築には向きません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "複数のリージョンとオンプレミスを1つのグローバルネットワークとして一元管理するなら AWS Cloud WAN です。セグメントは独立したルーティングドメインで、既定では同じセグメントのアタッチメントどうしだけが通信できます。",
+      "references": [
+        {
+          "title": "AWS Cloud WAN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-manager/latest/cloudwan/what-is-cloudwan.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-041",
+      "domain": "d1",
+      "question": "ある企業の注文処理は、在庫の確認、決済、配送の手配という複数の Lambda 関数を順番に呼び出している。今はそれぞれの関数が次の関数を直接呼び出しており、一時的なエラーでの再試行や、失敗したときの代わりの処理（返金など）を各関数に作り込んでいて、保守が大変になっている。処理は数分で終わり、同じ注文が二重に処理されてはならない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各関数の間に SQS キューを置き、関数がキューから次の関数を呼び出す",
+          "explanation": "関数どうしは切り離せますが、全体の流れや失敗時の代わりの処理は各関数に作り込んだままです。"
+        },
+        {
+          "text": "すべての処理を1つの大きな Lambda 関数にまとめる",
+          "explanation": "関数の数は減りますが、再試行や失敗時の処理は自分で書く必要があり、保守もしにくくなります。"
+        },
+        {
+          "text": "EC2 インスタンス上の cron で、関数を順番に呼び出すスクリプトを実行する",
+          "explanation": "サーバーの管理が増え、再試行や失敗時の処理もスクリプトに作り込むことになります。"
+        },
+        {
+          "text": "AWS Step Functions の Standard ワークフローで処理の流れを定義し、Retry と Catch で再試行と失敗時の処理を設定する",
+          "explanation": "Step Functions はステートマシンとして処理の流れを定義し、失敗したタスクの再試行や、失敗をキャッチして代わりの処理を実行する機能を持っています。Standard ワークフローは1回だけ実行されるため、二重の処理を避けられます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "複数の処理の流れ・再試行・失敗時の処理をまとめて管理するなら AWS Step Functions を使います。Standard ワークフローは1回だけの実行で最大1年、Express ワークフローは1回以上の実行で最大5分という違いも押さえておきます。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        },
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-042",
+      "domain": "d1",
+      "question": "ある企業は、複数の事業部のアカウントで発生する「注文の確定」のイベントを、共通基盤のアカウントにある複数の処理に届けたい。事業部の数は今後も増える。各事業部のアプリケーションが共通基盤の処理を直接呼び出す形は避けたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各事業部のアプリケーションが、共通基盤のアカウントの Lambda 関数を直接呼び出す",
+          "explanation": "事業部のアプリケーションと共通基盤の処理が強く結び付き、処理を追加・変更するたびに事業部側の変更が必要になります。"
+        },
+        {
+          "text": "各事業部のアカウントで Amazon EventBridge のルールを作り、共通基盤のアカウントのイベントバスをターゲットにする。共通基盤ではルールで各処理に振り分ける",
+          "explanation": "EventBridge は、アカウントのイベントバス間でイベントを送受信できます。送信側のルールで受信側のイベントバスをターゲットにし、受信側のルールで複数のターゲットへ振り分ければ、事業部と処理を疎結合に保てます。"
+        },
+        {
+          "text": "各事業部のアプリケーションが、イベントを共通基盤の RDS のテーブルに書き込む",
+          "explanation": "データベースを介した結合になり、処理を起動する仕組みも別に作る必要があります。"
+        },
+        {
+          "text": "事業部ごとに、共通基盤の担当者へメールで注文の内容を送る",
+          "explanation": "人の手作業になり、自動の処理にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アカウントをまたいでイベントを届けるなら、Amazon EventBridge のイベントバス間の連携が使えます。現在は、新しいクロスアカウントのイベントバスのターゲットには IAM ロールの指定が必要です。",
+      "references": [
+        {
+          "title": "Amazon EventBridge とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-what-is.html"
+        },
+        {
+          "title": "アカウント間でのイベントの送受信",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-cross-account.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-043",
+      "domain": "d2",
+      "question": "ある企業は、これから AWS で数十のアカウントを使い始める。ベストプラクティスに沿ったマルチアカウントの環境をすばやく用意し、組織全体に予防・検出のルールを適用したい。新しいアカウントも、承認済みの設定で標準化して作りたい。最も運用負荷が低い方法はどれか。",
+      "choices": [
+        {
+          "text": "管理アカウントで、アカウント・ログ・ルールの設定をすべて手作業で行う",
+          "explanation": "設定の量が多く、アカウントが増えるたびに作業が発生し、設定のずれも起きやすくなります。"
+        },
+        {
+          "text": "IAM Identity Center だけを有効にする",
+          "explanation": "アクセスの管理は一元化できますが、ログの集約やルールの適用、アカウントの作成の標準化までは行えません。"
+        },
+        {
+          "text": "AWS Config のルールを各アカウントで個別に作成する",
+          "explanation": "検出のルールは作れますが、マルチアカウントの環境そのものの用意やアカウントの作成の標準化はできません。"
+        },
+        {
+          "text": "AWS Control Tower でランディングゾーンを設定し、コントロールを有効にして、Account Factory でアカウントを作成する",
+          "explanation": "Control Tower はマルチアカウントの環境を設定・管理するサービスです。ランディングゾーンはベストプラクティスにもとづく環境で、コントロール（予防・検出・プロアクティブ）を適用できます。Account Factory で承認済みの設定のアカウントを標準化して作れます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "マルチアカウントの環境をベストプラクティスに沿ってすばやく用意するなら AWS Control Tower です。ランディングゾーン、コントロール（ガードレール）、Account Factory の役割を押さえておきます。",
+      "references": [
+        {
+          "title": "AWS Control Tower とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-044",
+      "domain": "d2",
+      "question": "ある企業のセキュリティチームは、組織内の複数のアカウント・リージョンの CloudTrail のログや VPC フローログなどのセキュリティのデータを、オンプレミスや SaaS のログと合わせて一か所に集め、共通の形式で分析したい。データは自社のアカウントで保持したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Security Lake を組織全体で有効にし、データソースを登録する",
+          "explanation": "Security Lake は、AWS・SaaS・オンプレミスなどのセキュリティのデータを、自社のアカウントの専用のデータレイクに自動で集約します。データは OCSF という標準のスキーマと Parquet の形式に変換され、複数のアカウント・リージョンで一元的に有効にできます。"
+        },
+        {
+          "text": "各アカウントで Amazon GuardDuty を有効にする",
+          "explanation": "GuardDuty は脅威を検出するサービスで、さまざまなログを共通の形式で集めて分析するデータレイクにはなりません。"
+        },
+        {
+          "text": "各アカウントの担当者が、毎週ログをダウンロードして共有フォルダに置く",
+          "explanation": "手作業で漏れが起きやすく、形式も揃いません。"
+        },
+        {
+          "text": "各アカウントの CloudWatch Logs にログを残し、アカウントごとに検索する",
+          "explanation": "アカウントごとにばらばらに検索することになり、一か所で共通の形式で分析するという要件を満たしません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "セキュリティのデータを組織全体から集め、共通の形式（OCSF）で分析するなら Amazon Security Lake が合います。データは自社の S3 バケットに保存され、所有権は自社が持ちます。",
+      "references": [
+        {
+          "title": "Amazon Security Lake とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-lake/latest/userguide/what-is-security-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-045",
+      "domain": "d2",
+      "question": "ある企業は、多数の VPC を AWS Transit Gateway でつないでいる。VPC 間の通信と、インターネットへ出ていく通信を、すべて一か所でステートフルに検査し、許可したドメインへの通信だけを通したい。侵入の防止も行いたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各 VPC のセキュリティグループで、通信先の IP アドレスを制限する",
+          "explanation": "VPC ごとの設定になり、一か所での検査にはなりません。ドメイン名による制御や侵入の防止もできません。"
+        },
+        {
+          "text": "各 VPC のネットワーク ACL で、拒否のルールを追加する",
+          "explanation": "ネットワーク ACL はサブネット単位のステートレスな制御で、ドメイン名による制御や侵入の防止はできません。"
+        },
+        {
+          "text": "検査用の VPC に AWS Network Firewall を置き、Transit Gateway の経路で通信を検査用の VPC に通す",
+          "explanation": "Network Firewall は、VPC のためのステートフルなマネージドのファイアウォールと、侵入の検知・防止のサービスです。ドメインによるフィルタリングや、VPC 間・インターネット向けの通信の検査ができます。Transit Gateway を通る通信も検査の対象にできます。"
+        },
+        {
+          "text": "Amazon GuardDuty を有効にする",
+          "explanation": "GuardDuty は脅威を検出するサービスで、通信をその場で検査して止めるものではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "多数の VPC の通信を一か所で検査するなら、検査用の VPC に AWS Network Firewall を置き、Transit Gateway で通信を集める構成が定番です。新しく作るファイアウォールには Next Generation のポリシーが推奨されています。",
+      "references": [
+        {
+          "title": "AWS Network Firewall とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-046",
+      "domain": "d2",
+      "question": "ある企業は AWS Organizations で数百のアカウントを運用している。すべてのアカウントで Amazon GuardDuty を有効にし、検出結果をセキュリティ専用のアカウントでまとめて管理したい。今後追加されるアカウントでも、自動で有効にしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントの管理者に、GuardDuty を有効にするよう依頼する",
+          "explanation": "有効にし忘れるアカウントが出る可能性があり、検出結果も一か所で管理できません。"
+        },
+        {
+          "text": "管理アカウントでセキュリティ専用のアカウントを GuardDuty の委任管理者に指定し、組織のメンバーアカウントで自動で有効にする設定にする",
+          "explanation": "委任管理者のアカウントは、組織のメンバーアカウントで GuardDuty を有効にして管理できます。自動で有効にする設定では、新しいアカウントだけ（NEW）またはすべてのアカウント（ALL）を選べます。"
+        },
+        {
+          "text": "管理アカウントそのものを GuardDuty の委任管理者にする",
+          "explanation": "管理アカウントを GuardDuty の委任管理者にすることは推奨されていません。セキュリティ専用のアカウントに任せます。"
+        },
+        {
+          "text": "CloudFormation StackSets で、各アカウントに GuardDuty を有効にするスタックを手作業で配る",
+          "explanation": "展開はできますが、検出結果の一元管理には別の設定が必要で、組織の機能を使う方法より手間がかかります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織全体のセキュリティサービスは、専用のアカウントを委任管理者にしてまとめて管理するのが定番です。GuardDuty の自動で有効にする設定はリージョンごとに行う点に注意します。",
+      "references": [
+        {
+          "title": "Organizations での GuardDuty の管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_organizations.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-047",
+      "domain": "d5",
+      "question": "ある企業は、プライベートサブネットの EC2 インスタンスへ、踏み台サーバー経由の SSH でログインして作業している。セキュリティの方針で、インバウンドのポートを開けず、SSH キーの管理もやめ、誰がいつどんな操作をしたかの記録を残すことになった。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "踏み台サーバーのセキュリティグループで、SSH の接続元を社内の IP アドレスに絞る",
+          "explanation": "接続元は絞れますが、インバウンドのポートや SSH キーの管理は残ります。"
+        },
+        {
+          "text": "各インスタンスにパブリック IP アドレスを付け、直接 SSH で接続する",
+          "explanation": "インスタンスがインターネットから到達できる場所に置かれ、セキュリティが下がります。"
+        },
+        {
+          "text": "AWS Systems Manager の Session Manager で接続し、IAM のポリシーでアクセスを制御して、セッションのログを S3 や CloudWatch Logs に保存する",
+          "explanation": "Session Manager では、インバウンドのポートを開けたり、踏み台サーバーを維持したり、SSH キーを管理したりする必要がありません。IAM のポリシーでアクセスを一元的に制御でき、セッションのログを S3 や CloudWatch Logs に保存できます。"
+        },
+        {
+          "text": "SSH キーを全員で共有し、定期的に変更する",
+          "explanation": "共有のキーでは誰が操作したかを区別できず、インバウンドのポートも残ります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "インスタンスへの安全な接続には Session Manager を使います。ポートを開けず、SSH キーもいらず、IAM で制御してログを残せます（ポート転送や SSH 経由のセッションではログが記録されない点に注意）。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-048",
+      "domain": "d5",
+      "question": "ある企業は、数百台の EC2 インスタンスとオンプレミスのサーバーに、セキュリティの更新プログラムを手作業で適用している。適用の漏れや遅れが起きている。承認した更新だけを、決めたスケジュールで自動で適用し、適用状況を一覧で確認したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各サーバーの OS の自動更新を有効にする",
+          "explanation": "サーバーごとの設定になり、承認した更新だけを適用したり、全体の適用状況を一覧で確認したりできません。"
+        },
+        {
+          "text": "更新を適用したゴールデンイメージを毎月作り、すべてのサーバーを作り直す",
+          "explanation": "オンプレミスのサーバーには使えず、作り直しの影響も大きくなります。"
+        },
+        {
+          "text": "担当者を増やし、手作業の確認を二重にする",
+          "explanation": "手作業のままなので、漏れや遅れの根本的な解決になりません。"
+        },
+        {
+          "text": "AWS Systems Manager の Patch Manager で、パッチベースラインとスケジュールを設定し、コンプライアンスの状況を確認する",
+          "explanation": "Patch Manager は、マネージドノードへのパッチの適用を自動化します。パッチベースラインで適用する更新を決め、スケジュールに従って実行でき、パッチのコンプライアンスの状況も確認できます。Quick Setup のパッチポリシーで設定するのが推奨です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "多数のサーバーへのパッチの適用は、AWS Systems Manager の Patch Manager で自動化します。オンプレミスのサーバーもマネージドノードとして対象にできます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/patch-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-049",
+      "domain": "d5",
+      "question": "ある企業は、組織内の数十のアカウントでアプリケーションを動かしている。運用チームは障害の調査のたびに各アカウントにサインインし直して、メトリクスやログ、トレースを確認しており、時間がかかっている。1つのアカウントから、すべてのアカウントのデータをまとめて確認したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudWatch のクロスアカウントオブザーバビリティで、監視用のアカウントを設定し、組織のアカウントをソースアカウントとしてリンクする",
+          "explanation": "クロスアカウントオブザーバビリティでは、監視用のアカウントからソースアカウントのメトリクス・ログ・X-Ray のトレースなどを表示して操作できます。Organizations を使って、組織や OU のアカウントをまとめてリンクできます。"
+        },
+        {
+          "text": "各アカウントのログを毎日 S3 にエクスポートし、監視用のアカウントにコピーする",
+          "explanation": "ログは集まりますが、すぐには見られず、メトリクスやトレースも別に集める必要があります。"
+        },
+        {
+          "text": "運用チームの全員に、すべてのアカウントの IAM ユーザーを作る",
+          "explanation": "サインインし直す手間は変わらず、IAM ユーザーの管理も増えます。"
+        },
+        {
+          "text": "各アカウントで CloudTrail を有効にする",
+          "explanation": "CloudTrail は API 操作の記録で、アプリケーションのメトリクスやトレースは確認できません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "複数のアカウントのメトリクス・ログ・トレースを1か所で見るなら、CloudWatch のクロスアカウントオブザーバビリティを使います。",
+      "references": [
+        {
+          "title": "CloudWatch のクロスアカウントオブザーバビリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-050",
+      "domain": "d5",
+      "question": "ある企業は、インフラを AWS CloudFormation で管理している。しかし、障害対応のときに担当者がコンソールから直接設定を変えてしまい、テンプレートと実際の設定が食い違っていることがある。どのリソースがテンプレートの外で変更されたかを特定したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "変更セットを作成して、スタックを更新する前に変更内容を確認する",
+          "explanation": "変更セットは、スタックの更新がリソースに与える影響を事前に確認するための機能です。テンプレートの外で行われた変更の検出には使いません。"
+        },
+        {
+          "text": "CloudFormation のドリフト検出を実行する",
+          "explanation": "ドリフト検出で、CloudFormation の管理外で設定が変更されたスタックのリソースを特定できます。なお、ドリフト検出に対応していないリソースは NOT_CHECKED になります。"
+        },
+        {
+          "text": "スタックを削除して、テンプレートから作り直す",
+          "explanation": "食い違いは解消されますが、どのリソースが変更されたかは分からず、作り直しの影響も大きくなります。"
+        },
+        {
+          "text": "CloudFormation のテンプレートを S3 のバージョニングで管理する",
+          "explanation": "テンプレートの変更履歴は残りますが、実際のリソースがコンソールから変更されたことは分かりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "テンプレートと実際のリソースの食い違い（ドリフト）は、CloudFormation のドリフト検出で見つけます。更新前の影響の確認に使う変更セットとの違いを押さえておきます。",
+      "references": [
+        {
+          "title": "CloudFormation のドリフト検出",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+        },
+        {
+          "title": "変更セットを使用したスタックの更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ]
     }
   ]
 }

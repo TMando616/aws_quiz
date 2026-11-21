@@ -74,8 +74,8 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
-assets/questions/sap.json               SAPの問題（自作38問）
-assets/questions/saa.json               SAAの問題（自作10問。分野1〜4に 3・3・2・2問）
+assets/questions/sap.json               SAPの問題（自作50問）
+assets/questions/saa.json               SAAの問題（自作30問。分野1〜4に 9・8・7・6問、うち複数選択2問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
 lib/models/question.dart                Question・Choice・Reference
@@ -106,7 +106,7 @@ tool/validate_questions.dart            品質チェックのコマンド
 4. **解説**：選んだ選択肢の解説を色付きの枠で一番上に → 正解（選んでいなかった場合）→ ほかの選択肢 → まとめ → 根拠リンク（タップで外部ブラウザ）
 5. **練習の結果**：正答率と分野ごとの内訳
 6. **模試**：試験ごとの問題数・時間で、比重どおりに分野を配分して出題。1問ごとの正誤は出さない。前の問題に戻れる・一覧から未回答に飛べる。残り時間は終了時刻から計算し、時間切れで自動採点。中断すると回答は保存されない
-   - 収録数が足りないときは、ある分だけで実施し、時間も比例して短くする（今のSAPは38問・91分）
+   - 収録数が足りないときは、ある分だけで実施し、時間も比例して短くする（今のSAPは50問・120分）
 7. **模試の結果**：正答率・かかった時間・分野別の正答率・間違えた問題の一覧（タップで解説付きの見直し）
 
 ### データの形式
@@ -211,12 +211,12 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 ## 6. 次にやること（優先順）
 
 1. **シミュレーターで画面を触って確認**（下の「未確認のこと」）
-2. **SAPの問題を見直す**：2026-11-21 に Claude が38問まで作成した（分野1〜5に 8・8・8・8・6問、うち複数選択6問）。SAP-C03 の試験ガイドのタスクから、仕組みが安定している論点を選んで自作し、根拠リンクはすべて実在を確認済み。ただし内容の正確さは本人の目でも確認する（問題を解きながら、解説と根拠リンクを読むのがおすすめ）
+2. **SAPの問題を見直す**：2026-11-21 に Claude が50問まで作成した（分野1〜5に 12・12・8・8・10問、うち複数選択5問）。SAP-C03 の試験ガイドのタスクから、仕組みが安定している論点を選んで自作し、根拠リンクはすべて実在を確認済み。ただし内容の正確さは本人の目でも確認する（問題を解きながら、解説と根拠リンクを読むのがおすすめ）
    - 2026-11-21 に品質チェック済み：全問の解説の主張を根拠ページと照合し（主張と引用の対応表を作成）、食い違い・古い情報を修正、根拠リンクを18件追加した。正解が1つに決まるかのレビューも実施。根拠ページに直接の記述が見つからず残っているのは sap-007（PrivateLink は CIDR が重複しても使える）と sap-010（スティッキーセッションでセッションが消える）
    - 試験ガイドの「範囲内のサービス」に入っていないサービスを正解にしていた2問を作り直した（sap-002：Application Discovery Service → AWS Transform、sap-018：AWS Artifact → AWS Verified Access）。問題を作るときは、正解のサービスが試験ガイドの範囲内のサービスの一覧にあるかを確認する
-   - sap-031〜038 は根拠ページで事実を確かめてから作成した（Glacier Deep Archive、スポット、Compute Optimizer、Budgets の予算アクション、DMS＋SCT、Transform MGN、S3 File Gateway、FIS）
+   - sap-031〜050 と saa-001〜030 は根拠ページで事実を確かめてから作成した。sap-031〜038（Glacier Deep Archive、スポット、Compute Optimizer、Budgets の予算アクション、DMS＋SCT、Transform MGN、S3 File Gateway、FIS）
    - 作成時、単一選択の正解の多くが B に偏ったため、選択肢を並べ替えて A〜D に散らした（品質チェックにも偏りの警告を追加）
-   - 今後足すなら、まだ入れていない論点（Bedrock Guardrails、VPC Lattice、Cloud WAN、Control Tower、Security Lake など）も、公式ドキュメントを確認しながら入れていく
+   - 今後足すなら、まだ入れていない論点（Bedrock Guardrails、Resilience Hub、Elastic Beanstalk、Lake Formation、EKS など）も、公式ドキュメントを確認しながら入れていく
 3. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アイコン、上の「リリース前にやること（広告まわり）」。ホーム画面に出るアプリ名は「クラウド認定」に変更済み（`CFBundleDisplayName`・`android:label`）。アプリ内の表記は `lib/config/app_info.dart` の `appName`
 4. Androidの環境構築とGoogle Playへの公開
 5. ほかの試験の問題を追加（次に受ける試験から）
