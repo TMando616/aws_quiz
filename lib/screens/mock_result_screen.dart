@@ -4,6 +4,7 @@ import '../ads/banner_ad_view.dart';
 import '../data/study_repository.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
+import '../widgets/domain_accuracy_bar.dart';
 import '../widgets/explanation_view.dart';
 
 /// 模試の結果。総合の正答率・分野別の正答率・間違えた問題の見直し
@@ -89,7 +90,7 @@ class MockResultScreen extends StatelessWidget {
           const SizedBox(height: 8),
           for (final d in exam.domains)
             if (result.byDomain[d.id] case final acc?)
-              _DomainResult(name: d.name, accuracy: acc),
+              DomainAccuracyBar(name: d.name, accuracy: acc),
           const SizedBox(height: 24),
           Text(
             wrong.isEmpty ? '全問正解です' : '間違えた問題（${wrong.length}問）',
@@ -127,48 +128,6 @@ class MockResultScreen extends StatelessWidget {
           FilledButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('試験トップに戻る'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DomainResult extends StatelessWidget {
-  const _DomainResult({required this.name, required this.accuracy});
-
-  final String name;
-  final Accuracy accuracy;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final rate = accuracy.rate ?? 0;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: Text(name, style: theme.textTheme.bodyMedium)),
-              const SizedBox(width: 12),
-              Text(
-                '${(rate * 100).round()}%（${accuracy.correct}/${accuracy.answered}）',
-                style: theme.textTheme.titleSmall,
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: rate,
-              minHeight: 6,
-              backgroundColor: scheme.surfaceContainerHighest,
-            ),
           ),
         ],
       ),

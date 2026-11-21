@@ -8,6 +8,7 @@ import '../models/exam.dart';
 import '../models/question.dart';
 import '../settings/quiz_layout.dart';
 import '../theme/app_theme.dart';
+import '../widgets/domain_accuracy_bar.dart';
 import '../widgets/explanation_view.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -35,6 +36,9 @@ class _QuizScreenState extends State<QuizScreen> {
   final Set<int> _selected = {}; // 選んでいる選択肢
   bool _answered = false; // 「回答する」を押したか
   int _correctCount = 0;
+
+  /// 問題の番号 → 正解したか（結果画面の分野別の内訳に使う）
+  final Map<int, bool> _results = {};
   bool _finished = false;
 
   final _interstitial = InterstitialAdManager();
@@ -95,6 +99,7 @@ class _QuizScreenState extends State<QuizScreen> {
     setState(() {
       _answered = true;
       if (correct) _correctCount++;
+      _results[_index] = correct;
     });
     _record(q, correct);
     // スワイプモードでは解説が問題文の下に出るので、そこまでスクロールする
@@ -145,6 +150,7 @@ class _QuizScreenState extends State<QuizScreen> {
     setState(() {
       _index = 0;
       _correctCount = 0;
+      _results.clear();
       _finished = false;
       _resetForQuestion();
     });
@@ -469,39 +475,61 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Widget _buildResult(int total) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final rate = total == 0 ? 0 : _correctCount / total;
+
+    // 分野ごとの出題数と正解数
+    final answered = <String, int>{};
+    final correct = <String, int>{};
+    for (final e in _results.entries) {
+      final domainId = widget.questions[e.key].domainId;
+      answered.update(domainId, (v) => v + 1, ifAbsent: () => 1);
+      if (e.value) correct.update(domainId, (v) => v + 1, ifAbsent: () => 1);
+    }
+
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.exam.shortName} 結果')),
+      appBar: AppBar(
+        title: Text('${widget.exam.shortName} 結果'),
+        automaticallyImplyLeading: false,
+      ),
       bottomNavigationBar: const SafeArea(child: BannerAdView()),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('$total問中', style: theme.textTheme.titleMedium),
-            Text(
-              '$_correctCount問 正解',
-              style: theme.textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold,
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        children: [
+          Center(
+            child: Text(
+              '${(rate * 100).round()}%',
+              style: theme.textTheme.displayMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: scheme.primary,
               ),
             ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                children: [
-                  FilledButton(
-                    onPressed: _restart,
-                    child: const Text('もう一度解く'),
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('試験トップに戻る'),
-                  ),
-                ],
+          ),
+          Center(
+            child: Text(
+              '$total問中 $_correctCount問正解',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 32),
+          Text('分野ごとの内訳', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          for (final d in widget.exam.domains)
+            if (answered[d.id] case final n?)
+              DomainAccuracyBar(
+                name: d.name,
+                accuracy: Accuracy(answered: n, correct: correct[d.id] ?? 0),
+              ),
+          const SizedBox(height: 24),
+          FilledButton(onPressed: _restart, child: const Text('もう一度解く')),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('試験トップに戻る'),
+          ),
+        ],
       ),
     );
   }

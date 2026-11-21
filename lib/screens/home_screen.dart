@@ -246,8 +246,9 @@ class _ProgressCard extends StatelessWidget {
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: scheme.primaryContainer.withValues(alpha: 0.6),
+        color: scheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,7 +256,7 @@ class _ProgressCard extends StatelessWidget {
           Text(
             done ? '全冠達成！' : '全冠への進捗',
             style: theme.textTheme.labelLarge?.copyWith(
-              color: scheme.onPrimaryContainer,
+              color: scheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 4),
@@ -266,13 +267,13 @@ class _ProgressCard extends StatelessWidget {
                   text: '$certified',
                   style: theme.textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: scheme.onPrimaryContainer,
+                    color: scheme.primary,
                   ),
                 ),
                 TextSpan(
                   text: ' / $total 取得',
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: scheme.onPrimaryContainer,
+                    color: scheme.onSurface,
                   ),
                 ),
               ],
@@ -284,14 +285,14 @@ class _ProgressCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: total == 0 ? 0 : certified / total,
               minHeight: 8,
-              backgroundColor: scheme.surface.withValues(alpha: 0.7),
+              backgroundColor: scheme.surfaceContainerHighest,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             '取得済みの試験は、右の ✓ をタップして印をつけられます',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: scheme.onPrimaryContainer.withValues(alpha: 0.8),
+              color: scheme.onSurfaceVariant,
             ),
           ),
         ],

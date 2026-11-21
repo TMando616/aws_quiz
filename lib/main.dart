@@ -23,8 +23,16 @@ class MyApp extends StatelessWidget {
       title: 'クラウド認定 学習',
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system, // 端末の設定に合わせてダークモードに切り替える
+      themeMode: _themeMode, // 端末の設定に合わせてダークモードに切り替える
       home: const HomeScreen(),
     );
   }
 }
+
+/// 通常は端末の設定に合わせる。開発中の画面確認では
+/// `--dart-define=THEME=dark`（または light）でテーマを固定できる
+ThemeMode get _themeMode => switch (const String.fromEnvironment('THEME')) {
+  'dark' => ThemeMode.dark,
+  'light' => ThemeMode.light,
+  _ => ThemeMode.system,
+};
