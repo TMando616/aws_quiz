@@ -4712,6 +4712,754 @@
           "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/what-is.html"
         }
       ]
+    },
+    {
+      "id": "sap-d088",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-039",
+      "point": "VPC Lattice と CIDR の重複",
+      "question": "Amazon VPC Lattice は、CIDR が重複している VPC の間のサービスの通信にも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。VPC Lattice は、重複する CIDR に対応しています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ピアリングや Transit Gateway のようにルーティングでつなぐ方法は CIDR の重複に対応できませんが、VPC Lattice ならサービス単位でつなげます。",
+      "references": [
+        {
+          "title": "Amazon VPC Lattice とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc-lattice/latest/ug/what-is-vpc-lattice.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d089",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-039",
+      "point": "サービス間の通信を IAM で制御する",
+      "question": "複数のアカウントの複数の VPC にあるマイクロサービスどうしの HTTP の呼び出しを、サービスごとに IAM のポリシーで細かく制御したい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "すべての VPC の組み合わせで VPC ピアリングを作る",
+          "explanation": "接続とルートの管理が増え、サービス単位で IAM のポリシーによる制御もできません。"
+        },
+        {
+          "text": "Transit Gateway で VPC をつなぐ",
+          "explanation": "ルーティングでネットワークをつなぐもので、サービス単位の IAM の制御はできません。"
+        },
+        {
+          "text": "各サービスをインターネットに公開し、API キーで制御する",
+          "explanation": "通信がインターネットを経由し、IAM のポリシーによる制御にもなりません。"
+        },
+        {
+          "text": "Amazon VPC Lattice のサービスネットワークと認証ポリシー",
+          "explanation": "VPC Lattice はサービス間の通信の接続・保護・監視を行うサービスで、認証ポリシーでサービスへのアクセスを細かく制御できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "複数の VPC・アカウントにまたがるサービス間の通信を、IAM のポリシーで制御したいなら VPC Lattice です。",
+      "references": [
+        {
+          "title": "Amazon VPC Lattice とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc-lattice/latest/ug/what-is-vpc-lattice.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d090",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-040",
+      "point": "Cloud WAN のセグメント",
+      "question": "AWS Cloud WAN のセグメントは独立したルーティングドメインで、既定では同じセグメントのアタッチメントどうしだけが通信できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。セグメントは専用のルーティングドメインで、既定では同じセグメントの中のアタッチメントだけが通信できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "本番・開発などの環境ごとにセグメントを分ければ、通信できる範囲を分けられます。",
+      "references": [
+        {
+          "title": "AWS Cloud WAN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-manager/latest/cloudwan/what-is-cloudwan.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d091",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-040",
+      "point": "グローバルネットワークを1つのポリシーで管理する",
+      "question": "世界の複数のリージョンの VPC と各国の拠点を1つのネットワークでつなぎ、構成全体を1つのポリシーで定義して展開したい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "VPC ピアリング",
+          "explanation": "推移的なルーティングができず、接続の数も大きく増えます。"
+        },
+        {
+          "text": "拠点ごとの Site-to-Site VPN",
+          "explanation": "拠点やリージョンが増えるたびに設定が増え、全体を1つのポリシーで管理できません。"
+        },
+        {
+          "text": "AWS Cloud WAN",
+          "explanation": "クラウドとオンプレミスの資源をつなぐ統合されたグローバルネットワークを作れます。コアネットワークポリシーという1つのドキュメントで構成を定義し、展開できます。"
+        },
+        {
+          "text": "AWS PrivateLink",
+          "explanation": "特定のサービスを公開する仕組みで、ネットワーク全体をつなぐ用途には向きません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "複数のリージョンとオンプレミスを1つのグローバルネットワークとして一元管理するなら AWS Cloud WAN です。",
+      "references": [
+        {
+          "title": "AWS Cloud WAN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-manager/latest/cloudwan/what-is-cloudwan.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d092",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-041",
+      "point": "Express ワークフローの実行時間",
+      "question": "Step Functions の Express ワークフローは、最大1年間実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Express ワークフローの実行は最大5分です。最大1年間実行できるのは Standard ワークフローです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Standard は「1回だけの実行・最大1年」、Express は「1回以上の実行・最大5分・高い実行レート」と覚えます。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        },
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d093",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-041",
+      "point": "再試行と失敗時の処理",
+      "question": "Step Functions のワークフローで、失敗したタスクの再試行と、失敗したときの代わりの処理を定義したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "SQS のデッドレターキュー",
+          "explanation": "処理できなかったメッセージを退避するキューの仕組みで、ワークフローの再試行や代わりの処理の定義には使いません。"
+        },
+        {
+          "text": "Lambda の予約済み同時実行数",
+          "explanation": "関数の同時実行の数を確保・制限する設定で、失敗時の処理の定義ではありません。"
+        },
+        {
+          "text": "CloudWatch アラーム",
+          "explanation": "メトリクスのしきい値で通知などを行う仕組みで、ワークフローの中の再試行の定義ではありません。"
+        },
+        {
+          "text": "ステートの Retry と Catch",
+          "explanation": "Task・Parallel・Map のステートに Retry（再試行）と Catch（失敗をキャッチして代わりの処理へ）を設定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Step Functions では、再試行と失敗時の処理を各関数に作り込まず、ステートの Retry と Catch で定義します。何も設定しないと、エラーでステートマシン全体の実行が失敗します。",
+      "references": [
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d094",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-042",
+      "point": "アカウントをまたぐイベントの送信",
+      "question": "Amazon EventBridge では、別のアカウントのイベントバスを、ルールのターゲットにできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。EventBridge は、アカウントのイベントバス間でイベントを送受信できます。送信側のアカウントで、受信側のイベントバスをターゲットにするルールを作ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "複数のアカウントのイベントを1つのアカウントに集めて処理する、といった構成ができます。",
+      "references": [
+        {
+          "title": "アカウント間でのイベントの送受信",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-cross-account.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d095",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-042",
+      "point": "クロスアカウントのターゲットと IAM ロール",
+      "question": "新しく作るクロスアカウントのイベントバスのターゲットには、IAM ロールの指定は不要である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。2023年3月2日以降に作る、新しいクロスアカウントのイベントバスのターゲットには、IAM ロールの追加が必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アカウントをまたいで送ったイベントは、送信側のアカウントにカスタムイベントとして課金される点も押さえておきます。",
+      "references": [
+        {
+          "title": "アカウント間でのイベントの送受信",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-cross-account.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d096",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-043",
+      "point": "マルチアカウントの環境をすばやく用意する",
+      "question": "ベストプラクティスに沿ったマルチアカウントの環境をすばやく用意し、ルールを適用して、新しいアカウントも承認済みの設定で作りたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "IAM Identity Center",
+          "explanation": "アクセスの管理を一元化するサービスで、環境の用意やアカウントの作成の標準化までは行えません。"
+        },
+        {
+          "text": "AWS Config のルールを各アカウントで作る",
+          "explanation": "検出のルールは作れますが、環境の用意やアカウントの作成の標準化はできません。"
+        },
+        {
+          "text": "AWS Control Tower",
+          "explanation": "ランディングゾーンでベストプラクティスにもとづく環境を用意し、コントロールを適用できます。Account Factory で、承認済みの設定のアカウントを標準化して作れます。"
+        },
+        {
+          "text": "管理アカウントですべて手作業で設定する",
+          "explanation": "設定の量が多く、アカウントが増えるたびに作業が必要です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "マルチアカウントの環境をベストプラクティスに沿って用意するなら AWS Control Tower です。",
+      "references": [
+        {
+          "title": "AWS Control Tower とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d097",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-043",
+      "point": "Control Tower のコントロールの種類",
+      "question": "AWS Control Tower のコントロールには、予防・検出・プロアクティブの3種類がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。コントロール（ガードレール）には、予防コントロール、検出コントロール、プロアクティブコントロールの3種類があります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "コントロールで、組織全体にルールを適用して守らせたり、違反を検出したりできます。",
+      "references": [
+        {
+          "title": "AWS Control Tower とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d098",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-044",
+      "point": "Security Lake のデータの形式",
+      "question": "Amazon Security Lake は、取り込んだセキュリティのデータを OCSF という標準のスキーマに変換する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。取り込んだデータを、Apache Parquet の形式と、OCSF という標準のオープンソースのスキーマに変換します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "共通の形式にそろえることで、AWS・SaaS・オンプレミスのデータをまとめて分析しやすくなります。",
+      "references": [
+        {
+          "title": "Amazon Security Lake とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-lake/latest/userguide/what-is-security-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d099",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-044",
+      "point": "Security Lake のデータの所有",
+      "question": "Amazon Security Lake のデータは AWS が管理するアカウントに保存され、利用者はデータを所有できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。データレイクは利用者のアカウントの S3 バケットに作られ、データの所有権は利用者が持ちます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Security Lake は、組織の複数のアカウント・リージョンで一元的に有効にでき、データは自社のアカウントで保持できます。",
+      "references": [
+        {
+          "title": "Amazon Security Lake とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-lake/latest/userguide/what-is-security-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d100",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-045",
+      "point": "VPC の通信をステートフルに検査する",
+      "question": "VPC の通信をステートフルに検査し、許可したドメインへの通信だけを通し、侵入の防止も行いたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "セキュリティグループ",
+          "explanation": "インスタンス単位で IP アドレスやポートを許可する仕組みで、ドメインによる制御や侵入の防止はできません。"
+        },
+        {
+          "text": "ネットワーク ACL",
+          "explanation": "サブネット単位のステートレスな制御で、ドメインによる制御や侵入の防止はできません。"
+        },
+        {
+          "text": "Amazon GuardDuty",
+          "explanation": "脅威を検出するサービスで、通信をその場で検査して止めるものではありません。"
+        },
+        {
+          "text": "AWS Network Firewall",
+          "explanation": "VPC のためのステートフルなマネージドのファイアウォールと、侵入の検知・防止のサービスです。ドメインによるフィルタリングもできます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "VPC の通信の検査や、ドメインによるフィルタリングが必要なら AWS Network Firewall です。新しく作るファイアウォールには Next Generation のポリシーが推奨されています。",
+      "references": [
+        {
+          "title": "AWS Network Firewall とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d101",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-045",
+      "point": "Transit Gateway の通信の検査",
+      "question": "AWS Network Firewall は、Transit Gateway を通って VPC に出入りする通信も検査の対象にできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Network Firewall は、インターネットゲートウェイ、NAT ゲートウェイ、Transit Gateway、Cloud WAN などを通って VPC に出入りする通信を検査できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "多数の VPC の通信を Transit Gateway で検査用の VPC に集めれば、1か所でまとめて検査できます。",
+      "references": [
+        {
+          "title": "AWS Network Firewall とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d102",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-046",
+      "point": "GuardDuty の委任管理者",
+      "question": "GuardDuty では、組織の管理アカウントそのものを委任管理者にすることが推奨されている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。組織の管理アカウントを GuardDuty の委任管理者にすることは推奨されていません。セキュリティ専用のアカウントを指定します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "管理アカウントは使う範囲をできるだけ絞り、セキュリティのサービスの管理は専用のアカウントに任せるのがベストプラクティスです。",
+      "references": [
+        {
+          "title": "Organizations での GuardDuty の管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_organizations.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d103",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-046",
+      "point": "新しいアカウントで自動で有効にする",
+      "question": "GuardDuty の委任管理者は、組織に新しく追加されたメンバーアカウントで、GuardDuty を自動で有効にする設定ができる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。自動で有効にする設定では、新しいメンバーアカウントだけ（NEW）か、すべてのメンバーアカウント（ALL）かを選べます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "この設定はリージョンごとに行う点に注意します。",
+      "references": [
+        {
+          "title": "Organizations での GuardDuty の管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_organizations.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d104",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-047",
+      "point": "Session Manager とインバウンドのポート",
+      "question": "Session Manager でインスタンスに接続するには、インスタンスのインバウンドの SSH のポートを開ける必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Session Manager では、インバウンドのポートを開けたり、踏み台のホストを維持したり、SSH キーを管理したりする必要がありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アクセスは IAM のポリシーで一元的に制御でき、セッションのログを S3 や CloudWatch Logs に保存できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d105",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-047",
+      "point": "ポートを開けずに安全に接続する",
+      "question": "プライベートサブネットの EC2 に、インバウンドのポートを開けず、SSH キーも使わずに接続し、操作の記録を残したい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "踏み台サーバーの SSH の接続元を社内の IP アドレスに絞る",
+          "explanation": "接続元は絞れますが、インバウンドのポートや SSH キーの管理は残ります。"
+        },
+        {
+          "text": "インスタンスにパブリック IP アドレスを付けて直接 SSH で接続する",
+          "explanation": "インスタンスがインターネットから到達できる場所に置かれます。"
+        },
+        {
+          "text": "Systems Manager の Session Manager",
+          "explanation": "ポートを開けず、SSH キーも管理せずに接続できます。IAM でアクセスを制御し、セッションのログを保存できます。"
+        },
+        {
+          "text": "SSH キーを全員で共有して定期的に変える",
+          "explanation": "誰が操作したかを区別できず、インバウンドのポートも残ります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "インスタンスへの安全な接続には Session Manager を使います。ただし、ポート転送や SSH 経由のセッションでは、セッションのログは記録されません。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d106",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-048",
+      "point": "パッチベースライン",
+      "question": "Systems Manager の Patch Manager では、パッチベースラインで、どの更新を適用するかを決める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Patch Manager は、パッチベースラインを使って適用する更新を決めます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "パッチの適用はスケジュールに従って自動で実行でき、コンプライアンスの状況のレポートも作れます。Quick Setup のパッチポリシーで設定するのが推奨です。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/patch-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d107",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-048",
+      "point": "多数のサーバーへのパッチの自動適用",
+      "question": "数百台の EC2 とオンプレミスのサーバーに、承認した更新だけを決めたスケジュールで自動適用し、適用状況を一覧で確認したい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "各サーバーで OS の自動更新を有効にする",
+          "explanation": "サーバーごとの設定になり、承認した更新だけの適用や、全体の状況の確認ができません。"
+        },
+        {
+          "text": "ゴールデンイメージを毎月作り、すべてのサーバーを作り直す",
+          "explanation": "オンプレミスのサーバーには使えず、作り直しの影響も大きくなります。"
+        },
+        {
+          "text": "担当者を増やして手作業の確認を二重にする",
+          "explanation": "手作業のままで、漏れや遅れの根本的な解決になりません。"
+        },
+        {
+          "text": "Systems Manager の Patch Manager",
+          "explanation": "マネージドノードへのパッチの適用を自動化し、パッチのコンプライアンスの詳細なレポートも作れます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "多数のサーバーへのパッチの適用は、Patch Manager で自動化します。オンプレミスのサーバーもマネージドノードとして対象にできます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/patch-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d108",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-049",
+      "point": "複数のアカウントのデータを1か所で見る",
+      "question": "組織の数十のアカウントのメトリクス・ログ・トレースを、1つのアカウントからまとめて確認したい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "各アカウントのログを毎日 S3 にエクスポートする",
+          "explanation": "ログは集まりますが、すぐには見られず、メトリクスやトレースも別に集める必要があります。"
+        },
+        {
+          "text": "全員に、すべてのアカウントの IAM ユーザーを作る",
+          "explanation": "アカウントを切り替える手間は変わらず、IAM ユーザーの管理も増えます。"
+        },
+        {
+          "text": "CloudWatch のクロスアカウントオブザーバビリティ",
+          "explanation": "監視用のアカウントから、ソースアカウントのメトリクス・ログ・X-Ray のトレースなどを表示して操作できます。"
+        },
+        {
+          "text": "各アカウントで CloudTrail を有効にする",
+          "explanation": "API の操作の記録で、アプリケーションのメトリクスやトレースは確認できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "複数のアカウントの観測データを1か所で見るなら、CloudWatch のクロスアカウントオブザーバビリティを使います。",
+      "references": [
+        {
+          "title": "CloudWatch のクロスアカウントオブザーバビリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d109",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-049",
+      "point": "組織のアカウントをまとめてリンクする",
+      "question": "CloudWatch のクロスアカウントオブザーバビリティでは、AWS Organizations を使って、組織や OU のアカウントをまとめて監視用のアカウントにリンクできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Organizations を使って、1つの組織または OU の中のアカウントを、監視用のアカウントにリンクできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アカウントが増えても、組織や OU の単位でリンクしておけば、監視用のアカウントから自動で見られるようになります。",
+      "references": [
+        {
+          "title": "CloudWatch のクロスアカウントオブザーバビリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d110",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-050",
+      "point": "変更セットの役割",
+      "question": "CloudFormation の変更セットを使うと、テンプレートの外で変更されたリソースを特定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。変更セットは、スタックに提案された変更が実行中のリソースに与える影響を、更新の前に確認するための機能です。テンプレートの外での変更を見つけるには、ドリフト検出を使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "変更セットは「更新する前の影響の確認」、ドリフト検出は「テンプレートと実際の設定の食い違いの発見」と、目的で使い分けます。",
+      "references": [
+        {
+          "title": "変更セットを使用したスタックの更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d111",
+      "type": "drill",
+      "domain": "d5",
+      "source": "sap-050",
+      "point": "テンプレートと実際の設定の食い違いを見つける",
+      "question": "CloudFormation で管理しているリソースが、コンソールから直接変更されていないかを確認したい。適した機能はどれか。",
+      "choices": [
+        {
+          "text": "変更セット",
+          "explanation": "スタックを更新する前に、変更の影響を確認するための機能です。"
+        },
+        {
+          "text": "スタックを削除してテンプレートから作り直す",
+          "explanation": "食い違いは解消されますが、どこが変更されたかは分からず、影響も大きくなります。"
+        },
+        {
+          "text": "テンプレートを S3 のバージョニングで管理する",
+          "explanation": "テンプレートの変更履歴は残りますが、実際のリソースの変更は分かりません。"
+        },
+        {
+          "text": "ドリフト検出",
+          "explanation": "CloudFormation の管理外で設定が変更されたスタックのリソースを特定できます。対応していないリソースは NOT_CHECKED になります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "テンプレートと実際のリソースの食い違い（ドリフト）は、ドリフト検出で見つけます。",
+      "references": [
+        {
+          "title": "CloudFormation のドリフト検出",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+        }
+      ]
     }
   ]
 }
