@@ -74,7 +74,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
-assets/questions/sap.json               SAPの問題（自作30問）
+assets/questions/sap.json               SAPの問題（自作38問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
 lib/models/question.dart                Question・Choice・Reference
@@ -105,7 +105,7 @@ tool/validate_questions.dart            品質チェックのコマンド
 4. **解説**：選んだ選択肢の解説を色付きの枠で一番上に → 正解（選んでいなかった場合）→ ほかの選択肢 → まとめ → 根拠リンク（タップで外部ブラウザ）
 5. **練習の結果**：正答率と分野ごとの内訳
 6. **模試**：試験ごとの問題数・時間で、比重どおりに分野を配分して出題。1問ごとの正誤は出さない。前の問題に戻れる・一覧から未回答に飛べる。残り時間は終了時刻から計算し、時間切れで自動採点。中断すると回答は保存されない
-   - 収録数が足りないときは、ある分だけで実施し、時間も比例して短くする（今のSAPは30問・72分）
+   - 収録数が足りないときは、ある分だけで実施し、時間も比例して短くする（今のSAPは38問・91分）
 7. **模試の結果**：正答率・かかった時間・分野別の正答率・間違えた問題の一覧（タップで解説付きの見直し）
 
 ### データの形式
@@ -200,20 +200,23 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - 同意が必要な地域の人には、ホームと出題画面の右上メニューに「広告のプライバシー設定」が出る（GDPRで、同意をあとから変えられる導線が必須）
 
 **リリース前にやること（広告まわり）**
-- AdMobでアプリと広告ユニットを作り、`ad_config.dart`・`Info.plist`・`AndroidManifest.xml` の3か所を本番IDに差し替える
-- `Info.plist` の `SKAdNetworkItems` にGoogle推奨の一覧を追加する（今はGoogleの1件だけ）
+- AdMobでアプリと広告ユニットを作る。広告ユニットIDはリリースビルドのときに `--dart-define=ADMOB_BANNER_IOS=...` などで渡す（渡さなければテスト用IDのまま。使い方は `lib/ads/ad_config.dart` の先頭）。アプリIDは `Info.plist` と `AndroidManifest.xml` を直接書き換える
+- `Info.plist` の `SKAdNetworkItems` は、Google の一覧（2026-01-30 更新版、50件）を入れ済み。リリース前に https://developers.google.com/admob/ios/3p-skadnetworks の更新日を確認する
 - AdMobの管理画面で、同意画面（GDPR用）とATT前の説明画面（IDFAメッセージ）の文面を日本語で作る
-- プライバシーポリシーのページを用意する（広告IDの利用と、学習記録は端末内だけに保存することを明記。App Storeの審査で必須）
+- プライバシーポリシー：下書きは `docs/privacy_policy.md`。`［ ］` を埋めて公開し（GitHub Pages など）、URLを `lib/config/app_info.dart` の `privacyPolicyUrl` に入れる
+- 問い合わせ用のメールアドレスを決めて `lib/config/app_info.dart` の `supportEmail` に入れる（解説の下の「この問題の誤りを報告」と「このアプリについて」で使う。空だと「未設定」と表示される）
+- バンドルID（iOS `com.example.awsQuiz`、Android `com.example.aws_quiz`）を自分のものに変える。公開後は変えられない
 
 ## 6. 次にやること（優先順）
 
 1. **シミュレーターで画面を触って確認**（下の「未確認のこと」）
-2. **SAPの問題を見直す**：2026-11-21 に Claude が30問まで作成した（分野1〜5に 8・8・4・4・6問、うち複数選択5問）。SAP-C03 の試験ガイドのタスクから、仕組みが安定している論点を選んで自作し、根拠リンクはすべて実在を確認済み。ただし内容の正確さは本人の目でも確認する（問題を解きながら、解説と根拠リンクを読むのがおすすめ）
+2. **SAPの問題を見直す**：2026-11-21 に Claude が38問まで作成した（分野1〜5に 8・8・8・8・6問、うち複数選択6問）。SAP-C03 の試験ガイドのタスクから、仕組みが安定している論点を選んで自作し、根拠リンクはすべて実在を確認済み。ただし内容の正確さは本人の目でも確認する（問題を解きながら、解説と根拠リンクを読むのがおすすめ）
    - 2026-11-21 に品質チェック済み：全問の解説の主張を根拠ページと照合し（主張と引用の対応表を作成）、食い違い・古い情報を修正、根拠リンクを18件追加した。正解が1つに決まるかのレビューも実施。根拠ページに直接の記述が見つからず残っているのは sap-007（PrivateLink は CIDR が重複しても使える）と sap-010（スティッキーセッションでセッションが消える）
-   - 期限・変化に注意：sap-002 の Application Discovery Service は2025-11-07から新規受付停止（AWS Transform が推奨）。試験の出題が AWS Transform 中心に変わっていれば作り直す
+   - 試験ガイドの「範囲内のサービス」に入っていないサービスを正解にしていた2問を作り直した（sap-002：Application Discovery Service → AWS Transform、sap-018：AWS Artifact → AWS Verified Access）。問題を作るときは、正解のサービスが試験ガイドの範囲内のサービスの一覧にあるかを確認する
+   - sap-031〜038 は根拠ページで事実を確かめてから作成した（Glacier Deep Archive、スポット、Compute Optimizer、Budgets の予算アクション、DMS＋SCT、Transform MGN、S3 File Gateway、FIS）
    - 作成時、単一選択の正解の多くが B に偏ったため、選択肢を並べ替えて A〜D に散らした（品質チェックにも偏りの警告を追加）
-   - 今後足すなら、今回避けた新しめの論点（Bedrock AgentCore、Bedrock Guardrails、VPC Lattice、Resilience Hub、FIS など）も、公式ドキュメントを確認しながら入れていく
-3. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アプリ名、アイコン、ホーム画面に出るアプリ名（今はiOSが「Aws Quiz」、Androidが「aws_quiz」のまま。「AWS」を含むので必ず変える。iOSは `Info.plist` の `CFBundleDisplayName`、Androidは `AndroidManifest.xml` の `android:label`）、上の「リリース前にやること（広告まわり）」
+   - 今後足すなら、まだ入れていない論点（Bedrock Guardrails、VPC Lattice、Cloud WAN、Control Tower、Security Lake など）も、公式ドキュメントを確認しながら入れていく
+3. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アイコン、上の「リリース前にやること（広告まわり）」。ホーム画面に出るアプリ名は「クラウド認定」に変更済み（`CFBundleDisplayName`・`android:label`）。アプリ内の表記は `lib/config/app_info.dart` の `appName`
 4. Androidの環境構築とGoogle Playへの公開
 5. ほかの試験の問題を追加（次に受ける試験から）
 
@@ -232,12 +235,14 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - 根拠リンクをタップしてブラウザが開くか
 - 同意画面の「Continue」を押したあと、ATTのダイアログ → バナー表示まで進むか
 - 試験トップの「取得済み」の切り替え
+- 「この問題の誤りを報告」でメールアプリが開くか（`supportEmail` を入れてから。シミュレーターにはメールアプリが無いので実機で）
+- 「このアプリについて」→「ライセンス」
 
 ### 試験情報で未確認・期限があるもの（2026-11-21時点）
-- **AIP-C01（Generative AI Developer - Professional）の試験時間**：公式ページを読めず未確認。ほかのプロフェッショナル試験と同じ180分を仮に入れている
-- **DVA**：DVA-C02は2026-11-30で終了し、DVA-C03は2026-12-01に申し込み受付開始。exams.jsonは先にDVA-C03の分野にしてある
-- **MLA**：英語版はMLA-C02（ベータ）に移行中。日本語版はC02が正式リリースされるまでMLA-C01が受けられるので、exams.jsonはMLA-C01。C02が正式リリースされたら更新する
-- **ANS（Advanced Networking - Specialty）**：2026-12-31で終了。過ぎたらexams.jsonから外す
+- **AIP-C01**：180分・75問（採点対象65問＋採点対象外10問）を公式ページで確認済み
+- **DVA**：DVA-C02は2026-11-30で終了。DVA-C03は2026-10-27に申し込み受付開始済み。exams.jsonはDVA-C03
+- **MLA**：英語版のMLA-C01は2026-09-28で終了し、MLA-C02はベータ中（170分・85問、正式リリース日は未定）。日本語版はC02の正式リリースまでMLA-C01が受けられるので、exams.jsonはMLA-C01のまま。C02の分野は「データ準備 28%／モデルと基盤モデルの開発 24%／デプロイとオーケストレーション 24%／運用・モニタリング・セキュリティ 24%」
+- **ANS（Advanced Networking - Specialty）**：2026-12-31で終了。終了日を過ぎた試験はアプリが自動で一覧から外す（`Exam.isOpenOn`）ので、アップデートは急がなくてよい。次に更新するときにexams.jsonから消す
 - **AI Business Strategist（AIB-C01）**：ベータ版のため入れていない。正式リリースされたら追加を検討（レベルが「Business」なので、`ExamLevel` に追加が必要）
 
 ## 8. 開発者について
