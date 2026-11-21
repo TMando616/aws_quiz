@@ -202,7 +202,7 @@ class _QuizScreenState extends State<QuizScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.exam.shortName} ${widget.title}'),
-        actions: [_buildMenu()],
+        actions: [?_buildMenu(q)],
       ),
       body: SafeArea(
         child: Column(
@@ -226,9 +226,14 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: KeyedSubtree(key: ValueKey(_index), child: body),
               ),
             ),
-            // 一問一答は選択肢をタップした時点で回答するので、答えるまではボタンを出さない
-            if (!q.isDrill || _answered)
-              Padding(
+            // 一問一答は選択肢をタップした時点で回答するので、答えるまではボタンを見せない。
+            // ただし場所は空けておき、ボタンが出ても選択肢の位置が動かないようにする
+            Visibility(
+              visible: !q.isDrill || _answered,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   t.space5,
                   t.space3,
@@ -246,6 +251,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
               ),
+            ),
             const BannerAdView(),
           ],
         ),
@@ -271,21 +277,25 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  /// 右上のメニュー。レイアウトの切り替えと、広告のプライバシー設定
-  Widget _buildMenu() {
+  /// 右上のメニュー。レイアウトの切り替えと、広告のプライバシー設定。
+  /// 一問一答は表示モードに関係なく1画面なので、切り替えは出さない（項目が無ければメニューごと出さない）
+  Widget? _buildMenu(Question q) {
+    final showLayouts = !q.isDrill;
+    if (!showLayouts && !_privacyOptionsRequired) return null;
     return PopupMenuButton<QuizLayout>(
-      icon: const Icon(Icons.view_agenda_outlined),
-      tooltip: '表示の切り替え',
+      icon: Icon(showLayouts ? Icons.view_agenda_outlined : Icons.more_horiz),
+      tooltip: showLayouts ? '表示の切り替え' : 'メニュー',
       onSelected: _changeLayout,
       itemBuilder: (context) => [
-        for (final layout in QuizLayout.values)
-          CheckedPopupMenuItem(
-            value: layout,
-            checked: layout == _layout,
-            child: Text(layout.label),
-          ),
+        if (showLayouts)
+          for (final layout in QuizLayout.values)
+            CheckedPopupMenuItem(
+              value: layout,
+              checked: layout == _layout,
+              child: Text(layout.label),
+            ),
         if (_privacyOptionsRequired) ...[
-          const PopupMenuDivider(),
+          if (showLayouts) const PopupMenuDivider(),
           const PopupMenuItem(
             onTap: AdConsent.showPrivacyOptions,
             child: Text('広告のプライバシー設定'),

@@ -111,7 +111,12 @@ class ChoiceTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(t.radiusControl),
-        border: Border.all(color: border, width: borderWidth),
+        // 枠線は外側に描く。選択・正誤で太さが変わっても選択肢の大きさと位置が動かないようにするため
+        border: Border.all(
+          color: border,
+          width: borderWidth,
+          strokeAlign: BorderSide.strokeAlignOutside,
+        ),
       ),
       child: Material(
         type: MaterialType.transparency,

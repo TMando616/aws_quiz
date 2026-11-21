@@ -237,7 +237,12 @@ class _HomeScreenState extends State<HomeScreen> {
     await Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => ExamScreen(exam: exam)));
     // 正答率や取得済みの印が変わっているかもしれないので読み直す
-    if (mounted) setState(() => _future = _load());
+    // アロー関数だと Future を返してしまい setState が例外になるので、ブロックで書く
+    if (mounted) {
+      setState(() {
+        _future = _load();
+      });
+    }
   }
 
   @override
