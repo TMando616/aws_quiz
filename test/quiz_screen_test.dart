@@ -64,14 +64,26 @@ void main() {
 
   testWidgets('一問一答で回答して「次へ」が出ても、選択肢の位置は変わらない', (tester) async {
     await _pump(tester, [_drill, _drill]);
-    // 正解の色に変わると枠線が太くなり文字が0.5pxずれるので、選択肢の枠の位置で比べる
+    // 枠線は外側に描くので、選択肢の枠の位置で比べる
+    final tile = find.byType(ChoiceTile).first;
+    final before = tester.getRect(tile);
+
+    await tester.tap(find.text('○ 正しい'));
+    await tester.pump(); // 回答直後の1フレーム（自動スクロールが始まる前）
+
+    expect(find.text('次へ'), findsOneWidget);
+    expect(tester.getRect(tile), before);
+  });
+
+  testWidgets('一問一答で回答すると、選択肢が上に来るまでスクロールして解説が見える', (tester) async {
+    await _pump(tester, [_drill, _drill]);
     final tile = find.byType(ChoiceTile).first;
     final before = tester.getRect(tile);
 
     await tester.tap(find.text('○ 正しい'));
     await tester.pumpAndSettle();
 
-    expect(find.text('次へ'), findsOneWidget);
-    expect(tester.getRect(tile), before);
+    expect(tester.getRect(tile).top, lessThan(before.top));
+    expect(find.text('正しいの解説').hitTestable(), findsOneWidget);
   });
 }

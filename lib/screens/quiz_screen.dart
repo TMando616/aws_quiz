@@ -53,6 +53,10 @@ class _QuizScreenState extends State<QuizScreen> {
   PageController _choicePager = PageController(viewportFraction: 0.88);
   int _choicePage = 0;
 
+  // 一問一答で、回答後に選択肢の位置までスクロールするための目印。
+  // カードをめくる間は前の問題と同時に描画されるので、問題ごとに作り直す（同じ GlobalKey が2つあるとエラーになる）
+  GlobalKey _drillChoicesKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -112,6 +116,18 @@ class _QuizScreenState extends State<QuizScreen> {
       _results[_index] = correct;
     });
     _record(q, correct);
+    // 一問一答は解説が選択肢の下に出るので、選択肢が画面の上に来るまでスクロールし、解説の頭を見せる
+    if (q.isDrill) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final target = _drillChoicesKey.currentContext;
+        if (target == null || !target.mounted) return;
+        Scrollable.ensureVisible(
+          target,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    }
     // スワイプモードでは解説が問題文の下に出るので、そこまでスクロールする
     if (_layout == QuizLayout.swipeChoices && !q.isDrill) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -171,6 +187,7 @@ class _QuizScreenState extends State<QuizScreen> {
     _selected.clear();
     _answered = false;
     _choicePage = 0;
+    _drillChoicesKey = GlobalKey();
     // PageControllerは位置を持っているので作り直す（古い方は描画後に破棄）
     final old = _choicePager;
     _choicePager = PageController(viewportFraction: 0.88);
@@ -322,7 +339,15 @@ class _QuizScreenState extends State<QuizScreen> {
                 QuestionCard(child: _buildQuestionText(q)),
                 SizedBox(height: t.space5),
                 const Spacer(),
-                ..._buildChoiceList(q),
+                // 上の余白も目印に含め、スクロール後に選択肢が画面の端に貼り付かないようにする
+                Padding(
+                  key: _drillChoicesKey,
+                  padding: EdgeInsets.only(top: t.space3),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _buildChoiceList(q),
+                  ),
+                ),
               ],
             ),
           ),
