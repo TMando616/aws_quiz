@@ -8,6 +8,8 @@ import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
+import '../theme/app_tokens.dart';
+import '../widgets/design_parts.dart';
 import 'mock_result_screen.dart';
 
 /// 模試の出題画面
@@ -228,13 +230,13 @@ class _MockScreenState extends State<MockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     final q = _questions[_index];
     final total = _questions.length;
     final selected = _selections[_index] ?? const <int>{};
     final isLast = _index == total - 1;
     final lowTime = _remaining.inMinutes < 5;
+    final timeColor = lowTime ? t.danger : t.textSecondary;
 
     return PopScope(
       canPop: false,
@@ -245,24 +247,21 @@ class _MockScreenState extends State<MockScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('${widget.exam.shortName} 模試（${_index + 1}/$total）'),
+          title: Text('${widget.exam.shortName} 模試'),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 16),
+              padding: EdgeInsets.only(right: t.space4),
               child: Center(
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.timer_outlined,
-                      size: 18,
-                      color: lowTime ? scheme.error : scheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 4),
+                    Icon(Icons.timer_outlined, color: timeColor),
+                    SizedBox(width: t.space1),
                     Text(
                       _formatRemaining(),
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                        color: lowTime ? scheme.error : null,
+                      style: t.caption.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: lowTime ? t.danger : t.textPrimary,
                       ),
                     ),
                   ],
@@ -274,37 +273,78 @@ class _MockScreenState extends State<MockScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              LinearProgressIndicator(value: (_index + 1) / total),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  t.space5,
+                  t.space2,
+                  t.space5,
+                  t.space2,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: ThinBar(value: (_index + 1) / total)),
+                    SizedBox(width: t.space3),
+                    Text(
+                      '${_index + 1} / $total',
+                      style: t.caption.copyWith(color: t.textPrimary),
+                    ),
+                  ],
+                ),
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   controller: _scroll,
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.fromLTRB(
+                    t.space5,
+                    t.space3,
+                    t.space5,
+                    t.space5,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(q.question, style: theme.textTheme.bodyLarge),
-                      if (q.isMultiple) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          '（${q.answers.length}つ選択）',
-                          style: theme.textTheme.labelLarge,
+                      QuestionCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(q.question, style: t.question),
+                            if (q.isMultiple) ...[
+                              SizedBox(height: t.space2),
+                              Text(
+                                '（${q.answers.length}つ選択）',
+                                style: t.body.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
-                      const SizedBox(height: 16),
-                      for (var i = 0; i < q.choices.length; i++)
-                        _MockChoice(
-                          label: String.fromCharCode(65 + i),
+                      ),
+                      SizedBox(height: t.space5),
+                      // 模試では正誤を出さず、選んだかどうかだけを表示する
+                      for (var i = 0; i < q.choices.length; i++) ...[
+                        if (i > 0) SizedBox(height: t.space2),
+                        ChoiceTile(
+                          letter: String.fromCharCode(65 + i),
                           text: q.choices[i].text,
-                          selected: selected.contains(i),
+                          state: selected.contains(i)
+                              ? ChoiceState.selected
+                              : ChoiceState.idle,
                           multiple: q.isMultiple,
                           onTap: () => _toggle(q, i),
                         ),
+                      ],
                     ],
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                padding: EdgeInsets.fromLTRB(
+                  t.space5,
+                  t.space2,
+                  t.space5,
+                  t.space3,
+                ),
                 child: Row(
                   children: [
                     IconButton.outlined(
@@ -312,25 +352,29 @@ class _MockScreenState extends State<MockScreen> {
                       icon: const Icon(Icons.chevron_left),
                       tooltip: '前の問題',
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: t.space2),
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: _openPalette,
-                        icon: const Icon(Icons.grid_view, size: 18),
+                        icon: const Icon(Icons.grid_view),
                         label: Text('一覧（未回答 $_unansweredCount）'),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: t.space2),
                     if (isLast)
                       FilledButton(
                         style: FilledButton.styleFrom(
-                          minimumSize: const Size(96, 52),
+                          minimumSize: Size(t.space7 * 2, t.tapTarget),
                         ),
                         onPressed: _confirmGrade,
                         child: const Text('採点'),
                       )
                     else
                       IconButton.filled(
+                        style: IconButton.styleFrom(
+                          backgroundColor: t.ink,
+                          foregroundColor: t.onInk,
+                        ),
                         onPressed: () => _goTo(_index + 1),
                         icon: const Icon(Icons.chevron_right),
                         tooltip: '次の問題',
@@ -347,45 +391,7 @@ class _MockScreenState extends State<MockScreen> {
   }
 }
 
-/// 模試の選択肢。正誤の色は出さず、選んだかどうかだけを表示する
-class _MockChoice extends StatelessWidget {
-  const _MockChoice({
-    required this.label,
-    required this.text,
-    required this.selected,
-    required this.multiple,
-    required this.onTap,
-  });
-
-  final String label;
-  final String text;
-  final bool selected;
-  final bool multiple;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      color: selected ? theme.colorScheme.primaryContainer : null,
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Text(label, style: theme.textTheme.titleMedium),
-        title: Text(text),
-        trailing: Icon(
-          multiple
-              ? (selected ? Icons.check_box : Icons.check_box_outline_blank)
-              : (selected
-                    ? Icons.radio_button_checked
-                    : Icons.radio_button_off),
-        ),
-        onTap: onTap,
-      ),
-    );
-  }
-}
-
-/// 問題の一覧。回答済みは塗りつぶし、今の問題は枠で示す
+/// 問題の一覧。回答済みは塗り、今の問題は墨の枠で示す
 class _QuestionPalette extends StatelessWidget {
   const _QuestionPalette({
     required this.count,
@@ -401,32 +407,41 @@ class _QuestionPalette extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final t = context.tokens;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        padding: EdgeInsets.fromLTRB(t.space5, 0, t.space5, t.space4),
         child: GridView.count(
           crossAxisCount: 6,
           shrinkWrap: true,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
+          mainAxisSpacing: t.space2,
+          crossAxisSpacing: t.space2,
           children: [
             for (var i = 0; i < count; i++)
               InkWell(
                 onTap: () => onTap(i),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(t.radiusSmall),
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isAnswered(i)
-                        ? scheme.primaryContainer
-                        : scheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(10),
-                    border: i == current
-                        ? Border.all(color: scheme.primary, width: 2)
-                        : null,
+                    color: isAnswered(i) ? t.surfaceMuted : t.surface,
+                    borderRadius: BorderRadius.circular(t.radiusSmall),
+                    border: Border.all(
+                      color: i == current ? t.ink : t.hairline,
+                      width: i == current
+                          ? t.borderControlSelected
+                          : t.borderThin,
+                    ),
                   ),
-                  child: Text('${i + 1}'),
+                  child: Text(
+                    '${i + 1}',
+                    style: t.caption.copyWith(
+                      color: t.textPrimary,
+                      fontWeight: isAnswered(i)
+                          ? FontWeight.w700
+                          : FontWeight.w400,
+                    ),
+                  ),
                 ),
               ),
           ],

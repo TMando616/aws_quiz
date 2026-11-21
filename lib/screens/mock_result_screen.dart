@@ -4,6 +4,8 @@ import '../ads/banner_ad_view.dart';
 import '../data/study_repository.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
+import '../theme/app_tokens.dart';
+import '../widgets/design_parts.dart';
 import '../widgets/domain_accuracy_bar.dart';
 import '../widgets/explanation_view.dart';
 import '../widgets/related_questions_buttons.dart';
@@ -42,8 +44,7 @@ class MockResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
     final wrong = [
       for (var i = 0; i < questions.length; i++)
         if (!questions[i].isCorrect(selections[i] ?? const {})) i,
@@ -56,76 +57,47 @@ class MockResultScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const SafeArea(child: BannerAdView()),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        padding: EdgeInsets.fromLTRB(t.space5, t.space5, t.space5, t.space6),
         children: [
           if (timeUp)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.only(bottom: t.space3),
               child: Text(
                 '制限時間になったため、採点しました',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: scheme.error,
-                ),
+                style: t.body.copyWith(color: t.danger),
               ),
             ),
-          Center(
-            child: Text(
-              '${(result.rate * 100).round()}%',
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: scheme.primary,
-              ),
-            ),
+          Text('${(result.rate * 100).round()}%', style: t.display),
+          SizedBox(height: t.space1),
+          Text(
+            '${result.questionCount}問中 ${result.correctCount}問正解・${_formatDuration(result.duration)}',
+            style: t.caption,
           ),
-          Center(
-            child: Text(
-              '${result.questionCount}問中 ${result.correctCount}問正解・${_formatDuration(result.duration)}',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const SizedBox(height: 32),
-          Text('分野別の正答率', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
+          SizedBox(height: t.space6),
+          const SectionLabel('分野ごとの正答率'),
           for (final d in exam.domains)
             if (result.byDomain[d.id] case final acc?)
               DomainAccuracyBar(name: d.name, accuracy: acc),
-          const SizedBox(height: 24),
-          Text(
-            wrong.isEmpty ? '全問正解です' : '間違えた問題（${wrong.length}問）',
-            style: theme.textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
+          SizedBox(height: t.space5),
+          SectionLabel(wrong.isEmpty ? '全問正解' : '間違えた問題（${wrong.length}問）'),
           for (final i in wrong)
-            Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                title: Text(
-                  questions[i].question,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                subtitle: Text(
-                  (selections[i]?.isEmpty ?? true)
-                      ? '未回答'
-                      : exam.domainById(questions[i].domainId)?.name ?? '',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => _ReviewScreen(
-                      exam: exam,
-                      question: questions[i],
-                      selected: selections[i] ?? const {},
-                    ),
+            ListRow(
+              title: questions[i].question,
+              titleMaxLines: 2,
+              subtitle: (selections[i]?.isEmpty ?? true)
+                  ? '未回答・${exam.domainById(questions[i].domainId)?.name ?? ''}'
+                  : exam.domainById(questions[i].domainId)?.name ?? '',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => _ReviewScreen(
+                    exam: exam,
+                    question: questions[i],
+                    selected: selections[i] ?? const {},
                   ),
                 ),
               ),
             ),
-          const SizedBox(height: 24),
+          SizedBox(height: t.space6),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('試験トップに戻る'),
@@ -136,7 +108,6 @@ class MockResultScreen extends StatelessWidget {
   }
 }
 
-/// 間違えた問題の見直し。問題文・自分の選択・解説を出す
 class _ReviewScreen extends StatelessWidget {
   const _ReviewScreen({
     required this.exam,
@@ -150,30 +121,30 @@ class _ReviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final t = context.tokens;
     return Scaffold(
       appBar: AppBar(title: const Text('見直し')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: EdgeInsets.fromLTRB(t.space5, t.space3, t.space5, t.space6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              exam.domainById(question.domainId)?.name ?? '',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.primary,
+            QuestionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    exam.domainById(question.domainId)?.name ?? '',
+                    style: t.label,
+                  ),
+                  SizedBox(height: t.space3),
+                  Text(question.question, style: t.question),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            Text(question.question, style: theme.textTheme.bodyLarge),
             if (selected.isEmpty) ...[
-              const SizedBox(height: 12),
-              Text(
-                '未回答でした',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.error,
-                ),
-              ),
+              SizedBox(height: t.space3),
+              Text('未回答でした', style: t.body.copyWith(color: t.danger)),
             ],
             ExplanationView(
               question: question,

@@ -103,7 +103,9 @@ lib/widgets/related_questions_buttons.dart  解説の下の「類題に挑戦」
 lib/screens/about_screen.dart           このアプリについて（注意書き・免責文・プライバシーポリシー・問い合わせ・ライセンス）
 lib/config/app_info.dart                アプリ名・問い合わせ先・注意書き・免責文
 lib/settings/quiz_layout.dart           出題画面の表示モード（タブ／スワイプ）
-lib/theme/app_theme.dart                ライト・ダークのテーマ、正誤の色
+lib/theme/app_theme.dart                トークンから組むライト・ダークのテーマ
+lib/theme/app_tokens.dart               デザインのトークン（色・文字・余白・角丸・影・動き）
+lib/widgets/design_parts.dart           共通の部品（問題のカード・選択肢・行・バー）
 lib/ads/                                広告（下の「広告の実装」）
 tool/validate_questions.dart            品質チェックのコマンド
 ```
@@ -218,6 +220,13 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - プライバシーポリシー：下書きは `docs/privacy_policy.md`。`［ ］` を埋めて公開し（GitHub Pages など）、URLを `lib/config/app_info.dart` の `privacyPolicyUrl` に入れる
 - 問い合わせ用のメールアドレスを決めて `lib/config/app_info.dart` の `supportEmail` に入れる（解説の下の「この問題の誤りを報告」と「このアプリについて」で使う。空だと「未設定」と表示される）
 - バンドルID（iOS `com.example.awsQuiz`、Android `com.example.aws_quiz`）を自分のものに変える。公開後は変えられない
+
+### デザイン（2026-11-21 追加）
+
+- デザインシステムは `DESIGN.md`（コンセプト「通勤電車で開く単語帳」）。値は `lib/theme/app_tokens.dart` のトークン（`context.tokens`）経由でだけ使う
+- 共通の部品は `lib/widgets/design_parts.dart`（問題のカード `QuestionCard`、選択肢 `ChoiceTile`、見出し `SectionLabel`、一覧の行 `ListRow`、細いバー `ThinBar`）
+- カード（角丸＋影）は問題のカードだけ。一覧は区切り線の行。主ボタン（墨）は1画面に1つ
+- すべての画面をトークンに移し、ライト・ダークでスクリーンショットを確認済み
 
 ### 類題（2026-11-21 追加）
 

@@ -4,6 +4,7 @@ import '../data/question_repository.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
 import '../screens/quiz_screen.dart';
+import '../theme/app_tokens.dart';
 
 /// 解説の下に出す、関連する問題へのボタン。関連する問題があるときだけ表示する
 ///
@@ -100,12 +101,12 @@ class _RelatedQuestionsButtonsState extends State<RelatedQuestionsButtons> {
     ];
     if (buttons.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
+      padding: EdgeInsets.only(top: context.tokens.space5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (var i = 0; i < buttons.length; i++) ...[
-            if (i > 0) const SizedBox(height: 8),
+            if (i > 0) SizedBox(height: context.tokens.space2),
             buttons[i],
           ],
         ],

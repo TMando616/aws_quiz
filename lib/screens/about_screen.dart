@@ -3,6 +3,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../config/app_info.dart';
 import '../support/report_mail.dart';
+import '../theme/app_tokens.dart';
+import '../widgets/design_parts.dart';
 
 /// 「このアプリについて」。注意書き・商標・プライバシーポリシー・問い合わせ・ライセンス
 class AboutScreen extends StatelessWidget {
@@ -27,38 +29,35 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final muted = theme.textTheme.bodyMedium?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
+    final t = context.tokens;
     return Scaffold(
       appBar: AppBar(title: const Text('このアプリについて')),
       body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.fromLTRB(t.space5, t.space3, t.space5, t.space6),
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Text(AppInfo.disclaimer, style: muted),
+          Text(
+            AppInfo.disclaimer,
+            style: t.body.copyWith(color: t.textSecondary),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Text(AppInfo.trademarkNotice, style: muted),
+          SizedBox(height: t.space3),
+          Text(
+            AppInfo.trademarkNotice,
+            style: t.body.copyWith(color: t.textSecondary),
           ),
-          const Divider(height: 24),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text('プライバシーポリシー'),
-            trailing: const Icon(Icons.open_in_new, size: 18),
+          SizedBox(height: t.space6),
+          ListRow(
+            leading: Icon(Icons.privacy_tip_outlined, color: t.textSecondary),
+            title: 'プライバシーポリシー',
             onTap: () => _openPrivacyPolicy(context),
           ),
-          ListTile(
-            leading: const Icon(Icons.mail_outline),
-            title: const Text('お問い合わせ・誤りの報告'),
+          ListRow(
+            leading: Icon(Icons.mail_outline, color: t.textSecondary),
+            title: 'お問い合わせ・誤りの報告',
             onTap: () => ReportMail.contact(context),
           ),
-          ListTile(
-            leading: const Icon(Icons.description_outlined),
-            title: const Text('ライセンス'),
+          ListRow(
+            leading: Icon(Icons.description_outlined, color: t.textSecondary),
+            title: 'ライセンス',
             onTap: () => showLicensePage(
               context: context,
               applicationName: AppInfo.appName,

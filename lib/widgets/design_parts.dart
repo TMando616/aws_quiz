@@ -188,6 +188,7 @@ class ListRow extends StatelessWidget {
     this.onTap,
     this.showChevron = true,
     this.titleStyle,
+    this.titleMaxLines,
     this.bottom,
   });
 
@@ -198,6 +199,9 @@ class ListRow extends StatelessWidget {
   final VoidCallback? onTap;
   final bool showChevron;
   final TextStyle? titleStyle;
+
+  /// タイトルの最大行数（長い問題文を一覧で出すときなど）。超えた分は「…」にする
+  final int? titleMaxLines;
 
   /// タイトルの下に置く部品（正答率のバーなど）
   final Widget? bottom;
@@ -222,7 +226,14 @@ class ListRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: titleStyle ?? t.body),
+                  Text(
+                    title,
+                    style: titleStyle ?? t.body,
+                    maxLines: titleMaxLines,
+                    overflow: titleMaxLines == null
+                        ? null
+                        : TextOverflow.ellipsis,
+                  ),
                   if (subtitle case final s?) Text(s, style: t.caption),
                   if (bottom case final b?) ...[SizedBox(height: t.space2), b],
                 ],
