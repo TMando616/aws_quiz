@@ -7,6 +7,7 @@ import '../models/exam.dart';
 import '../models/question.dart';
 import '../settings/quiz_layout.dart';
 import '../theme/app_theme.dart';
+import '../widgets/explanation_view.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({
@@ -377,27 +378,8 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  Widget _buildExplanation(Question q) {
-    final theme = Theme.of(context);
-    final isCorrect = q.isCorrect(_selected);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: 16),
-        Text(
-          isCorrect ? '⭕ 正解！' : '❌ 不正解',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: isCorrect
-                ? AppTheme.correctForeground(context)
-                : AppTheme.wrongForeground(context),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(q.explanation, style: theme.textTheme.bodyMedium),
-      ],
-    );
-  }
+  Widget _buildExplanation(Question q) =>
+      ExplanationView(question: q, selected: _selected);
 
   /// 選択肢のカード。[expand] がtrueならカードの高さいっぱいに広げ、長い文はカード内でスクロールする
   Widget _buildChoice(Question q, int i, {bool expand = false}) {

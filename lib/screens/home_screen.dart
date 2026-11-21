@@ -6,6 +6,7 @@ import '../data/question_repository.dart';
 import '../models/exam.dart';
 import 'exam_screen.dart';
 import 'quiz_screen.dart';
+import '../widgets/explanation_view.dart';
 
 /// ホーム。全試験をレベル別に並べる
 class HomeScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
-  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面まで進む
+  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説まで進む
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
 
   Future<void> _openDebugRoute(List<_ExamSummary> summaries) async {
@@ -48,6 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
     navigator.push(
       MaterialPageRoute(builder: (_) => ExamScreen(exam: target.exam)),
     );
+    if (_debugRoute == 'explanation') {
+      // 1問目で不正解（A）を選んだときの解説
+      final q = (await QuestionRepository().load(target.exam.id)).first;
+      navigator.push(
+        MaterialPageRoute(
+          builder: (_) => Scaffold(
+            appBar: AppBar(title: const Text('解説の確認（開発用）')),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+              child: ExplanationView(question: q, selected: const {0}),
+            ),
+          ),
+        ),
+      );
+    }
     if (_debugRoute == 'quiz') {
       final questions = await QuestionRepository().load(target.exam.id);
       navigator.push(
