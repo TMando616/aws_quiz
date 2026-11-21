@@ -82,7 +82,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
 assets/questions/sap.json               SAPの問題（本番形式75問＋一問一答161問）
-assets/questions/saa.json               SAAの問題（自作35問。分野1〜4に 9・9・7・10問、うち複数選択2問）
+assets/questions/saa.json               SAAの問題（本番形式35問。分野1〜4に 9・9・7・10問、うち複数選択2問。＋一問一答70問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
 lib/models/question.dart                Question・Choice・Reference
@@ -240,7 +240,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - 本番形式の解説の下に「ポイント別の一問一答（n問）」、一問一答の解説の下に「元の問題（本番形式）に挑戦」が出る
 - 模試・分野別の出題・ホームの問題数（「n問」）は本番形式だけ。一問一答の数は「一問一答 n問」と別に出す
 - 学習記録は `mode = 'drill'` で記録する。分野ごとの正答率は本番形式と一問一答を合わせて計算
-- 今あるもの：SAP の本番形式75問をすべて分解し、161問（sap-d001〜d161。4択と○×の混在）。本番形式の問題を足したら、一問一答への分解もセットで行う
+- 今あるもの：SAP の本番形式75問をすべて分解し161問（sap-d001〜d161）、SAA の本番形式35問をすべて分解し70問（saa-d001〜d070）。どちらも4択と○×の混在。本番形式の問題を足したら、一問一答への分解もセットで行う
 
 ## 6. 次にやること（優先順）
 

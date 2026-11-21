@@ -1231,6 +1231,2278 @@
         }
       ],
       "group": "compute-pricing"
+    },
+    {
+      "id": "saa-d001",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-001",
+      "point": "署名付き URL の認証情報",
+      "question": "S3 の署名付き URL で使われる認証情報は、URL を生成したユーザーのものである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。署名付き URL で使われる認証情報は、URL を生成した AWS のユーザーのものです。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "URL を生成するユーザーに、そのオブジェクトへのアクセス権限が必要です。",
+      "references": [
+        {
+          "title": "署名付き URL を使用したオブジェクトの共有",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d002",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-001",
+      "point": "署名付き URL の有効期限",
+      "question": "AWS CLI で作る S3 の署名付き URL の有効期限は、最大30日に設定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AWS CLI で作る署名付き URL の有効期限は、最大7日間です（コンソールでは最大12時間）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "署名付き URL は、非公開のオブジェクトへのアクセスを期限付きで許可するための仕組みです。",
+      "references": [
+        {
+          "title": "署名付き URL を使用したオブジェクトの共有",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d003",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-002",
+      "point": "OAI と OAC",
+      "question": "CloudFront から S3 へのアクセスを制限する設定として、新しく使うならオリジンアクセスアイデンティティ（OAI）が推奨されている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。OAI はレガシーで非推奨です。SSE-KMS への対応などの点から、オリジンアクセスコントロール（OAC）が推奨されています。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudFront 経由でだけ S3 にアクセスさせるなら、OAC を使います。",
+      "references": [
+        {
+          "title": "Amazon S3 オリジンへのアクセスの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d004",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-002",
+      "point": "CloudFront 経由でだけ S3 を見せる",
+      "question": "S3 の静的なサイトを CloudFront で配信し、S3 の URL への直接のアクセスは防ぎたい。使う機能はどれか。",
+      "choices": [
+        {
+          "text": "S3 の静的ウェブサイトホスティングでパブリックにする",
+          "explanation": "S3 の URL に直接アクセスできてしまいます。"
+        },
+        {
+          "text": "バケットポリシーで Referer ヘッダーを確認する",
+          "explanation": "Referer は送る側で書き換えられるため、確実には防げません。"
+        },
+        {
+          "text": "署名付き URL",
+          "explanation": "個々のオブジェクトへの一時的なアクセスを許可する仕組みで、CloudFront 経由に限定するものではありません。"
+        },
+        {
+          "text": "オリジンアクセスコントロール（OAC）",
+          "explanation": "CloudFront だけが S3 のオリジンにアクセスできるように制限します。バケットポリシーで CloudFront のサービスプリンシパルを許可します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CloudFront 経由でだけ S3 にアクセスさせるなら OAC です。",
+      "references": [
+        {
+          "title": "Amazon S3 オリジンへのアクセスの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d005",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-003",
+      "point": "ハードコードの置き換え",
+      "question": "Secrets Manager を使うと、コードに書かれた認証情報を、実行時の Secrets Manager の呼び出しに置き換えられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ハードコードされた認証情報を Secrets Manager へのランタイムの呼び出しに置き換え、必要なときに認証情報を動的に取得できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "自動ローテーションのスケジュールも設定できます。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/intro.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d006",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-003",
+      "point": "データベースの認証情報の保管",
+      "question": "Lambda 関数がデータベースに接続するためのパスワードを、コードに書かずに保管し、定期的に自動で変更したい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "Lambda の環境変数に平文で設定する",
+          "explanation": "関数の設定を見られる人には値が見え、自動の変更にもなりません。"
+        },
+        {
+          "text": "S3 のテキストファイルに保存する",
+          "explanation": "変更は手作業のままです。"
+        },
+        {
+          "text": "AWS Secrets Manager",
+          "explanation": "認証情報を保管し、実行時に取得できます。自動ローテーションも設定できます。"
+        },
+        {
+          "text": "暗号化した ZIP ファイルでデプロイする",
+          "explanation": "認証情報がコードに含まれたままです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "データベースの認証情報は Secrets Manager に保管し、実行時に取得します。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/intro.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d007",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-004",
+      "point": "SQS の滞留数によるスケーリング",
+      "question": "EC2 Auto Scaling は、SQS のキューにたまったメッセージの数（インスタンスあたりの滞留数）にもとづいてスケールできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。キューの ApproximateNumberOfMessages をフリートの実行中の台数で割った「インスタンスあたりの滞留数」を目安にスケールできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "今は、独自のメトリクスを発行する代わりに Metric Math を使う方法が勧められています。",
+      "references": [
+        {
+          "title": "Amazon SQS にもとづくスケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-using-sqs-queue.html"
+        },
+        {
+          "title": "Amazon SQS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d008",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-004",
+      "point": "時間のかかる処理を切り離す",
+      "question": "Web サーバーが時間のかかる処理を同期的に呼び出し、混雑時にタイムアウトしている。処理を切り離して、混雑時にも失われないようにしたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon SNS でメールを送る",
+          "explanation": "通知にはなりますが、処理の切り離しにはなりません。"
+        },
+        {
+          "text": "Amazon SQS のキュー",
+          "explanation": "キューで処理を切り離せば、混雑してもメッセージがキューにたまるだけで失われません。"
+        },
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "同期的に呼び出す構成は変わりません。"
+        },
+        {
+          "text": "すぐに何度も再試行する",
+          "explanation": "混雑がさらに悪化します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "時間のかかる処理は、SQS のキューで切り離すのが定番です。",
+      "references": [
+        {
+          "title": "Amazon SQS にもとづくスケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-using-sqs-queue.html"
+        },
+        {
+          "title": "Amazon SQS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d009",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-005",
+      "point": "EFS と Windows",
+      "question": "Amazon EFS は、Windows の EC2 インスタンスからも利用できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Windows ベースの EC2 インスタンスでの EFS の利用はサポートされていません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EFS は NFS で使う共有のファイルストレージです。",
+      "references": [
+        {
+          "title": "Amazon EFS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/efs/latest/ug/whatisefs.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d010",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-005",
+      "point": "複数の AZ から共有するストレージ",
+      "question": "複数の AZ の Linux の EC2 インスタンスから、同じファイルを同時に読み書きしたい。容量の管理はしたくない。適したものはどれか。",
+      "choices": [
+        {
+          "text": "Amazon EFS",
+          "explanation": "多数の EC2 インスタンスから同時にアクセスできる共有のファイルストレージで、データは複数の AZ に保存され、容量も自動で伸縮します。"
+        },
+        {
+          "text": "1つの EBS ボリューム",
+          "explanation": "EBS ボリュームは特定の AZ に作られ、基本的に1つのインスタンスに付けて使います。"
+        },
+        {
+          "text": "インスタンスストア",
+          "explanation": "停止・終了でデータが失われ、共有もできません。"
+        },
+        {
+          "text": "S3 Glacier Deep Archive",
+          "explanation": "アーカイブ用で、ファイルの読み書きには使えません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "複数の AZ から同じファイルを共有するなら EFS です。",
+      "references": [
+        {
+          "title": "Amazon EFS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/efs/latest/ug/whatisefs.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d011",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-006",
+      "point": "DNS フェイルオーバー",
+      "question": "Route 53 では、ヘルスチェックを使って、異常なリソースから正常なリソースへトラフィックを向ける DNS フェイルオーバーを設定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Route 53 で、異常なリソースから正常なリソースにトラフィックをルーティングするように DNS フェイルオーバーを設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "障害時に別のサイトへ自動で切り替えたいときに使います。",
+      "references": [
+        {
+          "title": "Route 53 のヘルスチェックと DNS フェイルオーバー",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/dns-failover.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d012",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-006",
+      "point": "障害時に自動で切り替える",
+      "question": "東京のサイトに障害が起きたら、大阪のお知らせのページに自動で案内したい。使う Route 53 のルーティングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "シンプルルーティング",
+          "explanation": "ヘルスチェックを使えず、障害時も止まったサイトに案内されます。"
+        },
+        {
+          "text": "加重ルーティング（ヘルスチェックなし）",
+          "explanation": "平常時から一部の利用者がお知らせのページに案内されます。"
+        },
+        {
+          "text": "位置情報ルーティング",
+          "explanation": "利用者の場所で振り分ける方式で、障害時の切り替えのためのものではありません。"
+        },
+        {
+          "text": "フェイルオーバールーティングとヘルスチェック",
+          "explanation": "ヘルスチェックで異常を検知すると、セカンダリのリソースへ切り替えます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "障害時の自動の切り替えは、フェイルオーバールーティングとヘルスチェックで行います。",
+      "references": [
+        {
+          "title": "Route 53 のヘルスチェックと DNS フェイルオーバー",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/dns-failover.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d013",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-007",
+      "point": "リードレプリカへの複製",
+      "question": "RDS のリードレプリカには、プライマリの更新が同期で複製される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。プライマリの DB インスタンスへの更新は、リードレプリカに非同期でコピーされます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "そのため、リードレプリカのデータは少し遅れることがあります。数秒の遅れが許される読み込みに使います。",
+      "references": [
+        {
+          "title": "リードレプリカの操作",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        },
+        {
+          "title": "マルチ AZ DB インスタンスのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d014",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-007",
+      "point": "読み込みの負荷を分散する",
+      "question": "RDS for MySQL で、読み込みのクエリが多くプライマリの負荷が高い。数秒前のデータでもよい。負荷を分散する方法はどれか。",
+      "choices": [
+        {
+          "text": "マルチ AZ のスタンバイにクエリを送る",
+          "explanation": "スタンバイは読み込みのトラフィックを処理できません。"
+        },
+        {
+          "text": "インスタンスクラスを大きくする",
+          "explanation": "負荷はプライマリに集中したままです。"
+        },
+        {
+          "text": "リードレプリカを作り、読み込みのクエリを送る",
+          "explanation": "読み込みのクエリをリードレプリカに送ることで、プライマリの負荷を減らせます。"
+        },
+        {
+          "text": "自動バックアップの保持期間を延ばす",
+          "explanation": "読み込みの性能には関係しません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "読み込みの分散はリードレプリカ、可用性はマルチ AZ、と使い分けます。",
+      "references": [
+        {
+          "title": "リードレプリカの操作",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        },
+        {
+          "title": "マルチ AZ DB インスタンスのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d015",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-008",
+      "point": "ElastiCache とは",
+      "question": "Amazon ElastiCache は、分散インメモリのデータストアやキャッシュの環境を簡単に用意・運用できるサービスである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ElastiCache は、分散インメモリデータストアまたはキャッシュ環境のセットアップ、管理、スケーリングを簡単にするサービスです。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "よく読まれるデータをキャッシュに置くと、データベースへの問い合わせを減らせます。",
+      "references": [
+        {
+          "title": "Amazon ElastiCache とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/WhatIs.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d016",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-008",
+      "point": "繰り返し読まれるデータを速く返す",
+      "question": "同じ商品情報が RDS から何度も読まれ、混雑時に遅くなる。更新は1日数回。データベースへの問い合わせを減らす方法はどれか。",
+      "choices": [
+        {
+          "text": "RDS のストレージを増やす",
+          "explanation": "問い合わせの数は変わりません。"
+        },
+        {
+          "text": "ElastiCache をキャッシュとして使う",
+          "explanation": "インメモリのキャッシュから返せば、データベースへの問い合わせが減り、応答も速くなります。"
+        },
+        {
+          "text": "Glacier に保存する",
+          "explanation": "取り出しに時間がかかり、頻繁に読むデータには使えません。"
+        },
+        {
+          "text": "バックアップの保持期間を延ばす",
+          "explanation": "読み込みの性能には関係しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "繰り返し読まれるデータは、ElastiCache などのキャッシュで速く返します。",
+      "references": [
+        {
+          "title": "Amazon ElastiCache とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/WhatIs.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d017",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-009",
+      "point": "gp3 のベースライン",
+      "question": "EBS の gp3 ボリュームでは、容量に関係なく 3,000 IOPS と 125 MiB/秒のベースラインの性能が料金に含まれる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。gp3 は、ストレージの料金に含まれている 3,000 IOPS と 125 MiB/秒のベースラインの性能を持ちます。追加の容量をプロビジョニングしなくても、必要な性能をプロビジョニングできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "性能のために容量を大きくする必要がないので、費用を下げやすくなります。",
+      "references": [
+        {
+          "title": "汎用 SSD ボリューム",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/general-purpose.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d018",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-009",
+      "point": "gp2 の性能",
+      "question": "EBS の gp2 ボリュームの IOPS は、ボリュームの容量に関係なく一定である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。gp2 の性能は、ボリュームのサイズ 1 GiB あたり 3 IOPS の割合で、容量に比例してスケールします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "そのため、gp2 では性能のために容量を大きくしていることがあります。",
+      "references": [
+        {
+          "title": "汎用 SSD ボリューム",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/general-purpose.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d019",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-010",
+      "point": "オンデマンドモード",
+      "question": "DynamoDB のオンデマンドキャパシティモードでは、キャパシティの計画やスケーリングの設定をせずに、使った分だけ支払う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。オンデマンドモードでは、キャパシティプランニングやスケーリングポリシーの設定を気にせずにテーブルを作れ、使った分だけを支払います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "多くのワークロードで推奨されるデフォルトの設定です。",
+      "references": [
+        {
+          "title": "DynamoDB のキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d020",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-010",
+      "point": "予測できないアクセスの DynamoDB",
+      "question": "新しいサービスで、DynamoDB のアクセス量が予測できず、ほとんどアクセスのない時間帯もある。キャパシティの見積もりはしたくない。適した設定はどれか。",
+      "choices": [
+        {
+          "text": "オンデマンドキャパシティモード",
+          "explanation": "キャパシティの計画が不要で、使った分だけ支払います。"
+        },
+        {
+          "text": "ピークに合わせた固定のプロビジョンドキャパシティ",
+          "explanation": "少ない時間帯もピーク分の料金がかかります。"
+        },
+        {
+          "text": "最小の固定のプロビジョンドキャパシティ",
+          "explanation": "アクセスが増えるとスロットリングが起きます。"
+        },
+        {
+          "text": "大きな RDS のインスタンスを常に動かす",
+          "explanation": "使わない時間も料金がかかります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アクセス量が予測できないなら、DynamoDB のオンデマンドモードが合います。",
+      "references": [
+        {
+          "title": "DynamoDB のキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d021",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-011",
+      "point": "セキュリティグループのルール",
+      "question": "セキュリティグループには、特定の IP アドレスを拒否するルールを書ける。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。セキュリティグループに書けるのは許可のルールだけです。拒否のルールは、ネットワーク ACL で書きます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "セキュリティグループはインスタンス単位・許可のみ・ステートフル、ネットワーク ACL はサブネット単位・許可と拒否・ステートレスです。",
+      "references": [
+        {
+          "title": "VPC のインフラストラクチャセキュリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/infrastructure-security.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d022",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-011",
+      "point": "ネットワーク ACL の戻りの通信",
+      "question": "ネットワーク ACL はステートレスなので、戻りの通信も明示的に許可する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ネットワーク ACL では、返されるトラフィックも明示的に許可する必要があります（ステートレス）。セキュリティグループは戻りの通信を自動で許可します（ステートフル）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ネットワーク ACL を設定するときは、応答の通信のルールも忘れずに書きます。",
+      "references": [
+        {
+          "title": "VPC のインフラストラクチャセキュリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/infrastructure-security.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d023",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-012",
+      "point": "EC2 の IAM ロールの認証情報",
+      "question": "EC2 の IAM ロールの認証情報は長期的なもので、手作業で定期的に更新する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ロールの認証情報は一時的なもので、自動的に更新されます。長期的な認証情報（アクセスキーなど）をインスタンスに配る必要はありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EC2 上のアプリケーションから AWS のサービスを使うときは、IAM ロール（インスタンスプロファイル）を使います。",
+      "references": [
+        {
+          "title": "EC2 インスタンスで IAM ロールを使用する",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d024",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-012",
+      "point": "EC2 のアプリケーションに権限を渡す",
+      "question": "EC2 上のアプリケーションから S3 にアクセスさせたい。アクセスキーをインスタンスに置かずに済む方法はどれか。",
+      "choices": [
+        {
+          "text": "アクセスキーを設定ファイルに書く",
+          "explanation": "長期的な認証情報をインスタンスに置くことになります。"
+        },
+        {
+          "text": "アクセスキーをユーザーデータに書く",
+          "explanation": "ユーザーデータはインスタンスから読み取れます。"
+        },
+        {
+          "text": "アクセスキーを毎月更新する",
+          "explanation": "長期的な認証情報を置くことは変わりません。"
+        },
+        {
+          "text": "IAM ロールをインスタンスプロファイルで関連付ける",
+          "explanation": "インスタンスプロファイルを通じて、ロールの一時的な認証情報がアプリケーションに提供されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EC2 には IAM ロールを関連付けて、一時的な認証情報を使わせます。",
+      "references": [
+        {
+          "title": "EC2 インスタンスで IAM ロールを使用する",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d025",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-013",
+      "point": "ソーシャルでのサインイン",
+      "question": "Amazon Cognito のユーザープールは、Google などのソーシャルの ID でのサインインに対応している。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Cognito は、OAuth 2.0 による Google・Facebook・Amazon・Apple へのサインインをサポートしています。SAML や OIDC でのサインインもできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アプリの利用者のサインアップ・サインインはユーザープールで提供します。",
+      "references": [
+        {
+          "title": "Amazon Cognito ユーザープール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-user-pools.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d026",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-013",
+      "point": "AWS のサービスへの一時的な認証情報",
+      "question": "サインインしたアプリの利用者に、S3 へ直接アップロードするための一時的な AWS の認証情報を発行したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "利用者ごとの IAM ユーザー",
+          "explanation": "利用者が増えると管理しきれず、長期的な認証情報を配ることになります。"
+        },
+        {
+          "text": "アプリに埋め込んだアクセスキー",
+          "explanation": "解析されるとキーが漏れます。"
+        },
+        {
+          "text": "Amazon Cognito のアイデンティティプール",
+          "explanation": "AWS のサービスへの API リクエストのための認証情報を利用者に提供します。"
+        },
+        {
+          "text": "IAM Identity Center",
+          "explanation": "従業員向けの仕組みで、一般のアプリの利用者向けではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "利用者の認証はユーザープール、AWS のサービスへのアクセスはアイデンティティプール、と役割を分けます。",
+      "references": [
+        {
+          "title": "Amazon Cognito ユーザープール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-user-pools.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d027",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-014",
+      "point": "AWS マネージドキーの位置づけ",
+      "question": "KMS の AWS マネージドキーは、2021年以降、新しい AWS のサービス向けには作られなくなったレガシーな鍵の種類である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。AWS マネージドキーは、2021年の時点で新しい AWS のサービス用に作られなくなったレガシーなキーの種類です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "鍵のライフサイクルや用途を自分で管理したいなら、カスタマーマネージドキーが推奨されます。",
+      "references": [
+        {
+          "title": "AWS KMS の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/concepts.html"
+        },
+        {
+          "title": "AWS CloudTrail による AWS KMS の API 呼び出しのログ記録",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/logging-using-cloudtrail.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d028",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-014",
+      "point": "KMS の操作の記録",
+      "question": "KMS の API の呼び出しは、CloudTrail に記録されない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。CloudTrail は、暗号化のオペレーションを含む KMS のすべての API の呼び出しをイベントとして記録します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "鍵がいつ誰に使われたかを監査できます。",
+      "references": [
+        {
+          "title": "AWS KMS の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/concepts.html"
+        },
+        {
+          "title": "AWS CloudTrail による AWS KMS の API 呼び出しのログ記録",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/logging-using-cloudtrail.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d029",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-015",
+      "point": "レートベースのルール",
+      "question": "AWS WAF のレートベースのルールは、受信したリクエストを数え、速すぎる場合にリクエストを制限する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。レートベースのルールは、受信リクエストをカウントし、レートが速すぎる場合にリクエストを制限します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "送信元の IP アドレスが変わっても、ルールが自動で対応します。",
+      "references": [
+        {
+          "title": "レートベースのルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+        },
+        {
+          "title": "AWS WAF とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-chapter.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d030",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-015",
+      "point": "AWS WAF で保護できるもの",
+      "question": "AWS WAF のウェブ ACL を関連付けて保護できるリソースはどれか。",
+      "choices": [
+        {
+          "text": "NAT ゲートウェイ",
+          "explanation": "WAF で保護するリソースではありません。"
+        },
+        {
+          "text": "Application Load Balancer",
+          "explanation": "AWS WAF は、ALB、CloudFront のディストリビューション、API Gateway の REST API などを保護できます。"
+        },
+        {
+          "text": "EBS ボリューム",
+          "explanation": "ブロックストレージで、HTTP のリクエストを受けるものではありません。"
+        },
+        {
+          "text": "SQS のキュー",
+          "explanation": "メッセージのキューで、WAF で保護するものではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS WAF は、ALB・CloudFront・API Gateway などに転送される HTTP(S) のリクエストを監視・制御します。",
+      "references": [
+        {
+          "title": "レートベースのルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+        },
+        {
+          "title": "AWS WAF とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-chapter.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d031",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-016",
+      "point": "ブロックパブリックアクセスと既存の設定",
+      "question": "S3 のブロックパブリックアクセスを有効にすると、既存のバケットポリシーや ACL が書き換えられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ブロックパブリックアクセスの設定は、既存のポリシーや ACL を変更しません。パブリックなアクセスを許可する設定を上書きして、そのアクセスを拒否します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "設定はアクセスポイント、バケット、アカウント全体に適用できます。",
+      "references": [
+        {
+          "title": "S3 のブロックパブリックアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d032",
+      "type": "drill",
+      "domain": "d1",
+      "source": "saa-016",
+      "point": "アカウントのすべてのバケットの公開を防ぐ",
+      "question": "設定ミスでバケットが公開されないよう、アカウント内のすべてのバケットに効く対策をしたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "アカウントのレベルのブロックパブリックアクセス",
+          "explanation": "パブリックアクセスを許可するポリシーや ACL を上書きして、アカウント全体で公開を制限します。"
+        },
+        {
+          "text": "バージョニング",
+          "explanation": "誤った削除や上書きから戻すための機能です。"
+        },
+        {
+          "text": "SSE-KMS の暗号化",
+          "explanation": "公開そのものを防ぐ設定ではありません。"
+        },
+        {
+          "text": "バケットごとのライフサイクルルール",
+          "explanation": "ストレージクラスの移動や削除のための機能です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "S3 の公開を確実に防ぐなら、アカウントのレベルのブロックパブリックアクセスです。",
+      "references": [
+        {
+          "title": "S3 のブロックパブリックアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d033",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-017",
+      "point": "ALB の振り分け先",
+      "question": "Application Load Balancer は、有効な AZ の正常なターゲットにだけリクエストを振り分ける（すべてが異常な場合を除く）。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。各ロードバランサーのノードは、有効な AZ の正常なターゲットにだけリクエストをルーティングします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ヘルスチェックで異常なインスタンスを避けられるので、複数の AZ の Auto Scaling グループと組み合わせて可用性を高めます。",
+      "references": [
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        },
+        {
+          "title": "Auto Scaling グループに Elastic Load Balancing を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d034",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-017",
+      "point": "すべてのターゲットが異常なとき",
+      "question": "ALB のターゲットグループのターゲットがすべて異常になると、ALB はすべてのリクエストを拒否する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ターゲットグループに異常なターゲットしかない場合、ALB はヘルスステータスにかかわらず、それらすべてのターゲットにリクエストをルーティングします（フェイルオープン）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "すべてが異常なときに全部を止めるより、動く可能性のあるターゲットに送る動きになっています。",
+      "references": [
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        },
+        {
+          "title": "Auto Scaling グループに Elastic Load Balancing を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d035",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-018",
+      "point": "Aurora のストレージ",
+      "question": "Aurora では、データがクラスターボリュームの6つのストレージノードに同期で複製される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Aurora は、クラスターボリュームに関連付けられた6つのストレージノードにデータを同期的に複製します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "データは複数の AZ に分散して保存されます。",
+      "references": [
+        {
+          "title": "Aurora の高可用性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d036",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-018",
+      "point": "Aurora のフェイルオーバー先",
+      "question": "Aurora のプライマリインスタンスに障害が起きたとき、短い時間で書き込みを再開できるようにするには、何を用意しておくとよいか。",
+      "choices": [
+        {
+          "text": "毎日のスナップショット",
+          "explanation": "復元に時間がかかり、最後のスナップショット以降のデータも失われます。"
+        },
+        {
+          "text": "大きなインスタンスクラス",
+          "explanation": "障害への備えにはなりません。"
+        },
+        {
+          "text": "S3 へのエクスポート",
+          "explanation": "自動のフェイルオーバーにはなりません。"
+        },
+        {
+          "text": "別の AZ の Aurora レプリカ",
+          "explanation": "プライマリの障害時に、Aurora は既存の Aurora レプリカを新しいプライマリに昇格させて、自動でフェイルオーバーします。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Aurora では、別の AZ に Aurora レプリカを置いておくと、障害時に自動で昇格して短時間で書き込みを再開できます。",
+      "references": [
+        {
+          "title": "Aurora の高可用性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d037",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-019",
+      "point": "バージョニングの初期設定",
+      "question": "S3 のバケットでは、バージョニングがデフォルトで有効になっている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。デフォルトでは、バケットの S3 バージョニングは無効になっています。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "誤った削除や上書きから守りたいなら、明示的に有効にします。",
+      "references": [
+        {
+          "title": "S3 バケットでのバージョニングの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Versioning.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d038",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-019",
+      "point": "バージョニングと削除",
+      "question": "バージョニングを有効にしたバケットでオブジェクトを削除すると、完全に消えるのではなく削除マーカーが追加される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。S3 はオブジェクトを完全に削除する代わりに削除マーカーを挿入します。以前のバージョンから復元できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "バージョニングで、誤った削除や上書きから簡単に復元できます。",
+      "references": [
+        {
+          "title": "S3 バケットでのバージョニングの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Versioning.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d039",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-020",
+      "point": "SNS から複数の SQS へ",
+      "question": "Amazon SNS のトピックに複数の SQS キューをサブスクライブすると、同じメッセージを各キューに届けられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SNS は、サブスクライブされた SQS キューにメッセージを送ります（ファンアウト）。メッセージはキューに保持され、ほかのアプリケーションがあとで処理できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "1つのイベントを複数のシステムで独立して処理したいときの定番の構成です。",
+      "references": [
+        {
+          "title": "SNS から SQS キューへのファンアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-sqs-as-subscriber.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d040",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-020",
+      "point": "1つのイベントを複数のシステムで処理する",
+      "question": "注文のたびに、3つのシステムがそれぞれ独立して処理する。どれかが一時的に止まっても、復旧後に処理できるようにしたい。適した構成はどれか。",
+      "choices": [
+        {
+          "text": "1つの SQS キューを3つのシステムで取り合う",
+          "explanation": "1つのメッセージは基本的に1つのシステムしか処理できません。"
+        },
+        {
+          "text": "3つのシステムの API を同期的に順番に呼ぶ",
+          "explanation": "1つが止まると処理が失敗します。"
+        },
+        {
+          "text": "SNS のトピックに、システムごとの SQS キューをサブスクライブする",
+          "explanation": "同じメッセージが各キューに届き、キューに保持されるので、止まっていたシステムも復旧後に処理できます。"
+        },
+        {
+          "text": "S3 に保存して1日1回読む",
+          "explanation": "すぐに処理できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "1つのイベントを複数の処理に配るなら、SNS から複数の SQS キューへのファンアウトです。",
+      "references": [
+        {
+          "title": "SNS から SQS キューへのファンアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-sqs-as-subscriber.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d041",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-021",
+      "point": "バックアップの保存場所",
+      "question": "AWS Backup のバックアップは、作成したリージョンの中にしか置けない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AWS Backup では、バックアップを複数の異なるリージョンにコピーできます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "別のリージョンにコピーしておくと、リージョン全体の障害にも備えられます。",
+      "references": [
+        {
+          "title": "AWS Backup とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/whatisbackup.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d042",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-021",
+      "point": "複数のサービスのバックアップを一元管理する",
+      "question": "EBS、RDS、DynamoDB、EFS のバックアップの方針を一か所で管理し、自動化したい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "サービスごとのスクリプトを cron で実行する",
+          "explanation": "スクリプトの保守が必要で、止まるとバックアップも止まります。"
+        },
+        {
+          "text": "AWS Backup",
+          "explanation": "複数のサービスのデータ保護を一元化して自動化できます。バックアッププランで方針を決めます。"
+        },
+        {
+          "text": "すべてを S3 にエクスポートする",
+          "explanation": "エクスポートの仕組みをサービスごとに作る必要があります。"
+        },
+        {
+          "text": "担当者が毎日手作業で取る",
+          "explanation": "漏れが起きやすくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "複数のサービスのバックアップを一元的に管理するなら AWS Backup です。",
+      "references": [
+        {
+          "title": "AWS Backup とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/whatisbackup.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d043",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-022",
+      "point": "CloudFront のリクエストの行き先",
+      "question": "CloudFront は、利用者のリクエストを、エッジロケーションを使わずにオリジンのリージョンへ直接送る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。CloudFront では、リクエストはレイテンシーが最小になるエッジロケーションにルーティングされ、キャッシュがあればすぐに配信されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "エッジロケーションのキャッシュから返すことで、遠くの利用者にも速く届けられます。",
+      "references": [
+        {
+          "title": "Amazon CloudFront とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d044",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-022",
+      "point": "世界中に速く配信する",
+      "question": "東京の S3 に置いた画像を、海外の利用者にも速く表示したい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "世界中のエッジロケーションからコンテンツを配信し、キャッシュがあればすぐに返します。"
+        },
+        {
+          "text": "S3 Standard-IA",
+          "explanation": "保存の費用が変わるだけで、距離による遅延は改善しません。"
+        },
+        {
+          "text": "S3 Transfer Acceleration",
+          "explanation": "主に S3 への長距離の転送を速くする機能で、キャッシュして多くの利用者に配信する仕組みではありません。"
+        },
+        {
+          "text": "大阪リージョンへの移動",
+          "explanation": "海外の利用者までの距離はほとんど変わりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "静的なコンテンツを世界中に速く届けるなら CloudFront です。",
+      "references": [
+        {
+          "title": "Amazon CloudFront とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d045",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-023",
+      "point": "DAX と整合性",
+      "question": "DynamoDB Accelerator（DAX）は、強い整合性の読み込みが必要なアプリケーションに向いている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。DAX は結果整合性のある読み込みの応答時間を短くするものです。強い整合性の読み込みが必要なアプリケーションには向きません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DAX はキャッシュのヒット率が高い（90%を超える）ときに最もよく働きます。",
+      "references": [
+        {
+          "title": "DynamoDB Accelerator（DAX）",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d046",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-023",
+      "point": "DynamoDB の読み込みをマイクロ秒に",
+      "question": "DynamoDB の読み込みをマイクロ秒単位まで速くしたい。結果整合性でよく、コードの変更は少なくしたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "オンデマンドキャパシティモード",
+          "explanation": "キャパシティの管理は楽になりますが、応答時間は変わりません。"
+        },
+        {
+          "text": "ElastiCache を前に置き、キャッシュの処理を作り込む",
+          "explanation": "速くはなりますが、コードの変更が多くなります。"
+        },
+        {
+          "text": "RDS への移行",
+          "explanation": "大きな変更が必要です。"
+        },
+        {
+          "text": "DynamoDB Accelerator（DAX）",
+          "explanation": "DynamoDB のためのインメモリのキャッシュで、API の互換性があるため、コードの変更が少なくて済みます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DynamoDB の読み込みの高速化は、まず DAX を検討します。",
+      "references": [
+        {
+          "title": "DynamoDB Accelerator（DAX）",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d047",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-024",
+      "point": "Kinesis の複数の読み手",
+      "question": "Kinesis Data Streams では、複数のアプリケーションが同じストリームからデータを読み取れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。複数の Kinesis Data Streams のアプリケーションで、ストリームからデータを消費できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リアルタイムの分析と不正の検知など、同じデータを別々の処理で使えます。",
+      "references": [
+        {
+          "title": "Amazon Kinesis Data Streams とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d048",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-024",
+      "point": "大量のデータをリアルタイムに集める",
+      "question": "クリックストリームを大量にリアルタイムで集め、分析用と不正検知用の2つのアプリケーションで読みたい。適したサービスはどれか。",
+      "choices": [
+        {
+          "text": "RDS に1行ずつ書き込む",
+          "explanation": "負荷が高くなり、複数のアプリケーションへ流す仕組みにもなりません。"
+        },
+        {
+          "text": "S3 に1日分ためて処理する",
+          "explanation": "リアルタイムになりません。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "大量のデータレコードのストリームをリアルタイムで収集・処理でき、複数のアプリケーションが読み取れます。"
+        },
+        {
+          "text": "1つの SQS 標準キュー",
+          "explanation": "1つのメッセージは基本的に1つのアプリケーションが処理します。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "リアルタイムのストリーミングデータは Kinesis Data Streams です。",
+      "references": [
+        {
+          "title": "Amazon Kinesis Data Streams とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d049",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-025",
+      "point": "Transfer Acceleration の仕組み",
+      "question": "S3 Transfer Acceleration は、CloudFront の世界中のエッジロケーションを利用して転送を速くする。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Transfer Acceleration は、Amazon CloudFront の世界中に点在するエッジロケーションを利用します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "遠くの拠点から S3 へのアップロードを速くしたいときに使います。",
+      "references": [
+        {
+          "title": "S3 Transfer Acceleration",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/transfer-acceleration.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d050",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-025",
+      "point": "Transfer Acceleration の料金",
+      "question": "S3 Transfer Acceleration は、追加の料金なしで使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Transfer Acceleration を使うと、追加のデータ転送料金が発生することがあります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "転送の速さと費用のバランスを考えて使います。",
+      "references": [
+        {
+          "title": "S3 Transfer Acceleration",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/transfer-acceleration.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d051",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-026",
+      "point": "クラスタープレイスメントグループの範囲",
+      "question": "クラスタープレイスメントグループは、インスタンスを複数の AZ にまたがって配置する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。クラスタープレイスメントグループは、1つの AZ の中のインスタンスを論理的にグループ化したものです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "近くに配置することで、低いネットワークの遅延と高いスループットが得られます。",
+      "references": [
+        {
+          "title": "プレイスメント戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d052",
+      "type": "drill",
+      "domain": "d3",
+      "source": "saa-026",
+      "point": "インスタンス間の通信を速くする",
+      "question": "多数の EC2 インスタンスが頻繁に通信するシミュレーションで、インスタンス間の遅延をできるだけ小さくしたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "スプレッドプレイスメントグループ",
+          "explanation": "インスタンスを別々のハードウェアに置いて、障害の影響を分けるためのものです。"
+        },
+        {
+          "text": "クラスタープレイスメントグループ",
+          "explanation": "1つの AZ の中で近くに配置し、低い遅延と高いスループットが必要なアプリケーションに推奨されています。"
+        },
+        {
+          "text": "複数のリージョンへの分散",
+          "explanation": "距離が遠くなり、遅延は大きくなります。"
+        },
+        {
+          "text": "EBS ボリュームの拡大",
+          "explanation": "インスタンス間の通信には関係しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "通信の遅延を小さくしたいならクラスター、障害の影響を分けたいならスプレッド、と使い分けます。",
+      "references": [
+        {
+          "title": "プレイスメント戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d053",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-027",
+      "point": "Standard-IA の最低保存期間",
+      "question": "S3 Standard-IA のオブジェクトを30日より前に削除しても、追加の料金はかからない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。最小ストレージ期間の30日が過ぎる前に削除した場合は、30日分の料金がかかります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "すぐに消すデータを Standard-IA に置くと、かえって費用が増えることがあります。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d054",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-027",
+      "point": "小さいオブジェクトの料金",
+      "question": "S3 Standard-IA では、128 KB 以下のオブジェクトにも 128 KB 分の料金がかかる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。オブジェクトが 128 KB 以下の場合、128 KB に相当する料金が請求されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "小さいファイルが多い場合は、Standard-IA にしても費用が下がらないことがあります。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d055",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-028",
+      "point": "Aurora Serverless v2 の一時停止",
+      "question": "Aurora Serverless v2 は、最小の容量を 0 ACU にでき、一時停止している間はインスタンスの容量の料金がかからない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。最小の ACU を 0 にすると自動で一時停止でき、一時停止の間はインスタンスの容量に対して課金されません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "使わない時間が長いデータベースの費用を抑えられます。再開には15秒ほどかかります。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        },
+        {
+          "title": "Aurora Serverless v2 の自動一時停止",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d056",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-028",
+      "point": "使わない時間が長いデータベース",
+      "question": "平日の日中だけ使い、夜間と休日はアクセスがない Aurora のデータベースの費用を抑えたい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "Aurora Serverless v2 で最小を 0 ACU にする",
+          "explanation": "需要に合わせて容量を自動で調整し、使われていないときは一時停止して、容量の料金がかかりません。"
+        },
+        {
+          "text": "ピークに合わせた大きなインスタンスを常に動かす",
+          "explanation": "使わない時間も料金がかかります。"
+        },
+        {
+          "text": "Aurora レプリカを増やす",
+          "explanation": "費用が増えるだけです。"
+        },
+        {
+          "text": "毎晩削除して朝に復元する",
+          "explanation": "運用の負担が大きくなります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "負荷の変動が大きい、使わない時間が長いデータベースには Aurora Serverless v2 が合います。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        },
+        {
+          "title": "Aurora Serverless v2 の自動一時停止",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d057",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-029",
+      "point": "Savings Plans の仕組み",
+      "question": "Savings Plans は、1年または3年の一定の利用量を約束する代わりに、オンデマンドより安い料金になる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Savings Plans は、1年または3年の一定のコンピューティングの使用量（1時間あたり）を約束する代わりに、オンデマンドの料金より安くなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "常に使う分に当てると、割引を無駄なく受けられます。",
+      "references": [
+        {
+          "title": "Savings Plans とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d058",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-029",
+      "point": "常に一定の利用量の割引",
+      "question": "24時間ずっと同じだけ使う EC2 の利用量の費用を、3年間下げたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "スポットインスタンス",
+          "explanation": "中断される可能性があり、常に必要な利用の土台には向きません。"
+        },
+        {
+          "text": "オンデマンドのまま使う",
+          "explanation": "割引がありません。"
+        },
+        {
+          "text": "Dedicated Hosts",
+          "explanation": "物理サーバーを専有するためのもので、費用を下げる目的には向きません。"
+        },
+        {
+          "text": "Savings Plans",
+          "explanation": "一定の利用量を約束する代わりに安くなるので、常に使う分に向いています。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "常に使う分は Savings Plans、変動する分は Auto Scaling で必要なときだけ、が基本です。",
+      "references": [
+        {
+          "title": "Savings Plans とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d059",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-030",
+      "point": "Lambda の料金",
+      "question": "AWS Lambda は、関数が動いていない時間も、サーバーの料金がかかり続ける。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Lambda の請求は、使ったリソースに対してだけ発生します。前払いのコミットメントもありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ときどきしか動かない処理を Lambda に移すと、待っている時間の費用がなくなります。",
+      "references": [
+        {
+          "title": "AWS Lambda とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d060",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-030",
+      "point": "ときどき動く短い処理",
+      "question": "1日に数回、数十秒で終わる処理を、24時間動く EC2 で動かしている。サーバーの管理をなくし、費用も下げたい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "EC2 のリザーブドインスタンス",
+          "explanation": "料金は下がっても、使わない時間の料金とサーバーの管理は残ります。"
+        },
+        {
+          "text": "EC2 のインスタンスを大きくする",
+          "explanation": "費用が増えます。"
+        },
+        {
+          "text": "AWS Lambda",
+          "explanation": "サーバーを管理せずにコードを実行でき、使ったリソースに対してだけ料金がかかります。"
+        },
+        {
+          "text": "EC2 を2台にする",
+          "explanation": "費用が2倍になります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ときどき動く短い処理は、Lambda などのサーバーレスに移すと効果的です。",
+      "references": [
+        {
+          "title": "AWS Lambda とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d061",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-031",
+      "point": "One Zone-IA の回復性",
+      "question": "S3 One Zone-IA では、AZ が地震や洪水で物理的に失われると、データも失われることがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。One Zone-IA はデータを1つの AZ にだけ保存するため、AZ の物理的な損失時にデータの回復性はありません。その分、Standard-IA より安くなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "作り直せるデータに使います。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d062",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-031",
+      "point": "作り直せるデータの保存",
+      "question": "作り直せるサムネイルを、ほとんど見られないがすぐに返せるように、最も安く保存したい。適したストレージクラスはどれか。",
+      "choices": [
+        {
+          "text": "S3 Standard",
+          "explanation": "保存の費用が高めです。"
+        },
+        {
+          "text": "S3 One Zone-IA",
+          "explanation": "1つの AZ にだけ保存するため Standard-IA より安く、ミリ秒単位で取り出せます。作り直せるデータに向いています。"
+        },
+        {
+          "text": "S3 Glacier Deep Archive",
+          "explanation": "取り出しに時間がかかります。"
+        },
+        {
+          "text": "S3 Standard-IA",
+          "explanation": "要件は満たせますが、作り直せるデータならさらに安いクラスがあります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "作り直せる、すぐ取り出したい、アクセスが少ない、なら One Zone-IA です。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d063",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-032",
+      "point": "Intelligent-Tiering の移動",
+      "question": "S3 Intelligent-Tiering は、30日間連続でアクセスのないオブジェクトを、低頻度アクセスの階層に自動で移す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Intelligent-Tiering はアクセスのパターンを監視し、30日間連続でアクセスのなかったオブジェクトを低頻度アクセス階層に自動で移します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アクセスがあれば、高頻度アクセス階層に自動で戻ります。",
+      "references": [
+        {
+          "title": "S3 Intelligent-Tiering の仕組み",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        },
+        {
+          "title": "S3 Intelligent-Tiering（ストレージクラス）",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/intelligent-tiering/"
+        }
+      ]
+    },
+    {
+      "id": "saa-d064",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-032",
+      "point": "Intelligent-Tiering の取り出しの料金",
+      "question": "S3 Intelligent-Tiering では、低頻度アクセスの階層からの取り出しに料金がかかる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Intelligent-Tiering ではデータの取り出しの料金は発生しません。少額のモニタリングとオートメーションの料金がかかります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アクセスが予測できないデータに向いています。",
+      "references": [
+        {
+          "title": "S3 Intelligent-Tiering の仕組み",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+        },
+        {
+          "title": "S3 Intelligent-Tiering（ストレージクラス）",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/intelligent-tiering/"
+        }
+      ]
+    },
+    {
+      "id": "saa-d065",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-033",
+      "point": "Glacier Deep Archive の取り出し時間",
+      "question": "S3 Glacier Deep Archive からの取り出しには、12〜48時間かかる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Glacier Deep Archive には、12〜48時間の2つの取り出しのオプションがあります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "すぐに取り出す必要のない長期保存のデータに向いています。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "S3 Glacier ストレージクラス",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/glacier/"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d066",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-033",
+      "point": "長期保存で取り出しが遅くてよい",
+      "question": "規制で10年保存し、ほとんど参照せず、取り出しは2日以内でよい記録を最も安く保存したい。適したものはどれか。",
+      "choices": [
+        {
+          "text": "S3 Glacier Deep Archive",
+          "explanation": "クラウドで最も低コストのストレージで、取り出しは12〜48時間です。"
+        },
+        {
+          "text": "S3 Standard-IA",
+          "explanation": "すぐに取り出せる分、保存の費用が高くなります。"
+        },
+        {
+          "text": "S3 Intelligent-Tiering",
+          "explanation": "アクセスのパターンが分からないデータ向けです。"
+        },
+        {
+          "text": "S3 Standard",
+          "explanation": "保存の費用が高くなります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "長期保存で取り出しが遅くてよいなら Glacier Deep Archive です。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージクラス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "S3 Glacier ストレージクラス",
+          "url": "https://aws.amazon.com/jp/s3/storage-classes/glacier/"
+        },
+        {
+          "title": "オブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d067",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-034",
+      "point": "マルチ AZ のスタンバイ",
+      "question": "RDS のマルチ AZ 配置（スタンバイが1つ）のスタンバイは、読み込みのトラフィックにも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。スタンバイは読み込みのトラフィックを処理できません。可用性のための仕組みです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "読み込みを分散したいならリードレプリカを使います。",
+      "references": [
+        {
+          "title": "マルチ AZ DB インスタンスのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        },
+        {
+          "title": "リードレプリカの操作",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d068",
+      "type": "drill",
+      "domain": "d2",
+      "source": "saa-034",
+      "point": "DB の可用性を上げる",
+      "question": "シングル AZ の RDS の可用性を上げたい。読み込みの性能には問題がない。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "リードレプリカを作り、障害時に手作業で昇格させる",
+          "explanation": "昇格は手作業で、接続先も変わります。"
+        },
+        {
+          "text": "インスタンスクラスを大きくする",
+          "explanation": "障害への備えにはなりません。"
+        },
+        {
+          "text": "バックアップの保持期間を延ばす",
+          "explanation": "障害時に復元するまで止まります。"
+        },
+        {
+          "text": "マルチ AZ 配置にする",
+          "explanation": "別の AZ に同期のスタンバイが用意され、障害時はスタンバイへフェイルオーバーします。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "可用性はマルチ AZ、読み込みの分散はリードレプリカ、と目的で選びます。",
+      "references": [
+        {
+          "title": "マルチ AZ DB インスタンスのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        },
+        {
+          "title": "リードレプリカの操作",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d069",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-035",
+      "point": "スポットの中断の通知",
+      "question": "スポットインスタンスは、中断の2分前に通知が届く。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。EC2 は、スポットインスタンスが中断される2分前に通知を送ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "通知を受けたら途中経過を保存するなど、中断に備えた作りにしておきます。",
+      "references": [
+        {
+          "title": "スポットインスタンス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        },
+        {
+          "title": "Auto Scaling の配分戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "saa-d070",
+      "type": "drill",
+      "domain": "d4",
+      "source": "saa-035",
+      "point": "スポットの中断を減らす",
+      "question": "スポットインスタンスで、中断の可能性をできるだけ低く、価格もできるだけ低くしたい。適した配分戦略はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスタイプを1種類だけ指定する",
+          "explanation": "選べるプールが少なく、中断されやすくなります。"
+        },
+        {
+          "text": "すべてオンデマンドにする",
+          "explanation": "スポットの割引を受けられません。"
+        },
+        {
+          "text": "price-capacity-optimized",
+          "explanation": "中断の可能性が最も低く、価格ができるだけ低いスポットのプールを選びます。"
+        },
+        {
+          "text": "Dedicated Hosts で起動する",
+          "explanation": "スポットの中断の対策にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "スポットでは、複数のインスタンスタイプと price-capacity-optimized で中断されにくくします。",
+      "references": [
+        {
+          "title": "スポットインスタンス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        },
+        {
+          "title": "Auto Scaling の配分戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html"
+        }
+      ]
     }
   ]
 }
