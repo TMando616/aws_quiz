@@ -1864,6 +1864,878 @@
           "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
         }
       ]
+    },
+    {
+      "id": "sap-d001",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-001",
+      "point": "アカウントの管理者でも外せない制限",
+      "question": "AWS Organizations で、メンバーアカウントの管理者（ルートユーザーを含む）でも外せない権限の上限を、組織全体にかけたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "IAM ポリシー",
+          "explanation": "IAM ポリシーはアカウントの中で管理されるため、そのアカウントの管理者が外したり書き換えたりできます。"
+        },
+        {
+          "text": "許可の境界（permissions boundary）",
+          "explanation": "許可の境界は IAM のユーザーやロールの権限の上限を決めるものですが、アカウントの中で設定するため、そのアカウントの管理者は変更できます。"
+        },
+        {
+          "text": "サービスコントロールポリシー（SCP）",
+          "explanation": "SCP は組織の側から、メンバーアカウントのルートユーザーを含む IAM ユーザーとロールの権限を制限します。アカウントの管理者は外せません。"
+        },
+        {
+          "text": "AWS Config ルール",
+          "explanation": "Config ルールは設定の違反を検出するもので、操作そのものを止める権限の上限にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "組織の側からかける権限の上限は SCP です。アカウントの中で設定する IAM ポリシーや許可の境界は、そのアカウントの管理者が変更できます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d002",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-001",
+      "point": "SCP が効く範囲",
+      "question": "SCP は、組織の管理アカウントのユーザーやロールにも効く。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP は組織のメンバーアカウントにだけ効き、管理アカウントのユーザーやロールには影響しません。管理アカウントでは別の対策が必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SCP の対象はメンバーアカウントだけです。管理アカウントでの作業を最小限にするのが、ベストプラクティスになっている理由の1つです。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d003",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-001",
+      "point": "SCP は権限を与えない",
+      "question": "SCP に Allow を書けば、メンバーアカウントの IAM ユーザーに新しい権限を与えられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP は権限の上限を決めるだけで、権限そのものは与えません。実際に操作するには、IAM ポリシーなどで権限を付与する必要があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SCP は「使える権限の最大値」を決めるもので、権限の付与は IAM ポリシーで行います。両方で許可されている操作だけが実行できます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d004",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-004",
+      "point": "同じ注文の中だけ順番を守る",
+      "question": "SQS FIFO キューで、同じ注文のメッセージは順番どおりに、別の注文は並行して処理したい。注文 ID を設定する項目はどれか。",
+      "choices": [
+        {
+          "text": "メッセージグループ ID",
+          "explanation": "FIFO キューは、同じメッセージグループ ID の中で厳密に順番を守ります。異なるメッセージグループ ID のメッセージは並行して処理できます。"
+        },
+        {
+          "text": "可視性タイムアウト",
+          "explanation": "受信したメッセージをほかの受信者から見えなくしておく時間で、順番の制御には使いません。"
+        },
+        {
+          "text": "配信遅延の秒数",
+          "explanation": "メッセージを受信できるようになるまでの待ち時間で、順番の制御には使いません。"
+        },
+        {
+          "text": "メッセージの保持期間",
+          "explanation": "メッセージをキューに残しておく期間で、順番の制御には使いません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "FIFO キューの順番は、メッセージグループ ID ごとに守られます。注文 ID をグループ ID にすれば「同じ注文は順番どおり、別の注文は並行」になります。",
+      "references": [
+        {
+          "title": "FIFO キューのメッセージグループの考え方",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-understanding-logic.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d005",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-004",
+      "point": "標準キューの順番",
+      "question": "SQS の標準キューは、メッセージが送信された順番どおりに届くことを保証する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。標準キューは「少なくとも1回」の配信で、順番を守るよう最善を尽くしますが保証はしません。複数のコピーが届いたり、順番が入れ替わったりすることがあります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "順番の保証が必要なら FIFO キューを使います。標準キューは順番の保証がない代わりに、スループットの制限が FIFO キューより緩くなっています。",
+      "references": [
+        {
+          "title": "標準キュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d006",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-004",
+      "point": "FIFO キューの重複排除",
+      "question": "SQS FIFO キューでは、同じ重複排除 ID のメッセージを5分以内に送り直しても、キューに重複して入らない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。FIFO キューには5分間の重複排除の間隔があり、その間に同じメッセージを再送しても重複して入りません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "送信の再試行で同じメッセージが二重に入るのを、FIFO キューの重複排除で防げます。コンテンツにもとづく重複排除を有効にするか、重複排除 ID を指定します。",
+      "references": [
+        {
+          "title": "FIFO キューの1回だけの処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d007",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-005",
+      "point": "オンプレミス → VPC の名前解決",
+      "question": "オンプレミスの DNS サーバーから、VPC のプライベートホストゾーンの名前を解決したい。オンプレミスの DNS サーバーで、問い合わせの転送先にするのはどれか。",
+      "choices": [
+        {
+          "text": "Route 53 Resolver のアウトバウンドエンドポイント",
+          "explanation": "アウトバウンドエンドポイントは、VPC からオンプレミスなどへ問い合わせを送り出すための出口です。逆向きです。"
+        },
+        {
+          "text": "Route 53 Resolver のインバウンドエンドポイント",
+          "explanation": "インバウンドエンドポイントは、オンプレミスなどからの DNS の問い合わせを VPC で受け付ける入口です。オンプレミス側でこの IP アドレスへ転送すれば、プライベートホストゾーンの名前を解決できます。"
+        },
+        {
+          "text": "インターネットゲートウェイ",
+          "explanation": "インターネットとの通信の出入口で、DNS の問い合わせを受け付ける仕組みではありません。"
+        },
+        {
+          "text": "NAT ゲートウェイ",
+          "explanation": "プライベートサブネットから外へ出る通信のためのもので、外からの DNS の問い合わせは受け付けません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オンプレミス → AWS はインバウンドエンドポイント、AWS → オンプレミスはアウトバウンドエンドポイント、と向きで覚えます。エンドポイントの IP アドレスはプライベートなので、Direct Connect や VPN での接続が必要です。",
+      "references": [
+        {
+          "title": "ネットワークへのインバウンド DNS クエリの転送",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-forwarding-inbound-queries.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d008",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-005",
+      "point": "VPC → オンプレミスの名前解決",
+      "question": "VPC 内の EC2 インスタンスから、オンプレミスの社内ドメインの名前を解決したい。DNS サーバーを自前で運用せずに済む方法はどれか。",
+      "choices": [
+        {
+          "text": "Route 53 Resolver のインバウンドエンドポイントだけを作る",
+          "explanation": "インバウンドエンドポイントは外から VPC への問い合わせの入口で、VPC からオンプレミスへの転送には使いません。"
+        },
+        {
+          "text": "VPC の DHCP オプションセットで、DNS サーバーをオンプレミスの DNS サーバーだけにする",
+          "explanation": "プライベートホストゾーンなど、AWS 側の名前を Resolver で解決できなくなります。"
+        },
+        {
+          "text": "プライベートホストゾーンをパブリックホストゾーンに作り直す",
+          "explanation": "社内向けの名前を公開することになり、オンプレミスの名前の解決にもつながりません。"
+        },
+        {
+          "text": "アウトバウンドエンドポイントと、社内ドメインをオンプレミスの DNS サーバーへ転送するルールを作り、VPC に関連付ける",
+          "explanation": "アウトバウンドエンドポイントと転送ルールで、VPC からの特定のドメインの問い合わせをオンプレミスの DNS サーバーへ転送できます。ルールは VPC に関連付けて使います。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "VPC からオンプレミスの名前を解決するには、アウトバウンドエンドポイントと転送ルールを使います。ルールは VPC に直接適用され、複数のアカウントで共有もできます。",
+      "references": [
+        {
+          "title": "Route 53 Resolver とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver.html"
+        },
+        {
+          "title": "ネットワークへのアウトバウンド DNS クエリの転送",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-forwarding-outbound-queries.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d009",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-006",
+      "point": "VPC ピアリングは推移的ではない",
+      "question": "VPC ピアリングでは、推移的なピアリング関係がサポートされない（A–B と B–C をつないでも、A から C へは B を経由できない）。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。VPC ピアリングは推移的なピアリング関係に対応していないため、通信したい VPC どうしをそれぞれ直接つなぐ必要があります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "VPC の数が多いと、ピアリングは組み合わせの数だけ必要になります。多数の VPC をつなぐなら、ハブになる Transit Gateway を使います。",
+      "references": [
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d010",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-006",
+      "point": "多数の VPC とオンプレミスのハブ",
+      "question": "数十の VPC とオンプレミスのネットワークを、ハブを介して相互に接続したい。VPC が増えても、ハブにつなぐだけで済むようにしたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "VPC ピアリング",
+          "explanation": "推移的なルーティングができないため、VPC の組み合わせの数だけ接続が必要になります。"
+        },
+        {
+          "text": "AWS PrivateLink",
+          "explanation": "特定のサービスを公開するための仕組みで、ネットワーク全体を相互につなぐ用途には向きません。"
+        },
+        {
+          "text": "AWS Transit Gateway",
+          "explanation": "Transit Gateway は、VPC とオンプレミスのネットワークを相互に接続するハブです。VPC が増えても、アタッチメントを足すだけで済みます。"
+        },
+        {
+          "text": "NAT ゲートウェイ",
+          "explanation": "プライベートサブネットから外へ出る通信のためのもので、VPC どうしをつなぐものではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "多数の VPC とオンプレミスをハブ＆スポークでつなぐなら Transit Gateway です。Direct Connect ゲートウェイを関連付ければ、オンプレミスともつながります。",
+      "references": [
+        {
+          "title": "AWS Transit Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/what-is-transit-gateway.html"
+        },
+        {
+          "title": "Direct Connect ゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/direct-connect-gateways-intro.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d011",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-006",
+      "point": "Transit Gateway のアカウント間の共有",
+      "question": "AWS RAM を使うと、組織内のほかのアカウントとリソース（Transit Gateway など）を共有できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。AWS RAM で、組織や OU の中でリソースを安全に共有できます。ネットワーク用のアカウントで作った Transit Gateway を、各アカウントの VPC からアタッチできるようになります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ネットワーク用のアカウントに Transit Gateway を作り、AWS RAM で共有するのがマルチアカウントでの定番の構成です。",
+      "references": [
+        {
+          "title": "AWS RAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d012",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-007",
+      "point": "VPC ピアリングと CIDR の重複",
+      "question": "CIDR ブロックが重複している VPC どうしでも、VPC ピアリング接続は作成できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。IPv4 や IPv6 の CIDR ブロックが一致または重複する VPC の間では、VPC ピアリング接続を作成できません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CIDR が重複していると、ピアリングのようにルーティングでつなぐ方法は使えません。サービスを公開するだけなら、顧客の VPC 内のエンドポイント経由で接続する PrivateLink を検討します。",
+      "references": [
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d013",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-007",
+      "point": "サービスを多数の顧客に一方向で公開",
+      "question": "自社のサービスを Network Load Balancer の背後に置き、VPC エンドポイントサービスとして多数の顧客にプライベートに公開する。顧客が自分の VPC に作るのはどれか。",
+      "choices": [
+        {
+          "text": "VPC ピアリング接続",
+          "explanation": "ルーティングで VPC どうしをつなぐもので、顧客の VPC 全体と通信できる状態になります。特定のサービスだけを公開する用途には向きません。"
+        },
+        {
+          "text": "インターフェイス VPC エンドポイント",
+          "explanation": "サービスの利用者は、自分の VPC にインターフェイス VPC エンドポイントを作成して、エンドポイントサービスに接続します。"
+        },
+        {
+          "text": "インターネットゲートウェイ",
+          "explanation": "インターネットとの出入口で、プライベートな接続にはなりません。"
+        },
+        {
+          "text": "Transit Gateway のアタッチメント",
+          "explanation": "ルーティングでネットワークをつなぐもので、サービスを公開する仕組みではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "PrivateLink では、提供側が NLB の背後のサービスをエンドポイントサービスとして公開し、利用側がインターフェイス VPC エンドポイントを作って接続します。",
+      "references": [
+        {
+          "title": "AWS PrivateLink を使用してサービスを共有する",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/privatelink-share-your-services.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d014",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-007",
+      "point": "接続リクエストの承諾",
+      "question": "PrivateLink のエンドポイントサービスでは、利用者からの接続リクエストを、提供側が手動で承諾する設定にできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。エンドポイントサービスは、接続リクエストを自動で受け入れるか、手動で承諾・拒否するかを設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "多数の顧客に公開するときは、承諾の設定と、どのプリンシパルに接続を許可するかを組み合わせて管理します。",
+      "references": [
+        {
+          "title": "AWS PrivateLink を使用してサービスを共有する",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/privatelink-share-your-services.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d015",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-008",
+      "point": "Global Accelerator の固定 IP",
+      "question": "AWS Global Accelerator は、アクセラレーターに固定の IP アドレスを提供し、その IP アドレスは AWS のエッジからエニーキャストされる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Global Accelerator はアクセラレーターに静的な IP アドレスを提供し、そのアドレスは AWS のエッジネットワークからエニーキャストされます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "接続先の IP アドレスを固定したい（ファイアウォールの許可リストに登録したい）という要件は、Global Accelerator を選ぶ手がかりになります。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        },
+        {
+          "title": "AWS Global Accelerator のよくある質問",
+          "url": "https://aws.amazon.com/jp/global-accelerator/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d016",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-008",
+      "point": "UDP の通信を固定 IP で最寄りのリージョンへ",
+      "question": "UDP で通信するアプリケーションを、固定の IP アドレスで世界中から受け付け、最寄りの正常なリージョンに届けたい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "CloudFront は Web コンテンツの配信のためのサービスで、UDP のアプリケーションの通信には使いません。"
+        },
+        {
+          "text": "Route 53 のレイテンシーベースルーティング",
+          "explanation": "DNS で振り分けるため、返す IP アドレスがリージョンによって変わり、固定の許可リストにできません。"
+        },
+        {
+          "text": "Application Load Balancer",
+          "explanation": "ALB は HTTP/HTTPS 用で、UDP を扱えません。"
+        },
+        {
+          "text": "AWS Global Accelerator",
+          "explanation": "Global Accelerator は TCP と UDP の両方に対応し、固定の IP アドレスから、ヘルスや場所にもとづいて最適なリージョンのエンドポイントへ転送します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "「固定 IP」「TCP/UDP」「最寄りの正常なリージョンへ」がそろったら Global Accelerator です。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        },
+        {
+          "title": "AWS Global Accelerator のよくある質問",
+          "url": "https://aws.amazon.com/jp/global-accelerator/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d017",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-008",
+      "point": "DNS のキャッシュとの関係",
+      "question": "Global Accelerator のエンドポイントの切り替えは、利用者の端末の DNS キャッシュが切れるまで反映されない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Global Accelerator は固定の IP アドレスのまま、ヘルスチェックにもとづいて新しい接続を別の正常なエンドポイントへ送ります。クライアントの IP アドレスのキャッシュの設定に依存しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DNS で切り替える Route 53 は TTL やキャッシュに左右されますが、Global Accelerator は IP アドレスが変わらないので、その影響を受けません。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        },
+        {
+          "title": "AWS Global Accelerator のよくある質問",
+          "url": "https://aws.amazon.com/jp/global-accelerator/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "sap-d018",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-009",
+      "point": "グローバルテーブルの書き込み",
+      "question": "DynamoDB グローバルテーブルでは、どのリージョンのレプリカでも読み込みと書き込みができる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。グローバルテーブルのレプリカは、読み込みと書き込みの両方を処理できます（マルチアクティブ）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "どのリージョンからも低遅延で書き込みたい（マルチアクティブ）なら DynamoDB グローバルテーブルが候補になります。複製は非同期で、競合は最後の書き込みが優先されます（結果整合性のモードの場合）。",
+      "references": [
+        {
+          "title": "Amazon DynamoDB グローバルテーブル",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d019",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-009",
+      "point": "複数リージョンのどこからでも書き込む",
+      "question": "3つのリージョンのどこからでも低遅延で読み書きでき、1つのリージョンが止まってもほかで書き込みを続けたい。キーと値のアクセスが中心である。適したものはどれか。",
+      "choices": [
+        {
+          "text": "Amazon RDS のクロスリージョンリードレプリカ",
+          "explanation": "リードレプリカは読み取り専用で、書き込みはプライマリのリージョンに集中します。"
+        },
+        {
+          "text": "Amazon S3 のクロスリージョンレプリケーション",
+          "explanation": "S3 はデータベースではなく、細かい読み書きの用途には向きません。"
+        },
+        {
+          "text": "DynamoDB グローバルテーブル",
+          "explanation": "各リージョンのレプリカで読み書きでき、1つのリージョンが止まってもほかのリージョンで続けられます。"
+        },
+        {
+          "text": "1つのリージョンの DynamoDB テーブルと、その前段の CloudFront",
+          "explanation": "書き込みは1つのリージョンに集中し、そのリージョンが止まると書き込めません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "「どのリージョンでも書き込む」「キーと値」なら DynamoDB グローバルテーブルです。",
+      "references": [
+        {
+          "title": "Amazon DynamoDB グローバルテーブル",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d020",
+      "type": "drill",
+      "domain": "d1",
+      "source": "sap-009",
+      "point": "整合性モードはあとから変えられるか",
+      "question": "DynamoDB グローバルテーブルの整合性モード（結果整合性／強い整合性）は、作成したあとでも変更できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。グローバルテーブルの整合性モードは、作成後に変更できません。指定しなければ、マルチリージョンの結果整合性（MREC）になります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "グローバルテーブルには、マルチリージョンの結果整合性（MREC）と強い整合性（MRSC）の2つのモードがあり、作成時に決めます。",
+      "references": [
+        {
+          "title": "Amazon DynamoDB グローバルテーブル",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d021",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-012",
+      "point": "従業員の複数アカウントへのサインイン",
+      "question": "組織の約100のアカウントに、従業員が社内の ID でサインインできるようにし、アカウントごとの権限も一元管理したい。使うのはどれか。",
+      "choices": [
+        {
+          "text": "AWS IAM Identity Center",
+          "explanation": "組織のすべてのアカウントとアプリケーションへのアクセス許可を一元的に割り当てられます。外部の ID プロバイダーとも連携できます。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープール",
+          "explanation": "Web やモバイルアプリの利用者向けのユーザーディレクトリで、従業員による AWS アカウントへのサインインの管理には使いません。"
+        },
+        {
+          "text": "各アカウントの IAM ユーザー",
+          "explanation": "アカウントごとに作成・削除が必要で、100アカウント分の管理は現実的ではありません。"
+        },
+        {
+          "text": "各アカウントの IAM の SAML ID プロバイダーとロール",
+          "explanation": "技術的には可能ですが、アカウントごとに設定と保守が必要で、権限を一元管理できません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "従業員の複数アカウントへのアクセスは IAM Identity Center に集約します。権限は許可セットとしてまとめて管理できます。",
+      "references": [
+        {
+          "title": "外部 ID プロバイダーへの接続（IAM Identity Center）",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+        },
+        {
+          "title": "許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d022",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-012",
+      "point": "SCIM による自動プロビジョニング",
+      "question": "IAM Identity Center は、外部の ID プロバイダーから SCIM でユーザーとグループを自動でプロビジョニングできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。IAM Identity Center は SCIM v2.0 を使った、ID プロバイダーからのユーザーとグループの自動プロビジョニング（同期）に対応しています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SCIM で同期すれば、入社・退職に合わせたユーザーの追加や削除が自動で反映されます。ただし、グループのプロビジョニングに対応していない ID プロバイダーもあります。",
+      "references": [
+        {
+          "title": "自動プロビジョニング（SCIM）",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/provision-automatically.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d023",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-012",
+      "point": "SAML だけでユーザーは同期されるか",
+      "question": "SAML の連携を設定するだけで、外部 ID プロバイダーのユーザーとグループの一覧が IAM Identity Center に自動で反映される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SAML には、ID プロバイダーへユーザーやグループの情報を問い合わせる方法がありません。アカウントへの割り当ての前に、SCIM か手作業でユーザーとグループをプロビジョニングする必要があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SAML はサインイン（認証）のため、SCIM はユーザーとグループの同期のため、と役割を分けて覚えます。",
+      "references": [
+        {
+          "title": "外部 ID プロバイダーへの接続（IAM Identity Center）",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d024",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-013",
+      "point": "混乱した代理を防ぐ条件",
+      "question": "第三者の事業者に、自社のアカウントの IAM ロールを引き受けさせる。混乱した代理（confused deputy）の問題を防ぐため、ロールの信頼ポリシーに付ける条件はどれか。",
+      "choices": [
+        {
+          "text": "aws:RequestedRegion",
+          "explanation": "リクエスト先のリージョンを条件にするもので、ロールを引き受ける相手の区別にはなりません。"
+        },
+        {
+          "text": "MFA を必須にする条件",
+          "explanation": "事業者のシステムが自動でロールを引き受ける場合、MFA は前提にできません。混乱した代理の対策にもなりません。"
+        },
+        {
+          "text": "aws:SourceIp で事業者の IP アドレスを指定する",
+          "explanation": "事業者のシステムからのリクエストかどうかは分かっても、どの顧客のための処理かは区別できず、混乱した代理は防げません。"
+        },
+        {
+          "text": "sts:ExternalId で、事業者が自社用に発行した外部 ID を指定する",
+          "explanation": "事業者が顧客ごとに一意の外部 ID を生成し、信頼ポリシーの条件に指定します。別の顧客が自社のロールを指定しても、外部 ID が一致せず引き受けに失敗します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "第三者にクロスアカウントのロールを引き受けさせるときは、信頼ポリシーに sts:ExternalId の条件を付けて、混乱した代理の問題を防ぎます。",
+      "references": [
+        {
+          "title": "第三者にアクセスを許可するときの外部 ID の使い方",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+        },
+        {
+          "title": "混乱した代理問題",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d025",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-013",
+      "point": "外部 ID は秘密の値か",
+      "question": "ロールの外部 ID は秘密の値として扱われ、ロールを表示する権限を持つユーザーにも見えない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ロールの外部 ID は、ロールを表示する権限を持つすべてのユーザーが見られます。秘密の値ではなく、顧客ごとに一意であることが大事です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "外部 ID は、パスワードのような秘密情報ではありません。事業者が顧客ごとに一意の値を発行し、正しい顧客のための処理かを区別するために使います。",
+      "references": [
+        {
+          "title": "第三者にアクセスを許可するときの外部 ID の使い方",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d026",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-014",
+      "point": "許可の境界の役割",
+      "question": "許可の境界は、それだけでは権限を与えず、ユーザーやロールが持てる権限の上限を決める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。許可の境界はアイデンティティベースのポリシーで付与できる権限の上限を設定するもので、それ自体はアクセス許可を提供しません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "実際に使える権限は、アイデンティティベースのポリシーで許可され、かつ許可の境界の範囲内にあるものだけです。",
+      "references": [
+        {
+          "title": "IAM エンティティのアクセス許可の境界",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-d027",
+      "type": "drill",
+      "domain": "d2",
+      "source": "sap-014",
+      "point": "ロールの作成を任せつつ昇格を防ぐ",
+      "question": "開発者が Lambda 用の IAM ロールを自分で作れるようにしつつ、自分より強い権限のロールを作って権限を昇格させることは防ぎたい。適した方法はどれか。",
+      "choices": [
+        {
+          "text": "SCP で、すべての IAM の操作を拒否する",
+          "explanation": "開発者がロールを作れなくなり、「自分で作れるようにする」という要件を満たしません。"
+        },
+        {
+          "text": "特定の許可の境界を付けることを、ロールの作成を許可する条件にする",
+          "explanation": "「この境界を付けたロールだけ作成できる」という条件（iam:PermissionsBoundary）にすれば、開発者は自由にロールを作れますが、境界を超える権限は持たせられません。"
+        },
+        {
+          "text": "開発者に AdministratorAccess を付け、作られたロールをあとで確認する",
+          "explanation": "確認は事後になるため、権限の昇格そのものは防げません。"
+        },
+        {
+          "text": "ロールの作成をすべてセキュリティチームが行う",
+          "explanation": "開発者が自分で作れるという要件を満たしません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "権限の作成を委任しつつ昇格を防ぐには、許可の境界の付与を作成の条件にします。",
+      "references": [
+        {
+          "title": "IAM エンティティのアクセス許可の境界",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html"
+        }
+      ]
     }
   ]
 }

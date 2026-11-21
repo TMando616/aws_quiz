@@ -75,13 +75,13 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 
 ## 5. 現在の実装
 
-`flutter analyze` 指摘なし、`flutter test` 29件通過、品質チェック エラー0件・警告0件（2026-11-21）。
+`flutter analyze` 指摘なし、`flutter test` 35件通過、品質チェック エラー0件・警告0件（2026-11-21）。
 
 ### ファイル構成
 
 ```
 assets/exams.json                       試験の一覧と設定（12試験）
-assets/questions/sap.json               SAPの問題（自作50問）
+assets/questions/sap.json               SAPの問題（本番形式50問＋一問一答27問）
 assets/questions/saa.json               SAAの問題（自作35問。分野1〜4に 9・9・7・10問、うち複数選択2問）
 lib/main.dart                           テーマと起動。最初の画面のあとに広告の同意確認
 lib/models/exam.dart                    Exam・Domain・MockSetting・ExamLevel
@@ -99,6 +99,9 @@ lib/screens/mock_screen.dart            模試の出題（タイマー・一覧�
 lib/screens/mock_result_screen.dart     模試の結果と、間違えた問題の見直し
 lib/widgets/explanation_view.dart       回答後の解説（練習と模試の見直しで共通）
 lib/widgets/domain_accuracy_bar.dart    分野ごとの正答率のバー
+lib/widgets/related_questions_buttons.dart  解説の下の「類題に挑戦」「ポイント別の一問一答」「元の問題に挑戦」
+lib/screens/about_screen.dart           このアプリについて（注意書き・免責文・プライバシーポリシー・問い合わせ・ライセンス）
+lib/config/app_info.dart                アプリ名・問い合わせ先・注意書き・免責文
 lib/settings/quiz_layout.dart           出題画面の表示モード（タブ／スワイプ）
 lib/theme/app_theme.dart                ライト・ダークのテーマ、正誤の色
 lib/ads/                                広告（下の「広告の実装」）
@@ -226,6 +229,18 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
   - SAA：s3-storage-class（4問）、messaging-service（3問）、db-availability-or-read（3問）、compute-pricing（3問）
   - SAP：vpc-connectivity（4問）、s3-storage-class・compute-pricing・messaging-service・permission-guardrails（各2問）
 - 類題を足す候補：混同しやすい論点（SAP の s3-storage-class・messaging-service に3問目、DR の方式の使い分け、Route 53 のルーティングポリシーの使い分けなど）
+
+### 一問一答（2026-11-21 追加）
+
+- 本番形式のシナリオ問題を、設計判断のポイントごとに分解した短い問題。差別化の軸（質）の1つ
+- データ：`"type": "drill"`。`source`（分解元の本番形式の問題のID）と `point`（設計判断のポイントの見出し）を持つ。分野（`domain`）は分解元に合わせる
+- 形式：「どのサービスか」は短い4択、「〜できるか」は○×（選択肢は `○ 正しい` / `× 誤り` の2つ）。正解は1つ
+- 品質チェック：選択肢2〜4つ・正解1つ（エラー）、`source` が実在する本番形式の問題か（エラー）、問題文が120字を超える・`point` が無い（警告）、正解の位置の偏りは本番形式と別に数える
+- 画面：試験トップの一番上に「一問一答（n問）」。選択肢をタップした時点で回答し、すぐに解説が出る。表示モードの設定に関係なく1画面
+- 本番形式の解説の下に「ポイント別の一問一答（n問）」、一問一答の解説の下に「元の問題（本番形式）に挑戦」が出る
+- 模試・分野別の出題・ホームの問題数（「n問」）は本番形式だけ。一問一答の数は「一問一答 n問」と別に出す
+- 学習記録は `mode = 'drill'` で記録する。分野ごとの正答率は本番形式と一問一答を合わせて計算
+- 今あるもの：SAP の10問（sap-001・004・005・006・007・008・009・012・013・014）から27問（sap-d001〜d027）。残りの本番形式の問題も順に分解する
 
 ## 6. 次にやること（優先順）
 
