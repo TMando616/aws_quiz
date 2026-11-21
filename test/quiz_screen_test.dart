@@ -72,4 +72,41 @@ void main() {
     expect(heading, findsOneWidget);
     expect(tester.getTopLeft(heading).dy, lessThan(200));
   });
+
+  testWidgets('解説に続きがあるときは「続きを見る」を出し、一番下まで送ったら隠す', (tester) async {
+    const long = Question(
+      id: 'xxx-d2',
+      type: Question.typeDrill,
+      domainId: 'd1',
+      question: '一問一答の問題文',
+      choices: [
+        Choice(text: '○ 正しい', explanation: '正しいの解説'),
+        Choice(text: '× 誤り', explanation: '誤りの解説'),
+      ],
+      answers: [0],
+      // 画面に収まらない長さのまとめ
+      explanation:
+          '長いまとめの解説。長いまとめの解説。長いまとめの解説。長いまとめの解説。'
+          '長いまとめの解説。長いまとめの解説。長いまとめの解説。長いまとめの解説。'
+          '長いまとめの解説。長いまとめの解説。長いまとめの解説。長いまとめの解説。'
+          '長いまとめの解説。長いまとめの解説。長いまとめの解説。長いまとめの解説。'
+          '長いまとめの解説。長いまとめの解説。長いまとめの解説。長いまとめの解説。'
+          '長いまとめの解説。長いまとめの解説。長いまとめの解説。長いまとめの解説。',
+      references: [
+        Reference(title: '公式ドキュメント', url: 'https://docs.aws.amazon.com/'),
+      ],
+    );
+    await _pump(tester, [long, long]);
+    // 回答前は出さない
+    expect(find.text('続きを見る').hitTestable(), findsNothing);
+
+    await tester.tap(find.text('○ 正しい'));
+    await tester.pumpAndSettle();
+    expect(find.text('続きを見る').hitTestable(), findsOneWidget);
+
+    await tester.tap(find.text('続きを見る'));
+    await tester.pumpAndSettle();
+    expect(find.text('続きを見る').hitTestable(), findsNothing);
+    expect(find.text('次へ'), findsOneWidget);
+  });
 }

@@ -62,6 +62,9 @@ class _QuizScreenState extends State<QuizScreen> {
   // カードをめくる間は前の問題と同時に描画されるので、問題ごとに作り直す（同じ GlobalKey が2つあるとエラーになる）
   GlobalKey _drillExplanationKey = GlobalKey();
 
+  /// 一問一答の解説に、画面より下の続きがあるか（「続きを見る」を出すか）
+  bool _drillHasMore = false;
+
   @override
   void initState() {
     super.initState();
@@ -199,6 +202,7 @@ class _QuizScreenState extends State<QuizScreen> {
     _answered = false;
     _choicePage = 0;
     _drillExplanationKey = GlobalKey();
+    _drillHasMore = false;
     // PageControllerは位置を持っているので作り直す（古い方は描画後に破棄）
     final old = _choicePager;
     _choicePager = PageController(viewportFraction: 0.88);
@@ -263,15 +267,38 @@ class _QuizScreenState extends State<QuizScreen> {
                   t.space5,
                   t.space3,
                 ),
-                child: FilledButton(
-                  onPressed: _answered
-                      ? () => _next(total)
-                      : (canSubmit ? () => _submit(q) : null),
-                  child: Text(
-                    !_answered
-                        ? (q.isDrill ? '選択肢をタップして回答' : '回答する')
-                        : (_index + 1 >= total ? '結果を見る' : '次へ'),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 解説に続きがあることを知らせ、タップで一番下まで送る。
+                    // 一番下に着いたら隠すが、場所は残して「次へ」が動かないようにする
+                    if (q.isDrill)
+                      Visibility(
+                        visible: _drillHasMore,
+                        maintainSize: true,
+                        maintainAnimation: true,
+                        maintainState: true,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: _scrollDrillToEnd,
+                            iconAlignment: IconAlignment.end,
+                            icon: const Icon(Icons.arrow_downward),
+                            label: const Text('続きを見る'),
+                          ),
+                        ),
+                      ),
+                    FilledButton(
+                      onPressed: _answered
+                          ? () => _next(total)
+                          : (canSubmit ? () => _submit(q) : null),
+                      child: Text(
+                        !_answered
+                            ? (q.isDrill ? '選択肢をタップして回答' : '回答する')
+                            : (_index + 1 >= total ? '結果を見る' : '次へ'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             const BannerAdView(),
@@ -332,6 +359,39 @@ class _QuizScreenState extends State<QuizScreen> {
   /// 問題のカードを上に、選択肢を親指の届く下に寄せる。回答後は解説が下に続く
   Widget _buildDrillBody(Question q) {
     final t = context.tokens;
+    final index = _index;
+    // スクロールの位置や解説の長さが変わるたびに、下に続きがあるかを確かめる
+    return NotificationListener<Notification>(
+      onNotification: (n) {
+        // カードをめくる間は前の問題も描画されているので、今の問題のものだけ見る
+        if (index != _index || !_answered) return false;
+        final metrics = switch (n) {
+          ScrollNotification(:final metrics) => metrics,
+          ScrollMetricsNotification(:final metrics) => metrics,
+          _ => null,
+        };
+        if (metrics == null || metrics.axis != Axis.vertical) return false;
+        final hasMore = metrics.extentAfter > 1;
+        if (hasMore != _drillHasMore) setState(() => _drillHasMore = hasMore);
+        return false;
+      },
+      child: _buildDrillScroll(q, t),
+    );
+  }
+
+  /// 一問一答の解説を一番下まで送る（「続きを見る」）
+  void _scrollDrillToEnd() {
+    final target = _drillExplanationKey.currentContext;
+    if (target == null) return;
+    final position = Scrollable.of(target).position;
+    position.animateTo(
+      position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  Widget _buildDrillScroll(Question q, AppTokens t) {
     return CustomScrollView(
       slivers: [
         SliverPadding(
