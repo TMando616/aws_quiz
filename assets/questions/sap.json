@@ -24,7 +24,9 @@
           "explanation": "CloudTrailはAPIの呼び出しを記録するサービスです。通知はできても作成は防げず、「制限する」という要件を満たしません。"
         }
       ],
-      "answers": [1],
+      "answers": [
+        1
+      ],
       "explanation": "「アカウントの管理者でも外せない制限」を組織全体にかけるなら、SCPが定番です。IAMポリシーはアカウント内で変更でき、ConfigやCloudTrailは検出や記録だけで、作成自体は防げません。",
       "references": [
         {
@@ -63,7 +65,10 @@
           "explanation": "DataSyncはオンラインでデータを転送するサービスで、移行の実行段階で使うものです。調査や計画の段階には向きません。"
         }
       ],
-      "answers": [0, 2],
+      "answers": [
+        0,
+        2
+      ],
       "explanation": "移行前の調査は、Application Discovery Serviceで情報を集め、Migration Hubで一元管理するのが定番の組み合わせです。Snowball・DataSyncはデータを運ぶ手段、Inspectorは脆弱性評価のサービスで、調査には使いません。",
       "references": [
         {
@@ -98,7 +103,9 @@
           "explanation": "CloudFrontはキャッシュによる配信の高速化が主な目的で、EC2が1台のままでは可用性は上がりません。リードレプリカは読み取りの負荷分散のためのもので、自動フェイルオーバーの仕組みではありません。"
         }
       ],
-      "answers": [1],
+      "answers": [
+        1
+      ],
       "explanation": "可用性を高める基本は、単一障害点をなくすことです。アプリ層は複数AZのAuto Scaling＋ALB、データベース層はRDSのマルチAZ配置で、どちらもAZ障害に耐えられる構成になります。",
       "references": [
         {
@@ -108,6 +115,295 @@
         {
           "title": "Elastic Load Balancing を使用して Auto Scaling グループ内のインスタンスにトラフィックを分散する",
           "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-004",
+      "domain": "d1",
+      "question": "あるECサイトは、注文ごとに「作成」「支払い」「発送」のイベントを発行し、後続の処理サービスが非同期で処理している。同じ注文のイベントは発行された順番どおりに処理する必要があり、同じイベントが重複して処理されてはならない。異なる注文のイベントは並行して処理してよい。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "Amazon SQS の標準キューを使い、可視性タイムアウトを長めに設定する",
+          "explanation": "標準キューは「少なくとも1回」の配信で、順番も保証されません（ベストエフォート）。可視性タイムアウトを伸ばしても、順番の保証や重複の排除にはなりません。"
+        },
+        {
+          "text": "Amazon SQS の FIFO キューを使い、メッセージグループ ID に注文 ID を設定する",
+          "explanation": "FIFO キューは同じメッセージグループ内の順番を保証し、重複排除 ID で一定時間内の重複を取り除きます。注文 ID をグループ ID にすれば、同じ注文は順番どおり、異なる注文は並行して処理できます。"
+        },
+        {
+          "text": "Amazon SNS の標準トピックで、処理サービスごとにサブスクリプションを作る",
+          "explanation": "SNS の標準トピックは配信の順番を保証せず、重複して届くこともあります。ファンアウトには向きますが、この要件は満たしません。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams を使い、パーティションキーにランダムな値を設定する",
+          "explanation": "Kinesis の順番はシャード内でのみ保たれます。パーティションキーがランダムだと同じ注文のイベントが別のシャードに分かれ、順番が崩れます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "「同じキーの中では順番どおり・重複なし、キーが違えば並行」という要件は、SQS FIFO キューのメッセージグループ ID がそのまま当てはまります。標準キューや SNS 標準トピックは順番を保証しません。",
+      "references": [
+        {
+          "title": "Amazon SQS FIFO キュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-005",
+      "domain": "d1",
+      "question": "ある企業はオンプレミスのデータセンターと AWS を AWS Direct Connect で接続している。VPC には Amazon Route 53 のプライベートホストゾーン（aws.example.internal）があり、オンプレミスには社内 DNS サーバー（corp.example.internal）がある。オンプレミスからプライベートホストゾーンの名前を、VPC 内の EC2 インスタンスから社内 DNS の名前を、それぞれ解決できるようにしたい。運用負荷を最小にするには、どの組み合わせを行うべきか。2つ選べ。",
+      "choices": [
+        {
+          "text": "Route 53 Resolver のインバウンドエンドポイントを作り、オンプレミスの DNS サーバーで aws.example.internal への問い合わせをそのエンドポイントの IP アドレスへ条件付きで転送する",
+          "explanation": "インバウンドエンドポイントは、オンプレミスからの DNS 問い合わせを VPC の Resolver で受け付ける入口です。オンプレミス側で条件付き転送を設定すれば、プライベートホストゾーンの名前を解決できます。"
+        },
+        {
+          "text": "プライベートホストゾーンをパブリックホストゾーンに作り直し、インターネット経由で解決させる",
+          "explanation": "社内向けの名前をインターネットに公開することになり、セキュリティ上望ましくありません。プライベートな IP アドレスの名前をパブリックに出す理由もありません。"
+        },
+        {
+          "text": "Route 53 Resolver のアウトバウンドエンドポイントと、corp.example.internal をオンプレミスの DNS サーバーへ転送するルールを作り、VPC に関連付ける",
+          "explanation": "アウトバウンドエンドポイントと転送ルールで、VPC 内からの特定ドメインの問い合わせをオンプレミスの DNS サーバーへ転送できます。マネージドなので DNS サーバーを自前で運用する必要がありません。"
+        },
+        {
+          "text": "VPC の DHCP オプションセットで、DNS サーバーをオンプレミスの DNS サーバーだけに変更する",
+          "explanation": "EC2 がオンプレミスの DNS サーバーだけを使うようになり、プライベートホストゾーンや AWS 内部の名前解決を Route 53 Resolver で行えなくなります。オンプレミス側にも転送設定が必要になり、構成が複雑になります。"
+        },
+        {
+          "text": "EC2 インスタンスに BIND をインストールして DNS フォワーダーを構築し、両方向の転送を設定する",
+          "explanation": "技術的には実現できますが、DNS サーバーの冗長化・パッチ適用・監視を自分たちで行う必要があり、運用負荷が高くなります。"
+        }
+      ],
+      "answers": [
+        0,
+        2
+      ],
+      "explanation": "ハイブリッドの名前解決は、Route 53 Resolver のエンドポイントで行うのが定番です。オンプレミス→AWS はインバウンドエンドポイント、AWS→オンプレミスはアウトバウンドエンドポイントと転送ルールを使います。どちらもマネージドで、DNS サーバーを自前で運用せずに済みます。",
+      "references": [
+        {
+          "title": "Route 53 Resolver とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver.html"
+        },
+        {
+          "title": "ネットワークへのインバウンド DNS クエリの転送",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-forwarding-inbound-queries.html"
+        },
+        {
+          "title": "ネットワークへのアウトバウンド DNS クエリの転送",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-forwarding-outbound-queries.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-006",
+      "domain": "d1",
+      "question": "ある企業は AWS Organizations の複数のアカウントに約30の VPC を持っている。すべての VPC どうし、および各 VPC とオンプレミスのデータセンター（AWS Direct Connect で接続済み）が相互に通信できるようにしたい。今後も VPC は増える予定で、接続の管理をできるだけ簡単にしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "すべての VPC の組み合わせで VPC ピアリングを作成し、各 VPC から Direct Connect の仮想インターフェイスを作る",
+          "explanation": "VPC ピアリングは推移的なルーティングができないため、全組み合わせ（30 VPC なら435本）の接続が必要です。VPC が増えるたびに接続とルートの管理が爆発的に増えます。"
+        },
+        {
+          "text": "ネットワーク用アカウントに AWS Transit Gateway を作り、AWS RAM で各アカウントに共有して VPC をアタッチし、Direct Connect ゲートウェイを Transit Gateway に関連付ける",
+          "explanation": "Transit Gateway はハブとして VPC とオンプレミスを相互に接続し、推移的なルーティングができます。RAM で共有すれば各アカウントの VPC をアタッチでき、Direct Connect ゲートウェイ経由でオンプレミスともつながります。VPC が増えてもアタッチを足すだけです。"
+        },
+        {
+          "text": "各 VPC からオンプレミスへ Site-to-Site VPN を張り、VPC 間の通信はオンプレミス経由で折り返す",
+          "explanation": "VPC 間の通信がすべてオンプレミスを経由するため、遅延と帯域の無駄が大きくなります。VPN の本数も VPC の数だけ増え、管理も煩雑です。"
+        },
+        {
+          "text": "すべての VPC 間の通信を AWS PrivateLink のエンドポイントサービスで公開する",
+          "explanation": "PrivateLink は特定のサービスを一方向に公開する仕組みで、VPC どうしを全面的にルーティングする用途には向きません。サービスごとにエンドポイントが必要になります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "多数の VPC とオンプレミスを相互接続するなら、Transit Gateway をハブにするハブ&スポーク構成が定番です。VPC ピアリングは推移的ルーティングができず、数が増えると管理が破綻します。",
+      "references": [
+        {
+          "title": "AWS Transit Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/what-is-transit-gateway.html"
+        },
+        {
+          "title": "AWS RAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/what-is.html"
+        },
+        {
+          "title": "Direct Connect ゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/direct-connect-gateways-intro.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-007",
+      "domain": "d1",
+      "question": "ある SaaS 事業者は、自社の VPC で動く API を、数百社の顧客がそれぞれの VPC からプライベートに利用できるようにしたい。多くの顧客の VPC は、事業者の VPC と CIDR ブロックが重複している。通信は顧客側から API への TCP 接続だけで、顧客の VPC へ事業者側から接続する必要はない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "顧客ごとに VPC ピアリングを作成し、ルートテーブルに API のサブネットへのルートを追加する",
+          "explanation": "VPC ピアリングは CIDR ブロックが重複する VPC どうしでは作成できません。数百の接続の管理も大変です。"
+        },
+        {
+          "text": "Network Load Balancer の背後に API を置いて VPC エンドポイントサービス（AWS PrivateLink）として公開し、顧客はインターフェイス VPC エンドポイントを作成する",
+          "explanation": "PrivateLink は顧客の VPC 内のエンドポイント（ENI）経由で API に接続するため、CIDR ブロックが重複していても使えます。通信は顧客側からの一方向に限られ、事業者は接続を承認制にすることもできます。"
+        },
+        {
+          "text": "AWS Transit Gateway に事業者と顧客の VPC をアタッチし、ルートを伝播させる",
+          "explanation": "Transit Gateway はルーティングで VPC をつなぐため、CIDR ブロックが重複していると正しくルーティングできません。顧客の VPC どうしが同じネットワークにつながるリスクもあります。"
+        },
+        {
+          "text": "API をインターネットに公開し、顧客の NAT ゲートウェイの IP アドレスだけを許可する",
+          "explanation": "通信がインターネットを経由するため、「プライベートに利用する」という要件を満たしません。顧客の IP アドレスの管理も必要になります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "「多数の利用者に特定のサービスを一方向でプライベートに公開する」「CIDR の重複がある」という条件は、AWS PrivateLink の典型的な使いどころです。ピアリングや Transit Gateway は CIDR の重複に対応できません。",
+      "references": [
+        {
+          "title": "AWS PrivateLink とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/what-is-privatelink.html"
+        },
+        {
+          "title": "AWS PrivateLink を使用してサービスを共有する",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/privatelink-share-your-services.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-008",
+      "domain": "d1",
+      "question": "あるオンラインゲームの会社は、UDP で通信するゲームサーバーを2つのリージョンで運用している。世界中のプレイヤーに低遅延で接続させたい。また、法人の利用者はファイアウォールで接続先の IP アドレスを許可リストに登録するため、接続先の IP アドレスは変わってはならない。リージョンで障害が起きたときは、DNS のキャッシュに左右されずに数十秒で別のリージョンへ切り替えたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon CloudFront のディストリビューションを作成し、各リージョンのゲームサーバーをオリジンにする",
+          "explanation": "CloudFront は HTTP/HTTPS（と WebSocket）のコンテンツ配信用で、UDP のゲーム通信には使えません。"
+        },
+        {
+          "text": "Amazon Route 53 のレイテンシーベースルーティングとヘルスチェックで、各リージョンのサーバーに振り分ける",
+          "explanation": "DNS による切り替えは、クライアントや途中の DNS サーバーのキャッシュ（TTL）に左右され、すぐに切り替わらないことがあります。返す IP アドレスもリージョンによって変わるため、固定の許可リストにできません。"
+        },
+        {
+          "text": "AWS Global Accelerator を使い、各リージョンのエンドポイントをエンドポイントグループとして登録する",
+          "explanation": "Global Accelerator は固定のエニーキャスト IP アドレスを提供し、AWS のグローバルネットワーク経由で最寄りの正常なリージョンへ TCP/UDP を転送します。ヘルスチェックで異常を検知すると、IP アドレスを変えずにすばやく切り替わります。"
+        },
+        {
+          "text": "各リージョンに Application Load Balancer を作り、その IP アドレスを利用者に案内する",
+          "explanation": "ALB は HTTP/HTTPS 用で UDP を扱えません。また ALB の IP アドレスは変わることがあるため、許可リストに登録する用途には向きません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "「固定 IP」「TCP/UDP」「DNS キャッシュに左右されない高速なフェイルオーバー」がそろったら AWS Global Accelerator です。CloudFront と ALB は HTTP 系、Route 53 は DNS ベースなので切り替えが TTL に依存します。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-009",
+      "domain": "d1",
+      "question": "あるモバイルアプリは、北米・欧州・アジアの3リージョンで利用者のプロフィールとゲームの進行状況を保存している。利用者は旅行先でもアプリを使うため、どのリージョンからも低遅延で読み書きできる必要がある。1つのリージョンが停止しても、ほかのリージョンで読み書きを続けたい。キーと値によるアクセスが中心である。最も適切なデータベースの構成はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Aurora グローバルデータベースを作成し、各リージョンにセカンダリクラスターを置く",
+          "explanation": "Aurora グローバルデータベースの書き込みはプライマリリージョンのクラスターで行われます。ほかのリージョンからの書き込みはプライマリまで届く必要があり、どのリージョンでも低遅延で書き込むという要件を満たしません。"
+        },
+        {
+          "text": "Amazon DynamoDB グローバルテーブルを作成し、3つのリージョンにレプリカを置く",
+          "explanation": "グローバルテーブルは各リージョンのレプリカで読み書きでき（マルチアクティブ）、変更は他のリージョンへ自動で複製されます。1つのリージョンが停止しても、残りのリージョンで読み書きを続けられます。"
+        },
+        {
+          "text": "1つのリージョンの Amazon RDS をプライマリにし、ほかの2リージョンにクロスリージョンリードレプリカを作る",
+          "explanation": "リードレプリカは読み取り専用です。書き込みはプライマリのリージョンに集中するため、ほかのリージョンからの書き込みは遅くなり、プライマリの停止時には書き込めなくなります。"
+        },
+        {
+          "text": "1つのリージョンの Amazon S3 にデータを JSON で保存し、ほかのリージョンへクロスリージョンレプリケーションする",
+          "explanation": "S3 はデータベースではなく、細かい読み書きや更新の競合の扱いに向きません。レプリケーション先から書き込んでも元のバケットへは戻りません（双方向にするには別途設定が必要で、構成が複雑になります）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "「複数リージョンのどこからでも低遅延で書き込みたい（マルチアクティブ）」「キーと値のアクセス」なら DynamoDB グローバルテーブルが合います。Aurora グローバルデータベースや RDS のリードレプリカは、書き込みが1つのリージョンに集中します。",
+      "references": [
+        {
+          "title": "Amazon DynamoDB グローバルテーブル",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html"
+        }
+      ]
+    },
+    {
+      "id": "sap-010",
+      "domain": "d1",
+      "question": "ある Web アプリケーションは、Application Load Balancer の背後で Auto Scaling グループの EC2 インスタンス上で動いている。ログイン中のセッション情報を各インスタンスのメモリに保存し、ALB のスティッキーセッションで同じインスタンスに振り分けている。スケールインやインスタンスの障害のたびに、利用者がログアウトされてしまう問題が起きている。最も適切な改善策はどれか。",
+      "choices": [
+        {
+          "text": "ALB のスティッキーセッションの有効期間を長くする",
+          "explanation": "セッション情報がインスタンスのメモリにある限り、そのインスタンスが終了すれば情報は失われます。有効期間を伸ばしても根本的な解決になりません。"
+        },
+        {
+          "text": "セッション情報を Amazon ElastiCache に保存し、アプリケーションをステートレスにする",
+          "explanation": "セッション情報をインスタンスの外（ElastiCache などの共有ストア）に置けば、どのインスタンスでも同じセッションを扱えます。スケールインや障害でインスタンスが入れ替わっても、利用者はログインしたままでいられます。"
+        },
+        {
+          "text": "各インスタンスに EBS ボリュームを追加し、セッション情報をファイルとして保存する",
+          "explanation": "EBS ボリュームは基本的に1つのインスタンスに紐付くため、ほかのインスタンスからは参照できません。インスタンスが終了すると、同じ問題が起きます。"
+        },
+        {
+          "text": "Auto Scaling グループのスケールインを無効にし、常に最大台数で運用する",
+          "explanation": "インスタンスの障害によるログアウトは防げず、使わない台数の費用もかかり続けます。Auto Scaling の利点も失われます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "スケールアウト・スケールインする構成では、セッションなどの状態をインスタンスの外に出して、アプリケーションをステートレスにするのが基本です。ElastiCache や DynamoDB がよく使われます。",
+      "references": [
+        {
+          "title": "セッション管理（AWS）",
+          "url": "https://aws.amazon.com/jp/caching/session-management/"
+        }
+      ]
+    },
+    {
+      "id": "sap-011",
+      "domain": "d1",
+      "question": "ある企業は、社内規程や製品マニュアル（数万ファイル、Amazon S3 に保存済み）をもとに、従業員の質問に回答する社内チャットボットを作りたい。文書は毎週更新されるため、回答には最新の内容を反映し、根拠となった文書も示したい。生成 AI の基盤モデルを自社で学習させる予定はない。最も運用負荷が低い方法はどれか。",
+      "choices": [
+        {
+          "text": "毎週、すべての文書を使って基盤モデルをファインチューニングし、更新したモデルで回答する",
+          "explanation": "ファインチューニングは毎週の学習に時間と費用がかかり、更新の反映が遅れます。どの文書を根拠にしたかを示すことも難しくなります。"
+        },
+        {
+          "text": "Amazon Bedrock のナレッジベースで S3 の文書をデータソースとして取り込み、質問に関連する文書を検索して回答を生成する（RAG）",
+          "explanation": "ナレッジベースは文書の分割・埋め込み（ベクトル化）・ベクトルストアへの保存を管理し、質問時に関連する部分を検索して回答を生成します。データソースを同期すれば更新が反映され、引用元も示せます。"
+        },
+        {
+          "text": "質問のたびに、すべての文書の本文をプロンプトに含めて基盤モデルに送る",
+          "explanation": "数万ファイルの本文はモデルが一度に扱える長さを大きく超えます。入力トークンの費用も膨大になり、現実的ではありません。"
+        },
+        {
+          "text": "Amazon SageMaker AI で、自社の文書から言語モデルを一から学習させる",
+          "explanation": "大量のデータと計算資源、専門知識が必要で、運用負荷が非常に高くなります。基盤モデルを自社で学習させないという前提にも反します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "自社の文書にもとづいて回答させたいときは、モデルを学習し直すのではなく、検索した文書を回答に使う RAG（検索拡張生成）が定番です。Amazon Bedrock のナレッジベースを使えば、取り込み・検索・回答生成をマネージドで構成できます。",
+      "references": [
+        {
+          "title": "Amazon Bedrock ナレッジベース",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/knowledge-base.html"
         }
       ]
     }

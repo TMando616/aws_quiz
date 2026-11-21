@@ -22,9 +22,10 @@ void main() {
 
   test('SAPの問題を新しい形式で読み込める', () async {
     final questions = await QuestionRepository().load('sap');
-    expect(questions, hasLength(3));
-    final q = questions.first;
-    expect(q.choices.first.explanation, isNotEmpty);
-    expect(q.references, isNotEmpty);
+    expect(questions, isNotEmpty);
+    for (final q in questions) {
+      expect(q.choices.every((c) => c.explanation.isNotEmpty), isTrue);
+      expect(q.references, isNotEmpty);
+    }
   });
 }
