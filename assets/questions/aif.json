@@ -375,7 +375,7 @@
       "answers": [
         3
       ],
-      "explanation": "MLOps では、モデルの監視、再学習、再デプロイを自動化された反復可能なプロセスとして運用します。SageMaker Model Monitor は、本番のモデルのデータの品質やモデルの品質の変化を検知します。",
+      "explanation": "MLOps では、モデルの監視、再学習、再デプロイを自動化された反復可能なプロセスとして運用します。SageMaker Model Monitor は、本番のモデルのデータの品質やモデルの品質の変化を検知します（なお、SageMaker Model Monitor は新規の利用者の受け付けを終了しています。既存の利用者は引き続き使えます。）",
       "references": [
         {
           "title": "SageMaker Model Monitor によるモデルの品質のモニタリング",
@@ -2855,7 +2855,7 @@
       "answers": [
         0
       ],
-      "explanation": "MLOps では、モデルの監視、再学習、再デプロイを自動化された反復可能なプロセスとして運用します。SageMaker Model Monitor は、本番のモデルのデータの品質やモデルの品質の変化を検知します。",
+      "explanation": "MLOps では、モデルの監視、再学習、再デプロイを自動化された反復可能なプロセスとして運用します。SageMaker Model Monitor は、本番のモデルのデータの品質やモデルの品質の変化を検知します（なお、SageMaker Model Monitor は新規の利用者の受け付けを終了しています。既存の利用者は引き続き使えます。）",
       "references": [
         {
           "title": "MLOps とは",
