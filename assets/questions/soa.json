@@ -2239,7 +2239,7 @@
       "answers": [
         1
       ],
-      "explanation": "詳細モニタリングは既定のメトリクスの間隔を1分にするだけです。メモリのメトリクスは CloudWatch エージェントで収集します。",
+      "explanation": "EC2 の既定のメトリクスはハイパーバイザーから見える CPU やネットワークなどです。メモリやディスクの使用率などの OS の中のメトリクスやログは、CloudWatch エージェントで収集します。",
       "references": [
         {
           "title": "CloudWatch エージェントでメトリクスとログを収集する",
@@ -2271,7 +2271,7 @@
       "answers": [
         0
       ],
-      "explanation": "エージェントは、メトリクスとログの両方を収集できます。",
+      "explanation": "EC2 の既定のメトリクスはハイパーバイザーから見える CPU やネットワークなどです。メモリやディスクの使用率などの OS の中のメトリクスやログは、CloudWatch エージェントで収集します。",
       "references": [
         {
           "title": "CloudWatch エージェントでメトリクスとログを収集する",
@@ -2303,7 +2303,7 @@
       "answers": [
         1
       ],
-      "explanation": "複合アラームの条件（ルール式）には、ほかのアラームの状態を指定します。",
+      "explanation": "複合アラームを使うと、複数のアラームの状態を AND・OR などで組み合わせ、本当に対応が必要なときだけ通知できます（アラームのノイズの削減）。",
       "references": [
         {
           "title": "複合アラームの作成",
@@ -2331,7 +2331,7 @@
       "answers": [
         0
       ],
-      "explanation": "アラームのアクションで、SNS のトピックに通知を送れます。",
+      "explanation": "複合アラームを使うと、複数のアラームの状態を AND・OR などで組み合わせ、本当に対応が必要なときだけ通知できます（アラームのノイズの削減）。",
       "references": [
         {
           "title": "アラームのアクション",
@@ -2359,7 +2359,7 @@
       "answers": [
         1
       ],
-      "explanation": "基盤の問題はシステムのステータスチェックで検出します。インスタンスのステータスチェックは、OS の設定などインスタンス側の問題を示します。",
+      "explanation": "システムのステータスチェックの失敗は、AWS 側の基盤の問題を示します。CloudWatch のアラームで EC2 の復旧アクションを使うと、インスタンスを別のハードウェアで自動的に復旧できます。",
       "references": [
         {
           "title": "インスタンスを停止・終了・再起動・復旧するアラームを作成する",
@@ -2423,7 +2423,7 @@
       "answers": [
         1
       ],
-      "explanation": "ダッシュボードには、複数のリージョンのリソースのメトリクスを表示できます。",
+      "explanation": "CloudWatch のダッシュボードは、複数のアカウントとリージョンのメトリクスとアラームを1か所に表示できます。ダッシュボードは共有もできます。",
       "references": [
         {
           "title": "CloudWatch ダッシュボードの使用",
@@ -2451,7 +2451,7 @@
       "answers": [
         0
       ],
-      "explanation": "ダッシュボードは、アカウントを持たない人にも共有できます（共有の方法を選びます）。",
+      "explanation": "CloudWatch のダッシュボードは、複数のアカウントとリージョンのメトリクスとアラームを1か所に表示できます。ダッシュボードは共有もできます。",
       "references": [
         {
           "title": "CloudWatch ダッシュボードの使用",
@@ -2519,7 +2519,7 @@
       "answers": [
         0
       ],
-      "explanation": "イベントパターンは、イベントの値と完全に一致する必要があります。パターンの誤りは、ルールが一致しないよくある原因です。",
+      "explanation": "EventBridge のルールが一致しているのにターゲットが呼び出されないときは、まずターゲットへのアクセス許可（Lambda 関数のリソースベースのポリシーなど）を確認します。",
       "references": [
         {
           "title": "Amazon EventBridge のルール",
@@ -2547,7 +2547,7 @@
       "answers": [
         1
       ],
-      "explanation": "Automation では、同時に処理するリソースの数（同時実行数）やエラーのしきい値を細かく制御できます。",
+      "explanation": "Systems Manager Automation は、EC2 インスタンスの再起動や AMI の作成などの運用の手順を、ランブックで自動化します。EventBridge などから実行できます。",
       "references": [
         {
           "title": "AWS Systems Manager Automation",
@@ -2575,7 +2575,7 @@
       "answers": [
         0
       ],
-      "explanation": "aws:approve のアクションで、承認されるまで実行を待てます。",
+      "explanation": "Systems Manager Automation は、EC2 インスタンスの再起動や AMI の作成などの運用の手順を、ランブックで自動化します。EventBridge などから実行できます。",
       "references": [
         {
           "title": "AWS Systems Manager Automation",
@@ -2603,7 +2603,7 @@
       "answers": [
         1
       ],
-      "explanation": "修復のアクションは、自動の修復にも、手動で実行する修復にも設定できます。",
+      "explanation": "AWS Config のルールに修復のアクションを設定すると、非準拠と評価されたリソースを、Systems Manager Automation のドキュメントで自動（または手動）で修復できます。",
       "references": [
         {
           "title": "AWS Config ルールによる非準拠のリソースの修復",
@@ -2667,7 +2667,7 @@
       "answers": [
         1
       ],
-      "explanation": "エラスティックボリュームで、インスタンスにアタッチしたまま、ボリュームタイプ・サイズ・IOPS を変更できます。",
+      "explanation": "gp2 の IOPS は容量に比例しますが、gp3 は容量とは別に IOPS とスループットを設定できます。エラスティックボリュームの機能で、ボリュームタイプやサイズを使いながら変更できます。",
       "references": [
         {
           "title": "Amazon EBS エラスティックボリューム",
@@ -2767,7 +2767,7 @@
       "answers": [
         1
       ],
-      "explanation": "Transfer Acceleration には、通常のデータ転送とは別に料金がかかります。高速化の効果がない転送には課金されません。",
+      "explanation": "S3 Transfer Acceleration は、地理的に離れたクライアントと S3 バケットの間の転送を、エッジロケーションを使って高速化します。",
       "references": [
         {
           "title": "Amazon S3 Transfer Acceleration",
@@ -2795,7 +2795,7 @@
       "answers": [
         0
       ],
-      "explanation": "ライフサイクルのポリシーで、アクセスされたファイルを標準のストレージクラスに戻せます。",
+      "explanation": "EFS のライフサイクル管理では、指定した期間アクセスされなかったファイルを、低頻度アクセスやアーカイブのストレージクラスに自動で移せます。",
       "references": [
         {
           "title": "Amazon EFS のライフサイクル管理",
@@ -2859,7 +2859,7 @@
       "answers": [
         0
       ],
-      "explanation": "Database Insights のダッシュボードで、DB の負荷を待機イベント・SQL 文・ホスト・ユーザーで絞り込めます。",
+      "explanation": "RDS の Performance Insights の機能は、CloudWatch Database Insights に引き継がれています。DB の負荷を、待機イベント・SQL 文・ホスト・ユーザーの観点で分析できます。",
       "references": [
         {
           "title": "Amazon CloudWatch Database Insights による Amazon RDS の DB 負荷のモニタリング",
@@ -2887,7 +2887,7 @@
       "answers": [
         1
       ],
-      "explanation": "OS のメトリクスでは CPU やメモリの状態はわかっても、どの SQL 文が原因かはわかりません。DB の負荷の分析には Database Insights を使います。",
+      "explanation": "RDS の Performance Insights の機能は、CloudWatch Database Insights に引き継がれています。DB の負荷を、待機イベント・SQL 文・ホスト・ユーザーの観点で分析できます。",
       "references": [
         {
           "title": "Amazon CloudWatch Database Insights による Amazon RDS の DB 負荷のモニタリング",
@@ -2951,7 +2951,7 @@
       "answers": [
         1
       ],
-      "explanation": "クラスタープレイスメントグループは、1つの AZ の中にインスタンスをまとめます。",
+      "explanation": "プレイスメントグループには、クラスター（低い遅延・高いスループット）、パーティション（大規模な分散システム）、分散（少数の重要なインスタンスを別々のハードウェアに）があります。",
       "references": [
         {
           "title": "プレイスメントグループ",
@@ -2979,7 +2979,7 @@
       "answers": [
         0
       ],
-      "explanation": "Compute Optimizer は、EC2・Auto Scaling グループ・EBS・Lambda などを対象にします。",
+      "explanation": "Compute Optimizer は、EC2・EBS・Lambda などの使用状況を分析し、過剰や不足のないリソースの設定を推奨して、費用の削減と性能の改善を助けます。",
       "references": [
         {
           "title": "AWS Compute Optimizer とは",
@@ -3043,7 +3043,7 @@
       "answers": [
         0
       ],
-      "explanation": "Logs Insights は、クエリでスキャンしたデータの量に応じて課金されます。",
+      "explanation": "CloudWatch Logs Insights は、ログのデータを対話的に検索・分析するサービスです。運用上の問題に素早く対応するために使えます。",
       "references": [
         {
           "title": "CloudWatch Logs Insights",
@@ -3071,7 +3071,7 @@
       "answers": [
         1
       ],
-      "explanation": "メトリクスフィルターでログからメトリクスを作れば、CloudWatch のアラームで継続的に監視できます。",
+      "explanation": "CloudWatch Logs Insights は、ログのデータを対話的に検索・分析するサービスです。運用上の問題に素早く対応するために使えます。",
       "references": [
         {
           "title": "CloudWatch Logs Insights",
@@ -3099,7 +3099,7 @@
       "answers": [
         1
       ],
-      "explanation": "ターゲット追跡スケーリングでは、Auto Scaling が必要な CloudWatch のアラームを作成・管理します。",
+      "explanation": "ターゲット追跡スケーリングでは、メトリクスと目標の値を選ぶだけで、Auto Scaling がメトリクスを目標の値の近くに保つように容量を調整します。",
       "references": [
         {
           "title": "ターゲット追跡スケーリングポリシー",
@@ -3127,7 +3127,7 @@
       "answers": [
         0
       ],
-      "explanation": "メトリクスが目標の値より下がれば、台数を減らします。",
+      "explanation": "ターゲット追跡スケーリングでは、メトリクスと目標の値を選ぶだけで、Auto Scaling がメトリクスを目標の値の近くに保つように容量を調整します。",
       "references": [
         {
           "title": "ターゲット追跡スケーリングポリシー",
@@ -3155,7 +3155,7 @@
       "answers": [
         1
       ],
-      "explanation": "cron の形式で、繰り返しのスケジュールも設定できます。",
+      "explanation": "スケジュールに基づくスケーリングでは、予測できる負荷の変化に合わせて、日時を決めて容量を変えられます。",
       "references": [
         {
           "title": "スケジュールに基づくスケーリング",
@@ -3219,7 +3219,7 @@
       "answers": [
         1
       ],
-      "explanation": "ウォームプールのインスタンスは、停止・実行中・休止のいずれかの状態で待機させられます。停止状態なら費用を抑えられます。",
+      "explanation": "ウォームプールは、Auto Scaling グループの横に、初期化済みのインスタンスを待機させておく仕組みです。起動に時間がかかるアプリケーションのスケールアウトの遅れを減らせます。",
       "references": [
         {
           "title": "ウォームプール",
@@ -3247,7 +3247,7 @@
       "answers": [
         0
       ],
-      "explanation": "停止中のインスタンスのコンピューティングの料金はかかりませんが、EBS ボリュームなどの料金はかかります。",
+      "explanation": "ウォームプールは、Auto Scaling グループの横に、初期化済みのインスタンスを待機させておく仕組みです。起動に時間がかかるアプリケーションのスケールアウトの遅れを減らせます。",
       "references": [
         {
           "title": "ウォームプール",
@@ -3311,7 +3311,7 @@
       "answers": [
         1
       ],
-      "explanation": "オンデマンドモードでは、キャパシティを指定せず、リクエストの量に応じて支払います。",
+      "explanation": "オンデマンドのキャパシティモードは、予測できないトラフィックや新しいアプリケーションに向いています。プロビジョンドモードは、予測できるトラフィックで、自動スケーリングと組み合わせて使います。",
       "references": [
         {
           "title": "DynamoDB の読み取り/書き込みキャパシティモード",
@@ -3339,7 +3339,7 @@
       "answers": [
         0
       ],
-      "explanation": "Aurora Serverless v2 のキャパシティは ACU の単位で、最小と最大の範囲を指定します。",
+      "explanation": "Aurora Serverless v2 は、アプリケーションの需要に応じて、データベースのキャパシティを自動で細かく調整します。負荷の変化が大きいワークロードに向いています。",
       "references": [
         {
           "title": "Aurora Serverless v2",
@@ -3403,7 +3403,7 @@
       "answers": [
         1
       ],
-      "explanation": "既定では EC2 のステータスチェックだけを使います。ELB のヘルスチェックは追加で有効にします。",
+      "explanation": "Auto Scaling の既定のヘルスチェックは EC2 のステータスチェックだけです。ELB のヘルスチェックを有効にすると、アプリケーションの異常でもインスタンスを置き換えられます。",
       "references": [
         {
           "title": "Auto Scaling グループのインスタンスのヘルスチェック",
@@ -3435,7 +3435,7 @@
       "answers": [
         0
       ],
-      "explanation": "猶予期間の間は、新しいインスタンスのヘルスチェックの結果で置き換えません。",
+      "explanation": "Auto Scaling の既定のヘルスチェックは EC2 のステータスチェックだけです。ELB のヘルスチェックを有効にすると、アプリケーションの異常でもインスタンスを置き換えられます。",
       "references": [
         {
           "title": "Auto Scaling グループのインスタンスのヘルスチェック",
@@ -3467,7 +3467,7 @@
       "answers": [
         0
       ],
-      "explanation": "Route 53 のヘルスチェックは、エンドポイント・ほかのヘルスチェック（計算されたヘルスチェック）・CloudWatch のアラームを監視できます。",
+      "explanation": "フェイルオーバールーティングは、アクティブ・パッシブの構成で使います。プライマリのリソースが異常になると、セカンダリのリソースに通信を向けます。",
       "references": [
         {
           "title": "Route 53 のヘルスチェックの種類",
@@ -3495,7 +3495,7 @@
       "answers": [
         1
       ],
-      "explanation": "Route 53 がヘルスチェックの結果をもとに、DNS の応答をセカンダリに切り替えます。",
+      "explanation": "フェイルオーバールーティングは、アクティブ・パッシブの構成で使います。プライマリのリソースが異常になると、セカンダリのリソースに通信を向けます。",
       "references": [
         {
           "title": "フェイルオーバールーティング",
@@ -3527,7 +3527,7 @@
       "answers": [
         1
       ],
-      "explanation": "マルチ AZ の DB インスタンス配置のスタンバイは、読み取りには使えません。読み取りの拡張にはリードレプリカを使います（読み取り可能なスタンバイを持つ、マルチ AZ の DB クラスター配置もあります）。",
+      "explanation": "RDS のマルチ AZ 配置では、別の AZ のスタンバイに同期でデータを複製し、障害時に自動でフェイルオーバーします。エンドポイントの DNS 名はそのまま使えます。",
       "references": [
         {
           "title": "Amazon RDS のマルチ AZ の DB インスタンス配置",
@@ -3555,7 +3555,7 @@
       "answers": [
         0
       ],
-      "explanation": "プライマリからスタンバイへは同期で複製されるので、フェイルオーバーしてもデータが失われにくくなります。",
+      "explanation": "RDS のマルチ AZ 配置では、別の AZ のスタンバイに同期でデータを複製し、障害時に自動でフェイルオーバーします。エンドポイントの DNS 名はそのまま使えます。",
       "references": [
         {
           "title": "マルチ AZ 配置",
@@ -3587,7 +3587,7 @@
       "answers": [
         0
       ],
-      "explanation": "リソースの割り当てでタグを指定すると、そのタグの付いたリソースがプランの対象になります。",
+      "explanation": "AWS Backup のバックアッププランでは、バックアップの頻度・保持期間・コピー先などのルールを定義し、タグなどでリソースを割り当てられます。",
       "references": [
         {
           "title": "AWS Backup のバックアッププラン",
@@ -3655,7 +3655,7 @@
       "answers": [
         1
       ],
-      "explanation": "ポイントインタイムリカバリは、新しい DB インスタンスとして復元します。元のインスタンスは上書きされません。",
+      "explanation": "RDS のポイントインタイムリカバリでは、バックアップの保持期間の中の任意の時点（通常は直近5分前まで）の状態を、新しい DB インスタンスとして復元できます。",
       "references": [
         {
           "title": "DB インスタンスを特定の時点に復元する",
@@ -3683,7 +3683,7 @@
       "answers": [
         0
       ],
-      "explanation": "保持期間の中の任意の時点に戻せます。",
+      "explanation": "RDS のポイントインタイムリカバリでは、バックアップの保持期間の中の任意の時点（通常は直近5分前まで）の状態を、新しい DB インスタンスとして復元できます。",
       "references": [
         {
           "title": "DB インスタンスを特定の時点に復元する",
@@ -3711,7 +3711,7 @@
       "answers": [
         1
       ],
-      "explanation": "一度有効にしたバージョニングは、停止はできますが、未設定の状態には戻せません。",
+      "explanation": "S3 のバージョニングを有効にすると、オブジェクトを上書きしても前の版が残り、削除しても削除マーカーが付くだけで、前の版に戻せます。",
       "references": [
         {
           "title": "S3 バケットでのバージョニングの使用",
@@ -3779,7 +3779,7 @@
       "answers": [
         1
       ],
-      "explanation": "パイロットライトでは、データは複製しますが、アプリケーションのサーバーは止めておき、災害時に起動します。",
+      "explanation": "DR の方式は、費用と RTO・RPO の小ささの順に、バックアップと復元 → パイロットライト → ウォームスタンバイ → マルチサイトアクティブ/アクティブとなります。",
       "references": [
         {
           "title": "クラウドでのディザスタリカバリのオプション",
@@ -3807,7 +3807,7 @@
       "answers": [
         1
       ],
-      "explanation": "それは RTO（目標復旧時間）です。RPO（目標復旧時点）は、許されるデータの損失の量（どの時点まで戻せればよいか）です。",
+      "explanation": "DR の方式は、費用と RTO・RPO の小ささの順に、バックアップと復元 → パイロットライト → ウォームスタンバイ → マルチサイトアクティブ/アクティブとなります。",
       "references": [
         {
           "title": "クラウドでのディザスタリカバリのオプション",
@@ -3835,7 +3835,7 @@
       "answers": [
         0
       ],
-      "explanation": "常に動いている縮小版の環境があるので、パイロットライトより RTO が短く、テストもしやすくなります。",
+      "explanation": "ウォームスタンバイでは、DR のリージョンで縮小した規模の本番の環境を常に動かしておくので、拡張するだけで素早く切り替えられます。",
       "references": [
         {
           "title": "クラウドでのディザスタリカバリのオプション",
@@ -3899,7 +3899,7 @@
       "answers": [
         0
       ],
-      "explanation": "ライトスルーは書き込みのたびにキャッシュを更新します。その代わり、読まれないデータもキャッシュに入ります。",
+      "explanation": "読み取りの多いデータは、ElastiCache でキャッシュするとデータベースの負荷を下げられます。遅延読み込みでは、キャッシュにないときだけデータベースから読み、キャッシュに入れます。",
       "references": [
         {
           "title": "ElastiCache のキャッシュ戦略",
@@ -3963,7 +3963,7 @@
       "answers": [
         1
       ],
-      "explanation": "Image Builder は、AMI とコンテナイメージの両方を作れます。",
+      "explanation": "EC2 Image Builder は、仮想マシンやコンテナのイメージの作成・保守・検証・共有・配布を自動化します。スケジュールに沿ってパイプラインを実行できます。",
       "references": [
         {
           "title": "EC2 Image Builder とは",
@@ -3991,7 +3991,7 @@
       "answers": [
         0
       ],
-      "explanation": "パイプラインにテストのコンポーネントを入れて、イメージを検証してから配布できます。",
+      "explanation": "EC2 Image Builder は、仮想マシンやコンテナのイメージの作成・保守・検証・共有・配布を自動化します。スケジュールに沿ってパイプラインを実行できます。",
       "references": [
         {
           "title": "EC2 Image Builder とは",
@@ -4019,7 +4019,7 @@
       "answers": [
         0
       ],
-      "explanation": "管理者のアカウントでテンプレートを定義・管理し、選んだアカウントとリージョンにスタックをプロビジョニングします。",
+      "explanation": "CloudFormation StackSets は、1つのテンプレートから、複数のアカウントとリージョンにスタックを配ります。Organizations と組み合わせると、OU に加わったアカウントに自動でデプロイできます。",
       "references": [
         {
           "title": "CloudFormation StackSets の使用",
@@ -4047,7 +4047,7 @@
       "answers": [
         1
       ],
-      "explanation": "サービスマネージドのアクセス許可と自動デプロイを使うと、対象の OU に加わったアカウントに自動でスタックが作られます。",
+      "explanation": "CloudFormation StackSets は、1つのテンプレートから、複数のアカウントとリージョンにスタックを配ります。Organizations と組み合わせると、OU に加わったアカウントに自動でデプロイできます。",
       "references": [
         {
           "title": "CloudFormation StackSets の使用",
@@ -4111,7 +4111,7 @@
       "answers": [
         0
       ],
-      "explanation": "組織や OU を指定すると、その中のアカウントとまとめて共有できます。",
+      "explanation": "AWS RAM は、AWS のリソースをアカウント間や組織内で安全に共有するサービスです。VPC のサブネットを共有すると、参加するアカウントは共有されたサブネットにリソースを作れます。",
       "references": [
         {
           "title": "AWS Resource Access Manager とは",
@@ -4143,7 +4143,7 @@
       "answers": [
         0
       ],
-      "explanation": "既定では、CloudFormation はスタックの削除時にリソースを削除します（一部のリソースは既定がスナップショット）。",
+      "explanation": "DeletionPolicy 属性を使うと、スタックからリソースが削除されるときに、リソースを保持したり、（対応しているリソースでは）スナップショットを取ったりできます。",
       "references": [
         {
           "title": "DeletionPolicy 属性",
@@ -4207,7 +4207,7 @@
       "answers": [
         1
       ],
-      "explanation": "タイムアウトまでに必要な数の成功のシグナルを受け取れないと、作成は失敗となり、スタックはロールバックします。",
+      "explanation": "CreationPolicy 属性を使うと、指定した数の成功のシグナルを受け取るか、タイムアウトするまで、リソースの作成を完了にしません。インスタンスの中から cfn-signal でシグナルを送ります。",
       "references": [
         {
           "title": "CreationPolicy 属性",
@@ -4271,7 +4271,7 @@
       "answers": [
         1
       ],
-      "explanation": "各サブネットでは5つの IP アドレスが AWS に予約されるので、/24 で使えるのは251個です。",
+      "explanation": "サブネットの各 CIDR ブロックでは、最初の4つと最後の1つの IP アドレスを AWS が予約していて、インスタンスに割り当てられません。/28 のサブネットで使えるのは11個だけなので、規模に合わせてサブネットを設計します。",
       "references": [
         {
           "title": "VPC とサブネットの CIDR ブロック",
@@ -4335,7 +4335,7 @@
       "answers": [
         1
       ],
-      "explanation": "CDK は、TypeScript・JavaScript・Python・Java・C#・Go などのプログラミング言語で書けます。",
+      "explanation": "AWS CDK は、TypeScript・Python などのプログラミング言語でクラウドのインフラを定義するフレームワークです。CloudFormation を通してデプロイします。",
       "references": [
         {
           "title": "AWS CDK とは",
@@ -4363,7 +4363,7 @@
       "answers": [
         0
       ],
-      "explanation": "cdk synth でテンプレートに合成し、CloudFormation でデプロイします。",
+      "explanation": "AWS CDK は、TypeScript・Python などのプログラミング言語でクラウドのインフラを定義するフレームワークです。CloudFormation を通してデプロイします。",
       "references": [
         {
           "title": "AWS CDK とは",
@@ -4391,7 +4391,7 @@
       "answers": [
         0
       ],
-      "explanation": "SSM Agent が動き、適切なアクセス許可があるインスタンスが、マネージドノードとして管理されます。",
+      "explanation": "Patch Manager は、マネージドノードへのパッチ適用を自動化します。パッチベースラインで承認するパッチを決め、メンテナンスウィンドウで適用の時間帯を指定します。",
       "references": [
         {
           "title": "AWS Systems Manager Patch Manager",
@@ -4423,7 +4423,7 @@
       "answers": [
         1
       ],
-      "explanation": "Patch Manager は、Windows と Linux・macOS などのオペレーティングシステムに対応しています。",
+      "explanation": "Patch Manager は、マネージドノードへのパッチ適用を自動化します。パッチベースラインで承認するパッチを決め、メンテナンスウィンドウで適用の時間帯を指定します。",
       "references": [
         {
           "title": "AWS Systems Manager Patch Manager",
@@ -4491,7 +4491,7 @@
       "answers": [
         1
       ],
-      "explanation": "Session Manager は、インバウンドのポートを開けずに接続できます。",
+      "explanation": "Run Command を使うと、SSH や踏み台なしで、多数のマネージドノードの設定の変更やスクリプトの実行を安全に行えます。同時実行数やエラーのしきい値も制御できます。",
       "references": [
         {
           "title": "AWS Systems Manager Session Manager",
@@ -4519,7 +4519,7 @@
       "answers": [
         1
       ],
-      "explanation": "関連付けは、スケジュールに沿って繰り返し適用され、状態を保ちます。",
+      "explanation": "State Manager は、マネージドノードなどを、定義した状態に保つための設定管理の機能です。関連付けのスケジュールに沿って、繰り返し状態を適用します。",
       "references": [
         {
           "title": "AWS Systems Manager State Manager",
@@ -4583,7 +4583,7 @@
       "answers": [
         0
       ],
-      "explanation": "S3 のイベントを EventBridge に送ると、ルールで多くのターゲットに振り分けられます。",
+      "explanation": "S3 のイベント通知を使うと、オブジェクトの作成・削除などのイベントをきっかけに、Lambda 関数・SQS・SNS・EventBridge にイベントを送れます。",
       "references": [
         {
           "title": "Amazon S3 のイベント通知",
@@ -4611,7 +4611,7 @@
       "answers": [
         1
       ],
-      "explanation": "同じバケットに書き込むと、その書き込みがまたイベントを発生させ、処理が繰り返されるおそれがあります。出力は別のバケットや別のプレフィックスにします。",
+      "explanation": "S3 のイベント通知を使うと、オブジェクトの作成・削除などのイベントをきっかけに、Lambda 関数・SQS・SNS・EventBridge にイベントを送れます。",
       "references": [
         {
           "title": "Amazon S3 のイベント通知",
@@ -4639,7 +4639,7 @@
       "answers": [
         0
       ],
-      "explanation": "繰り返しのスケジュールのほか、一度きりのスケジュールも作れます。",
+      "explanation": "EventBridge Scheduler を使うと、サーバーを用意せずに、決まった時刻や間隔で AWS のサービスの API やターゲットを呼び出せます。",
       "references": [
         {
           "title": "Amazon EventBridge Scheduler",
@@ -4667,7 +4667,7 @@
       "answers": [
         1
       ],
-      "explanation": "EventBridge Scheduler では、再試行の上限や、失敗したトリガーを保持する最大の時間を設定できます。",
+      "explanation": "EventBridge Scheduler を使うと、サーバーを用意せずに、決まった時刻や間隔で AWS のサービスの API やターゲットを呼び出せます。",
       "references": [
         {
           "title": "Amazon EventBridge Scheduler",
@@ -4695,7 +4695,7 @@
       "answers": [
         1
       ],
-      "explanation": "変更セットは作成しただけでは反映されず、実行（execute）したときに初めてスタックが変更されます。",
+      "explanation": "変更セットを使うと、スタックの更新が実行中のリソースにどう影響するか（重要なリソースの削除や置き換えが起きるか）を、実行の前に確認できます。",
       "references": [
         {
           "title": "CloudFormation の変更セット",
@@ -4723,7 +4723,7 @@
       "answers": [
         0
       ],
-      "explanation": "置き換えでは新しい物理 ID のリソースが作られるので、データを持つリソースでは特に注意が必要です。",
+      "explanation": "変更セットを使うと、スタックの更新が実行中のリソースにどう影響するか（重要なリソースの削除や置き換えが起きるか）を、実行の前に確認できます。",
       "references": [
         {
           "title": "CloudFormation の変更セット",
@@ -4751,7 +4751,7 @@
       "answers": [
         0
       ],
-      "explanation": "ルールは、イベントのパターンへの一致か、スケジュールをきっかけにターゲットを呼び出します。",
+      "explanation": "EventBridge のルールは、イベントのパターンに一致したイベントをターゲット（Lambda 関数など）に送ります。AWS のサービスのイベントをきっかけにした運用の自動化に使えます。",
       "references": [
         {
           "title": "Amazon EventBridge のルール",
@@ -4815,7 +4815,7 @@
       "answers": [
         1
       ],
-      "explanation": "アカウントのパスワードポリシーは IAM ユーザーに適用され、ルートユーザーには適用されません。",
+      "explanation": "IAM のアカウントのパスワードポリシーで、IAM ユーザーのパスワードの最小の長さ、必要な文字の種類、有効期間、再利用の防止などを設定できます。",
       "references": [
         {
           "title": "IAM ユーザーのアカウントパスワードポリシーの設定",
@@ -4843,7 +4843,7 @@
       "answers": [
         0
       ],
-      "explanation": "パスワードポリシーで、以前のパスワードの再利用を防ぐ設定ができます。",
+      "explanation": "IAM のアカウントのパスワードポリシーで、IAM ユーザーのパスワードの最小の長さ、必要な文字の種類、有効期間、再利用の防止などを設定できます。",
       "references": [
         {
           "title": "IAM ユーザーのアカウントパスワードポリシーの設定",
@@ -4871,7 +4871,7 @@
       "answers": [
         0
       ],
-      "explanation": "Access Analyzer の未使用のアクセスの分析で、使われていないロールやアクセス許可を見つけられます。",
+      "explanation": "IAM Access Analyzer は、リソースベースのポリシーを分析し、外部のエンティティと共有されているリソースを特定します。使われていないアクセス許可の分析や、ポリシーの検証もできます。",
       "references": [
         {
           "title": "IAM Access Analyzer",
@@ -4935,7 +4935,7 @@
       "answers": [
         1
       ],
-      "explanation": "SCP は管理アカウントには影響しません。メンバーアカウントにだけ適用されます。",
+      "explanation": "SCP で拒否した操作は、メンバーアカウントの管理者を含め、そのアカウントのどの IAM プリンシパルも実行できません。組織全体のガードレールとして使います。",
       "references": [
         {
           "title": "サービスコントロールポリシー (SCP)",
@@ -4999,7 +4999,7 @@
       "answers": [
         1
       ],
-      "explanation": "AWS が用意したサンプルのテンプレートを使うことも、自分で作ることもできます。",
+      "explanation": "コンフォーマンスパックは、AWS Config のルールと修復のアクションの集まりで、アカウントやリージョン、組織全体に1つの単位としてデプロイできます。サンプルのテンプレートも用意されています。",
       "references": [
         {
           "title": "AWS Config のコンフォーマンスパック",
@@ -5063,7 +5063,7 @@
       "answers": [
         1
       ],
-      "explanation": "KMS は以前の鍵の素材を保持するので、ローテーションの前に暗号化したデータも復号できます。",
+      "explanation": "KMS の自動ローテーションを有効にすると、鍵の素材が定期的に新しくなります。キーの ID や ARN は変わらず、以前の鍵の素材も保持されるので、既存のデータを再暗号化する必要はありません。",
       "references": [
         {
           "title": "AWS KMS キーのローテーション",
@@ -5127,7 +5127,7 @@
       "answers": [
         1
       ],
-      "explanation": "ACM が自動で更新するのは、ACM が発行した証明書です。インポートした証明書は、利用者が更新して再インポートします。",
+      "explanation": "ACM のマネージド更新は、ACM が発行した証明書を期限の前に自動で更新します。DNS 検証の場合は、検証用の CNAME レコードを残しておけば自動で更新されます。",
       "references": [
         {
           "title": "ACM 証明書のマネージド更新",
@@ -5155,7 +5155,7 @@
       "answers": [
         1
       ],
-      "explanation": "ACM が自動で更新するのは DNS 検証の場合です。それ以外の場合は、期限が近づくとメールで通知されるので、対応が必要です。",
+      "explanation": "ACM のマネージド更新は、ACM が発行した証明書を期限の前に自動で更新します。DNS 検証の場合は、検証用の CNAME レコードを残しておけば自動で更新されます。",
       "references": [
         {
           "title": "ACM 証明書のマネージド更新",
@@ -5183,7 +5183,7 @@
       "answers": [
         0
       ],
-      "explanation": "ローテーションは、シークレットを定期的に更新するプロセスです。自動ローテーションを設定できます。",
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管し、ローテーションを自動化します。アプリケーションは API でシークレットを取得するので、設定ファイルに書く必要がなくなります。",
       "references": [
         {
           "title": "AWS Secrets Manager のシークレットのローテーション",
@@ -5211,7 +5211,7 @@
       "answers": [
         1
       ],
-      "explanation": "Secrets Manager は、シークレットを KMS の鍵で暗号化して保存します。",
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管し、ローテーションを自動化します。アプリケーションは API でシークレットを取得するので、設定ファイルに書く必要がなくなります。",
       "references": [
         {
           "title": "AWS Secrets Manager のシークレットのローテーション",
@@ -5275,7 +5275,7 @@
       "answers": [
         0
       ],
-      "explanation": "Macie は、S3 の機密データを検出し、データの分類と保護を助けます。",
+      "explanation": "GuardDuty の検出結果は、イベントとして EventBridge に送られます。ルールで重大度などを絞り込み、SNS での通知や Lambda での自動の対処につなげられます。",
       "references": [
         {
           "title": "Amazon Macie とは",
@@ -5303,7 +5303,7 @@
       "answers": [
         1
       ],
-      "explanation": "デフォルトでの暗号化は、有効にした後に新しく作るボリュームが対象です。既存のボリュームはスナップショットを暗号化してコピーし、作り直します。",
+      "explanation": "EBS のデフォルトでの暗号化は、リージョンごとの設定です。有効にすると、そのリージョンで新しく作る EBS ボリュームが自動的に暗号化されます。",
       "references": [
         {
           "title": "デフォルトでの EBS の暗号化",
@@ -5367,7 +5367,7 @@
       "answers": [
         0
       ],
-      "explanation": "CloudTrail には、拒否されたリクエストも AccessDenied などのエラーとして記録されます。",
+      "explanation": "IAM ポリシーシミュレーターを使うと、アイデンティティベースのポリシーやリソースベースのポリシーなどを、実際の操作なしでテストし、拒否の原因の記述を特定できます。",
       "references": [
         {
           "title": "AWS CloudTrail とは",
@@ -5395,7 +5395,7 @@
       "answers": [
         1
       ],
-      "explanation": "ポリシーシミュレーターは、組織に属するアカウントでは SCP の影響も含めてシミュレーションできます。",
+      "explanation": "IAM ポリシーシミュレーターを使うと、アイデンティティベースのポリシーやリソースベースのポリシーなどを、実際の操作なしでテストし、拒否の原因の記述を特定できます。",
       "references": [
         {
           "title": "IAM ポリシーシミュレーターを使用した IAM ポリシーのテスト",
@@ -5427,7 +5427,7 @@
       "answers": [
         0
       ],
-      "explanation": "グローバルなサービスのリクエストは特定のリージョンで処理されるので、除外の設定をしないと必要な操作まで拒否されることがあります。",
+      "explanation": "SCP の条件キー aws:RequestedRegion を使うと、許可したリージョン以外への API のリクエストを拒否できます。データの所在地の要件に対応する一般的な方法です。",
       "references": [
         {
           "title": "サービスコントロールポリシー (SCP)",
@@ -5455,7 +5455,7 @@
       "answers": [
         1
       ],
-      "explanation": "SCP はアクセス許可を与えません。操作には IAM ポリシーなどでの許可も必要です。",
+      "explanation": "SCP の条件キー aws:RequestedRegion を使うと、許可したリージョン以外への API のリクエストを拒否できます。データの所在地の要件に対応する一般的な方法です。",
       "references": [
         {
           "title": "サービスコントロールポリシー (SCP)",
@@ -5483,7 +5483,7 @@
       "answers": [
         1
       ],
-      "explanation": "パブリック NAT ゲートウェイはパブリックサブネットに作り、Elastic IP アドレスを関連付けます。",
+      "explanation": "NAT ゲートウェイを使うと、プライベートサブネットのインスタンスは VPC の外のサービスに接続できますが、外のサービスからインスタンスへの接続は受け付けません。",
       "references": [
         {
           "title": "NAT ゲートウェイ",
@@ -5511,7 +5511,7 @@
       "answers": [
         1
       ],
-      "explanation": "NAT ゲートウェイ経由でインスタンスから外に接続できますが、インターネットから求められていない接続は受け付けません。",
+      "explanation": "NAT ゲートウェイを使うと、プライベートサブネットのインスタンスは VPC の外のサービスに接続できますが、外のサービスからインスタンスへの接続は受け付けません。",
       "references": [
         {
           "title": "NAT ゲートウェイ",
@@ -5539,7 +5539,7 @@
       "answers": [
         1
       ],
-      "explanation": "Egress-Only インターネットゲートウェイは IPv6 専用です。IPv4 では NAT ゲートウェイを使います。",
+      "explanation": "Egress-Only インターネットゲートウェイは、IPv6 で VPC からインターネットへの外向きの通信を許可し、インターネットからインスタンスへの接続を防ぎます。",
       "references": [
         {
           "title": "Egress-Only インターネットゲートウェイ",
@@ -5567,7 +5567,7 @@
       "answers": [
         0
       ],
-      "explanation": "ステートフルなので、外向きの通信への応答はインスタンスに戻ります。",
+      "explanation": "Egress-Only インターネットゲートウェイは、IPv6 で VPC からインターネットへの外向きの通信を許可し、インターネットからインスタンスへの接続を防ぎます。",
       "references": [
         {
           "title": "Egress-Only インターネットゲートウェイ",
@@ -5631,7 +5631,7 @@
       "answers": [
         0
       ],
-      "explanation": "ゲートウェイエンドポイントを作るときに選んだルートテーブルに、サービスのプレフィックスリストへのルートが自動で追加されます。",
+      "explanation": "S3 と DynamoDB にはゲートウェイエンドポイントがあり、ルートテーブルに追加するだけで、インターネットを通さずにアクセスできます。ゲートウェイエンドポイントに追加の料金はかかりません。",
       "references": [
         {
           "title": "ゲートウェイエンドポイント",
@@ -5659,7 +5659,7 @@
       "answers": [
         0
       ],
-      "explanation": "プライベート DNS を有効にすると、アプリケーションのコードを変えずにエンドポイントを使えます。",
+      "explanation": "インターフェイス VPC エンドポイントは、サブネットに作られるネットワークインターフェイスを通して、AWS PrivateLink で AWS のサービスにプライベートに接続します。",
       "references": [
         {
           "title": "インターフェイス VPC エンドポイントを使用して AWS のサービスにアクセスする",
@@ -5687,7 +5687,7 @@
       "answers": [
         1
       ],
-      "explanation": "インターフェイスエンドポイントには、時間あたりとデータ処理の料金がかかります。ゲートウェイエンドポイントは追加料金なしです。",
+      "explanation": "インターフェイス VPC エンドポイントは、サブネットに作られるネットワークインターフェイスを通して、AWS PrivateLink で AWS のサービスにプライベートに接続します。",
       "references": [
         {
           "title": "ゲートウェイエンドポイント",
@@ -5715,7 +5715,7 @@
       "answers": [
         1
       ],
-      "explanation": "CIDR ブロックが重複している VPC 間では、ピアリング接続を作れません。",
+      "explanation": "VPC ピアリングは1対1の接続で、推移的なピアリングはサポートされません。多数の VPC やオンプレミスをつなぐなら、Transit Gateway をハブにすると管理が簡単になります。",
       "references": [
         {
           "title": "VPC ピアリングの制限",
@@ -5743,7 +5743,7 @@
       "answers": [
         0
       ],
-      "explanation": "ピアリング接続を作るだけでは通信できず、ルートテーブルにルートを追加します。",
+      "explanation": "VPC ピアリングは1対1の接続で、推移的なピアリングはサポートされません。多数の VPC やオンプレミスをつなぐなら、Transit Gateway をハブにすると管理が簡単になります。",
       "references": [
         {
           "title": "VPC ピアリングとは",
@@ -5775,7 +5775,7 @@
       "answers": [
         1
       ],
-      "explanation": "選ばれるのは、測定された遅延が最も小さいリージョンです。地理的に最も近いとは限りません。",
+      "explanation": "レイテンシーベースのルーティングは、複数のリージョンにリソースがあるとき、遅延が最も小さいリージョンに利用者を振り分けます。",
       "references": [
         {
           "title": "レイテンシーベースのルーティング",
@@ -5839,7 +5839,7 @@
       "answers": [
         0
       ],
-      "explanation": "重み0のレコードには、ほかに重みのあるレコードがある限り、通信は送られません。",
+      "explanation": "加重ルーティングでは、複数のリソースに、指定した割合で通信を振り分けられます。新しいバージョンのテストや段階的な移行に使えます。",
       "references": [
         {
           "title": "加重ルーティング",
@@ -5867,7 +5867,7 @@
       "answers": [
         1
       ],
-      "explanation": "加重ルーティングのレコードにもヘルスチェックを関連付けられ、異常なリソースには振り分けなくなります。",
+      "explanation": "加重ルーティングでは、複数のリソースに、指定した割合で通信を振り分けられます。新しいバージョンのテストや段階的な移行に使えます。",
       "references": [
         {
           "title": "加重ルーティング",
@@ -5895,7 +5895,7 @@
       "answers": [
         0
       ],
-      "explanation": "既定のレコードがないと、一致する場所のレコードがないクエリには応答が返りません。",
+      "explanation": "位置情報ルーティングは、利用者の場所に基づいて振り分けます。コンテンツのローカライズや、配信の権利による地域の制限などに使えます。",
       "references": [
         {
           "title": "位置情報ルーティング",
@@ -5959,7 +5959,7 @@
       "answers": [
         0
       ],
-      "explanation": "Resolver のクエリのログ記録で、VPC の DNS クエリを CloudWatch Logs・S3・Firehose に記録できます。",
+      "explanation": "Route 53 Resolver のエンドポイントを使うと、VPC とオンプレミスのネットワークの間で DNS の名前解決ができます。インバウンドは VPC への問い合わせを受け、アウトバウンドはルールに従ってオンプレミスに転送します。",
       "references": [
         {
           "title": "Route 53 Resolver のクエリのログ記録",
@@ -6023,7 +6023,7 @@
       "answers": [
         0
       ],
-      "explanation": "新しい名前のファイルはキャッシュにないので、オリジンから取得されます。どのバージョンを配信するかも管理しやすくなります。",
+      "explanation": "CloudFront は有効期限（TTL）が切れるまでキャッシュを返します。すぐに更新したい場合は無効化を作成します。頻繁に更新するなら、ファイル名にバージョンを入れる方法もあります。",
       "references": [
         {
           "title": "CloudFront のファイルの無効化",
@@ -6131,7 +6131,7 @@
       "answers": [
         0
       ],
-      "explanation": "ネットワーク ACL は、ルール番号の小さい順に評価し、一致したルールを適用します。",
+      "explanation": "ネットワーク ACL はステートレスなので、インバウンドの通信を許可しても、その応答のアウトバウンドの通信は自動では許可されません。応答はクライアントのエフェメラルポートに送られるので、そのポートの範囲を許可します。",
       "references": [
         {
           "title": "ネットワーク ACL",
@@ -6159,7 +6159,7 @@
       "answers": [
         0
       ],
-      "explanation": "Reachability Analyzer は設定の分析ツールで、到達できないときは原因の部分を特定します。",
+      "explanation": "Reachability Analyzer は、VPC の中のリソース間の到達可能性を、パケットを送らずに設定から分析します。到達できない場合は、原因になっている設定の部分を示します。",
       "references": [
         {
           "title": "VPC Reachability Analyzer とは",

@@ -2264,7 +2264,7 @@
       "answers": [
         1
       ],
-      "explanation": "クラウドでは需要に合わせて数分で増減できるので、事前の容量の見積もりに頼らなくてよくなります。",
+      "explanation": "クラウドでは、需要を予測して先に設備を買う代わりに、必要な分だけを使い、需要の変化に合わせて数分で増減できます。",
       "references": [
         {
           "title": "クラウドコンピューティングの 6 つのメリット",
@@ -2328,7 +2328,7 @@
       "answers": [
         0
       ],
-      "explanation": "多くの利用者の使用量が集まることで、AWS は高い規模の経済を実現し、料金を下げられます。",
+      "explanation": "何十万もの利用者の使用量が集まることで、AWS は自社だけで運用するより大きな規模の経済を実現し、その結果として従量課金の料金を下げられます。",
       "references": [
         {
           "title": "クラウドコンピューティングの 6 つのメリット",
@@ -2356,7 +2356,7 @@
       "answers": [
         1
       ],
-      "explanation": "データセンターの物理的な作業は AWS が行います。利用者は顧客に価値を届ける仕事に集中できます。",
+      "explanation": "何十万もの利用者の使用量が集まることで、AWS は自社だけで運用するより大きな規模の経済を実現し、その結果として従量課金の料金を下げられます。",
       "references": [
         {
           "title": "クラウドコンピューティングの 6 つのメリット",
@@ -2384,7 +2384,7 @@
       "answers": [
         0
       ],
-      "explanation": "世界中のリージョンに簡単にデプロイでき、利用者に低い遅延を提供できます。",
+      "explanation": "AWS は世界中にリージョンを持っているので、新しい地域へのデプロイが数分ででき、各地の利用者に低い遅延と良い体験を届けられます。",
       "references": [
         {
           "title": "クラウドコンピューティングの 6 つのメリット",
@@ -2448,7 +2448,7 @@
       "answers": [
         1
       ],
-      "explanation": "AZ は1つ以上のデータセンターで構成されます。",
+      "explanation": "リージョンは地理的な場所で、その中に互いに離れた複数の AZ があります。AZ は1つ以上のデータセンターからなり、1つの AZ の障害がほかの AZ に波及しにくいように作られています。",
       "references": [
         {
           "title": "グローバルインフラストラクチャ",
@@ -2480,7 +2480,7 @@
       "answers": [
         0
       ],
-      "explanation": "AZ は互いに独立しているので、複数の AZ に分けて配置すると可用性が上がります。",
+      "explanation": "リージョンは地理的な場所で、その中に互いに離れた複数の AZ があります。AZ は1つ以上のデータセンターからなり、1つの AZ の障害がほかの AZ に波及しにくいように作られています。",
       "references": [
         {
           "title": "グローバルインフラストラクチャ",
@@ -2552,7 +2552,7 @@
       "answers": [
         0
       ],
-      "explanation": "ロードバランサーはターゲットのヘルスチェックを行い、正常なターゲットにだけ通信を送ります。",
+      "explanation": "可用性を上げる基本は、リソースを複数の AZ に分散することです。Elastic Load Balancing は複数の AZ のターゲットに通信を振り分けられます。",
       "references": [
         {
           "title": "Elastic Load Balancing とは",
@@ -2584,7 +2584,7 @@
       "answers": [
         0
       ],
-      "explanation": "運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性の6つです。",
+      "explanation": "Well-Architected フレームワークの柱は、運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性の6つです。",
       "references": [
         {
           "title": "フレームワークの柱",
@@ -2648,7 +2648,7 @@
       "answers": [
         0
       ],
-      "explanation": "信頼性の柱は、ワークロードが意図した機能を正しく一貫して果たす能力を扱います。",
+      "explanation": "信頼性の柱は、期待されるときに意図した機能を正しく一貫して果たす能力を扱います。障害からの回復や、需要に応じたリソースの確保が含まれます。",
       "references": [
         {
           "title": "信頼性の柱",
@@ -2716,7 +2716,7 @@
       "answers": [
         0
       ],
-      "explanation": "AWS CAF は、ケイパビリティを6つのパースペクティブに分けています。",
+      "explanation": "AWS CAF には、ビジネス・人材・ガバナンス・プラットフォーム・セキュリティ・オペレーションの6つのパースペクティブがあります。人と組織の変化は人材のパースペクティブが扱います。",
       "references": [
         {
           "title": "AWS クラウド導入フレームワーク (AWS CAF) の概要",
@@ -2816,7 +2816,7 @@
       "answers": [
         1
       ],
-      "explanation": "リホストはアプリケーションを変更せずに移します。作り直すのはリファクタリングです。",
+      "explanation": "コードを変えずにそのまま移すのはリホスト（リフト＆シフト）です。早く移行でき、移行後に最適化を進めることもできます。",
       "references": [
         {
           "title": "移行戦略",
@@ -2844,7 +2844,7 @@
       "answers": [
         0
       ],
-      "explanation": "アプリケーションの中心は変えずに、マネージドサービスに移して最適化するのがリプラットフォームです。",
+      "explanation": "コードは変えずに、マネージドなデータベースに移して運用の手間を減らすのはリプラットフォーム（リフト・ティンカー＆シフト）です。",
       "references": [
         {
           "title": "移行戦略",
@@ -2912,7 +2912,7 @@
       "answers": [
         1
       ],
-      "explanation": "リファクタリングは設計を作り直すので、時間と手間が最もかかりやすい戦略です。その分、クラウドの利点を最も生かせます。",
+      "explanation": "拡張性や俊敏性を上げるために、マイクロサービスやサーバーレスなどへ設計を作り直すのはリファクタリング（リアーキテクト）です。",
       "references": [
         {
           "title": "移行戦略",
@@ -2976,7 +2976,7 @@
       "answers": [
         1
       ],
-      "explanation": "DMS は、同じエンジンどうしの移行にも、違うエンジンどうしの移行にも使えます。",
+      "explanation": "データベースのエンジンが変わる移行（異種移行）では、SCT でスキーマを変換し、DMS でデータを移行します。",
       "references": [
         {
           "title": "AWS Schema Conversion Tool とは",
@@ -3044,7 +3044,7 @@
       "answers": [
         0
       ],
-      "explanation": "需要の増減に合わせてリソースを調整できる性質を伸縮性と呼びます。",
+      "explanation": "需要に合わせてリソースを増減できることを伸縮性（エラスティシティ）と呼びます。EC2 Auto Scaling は、需要に応じてインスタンスの台数を自動で調整します。",
       "references": [
         {
           "title": "Amazon EC2 Auto Scaling とは",
@@ -3072,7 +3072,7 @@
       "answers": [
         0
       ],
-      "explanation": "Auto Scaling はインスタンスのヘルスチェックを行い、異常なインスタンスを置き換えて台数を保ちます。",
+      "explanation": "需要に合わせてリソースを増減できることを伸縮性（エラスティシティ）と呼びます。EC2 Auto Scaling は、需要に応じてインスタンスの台数を自動で調整します。",
       "references": [
         {
           "title": "Amazon EC2 Auto Scaling とは",
@@ -3100,7 +3100,7 @@
       "answers": [
         0
       ],
-      "explanation": "License Manager は、AWS とオンプレミスでのライセンスの利用状況を管理するサービスです。",
+      "explanation": "クラウドでは、データセンターやサーバーへの先行投資（設備投資）が不要になり、使った分だけの支払い（運用費）に変わります。",
       "references": [
         {
           "title": "クラウドコンピューティングの 6 つのメリット",
@@ -3172,7 +3172,7 @@
       "answers": [
         0
       ],
-      "explanation": "リソースを数分で用意できることで、組織の俊敏性が大きく上がります。",
+      "explanation": "クラウドでは新しいリソースをすぐに用意できるので、実験にかかる費用と時間が大きく下がり、組織の俊敏性が上がります。",
       "references": [
         {
           "title": "クラウドコンピューティングの 6 つのメリット",
@@ -3236,7 +3236,7 @@
       "answers": [
         1
       ],
-      "explanation": "物理的なハードウェアの保守は AWS の責任です（責任共有モデル）。",
+      "explanation": "EC2 なら物理サーバーの調達・設置・保守は AWS が行います。アプリケーションに手を加えずに移すのはリホストです。",
       "references": [
         {
           "title": "責任共有モデル",
@@ -3300,7 +3300,7 @@
       "answers": [
         0
       ],
-      "explanation": "AWS はクラウドを構成する基盤を守り、利用者はクラウドに置くデータや設定を守ります。",
+      "explanation": "AWS は「クラウドのセキュリティ」（ハードウェア・ソフトウェア・ネットワーク・施設）に責任を持ち、利用者は「クラウドにおけるセキュリティ」に責任を持ちます。EC2 のようなサービスでは、ゲスト OS のパッチ適用も利用者の責任です。",
       "references": [
         {
           "title": "責任共有モデル",
@@ -3328,7 +3328,7 @@
       "answers": [
         1
       ],
-      "explanation": "セキュリティグループ（AWS が提供するファイアウォール）の設定は利用者の責任です。",
+      "explanation": "AWS は「クラウドのセキュリティ」（ハードウェア・ソフトウェア・ネットワーク・施設）に責任を持ち、利用者は「クラウドにおけるセキュリティ」に責任を持ちます。EC2 のようなサービスでは、ゲスト OS のパッチ適用も利用者の責任です。",
       "references": [
         {
           "title": "責任共有モデル",
@@ -3356,7 +3356,7 @@
       "answers": [
         0
       ],
-      "explanation": "EC2 のようなサービスは利用者の範囲が広く、マネージドサービスでは AWS の範囲が広くなります。",
+      "explanation": "マネージドサービスでは AWS が担う範囲が広がり、OS やデータベースのソフトウェアのパッチ適用も AWS が行います。それでも、データとアクセス許可の管理は利用者の責任です。",
       "references": [
         {
           "title": "責任共有モデル",
@@ -3388,7 +3388,7 @@
       "answers": [
         1
       ],
-      "explanation": "どのサービスでも、データとそのアクセス許可の管理は利用者の責任です。",
+      "explanation": "マネージドサービスでは AWS が担う範囲が広がり、OS やデータベースのソフトウェアのパッチ適用も AWS が行います。それでも、データとアクセス許可の管理は利用者の責任です。",
       "references": [
         {
           "title": "責任共有モデル",
@@ -3420,7 +3420,7 @@
       "answers": [
         1
       ],
-      "explanation": "Lambda では、基盤のサーバーと OS の管理は AWS が行います。",
+      "explanation": "Lambda はサーバーレスなので、利用者は OS やランタイムを管理しません。利用者の責任は、コード、アクセス許可、データの扱いに絞られます。",
       "references": [
         {
           "title": "Lambda のセキュリティ",
@@ -3488,7 +3488,7 @@
       "answers": [
         1
       ],
-      "explanation": "ルートユーザーは、ルートユーザーでしかできない作業にだけ使い、日常の作業には使いません。",
+      "explanation": "ルートユーザーは、アカウントの解約やアカウントの設定の変更など、ごく一部の作業にだけ使います。日常の作業には使いません。",
       "references": [
         {
           "title": "AWS アカウントのルートユーザーのベストプラクティス",
@@ -3516,7 +3516,7 @@
       "answers": [
         0
       ],
-      "explanation": "ルートユーザーの認証情報を守るため、MFA を有効にすることが推奨されています。",
+      "explanation": "ルートユーザーは、アカウントの解約やアカウントの設定の変更など、ごく一部の作業にだけ使います。日常の作業には使いません。",
       "references": [
         {
           "title": "AWS アカウントのルートユーザーのベストプラクティス",
@@ -3544,7 +3544,7 @@
       "answers": [
         1
       ],
-      "explanation": "ルートユーザーのアクセスキーは作らないことが推奨されています。プログラムからの操作には IAM ロールなどを使います。",
+      "explanation": "ルートユーザーには MFA を設定し、アクセスキーは作らず、日常の作業には使いません。",
       "references": [
         {
           "title": "AWS アカウントのルートユーザーのベストプラクティス",
@@ -3608,7 +3608,7 @@
       "answers": [
         0
       ],
-      "explanation": "必要な操作だけを許可することで、誤操作や悪用の影響を小さくできます。",
+      "explanation": "IAM では、作業に必要なアクセス許可だけを与える「最小権限」が基本です。使われていない権限は定期的に見直して削ります。",
       "references": [
         {
           "title": "IAM でのセキュリティのベストプラクティス",
@@ -3636,7 +3636,7 @@
       "answers": [
         1
       ],
-      "explanation": "人のアクセスには、ID フェデレーションなどで一時的な認証情報を使うことが推奨されています。",
+      "explanation": "IAM では、作業に必要なアクセス許可だけを与える「最小権限」が基本です。使われていない権限は定期的に見直して削ります。",
       "references": [
         {
           "title": "IAM でのセキュリティのベストプラクティス",
@@ -3664,7 +3664,7 @@
       "answers": [
         0
       ],
-      "explanation": "アプリケーションはインスタンスから一時的な認証情報を受け取り、それを使って AWS にアクセスします。",
+      "explanation": "EC2 上のアプリケーションには IAM ロールを使います。インスタンスに一時的な認証情報が自動で提供され、定期的に更新されます。",
       "references": [
         {
           "title": "IAM ロールを使用して EC2 インスタンス上のアプリケーションにアクセス許可を付与する",
@@ -3764,7 +3764,7 @@
       "answers": [
         0
       ],
-      "explanation": "IAM アイデンティティセンターは、複数のアカウントへのシングルサインオンを提供します。",
+      "explanation": "IAM アイデンティティセンターは、組織の社員などの AWS アカウントやアプリケーションへのアクセスを一元管理するサービスです。",
       "references": [
         {
           "title": "IAM アイデンティティセンターとは",
@@ -3792,7 +3792,7 @@
       "answers": [
         1
       ],
-      "explanation": "AWS Artifact のレポートは無料で、必要なときにダウンロードできます。",
+      "explanation": "AWS Artifact では、AWS の SOC レポートや ISO 認証などのコンプライアンスのレポートや、AWS との契約（例：BAA）を入手できます。",
       "references": [
         {
           "title": "AWS Artifact とは",
@@ -3824,7 +3824,7 @@
       "answers": [
         1
       ],
-      "explanation": "AWS の認証は AWS の基盤についてのものです。利用者のアプリケーションのコンプライアンスは、責任共有モデルに沿って利用者が対応します。",
+      "explanation": "AWS Artifact では、AWS の SOC レポートや ISO 認証などのコンプライアンスのレポートや、AWS との契約（例：BAA）を入手できます。",
       "references": [
         {
           "title": "責任共有モデル",
@@ -3852,7 +3852,7 @@
       "answers": [
         1
       ],
-      "explanation": "自動で無料適用されるのは Shield Standard です。Shield Advanced は有料のサービスです。",
+      "explanation": "AWS Shield Standard は追加料金なしですべての利用者に自動で適用されます。より高度な保護が必要なら Shield Advanced を契約します。",
       "references": [
         {
           "title": "AWS Shield の仕組み",
@@ -3916,7 +3916,7 @@
       "answers": [
         0
       ],
-      "explanation": "WAF は CloudFront・ALB・API Gateway などのリソースを保護できます。",
+      "explanation": "AWS WAF は、CloudFront・ALB・API Gateway などへの HTTP(S) リクエストを監視し、ルールに合うものをブロックできます。",
       "references": [
         {
           "title": "AWS WAF",
@@ -3988,7 +3988,7 @@
       "answers": [
         1
       ],
-      "explanation": "GuardDuty は CloudTrail や VPC フローログなどのデータソースを AWS 側で分析するので、基本の検出に利用者がログを送る設定はいりません。",
+      "explanation": "GuardDuty は、ログなどを機械学習や脅威インテリジェンスで分析し、不審な活動や悪意のある活動を継続的に検出する脅威検出サービスです。",
       "references": [
         {
           "title": "Amazon GuardDuty とは",
@@ -4052,7 +4052,7 @@
       "answers": [
         0
       ],
-      "explanation": "Inspector は EC2・ECR のコンテナイメージ・Lambda 関数を対象にスキャンします。",
+      "explanation": "Amazon Inspector は、ワークロードのソフトウェアの脆弱性と、意図しないネットワークの露出を自動で継続的に調べる脆弱性管理サービスです。",
       "references": [
         {
           "title": "Amazon Inspector とは",
@@ -4116,7 +4116,7 @@
       "answers": [
         0
       ],
-      "explanation": "Macie は S3 のデータを対象に、個人情報などの機密データを見つけます。",
+      "explanation": "Amazon Macie は、S3 の機密データを検出・保護するためのデータセキュリティサービスです。",
       "references": [
         {
           "title": "Amazon Macie とは",
@@ -4180,7 +4180,7 @@
       "answers": [
         0
       ],
-      "explanation": "KMS は多くの AWS サービスと統合されており、保存データの暗号化に使えます。",
+      "explanation": "AWS KMS は、データを守るための暗号化の鍵を作成・管理するサービスです。S3 や EBS などのサービスと統合されています。",
       "references": [
         {
           "title": "AWS のサービスでの AWS KMS の使用",
@@ -4244,7 +4244,7 @@
       "answers": [
         0
       ],
-      "explanation": "アプリケーションは実行時に Secrets Manager からシークレットを取得します。",
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを一元管理し、アプリケーションは API で取得します。自動のローテーションもできます。",
       "references": [
         {
           "title": "AWS Secrets Manager とは",
@@ -4308,7 +4308,7 @@
       "answers": [
         1
       ],
-      "explanation": "操作の履歴は CloudTrail で記録します。CloudWatch のメトリクスは性能などの数値の監視に使います。",
+      "explanation": "CloudTrail は、コンソール・CLI・SDK などからの操作を記録し、誰がいつ何をしたかを監査できるようにします。",
       "references": [
         {
           "title": "AWS CloudTrail とは",
@@ -4372,7 +4372,7 @@
       "answers": [
         1
       ],
-      "explanation": "セキュリティグループは許可のルールだけを書きます。拒否のルールはネットワーク ACL で書けます。",
+      "explanation": "セキュリティグループはリソース（インスタンスなど）に付けるステートフルなファイアウォールで、許可のルールだけを書きます。ネットワーク ACL はサブネットに付けるステートレスなファイアウォールで、許可と拒否を書けます。",
       "references": [
         {
           "title": "セキュリティグループのルール",
@@ -4404,7 +4404,7 @@
       "answers": [
         0
       ],
-      "explanation": "ネットワーク ACL はサブネット単位で働きます。",
+      "explanation": "セキュリティグループはリソース（インスタンスなど）に付けるステートフルなファイアウォールで、許可のルールだけを書きます。ネットワーク ACL はサブネットに付けるステートレスなファイアウォールで、許可と拒否を書けます。",
       "references": [
         {
           "title": "セキュリティグループ",
@@ -4436,7 +4436,7 @@
       "answers": [
         1
       ],
-      "explanation": "SCP はアクセス許可を与えません。使えるアクセス許可の上限（ガードレール）を決めるだけです。",
+      "explanation": "SCP は、組織内のアカウントで使えるアクセス許可の上限を決めるポリシーです。アカウントの管理者も含め、SCP で拒否された操作はできません。",
       "references": [
         {
           "title": "サービスコントロールポリシー (SCP)",
@@ -4500,7 +4500,7 @@
       "answers": [
         1
       ],
-      "explanation": "Direct Connect はインターネットを経由しない専用の接続です。",
+      "explanation": "Direct Connect は、オンプレミスと AWS を標準のイーサネットの光ファイバーケーブルでつなぐ専用の接続です。インターネットを経由しないので、帯域や遅延が安定します。",
       "references": [
         {
           "title": "AWS Direct Connect とは",
@@ -4528,7 +4528,7 @@
       "answers": [
         1
       ],
-      "explanation": "専用の接続は物理的な回線の手配が必要なので、使えるまでに時間がかかります。すぐに使いたいなら Site-to-Site VPN が向いています。",
+      "explanation": "Direct Connect は、オンプレミスと AWS を標準のイーサネットの光ファイバーケーブルでつなぐ専用の接続です。インターネットを経由しないので、帯域や遅延が安定します。",
       "references": [
         {
           "title": "AWS Site-to-Site VPN とは",
@@ -4556,7 +4556,7 @@
       "answers": [
         0
       ],
-      "explanation": "Site-to-Site VPN は IPsec で通信を暗号化します。",
+      "explanation": "Site-to-Site VPN は、インターネットを経由した暗号化された接続で、オンプレミスと VPC をつなぎます。専用線より早く安く始められます。",
       "references": [
         {
           "title": "AWS Site-to-Site VPN とは",
@@ -4620,7 +4620,7 @@
       "answers": [
         0
       ],
-      "explanation": "リクエストは、遅延が最も小さいエッジロケーションに送られます。",
+      "explanation": "CloudFront は、エッジロケーションと呼ばれる世界中のデータセンターからコンテンツを配信し、利用者に届くまでの遅延を小さくします。",
       "references": [
         {
           "title": "Amazon CloudFront とは",
@@ -4684,7 +4684,7 @@
       "answers": [
         1
       ],
-      "explanation": "Lambda は使った計算時間に対して料金がかかり、実行していない間は料金がかかりません。",
+      "explanation": "Lambda はサーバーレスのコンピューティングサービスです。イベントに応じてコードを実行し、実行した分だけ料金がかかります。",
       "references": [
         {
           "title": "AWS Lambda とは",
@@ -4712,7 +4712,7 @@
       "answers": [
         0
       ],
-      "explanation": "Lambda はリクエストの量に合わせて自動でスケールします。",
+      "explanation": "Lambda はサーバーレスのコンピューティングサービスです。イベントに応じてコードを実行し、実行した分だけ料金がかかります。",
       "references": [
         {
           "title": "AWS Lambda とは",
@@ -4812,7 +4812,7 @@
       "answers": [
         0
       ],
-      "explanation": "Elastic Beanstalk に追加料金はなく、作成されたリソースの分だけ支払います。",
+      "explanation": "Elastic Beanstalk は、アプリケーションをアップロードするだけで、デプロイ・容量の用意・負荷分散・Auto Scaling を自動で扱います。必要なら裏側のリソースも操作できます。",
       "references": [
         {
           "title": "AWS Elastic Beanstalk とは",
@@ -4840,7 +4840,7 @@
       "answers": [
         1
       ],
-      "explanation": "Elastic Beanstalk は自動で管理しますが、裏側のリソースの設定を変えることもできます。",
+      "explanation": "Elastic Beanstalk は、アプリケーションをアップロードするだけで、デプロイ・容量の用意・負荷分散・Auto Scaling を自動で扱います。必要なら裏側のリソースも操作できます。",
       "references": [
         {
           "title": "AWS Elastic Beanstalk とは",
@@ -4868,7 +4868,7 @@
       "answers": [
         0
       ],
-      "explanation": "Lightsail は、簡単に始められることを重視したサービスです。",
+      "explanation": "Lightsail は、Web サイトなどを簡単に始めるための、仮想サーバーなどをわかりやすい料金で提供するサービスです。",
       "references": [
         {
           "title": "Amazon Lightsail とは",
@@ -4932,7 +4932,7 @@
       "answers": [
         0
       ],
-      "explanation": "Outposts は、AWS のインフラを利用者の施設に持ち込むサービスです。",
+      "explanation": "Outposts は、AWS が管理するラックなどを利用者の施設に置き、低い遅延やデータの所在地の要件に応えます。",
       "references": [
         {
           "title": "AWS Outposts とは",
@@ -4996,7 +4996,7 @@
       "answers": [
         0
       ],
-      "explanation": "EBS ボリュームは特定の AZ に作られ、同じ AZ のインスタンスにアタッチします。",
+      "explanation": "EBS は EC2 インスタンスにアタッチするブロックストレージで、OS の起動用のボリュームやデータベースのデータ置き場に使います。",
       "references": [
         {
           "title": "Amazon EBS とは",
@@ -5068,7 +5068,7 @@
       "answers": [
         1
       ],
-      "explanation": "EFS の容量は、ファイルの追加・削除に合わせて自動で増減します。",
+      "explanation": "EFS は、複数の EC2 インスタンスなどから共有できるフルマネージドのファイルストレージです。容量は自動で伸び縮みします。",
       "references": [
         {
           "title": "Amazon EFS とは",
@@ -5132,7 +5132,7 @@
       "answers": [
         0
       ],
-      "explanation": "静的なウェブサイトのページは静的なコンテンツからなり、クライアントサイドのスクリプトを含めることもできます。サーバー側で処理を動かすことはできません。",
+      "explanation": "S3 の静的ウェブサイトホスティングを使うと、HTML や画像などの静的なコンテンツを、サーバーなしで公開できます。",
       "references": [
         {
           "title": "Amazon S3 を使用して静的ウェブサイトをホスティングする",
@@ -5232,7 +5232,7 @@
       "answers": [
         0
       ],
-      "explanation": "S3 Standard などは、最低3つの AZ にデータを保存します。",
+      "explanation": "S3 Glacier Deep Archive は、年に1〜2回程度しかアクセスしないデータを長期保存するための、最も低いコストのストレージクラスです。",
       "references": [
         {
           "title": "Amazon S3 のストレージクラス",
@@ -5260,7 +5260,7 @@
       "answers": [
         0
       ],
-      "explanation": "Storage Gateway は、オンプレミスの環境と AWS のストレージをつなぎます。",
+      "explanation": "Storage Gateway は、オンプレミスと AWS のストレージをつなぐハイブリッドのストレージサービスです。S3 File Gateway では、ファイル共有を通して S3 にデータを保存します。",
       "references": [
         {
           "title": "Amazon S3 File Gateway とは",
@@ -5360,7 +5360,7 @@
       "answers": [
         0
       ],
-      "explanation": "リードレプリカに読み取りのクエリを振り分けることで、元の DB インスタンスの負荷を減らせます。",
+      "explanation": "表を結合し、トランザクションで整合性を保つ用途にはリレーショナルデータベースが向いています。RDS なら運用の多くを AWS に任せられます。",
       "references": [
         {
           "title": "DB インスタンスのリードレプリカ",
@@ -5388,7 +5388,7 @@
       "answers": [
         1
       ],
-      "explanation": "DynamoDB はサーバーレスなので、サーバーの管理やパッチ適用は不要です。",
+      "explanation": "DynamoDB は、サーバーレスでフルマネージドの NoSQL データベースです。キーによる読み書きを、どの規模でも一桁ミリ秒で処理できます。",
       "references": [
         {
           "title": "Amazon DynamoDB とは",
@@ -5452,7 +5452,7 @@
       "answers": [
         1
       ],
-      "explanation": "Redshift は分析のためのデータウェアハウスです。日々のトランザクション処理には RDS などを使います。",
+      "explanation": "Redshift はデータウェアハウスのサービスで、大量のデータに対する分析のクエリを高速に実行できます。",
       "references": [
         {
           "title": "Amazon Redshift とは",
@@ -5516,7 +5516,7 @@
       "answers": [
         0
       ],
-      "explanation": "よく使うデータをキャッシュから返すことで、データベースへの問い合わせが減ります。",
+      "explanation": "ElastiCache は、Valkey・Memcached・Redis OSS と互換性のあるインメモリのキャッシュです。データベースの前に置くと、応答が速くなります。",
       "references": [
         {
           "title": "Amazon ElastiCache とは",
@@ -5544,7 +5544,7 @@
       "answers": [
         0
       ],
-      "explanation": "ElastiCache はインメモリのデータストアで、ミリ秒未満の応答を実現できます。",
+      "explanation": "ElastiCache は、Valkey・Memcached・Redis OSS と互換性のあるインメモリのキャッシュです。データベースの前に置くと、応答が速くなります。",
       "references": [
         {
           "title": "Amazon ElastiCache とは",
@@ -5572,7 +5572,7 @@
       "answers": [
         0
       ],
-      "explanation": "VPC は、従来のデータセンターのネットワークに近い、自分専用の仮想ネットワークです。",
+      "explanation": "サブネットは、インターネットゲートウェイへのルートがあればパブリック、なければプライベートと呼ばれます。データベースはプライベートサブネットに置くのが基本です。",
       "references": [
         {
           "title": "Amazon VPC とは",
@@ -5600,7 +5600,7 @@
       "answers": [
         1
       ],
-      "explanation": "サブネットは1つの AZ の中に作ります。",
+      "explanation": "サブネットは、インターネットゲートウェイへのルートがあればパブリック、なければプライベートと呼ばれます。データベースはプライベートサブネットに置くのが基本です。",
       "references": [
         {
           "title": "VPC のサブネット",
@@ -5632,7 +5632,7 @@
       "answers": [
         0
       ],
-      "explanation": "Route 53 はヘルスチェックの結果をもとに、正常なリソースに通信を向けられます。",
+      "explanation": "Route 53 は、ドメインの登録・DNS の名前解決・ヘルスチェックができる、可用性と拡張性の高い DNS のサービスです。",
       "references": [
         {
           "title": "Amazon Route 53 とは",
@@ -5912,7 +5912,7 @@
       "answers": [
         0
       ],
-      "explanation": "スポットインスタンスは、AWS がその容量を必要とすると中断されます。",
+      "explanation": "スポットインスタンスは、使われていない EC2 の容量を大幅な割引で使えるオプションです。AWS が容量を必要とすると中断されるため、中断しても困らない処理に使います。",
       "references": [
         {
           "title": "Amazon EC2 スポットインスタンス",
@@ -5940,7 +5940,7 @@
       "answers": [
         1
       ],
-      "explanation": "中断されることがあるので、止められないワークロードには向きません。中断に耐えられるバッチ処理などに向いています。",
+      "explanation": "スポットインスタンスは、使われていない EC2 の容量を大幅な割引で使えるオプションです。AWS が容量を必要とすると中断されるため、中断しても困らない処理に使います。",
       "references": [
         {
           "title": "Amazon EC2 スポットインスタンス",
@@ -5968,7 +5968,7 @@
       "answers": [
         0
       ],
-      "explanation": "Savings Plans は、一定の利用量（$/時間）を1年か3年約束することで割引を受ける料金モデルです。",
+      "explanation": "長期間、安定して使うことがわかっているなら、Savings Plans（またはリザーブドインスタンス）で利用量を約束すると、オンデマンドより大きく割引されます。",
       "references": [
         {
           "title": "Savings Plans とは",
@@ -6036,7 +6036,7 @@
       "answers": [
         1
       ],
-      "explanation": "オンデマンドは長期の約束なしに、使った分だけ支払います。",
+      "explanation": "短期間・使う期間が読めない・中断されては困る、という場合はオンデマンドが向いています。前払いや長期の約束は要りません。",
       "references": [
         {
           "title": "インスタンス購入オプション",
@@ -6064,7 +6064,7 @@
       "answers": [
         0
       ],
-      "explanation": "インターネットから EC2 へのデータ転送（IN）は無料です。外向きのデータ転送には料金がかかります。",
+      "explanation": "短期間・使う期間が読めない・中断されては困る、という場合はオンデマンドが向いています。前払いや長期の約束は要りません。",
       "references": [
         {
           "title": "Amazon EC2 オンデマンド料金（データ転送）",
@@ -6092,7 +6092,7 @@
       "answers": [
         0
       ],
-      "explanation": "Budgets は、実績の費用と予測の費用のどちらにもアラートを設定できます。",
+      "explanation": "AWS Budgets では、費用や使用量の予算を決め、実績や予測がしきい値を超えたときにアラートを送れます。",
       "references": [
         {
           "title": "AWS Budgets を使用したコストの管理",
@@ -6228,7 +6228,7 @@
       "answers": [
         0
       ],
-      "explanation": "一括請求では、複数のアカウントの料金を1つの請求書で支払います。",
+      "explanation": "Organizations の一括請求では、管理アカウントが組織内のすべてのアカウントの料金を支払います。利用量が合算されるので、ボリューム料金の割引を受けやすくなります。",
       "references": [
         {
           "title": "一括請求",
@@ -6256,7 +6256,7 @@
       "answers": [
         1
       ],
-      "explanation": "一括請求に追加の料金はかかりません。",
+      "explanation": "Organizations の一括請求では、管理アカウントが組織内のすべてのアカウントの料金を支払います。利用量が合算されるので、ボリューム料金の割引を受けやすくなります。",
       "references": [
         {
           "title": "一括請求",
@@ -6284,7 +6284,7 @@
       "answers": [
         0
       ],
-      "explanation": "Trusted Advisor は、ベストプラクティスをもとに環境を調べ、推奨事項を示します。ベーシックサポートでも、サービスの制限のチェックと、一部のセキュリティ・耐障害性のチェックが使えます。",
+      "explanation": "ベーシックサポートは全利用者に含まれ、24時間のカスタマーサービス、ドキュメントや re:Post、Trusted Advisor の主要なチェック、AWS Health Dashboard を使えます。",
       "references": [
         {
           "title": "AWS Trusted Advisor",
@@ -6348,7 +6348,7 @@
       "answers": [
         1
       ],
-      "explanation": "指定の TAM は Enterprise Support 以上のプランで提供されます。",
+      "explanation": "本番システムの停止に1時間未満の応答が必要なら、Business Support+ 以上のプランを選びます（従来の Business サポートの後継のプランで、Business サポートは2027年1月1日に終了予定です）。指定のテクニカルアカウントマネージャーが必要なら Enterprise Support 以上です。",
       "references": [
         {
           "title": "AWS サポートプランの比較",

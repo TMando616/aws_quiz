@@ -2302,7 +2302,7 @@
       "answers": [
         0
       ],
-      "explanation": "プロキシ統合では、API Gateway がリクエスト全体を関数への入力として渡し、関数の出力を HTTP のレスポンスに変換します。",
+      "explanation": "呼び出し元がその場で結果を必要とし、処理が短いなら同期のパターン（API Gateway → Lambda）を使います。時間がかかる処理や、呼び出し元が結果を待たなくてよい処理は非同期にします。",
       "references": [
         {
           "title": "Lambda プロキシ統合",
@@ -2330,7 +2330,7 @@
       "answers": [
         1
       ],
-      "explanation": "API Gateway の統合にはタイムアウトがあり、長時間の処理は同期では返せません。時間がかかる処理は非同期にします。",
+      "explanation": "呼び出し元がその場で結果を必要とし、処理が短いなら同期のパターン（API Gateway → Lambda）を使います。時間がかかる処理や、呼び出し元が結果を待たなくてよい処理は非同期にします。",
       "references": [
         {
           "title": "API Gateway のリクエストのスロットリング",
@@ -2358,7 +2358,7 @@
       "answers": [
         0
       ],
-      "explanation": "イベントソースマッピングを使うと、関数がバッチを正常に処理したあと、Lambda がメッセージを削除します。",
+      "explanation": "時間のかかる処理は SQS で切り離す（非同期・疎結合にする）と、受付側はすぐに応答でき、処理側は自分のペースで処理できます。処理に失敗したメッセージはキューに戻り、再試行されます。",
       "references": [
         {
           "title": "Lambda で Amazon SQS を使う",
@@ -2422,7 +2422,7 @@
       "answers": [
         0
       ],
-      "explanation": "ルールに一致したイベントを、複数のターゲットに送れます。",
+      "explanation": "EventBridge は、イベントをイベントパターンで絞り込み、一致したものを複数のターゲットに配信します。イベント駆動の疎結合な構成にできます。",
       "references": [
         {
           "title": "Amazon EventBridge のルール",
@@ -2494,7 +2494,7 @@
       "answers": [
         0
       ],
-      "explanation": "可視性タイムアウトの間は、ほかの受信者がそのメッセージを受け取れません。",
+      "explanation": "可視性タイムアウトは、受信したメッセージをほかの受信者から見えなくしておく時間です。処理が終わる前にタイムアウトすると、メッセージがまた配信されて重複します。Lambda と使う場合は、関数のタイムアウトより長くします。",
       "references": [
         {
           "title": "Amazon SQS の可視性タイムアウト",
@@ -2526,7 +2526,7 @@
       "answers": [
         1
       ],
-      "explanation": "SQS は受信しただけではメッセージを削除しません。受信者が処理後に削除します（Lambda のイベントソースマッピングでは Lambda が削除します）。",
+      "explanation": "可視性タイムアウトは、受信したメッセージをほかの受信者から見えなくしておく時間です。処理が終わる前にタイムアウトすると、メッセージがまた配信されて重複します。Lambda と使う場合は、関数のタイムアウトより長くします。",
       "references": [
         {
           "title": "Amazon SQS の可視性タイムアウト",
@@ -2558,7 +2558,7 @@
       "answers": [
         0
       ],
-      "explanation": "メッセージがデッドレターキューに移っても期限切れで消えないよう、保持期間は元のキューより長くします。",
+      "explanation": "デッドレターキューを使うと、指定した回数受信しても処理に成功しないメッセージを、元のキューから移して隔離できます。",
       "references": [
         {
           "title": "Amazon SQS のデッドレターキューの使用",
@@ -2586,7 +2586,7 @@
       "answers": [
         0
       ],
-      "explanation": "デッドレターキューの再処理（redrive）で、メッセージを元のキューなどに戻せます。",
+      "explanation": "デッドレターキューを使うと、指定した回数受信しても処理に成功しないメッセージを、元のキューから移して隔離できます。",
       "references": [
         {
           "title": "Amazon SQS のデッドレターキューの使用",
@@ -2614,7 +2614,7 @@
       "answers": [
         0
       ],
-      "explanation": "ショートポーリングは一部のサーバーだけを調べるので、メッセージがあっても空の応答が返ることがあります。",
+      "explanation": "ロングポーリングは、メッセージが届くか待機時間が過ぎるまで応答を待つので、空の応答と誤った空の応答を減らし、費用を下げられます。",
       "references": [
         {
           "title": "Amazon SQS のショートポーリングとロングポーリング",
@@ -2678,7 +2678,7 @@
       "answers": [
         1
       ],
-      "explanation": "標準キューはベストエフォートの順番で、まれに重複して届くこともあります。順番が必要なら FIFO キューを使います。",
+      "explanation": "FIFO キューは、メッセージグループごとに送った順番を守り、重複排除 ID で重複したメッセージを取り除きます。グループを分ければ、別の口座どうしは並行して処理できます。",
       "references": [
         {
           "title": "Amazon SQS FIFO キュー",
@@ -2742,7 +2742,7 @@
       "answers": [
         1
       ],
-      "explanation": "フィルターポリシーは購読（サブスクリプション）ごとに設定し、購読者が受け取るメッセージを絞ります。",
+      "explanation": "SNS のトピックを複数の SQS キューで購読させる「ファンアウト」で、1つのメッセージを並行して処理させられます。購読ごとのフィルターポリシーで、必要なメッセージだけを届けられます。",
       "references": [
         {
           "title": "Amazon SNS のメッセージフィルタリング",
@@ -2770,7 +2770,7 @@
       "answers": [
         0
       ],
-      "explanation": "SNS はプッシュ型、SQS はポーリングで取りに行くプル型です。",
+      "explanation": "SNS のトピックを複数の SQS キューで購読させる「ファンアウト」で、1つのメッセージを並行して処理させられます。購読ごとのフィルターポリシーで、必要なメッセージだけを届けられます。",
       "references": [
         {
           "title": "Amazon SQS キューへの Amazon SNS メッセージのファンアウト",
@@ -2802,7 +2802,7 @@
       "answers": [
         0
       ],
-      "explanation": "SDK は一時的なエラーを再試行し、再試行のモードや最大の試行回数を設定できます。",
+      "explanation": "一時的なエラー（スロットリングなど）は、指数バックオフとジッターで再試行するのが基本です。AWS SDK には再試行の仕組みが組み込まれていて、最大の試行回数などを設定できます。",
       "references": [
         {
           "title": "AWS SDK の再試行の動作",
@@ -2866,7 +2866,7 @@
       "answers": [
         0
       ],
-      "explanation": "検証に失敗すると、API Gateway はすぐにエラーの応答を返します。",
+      "explanation": "API Gateway のリクエストの検証では、必須のパラメータやボディのモデルを検証し、失敗したリクエストを統合先に送らずに拒否できます。",
       "references": [
         {
           "title": "API Gateway でのリクエストの検証",
@@ -2930,7 +2930,7 @@
       "answers": [
         0
       ],
-      "explanation": "ストリームの容量はシャードの数で決まります（プロビジョンドモード）。",
+      "explanation": "Kinesis Data Streams では、パーティションキーでレコードをシャードに振り分け、シャード内では順番が保たれます。データは保持期間の間、複数のアプリケーションから読み取れます。",
       "references": [
         {
           "title": "Amazon Kinesis Data Streams の用語と概念",
@@ -2994,7 +2994,7 @@
       "answers": [
         1
       ],
-      "explanation": "VPC に接続した関数は、それだけではインターネットにアクセスできません（パブリックサブネットに接続しても同じです）。プライベートサブネットから NAT ゲートウェイを経由するなどの設定が必要です。",
+      "explanation": "Lambda 関数の VPC の設定でサブネットとセキュリティグループを指定すると、関数は VPC 内のリソースにアクセスできるようになります。",
       "references": [
         {
           "title": "Lambda 関数に VPC 内のリソースへのアクセスを許可する",
@@ -3022,7 +3022,7 @@
       "answers": [
         0
       ],
-      "explanation": "Lambda は VPC 内にネットワークインターフェイスを作るので、実行ロールに ec2:CreateNetworkInterface などの権限が必要です。",
+      "explanation": "Lambda 関数の VPC の設定でサブネットとセキュリティグループを指定すると、関数は VPC 内のリソースにアクセスできるようになります。",
       "references": [
         {
           "title": "Lambda 関数に VPC 内のリソースへのアクセスを許可する",
@@ -3086,7 +3086,7 @@
       "answers": [
         0
       ],
-      "explanation": "Lambda は環境変数を保存時に暗号化します。独自の KMS キーを使うこともできます。",
+      "explanation": "環境変数を使うと、コードを更新せずに関数の動作を変えられます。機密の値は Secrets Manager や Parameter Store に置き、暗号化して扱います。",
       "references": [
         {
           "title": "Lambda の環境変数",
@@ -3114,7 +3114,7 @@
       "answers": [
         0
       ],
-      "explanation": "非同期呼び出しでは、関数がエラーを返すと、既定で Lambda がさらに2回再試行します。",
+      "explanation": "非同期呼び出しでは、Lambda が失敗したイベントを再試行し、それでも失敗したら送信先に送れます。送信先には呼び出しの詳細も含まれるので、デッドレターキューより多くの情報を得られます。",
       "references": [
         {
           "title": "Lambda の非同期呼び出しでのエラーと再試行の処理",
@@ -3182,7 +3182,7 @@
       "answers": [
         0
       ],
-      "explanation": "既定では、バッチのどれかが失敗すると、成功したメッセージも含めて再試行されます。部分的なバッチの応答で、これを防げます。",
+      "explanation": "部分的なバッチの失敗の報告を有効にすると、関数は失敗したメッセージの ID だけを返し、そのメッセージだけが再び見えるようになります。",
       "references": [
         {
           "title": "Lambda で Amazon SQS を使う",
@@ -3250,7 +3250,7 @@
       "answers": [
         1
       ],
-      "explanation": "期限切れの項目は、通常は数日以内に削除されます。期限切れでも削除前の項目は読めるので、必要ならクエリで除外します。",
+      "explanation": "DynamoDB の TTL は、項目ごとの有効期限のタイムスタンプを過ぎた項目を自動で削除します。削除に書き込みのスループットを消費しません。",
       "references": [
         {
           "title": "DynamoDB の有効期限 (TTL)",
@@ -3314,7 +3314,7 @@
       "answers": [
         1
       ],
-      "explanation": "値の種類が少ないとアクセスが一部のパーティションに集中します。値の種類が多い属性を選びます。",
+      "explanation": "パーティションキーは、値の種類が多く、アクセスが均等に分散する属性を選びます。特定の値にアクセスが集中する「ホットパーティション」を避けるためです。",
       "references": [
         {
           "title": "パーティションキーの設計のベストプラクティス",
@@ -3346,7 +3346,7 @@
       "answers": [
         0
       ],
-      "explanation": "パーティションキーに乱数などの接尾辞を付けると、書き込みを複数のパーティションに分散できます。",
+      "explanation": "パーティションキーは、値の種類が多く、アクセスが均等に分散する属性を選びます。特定の値にアクセスが集中する「ホットパーティション」を避けるためです。",
       "references": [
         {
           "title": "書き込みのシャーディングによるワークロードの均等な分散",
@@ -3374,7 +3374,7 @@
       "answers": [
         1
       ],
-      "explanation": "フィルタ式は読み取った後に適用されるので、消費するキャパシティは減りません。",
+      "explanation": "別のアクセスパターンで検索するなら GSI を作ります。GSI はテーブルと異なるパーティションキーとソートキーを持て、あとから追加できます。",
       "references": [
         {
           "title": "DynamoDB のスキャン",
@@ -3402,7 +3402,7 @@
       "answers": [
         0
       ],
-      "explanation": "Query はパーティションキーの値を指定し、必要に応じてソートキーの条件で絞り込みます。",
+      "explanation": "別のアクセスパターンで検索するなら GSI を作ります。GSI はテーブルと異なるパーティションキーとソートキーを持て、あとから追加できます。",
       "references": [
         {
           "title": "DynamoDB のクエリ",
@@ -3430,7 +3430,7 @@
       "answers": [
         1
       ],
-      "explanation": "GSI がサポートするのは結果整合性のある読み取りだけです。",
+      "explanation": "DynamoDB の既定の読み取りは結果整合性です。最新の値が必要なら ConsistentRead を指定して強力な整合性のある読み取りを行います（読み込みキャパシティは2倍消費します）。",
       "references": [
         {
           "title": "DynamoDB の読み取り整合性",
@@ -3494,7 +3494,7 @@
       "answers": [
         0
       ],
-      "explanation": "ユーザープールは、認証に成功した利用者に JSON Web Token（JWT）を発行します。",
+      "explanation": "Cognito ユーザープールは、アプリの利用者のサインアップ・サインインを提供するユーザーディレクトリです。API Gateway のオーソライザーで、ユーザープールのトークンを検証できます。",
       "references": [
         {
           "title": "Amazon Cognito ユーザープール",
@@ -3526,7 +3526,7 @@
       "answers": [
         1
       ],
-      "explanation": "API キーは使用量プランで利用量を管理するためのもので、認証や認可には IAM・Cognito・Lambda オーソライザーを使います。",
+      "explanation": "Cognito ユーザープールは、アプリの利用者のサインアップ・サインインを提供するユーザーディレクトリです。API Gateway のオーソライザーで、ユーザープールのトークンを検証できます。",
       "references": [
         {
           "title": "API Gateway の使用量プランと API キー",
@@ -3590,7 +3590,7 @@
       "answers": [
         1
       ],
-      "explanation": "オーソライザーの結果（ポリシー）はキャッシュでき、同じトークンでのリクエストでは関数を呼び出さずに済みます。",
+      "explanation": "Lambda オーソライザーは、ベアラートークンなどの独自の認証方式で API へのアクセスを制御したいときに使います。関数がポリシーを返し、API Gateway がそれに従ってアクセスを許可します。",
       "references": [
         {
           "title": "API Gateway の Lambda オーソライザー",
@@ -3618,7 +3618,7 @@
       "answers": [
         0
       ],
-      "explanation": "ユーザープールはユーザーディレクトリで認証を、アイデンティティプールは一時的な AWS 認証情報の発行を担います。",
+      "explanation": "Cognito アイデンティティプール（フェデレーテッドアイデンティティ）は、ユーザープールや外部の ID プロバイダーで認証された利用者に、AWS のサービスにアクセスするための一時的な認証情報を発行します。",
       "references": [
         {
           "title": "Amazon Cognito アイデンティティプール",
@@ -3646,7 +3646,7 @@
       "answers": [
         1
       ],
-      "explanation": "アイデンティティプールは、認証されていない（ゲストの）利用者にも、権限を絞ったロールの認証情報を発行できます。",
+      "explanation": "Cognito アイデンティティプール（フェデレーテッドアイデンティティ）は、ユーザープールや外部の ID プロバイダーで認証された利用者に、AWS のサービスにアクセスするための一時的な認証情報を発行します。",
       "references": [
         {
           "title": "Amazon Cognito アイデンティティプール",
@@ -3674,7 +3674,7 @@
       "answers": [
         0
       ],
-      "explanation": "AssumeRole は、アクセスキー ID・シークレットアクセスキー・セキュリティトークンの一時的な認証情報を返します。",
+      "explanation": "クロスアカウントのアクセスには、アクセス先のアカウントにロールを作り、信頼ポリシーでアクセス元を許可します。アクセス元は AssumeRole で一時的な認証情報を受け取ります。",
       "references": [
         {
           "title": "AssumeRole",
@@ -3742,7 +3742,7 @@
       "answers": [
         1
       ],
-      "explanation": "既定ではすべてのリクエストが暗黙的に拒否され（ルートユーザーを除く）、明示的な許可があるときだけ許可されます。",
+      "explanation": "IAM のポリシーの評価では、まず明示的な拒否があるかを確認し、あればリクエストを拒否します。明示的な許可がなければ、暗黙的に拒否されます。",
       "references": [
         {
           "title": "リクエストの許可と拒否の判定",
@@ -3806,7 +3806,7 @@
       "answers": [
         1
       ],
-      "explanation": "署名付き URL でできる操作は、URL を作成したプリンシパルのアクセス許可の範囲に限られます。",
+      "explanation": "署名付き URL を使うと、相手に AWS の認証情報やアクセス許可がなくても、URL を知っている人に期限付きでアップロードを許可できます。",
       "references": [
         {
           "title": "署名付き URL を使用したオブジェクトのアップロード",
@@ -3870,7 +3870,7 @@
       "answers": [
         0
       ],
-      "explanation": "SDK は、環境変数・共有の認証情報ファイル・コンテナや EC2 のロールなどを順番に探します。",
+      "explanation": "ECS のタスクロールを使うと、コンテナのアプリケーションに一時的な認証情報が提供されます。AWS SDK は認証情報プロバイダーチェーンでこれを自動で見つけます。",
       "references": [
         {
           "title": "AWS SDK の認証情報プロバイダーチェーン",
@@ -3934,7 +3934,7 @@
       "answers": [
         0
       ],
-      "explanation": "STS の GetSessionToken などに MFA のコードを渡して一時的な認証情報を取得し、それで API を呼び出します。",
+      "explanation": "IAM ポリシーの Condition で aws:MultiFactorAuthPresent を使うと、MFA で認証した場合だけ API の呼び出しを許可できます。",
       "references": [
         {
           "title": "MFA で保護された API アクセスの設定",
@@ -3962,7 +3962,7 @@
       "answers": [
         0
       ],
-      "explanation": "Condition で、MFA の有無・送信元 IP・タグなどの条件を指定できます。",
+      "explanation": "IAM ポリシーの Condition で aws:MultiFactorAuthPresent を使うと、MFA で認証した場合だけ API の呼び出しを許可できます。",
       "references": [
         {
           "title": "ポリシーの評価論理",
@@ -3990,7 +3990,7 @@
       "answers": [
         0
       ],
-      "explanation": "平文のデータキーは使ったらすぐに消し、暗号化されたデータキーだけを保存します。",
+      "explanation": "KMS の Encrypt API で直接暗号化できるのは4 KB までです。大きなデータは、GenerateDataKey で作ったデータキーで暗号化し、データキー自体を KMS の鍵で暗号化して保存します（エンベロープ暗号化）。",
       "references": [
         {
           "title": "GenerateDataKey（AWS KMS API）",
@@ -4054,7 +4054,7 @@
       "answers": [
         1
       ],
-      "explanation": "S3 は、すべての新しいオブジェクトを既定で SSE-S3 で暗号化します。",
+      "explanation": "SSE-KMS では、KMS の鍵でオブジェクトを暗号化します。鍵のポリシーで利用者を制御でき、鍵の使用は CloudTrail で監査できます。",
       "references": [
         {
           "title": "サーバー側の暗号化によるデータの保護",
@@ -4122,7 +4122,7 @@
       "answers": [
         0
       ],
-      "explanation": "ローテーションは、ローテーション用の Lambda 関数か、マネージドローテーションで行います。",
+      "explanation": "Secrets Manager は、シークレットの保管・取得に加え、スケジュールでの自動ローテーションを提供します。RDS などのデータベースの認証情報のローテーションを設定できます。",
       "references": [
         {
           "title": "AWS Secrets Manager のシークレットのローテーション",
@@ -4150,7 +4150,7 @@
       "answers": [
         0
       ],
-      "explanation": "Secrets Manager のクライアント側のキャッシュを使うと、呼び出しの回数を減らせます。",
+      "explanation": "Secrets Manager は、シークレットの保管・取得に加え、スケジュールでの自動ローテーションを提供します。RDS などのデータベースの認証情報のローテーションを設定できます。",
       "references": [
         {
           "title": "AWS Secrets Manager のシークレットのローテーション",
@@ -4178,7 +4178,7 @@
       "answers": [
         1
       ],
-      "explanation": "SecureString は、機密データを KMS の鍵で暗号化して保管するパラメータです。",
+      "explanation": "Parameter Store は、設定データやシークレットを階層的に保管するサービスです。標準パラメータは追加料金なしで使え、SecureString で KMS による暗号化もできます。",
       "references": [
         {
           "title": "AWS Systems Manager Parameter Store",
@@ -4242,7 +4242,7 @@
       "answers": [
         1
       ],
-      "explanation": "ACM が発行した証明書は、マネージドな更新で自動的に更新されます。",
+      "explanation": "AWS Private CA は、組織内で使うプライベートな証明書を発行する認証局を、自分で運用せずに使えるサービスです。ACM と組み合わせて証明書を管理できます。",
       "references": [
         {
           "title": "AWS Certificate Manager とは",
@@ -4270,7 +4270,7 @@
       "answers": [
         1
       ],
-      "explanation": "TLS は転送中（通信中）のデータを暗号化する仕組みです。保存データの暗号化には KMS などを使います。",
+      "explanation": "AWS Private CA は、組織内で使うプライベートな証明書を発行する認証局を、自分で運用せずに使えるサービスです。ACM と組み合わせて証明書を管理できます。",
       "references": [
         {
           "title": "AWS Private CA とは",
@@ -4302,7 +4302,7 @@
       "answers": [
         0
       ],
-      "explanation": "ガードレールのコンテンツフィルターで、プロンプト攻撃を検出してブロックできます。",
+      "explanation": "Bedrock のガードレールでは、コンテンツフィルター、拒否するトピック、単語のフィルター、機密情報（PII）のフィルターなどを設定し、入力と出力の両方に適用できます。",
       "references": [
         {
           "title": "Amazon Bedrock のガードレール",
@@ -4330,7 +4330,7 @@
       "answers": [
         1
       ],
-      "explanation": "ガードレールは、利用者の入力とモデルの出力の両方を評価できます。",
+      "explanation": "Bedrock のガードレールでは、コンテンツフィルター、拒否するトピック、単語のフィルター、機密情報（PII）のフィルターなどを設定し、入力と出力の両方に適用できます。",
       "references": [
         {
           "title": "Amazon Bedrock のガードレール",
@@ -4358,7 +4358,7 @@
       "answers": [
         1
       ],
-      "explanation": "Bedrock は、プロンプトや出力をモデルの学習に使わず、サードパーティにも配布しません。",
+      "explanation": "インターフェイス VPC エンドポイントを使うと、VPC から Bedrock にインターネットを経由せずに接続できます。また Bedrock は、利用者のプロンプトや出力をモデルの学習に使いません。",
       "references": [
         {
           "title": "Amazon Bedrock のよくある質問",
@@ -4422,7 +4422,7 @@
       "answers": [
         1
       ],
-      "explanation": "logs:Unmask の権限があれば、マスクされていないデータを表示できます。",
+      "explanation": "CloudWatch Logs のデータ保護では、データ識別子を使ってログの中の機密データを検出し、マスクできます。マスクされていないデータを見るには logs:Unmask の権限が必要です。",
       "references": [
         {
           "title": "CloudWatch Logs のマスキングによる機密データの保護",
@@ -4450,7 +4450,7 @@
       "answers": [
         0
       ],
-      "explanation": "マスクは保険で、まずはログに機密データを出さない設計にします。",
+      "explanation": "CloudWatch Logs のデータ保護では、データ識別子を使ってログの中の機密データを検出し、マスクできます。マスクされていないデータを見るには logs:Unmask の権限が必要です。",
       "references": [
         {
           "title": "CloudWatch Logs のマスキングによる機密データの保護",
@@ -4478,7 +4478,7 @@
       "answers": [
         0
       ],
-      "explanation": "外部で認証された相手は、ロールを引き受けて一時的な認証情報を使います。",
+      "explanation": "IAM の OIDC の ID プロバイダーは、OpenID Connect に対応した外部の ID プロバイダーを表します。外部で認証されたワークロードは、AssumeRoleWithWebIdentity で一時的な認証情報を受け取れます（ID フェデレーション）。",
       "references": [
         {
           "title": "AssumeRoleWithWebIdentity",
@@ -4542,7 +4542,7 @@
       "answers": [
         1
       ],
-      "explanation": "AppConfig は、設定をコードのデプロイと切り離して更新・配信できます。",
+      "explanation": "AppConfig を使うと、アプリケーションの設定やフィーチャーフラグを、コードのデプロイと切り離して変更できます。段階的に配信し、問題があればロールバックできます。",
       "references": [
         {
           "title": "AWS AppConfig とは",
@@ -4570,7 +4570,7 @@
       "answers": [
         0
       ],
-      "explanation": "バリデーターで、設定の形式や内容の誤りを配信前に見つけられます。",
+      "explanation": "AppConfig を使うと、アプリケーションの設定やフィーチャーフラグを、コードのデプロイと切り離して変更できます。段階的に配信し、問題があればロールバックできます。",
       "references": [
         {
           "title": "AWS AppConfig とは",
@@ -4598,7 +4598,7 @@
       "answers": [
         1
       ],
-      "explanation": "呼び出しの URL にはステージ名が含まれ、ステージごとに URL が分かれます。",
+      "explanation": "ステージ変数は、ステージに関連付けた名前と値の組です。統合先の Lambda 関数の ARN などで参照すると、同じ API の定義のまま、ステージごとに呼び出し先を変えられます。",
       "references": [
         {
           "title": "API Gateway のステージ変数",
@@ -4702,7 +4702,7 @@
       "answers": [
         0
       ],
-      "explanation": "一意のタグを使うと、どのイメージがデプロイされているかを確実に特定でき、ロールバックもしやすくなります。",
+      "explanation": "ECR のイメージタグの変更不可を有効にすると、同じタグでのイメージの上書きを防げます。本番のイメージを確実に特定でき、意図しない変更を防げます。",
       "references": [
         {
           "title": "Amazon ECR のイメージタグの変更可能性",
@@ -4730,7 +4730,7 @@
       "answers": [
         1
       ],
-      "explanation": "CodeArtifact は、npm・pip・Maven などのよく使われるパッケージマネージャーと連携します。",
+      "explanation": "CodeArtifact は、npm・pip・Maven などのパッケージマネージャーで使えるマネージドなアーティファクトのリポジトリです。社内のパッケージの共有や、公開のリポジトリからの取り込みを管理できます。",
       "references": [
         {
           "title": "AWS CodeArtifact とは",
@@ -4794,7 +4794,7 @@
       "answers": [
         1
       ],
-      "explanation": "SAM は CloudFormation の拡張で、短い記述をデプロイ時に CloudFormation のリソースに展開します。",
+      "explanation": "SAM CLI の sam local invoke を使うと、Lambda 関数をローカルで実行してテストできます。sam local generate-event でサンプルのイベントを作ることもできます。",
       "references": [
         {
           "title": "AWS SAM とは",
@@ -4822,7 +4822,7 @@
       "answers": [
         0
       ],
-      "explanation": "コンソールでテストイベントを作り、関数を呼び出して結果を確認できます。",
+      "explanation": "SAM CLI の sam local invoke を使うと、Lambda 関数をローカルで実行してテストできます。sam local generate-event でサンプルのイベントを作ることもできます。",
       "references": [
         {
           "title": "コンソールで Lambda 関数をテストする",
@@ -4850,7 +4850,7 @@
       "answers": [
         0
       ],
-      "explanation": "モック統合では、API Gateway が統合のレスポンスを返し、バックエンドには送りません。",
+      "explanation": "API Gateway のモック統合を使うと、統合先のバックエンドを用意せずに API のレスポンスを返せます。バックエンドが完成する前の開発やテストに使えます。",
       "references": [
         {
           "title": "API Gateway のモック統合",
@@ -4914,7 +4914,7 @@
       "answers": [
         1
       ],
-      "explanation": "発行したバージョンは変更できません。変更するには新しいバージョンを発行します。",
+      "explanation": "Lambda のバージョンは、コードと設定の変更できないスナップショットです。エイリアスで特定のバージョンを指すと、呼び出し側を変えずに本番のバージョンを切り替えられます。",
       "references": [
         {
           "title": "Lambda のバージョン",
@@ -4946,7 +4946,7 @@
       "answers": [
         0
       ],
-      "explanation": "エイリアスのルーティングの設定で、新しいバージョンに一部のトラフィックを送れます。",
+      "explanation": "Lambda のバージョンは、コードと設定の変更できないスナップショットです。エイリアスで特定のバージョンを指すと、呼び出し側を変えずに本番のバージョンを切り替えられます。",
       "references": [
         {
           "title": "Lambda のエイリアス",
@@ -4974,7 +4974,7 @@
       "answers": [
         1
       ],
-      "explanation": "Lambda はコンテナイメージを Amazon ECR のリポジトリから取得してデプロイします。",
+      "explanation": ".zip のデプロイパッケージ（レイヤーを含む）には展開後のサイズの上限があります。コンテナイメージなら最大10 GB まで使えるので、大きなライブラリを含む関数に向いています。",
       "references": [
         {
           "title": "コンテナイメージで Lambda 関数をデプロイする",
@@ -5042,7 +5042,7 @@
       "answers": [
         0
       ],
-      "explanation": "リニアは等しい増分で、カナリアは2段階で移します。",
+      "explanation": "Lambda の CodeDeploy のデプロイ設定には、カナリア（2段階で切り替え）、リニア（同じ割合ずつ増やす）、一括（AllAtOnce）があります。",
       "references": [
         {
           "title": "CodeDeploy のデプロイ設定",
@@ -5142,7 +5142,7 @@
       "answers": [
         0
       ],
-      "explanation": "全インスタンスに同時に展開するので、短い停止が発生することがあります。",
+      "explanation": "Elastic Beanstalk のブルー/グリーンデプロイでは、別の環境に新しいバージョンをデプロイし、CNAME を入れ替えて切り替えます。元の環境を残しておけば、すぐに戻せます。",
       "references": [
         {
           "title": "Elastic Beanstalk のデプロイポリシーと設定",
@@ -5170,7 +5170,7 @@
       "answers": [
         0
       ],
-      "explanation": "maximumPercent は、デプロイ中に RUNNING や PENDING の状態にできるタスクの上限の割合です。",
+      "explanation": "ECS のローリング更新では、minimumHealthyPercent が更新中に動かしておく最小のタスクの割合、maximumPercent が同時に動かせる最大の割合を決めます。",
       "references": [
         {
           "title": "Amazon ECS のローリング更新のデプロイ",
@@ -5198,7 +5198,7 @@
       "answers": [
         1
       ],
-      "explanation": "Fargate では、タスクを動かすサーバーの管理は不要です。",
+      "explanation": "ECS のローリング更新では、minimumHealthyPercent が更新中に動かしておく最小のタスクの割合、maximumPercent が同時に動かせる最大の割合を決めます。",
       "references": [
         {
           "title": "Amazon ECS のローリング更新のデプロイ",
@@ -5226,7 +5226,7 @@
       "answers": [
         1
       ],
-      "explanation": "既定では、失敗したら前の状態にロールバックします。デバッグのためにロールバックせずに残すオプションもあります。",
+      "explanation": "変更セットを使うと、スタックを更新する前に、変更の内容（追加・変更・削除、置き換えの有無）を確認できます。確認してから実行するので、意図しない変更を防げます。",
       "references": [
         {
           "title": "CloudFormation のスタックの失敗時のオプション",
@@ -5326,7 +5326,7 @@
       "answers": [
         0
       ],
-      "explanation": "CodeDeploy は、最後の正常なリビジョンを新しいデプロイ ID で再デプロイしてロールバックします。",
+      "explanation": "CodeDeploy では、デプロイが失敗したときや、指定した CloudWatch のアラームのしきい値に達したときに、自動でロールバックするよう設定できます。",
       "references": [
         {
           "title": "CodeDeploy でのロールバックと再デプロイ",
@@ -5354,7 +5354,7 @@
       "answers": [
         0
       ],
-      "explanation": "承認のアクションに SNS のトピックを設定すると、承認が必要になったときに通知されます。",
+      "explanation": "CodePipeline の手動承認のアクションを使うと、パイプラインの実行を止めて、担当者が承認または却下するまで待てます。",
       "references": [
         {
           "title": "CodePipeline の手動承認アクション",
@@ -5386,7 +5386,7 @@
       "answers": [
         0
       ],
-      "explanation": "ソースのリポジトリへのプッシュなどをきっかけに、パイプラインが自動で実行されます。",
+      "explanation": "CodePipeline の手動承認のアクションを使うと、パイプラインの実行を止めて、担当者が承認または却下するまで待てます。",
       "references": [
         {
           "title": "AWS CodePipeline とは",
@@ -5414,7 +5414,7 @@
       "answers": [
         0
       ],
-      "explanation": "Amplify は、ブランチへのコミットのたびにビルドとデプロイを実行します。",
+      "explanation": "Amplify のホスティングでは、Git のブランチごとに環境を作り、ブランチへのコミットのたびに自動でビルド・デプロイできます。",
       "references": [
         {
           "title": "Amplify のフィーチャーブランチのデプロイ",
@@ -5514,7 +5514,7 @@
       "answers": [
         1
       ],
-      "explanation": "X-Ray はサンプリングで一部のリクエストを記録し、費用を抑えながら代表的なデータを集めます。",
+      "explanation": "X-Ray は、分散したアプリケーションのリクエストを追跡し、トレースマップと各区間の時間で、遅い部分やエラーの原因を見つけやすくします。",
       "references": [
         {
           "title": "AWS X-Ray の概念",
@@ -5542,7 +5542,7 @@
       "answers": [
         0
       ],
-      "explanation": "メトリクスフィルターで、ログのパターンに一致した回数などをメトリクスにし、アラームに使えます。",
+      "explanation": "CloudWatch Logs Insights は、ログのデータを対話的に検索・分析できるサービスです。fields・filter・stats・sort などのコマンドでクエリを書きます。",
       "references": [
         {
           "title": "メトリクスフィルターを使用してログイベントからメトリクスを作成する",
@@ -5606,7 +5606,7 @@
       "answers": [
         1
       ],
-      "explanation": "スロットリングは ThrottlingException など、権限不足は AccessDeniedException と、別のエラーとして返されます。",
+      "explanation": "AccessDeniedException は、呼び出しに必要な権限がないことを示します。Lambda 関数の場合は、まず実行ロールのポリシーを確認します。",
       "references": [
         {
           "title": "IAM ロール",
@@ -5674,7 +5674,7 @@
       "answers": [
         0
       ],
-      "explanation": "JSON のログ形式では、アプリケーションのログレベルとシステムのログレベルを設定できます。",
+      "explanation": "Lambda では、ログ形式に JSON を選ぶと、ログが構造化されたキーと値の組で出力されます。検索やフィルタ、集計がしやすくなります。",
       "references": [
         {
           "title": "Lambda 関数のログ形式（JSON 形式の構造化ログ）",
@@ -5702,7 +5702,7 @@
       "answers": [
         1
       ],
-      "explanation": "Lambda は関数の出力を、自動で CloudWatch Logs のロググループに送ります。",
+      "explanation": "Lambda では、ログ形式に JSON を選ぶと、ログが構造化されたキーと値の組で出力されます。検索やフィルタ、集計がしやすくなります。",
       "references": [
         {
           "title": "Lambda 関数のログ形式（JSON 形式の構造化ログ）",
@@ -5730,7 +5730,7 @@
       "answers": [
         0
       ],
-      "explanation": "AWS CLI や SDK から PutMetricData でカスタムメトリクスを発行できます。",
+      "explanation": "埋め込みメトリクスフォーマットを使うと、構造化されたログの中にメトリクスを埋め込み、CloudWatch が自動でメトリクスを作ります。Lambda などで、API を呼び出さずにカスタムメトリクスを発行できます。",
       "references": [
         {
           "title": "カスタムメトリクスを発行する",
@@ -5794,7 +5794,7 @@
       "answers": [
         1
       ],
-      "explanation": "アラームの状態は、OK・ALARM・INSUFFICIENT_DATA の3つです。",
+      "explanation": "CloudWatch のアラームは、メトリクスがしきい値を超えたときに SNS のトピックに通知できます。Lambda には Throttles・Errors・ConcurrentExecutions などのメトリクスがあります。",
       "references": [
         {
           "title": "CloudWatch アラームの使用",
@@ -5862,7 +5862,7 @@
       "answers": [
         0
       ],
-      "explanation": "成功とみなすコード（matcher）を設定できます。",
+      "explanation": "ALB はターゲットグループのヘルスチェックで、正常なターゲットにだけ通信を送ります。アプリケーションの状態を返すパスを指定すると、プロセスの異常も検出できます。",
       "references": [
         {
           "title": "ターゲットグループのヘルスチェック",
@@ -5890,7 +5890,7 @@
       "answers": [
         1
       ],
-      "explanation": "ALB は、異常と判定したターゲットへの通信の振り分けを止めます。",
+      "explanation": "ALB はターゲットグループのヘルスチェックで、正常なターゲットにだけ通信を送ります。アプリケーションの状態を返すパスを指定すると、プロセスの異常も検出できます。",
       "references": [
         {
           "title": "ターゲットグループのヘルスチェック",
@@ -5918,7 +5918,7 @@
       "answers": [
         1
       ],
-      "explanation": "予約された同時実行数は、関数の同時実行数を確保し上限にするだけです。事前の初期化はプロビジョニングされた同時実行数の役割です。",
+      "explanation": "プロビジョニングされた同時実行数を使うと、指定した数の実行環境が事前に初期化され、二桁ミリ秒の範囲で応答できるようになります。予約された同時実行数とは目的が違います。",
       "references": [
         {
           "title": "Lambda の同時実行数",
@@ -5946,7 +5946,7 @@
       "answers": [
         1
       ],
-      "explanation": "プロビジョニングされた同時実行数には、確保している間の料金がかかります。",
+      "explanation": "プロビジョニングされた同時実行数を使うと、指定した数の実行環境が事前に初期化され、二桁ミリ秒の範囲で応答できるようになります。予約された同時実行数とは目的が違います。",
       "references": [
         {
           "title": "Lambda のプロビジョニングされた同時実行数",
@@ -6010,7 +6010,7 @@
       "answers": [
         0
       ],
-      "explanation": "SQS のイベントソースマッピングの最大同時実行数で、同時に呼び出す数を制限できます。",
+      "explanation": "予約された同時実行数を設定すると、その数の同時実行がその関数のために確保され、同時に関数の同時実行数の上限にもなります。下流のリソースを守るために使えます。",
       "references": [
         {
           "title": "Lambda で Amazon SQS を使う",
@@ -6038,7 +6038,7 @@
       "answers": [
         0
       ],
-      "explanation": "実行時間とメモリの積で料金が決まるので、処理が速くなれば合計が下がる場合があります。",
+      "explanation": "Lambda はメモリの設定に比例して CPU を割り当てます。CPU を多く使う処理では、メモリを増やすと実行時間が短くなり、全体の費用が下がることもあります。",
       "references": [
         {
           "title": "Lambda のメモリの設定",
@@ -6102,7 +6102,7 @@
       "answers": [
         1
       ],
-      "explanation": "DAX は結果整合性の読み取りをキャッシュします。強力な整合性のある読み取りは DynamoDB にそのまま送られます。",
+      "explanation": "DAX は DynamoDB 用のフルマネージドのインメモリキャッシュです。DynamoDB の API と互換性があり、読み取りの応答をマイクロ秒にできます。",
       "references": [
         {
           "title": "DynamoDB Accelerator (DAX) によるインメモリアクセラレーション",
@@ -6130,7 +6130,7 @@
       "answers": [
         1
       ],
-      "explanation": "DAX は読み取りの多いアプリケーション向けです。書き込みが多いと、クラスター内の複製が増えて資源を多く使うので、向いていません。",
+      "explanation": "DAX は DynamoDB 用のフルマネージドのインメモリキャッシュです。DynamoDB の API と互換性があり、読み取りの応答をマイクロ秒にできます。",
       "references": [
         {
           "title": "DynamoDB Accelerator (DAX) によるインメモリアクセラレーション",
@@ -6158,7 +6158,7 @@
       "answers": [
         1
       ],
-      "explanation": "キャッシュのデータはミスのときにしか更新されないので、古くなることがあります。TTL を組み合わせて対処します。",
+      "explanation": "遅延読み込みでは、要求されたデータだけがキャッシュされ、キャッシュの障害にも強い一方で、データが古くなることがあります。ライトスルーは常に最新ですが、使われないデータもキャッシュされます。",
       "references": [
         {
           "title": "ElastiCache のキャッシュ戦略",
@@ -6222,7 +6222,7 @@
       "answers": [
         0
       ],
-      "explanation": "OAC で、S3 のオリジンへのアクセスを CloudFront だけに制限できます。",
+      "explanation": "CloudFront は、コンテンツをエッジロケーションにキャッシュし、利用者に近い場所から配信します。キャッシュの期間は Cache-Control のヘッダーやキャッシュポリシーで制御できます。",
       "references": [
         {
           "title": "Amazon S3 オリジンへのアクセスを制限する",
@@ -6286,7 +6286,7 @@
       "answers": [
         0
       ],
-      "explanation": "API Gateway は、トークンバケットのアルゴリズムでスロットリングを行います。",
+      "explanation": "API Gateway は、定常のレートとバーストの上限を超えたリクエストをスロットリングし、429 を返します。クライアントは、レートを抑えながら再送します。必要なら API の側で上限やキャッシュを見直します。",
       "references": [
         {
           "title": "API Gateway のリクエストのスロットリング",
