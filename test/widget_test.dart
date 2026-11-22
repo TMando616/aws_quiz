@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:aws_quiz/ads/ad_config.dart';
@@ -29,10 +30,13 @@ void main() {
     // 今日の学習と、ホームの主ボタン「続きから解く」
     expect(find.text('今日の学習'), findsOneWidget);
     expect(find.text('目標 10問'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('続きから解く'), 200);
+    // ホームの縦のリスト（全冠ボードなどの中にもスクロールできる部品があるので、一番外側を指定する）
+    final list = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(find.text('続きから解く'), 200, scrollable: list);
     expect(find.text('続きから解く'), findsOneWidget);
-    // 問題のある試験は、ボードと「解ける試験」の両方に出る
-    await tester.scrollUntilVisible(find.text('解ける試験'), 200);
-    expect(find.text('SAP'), findsWidgets);
+    // 問題のある試験は「解ける試験」の一覧に、問題数つきで出る
+    final sapRow = find.text('本番形式 75問・一問一答 161問');
+    await tester.scrollUntilVisible(sapRow, 100, scrollable: list);
+    expect(sapRow, findsOneWidget);
   });
 }

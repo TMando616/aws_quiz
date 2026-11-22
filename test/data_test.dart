@@ -26,7 +26,9 @@ void main() {
     final ids = await ExamRepository().examIdsWithQuestions();
     expect(ids, contains('sap'));
     expect(ids, contains('saa'));
-    expect(ids, isNot(contains('clf')));
+    expect(ids, contains('clf'));
+    // ANS は2026年12月で終了するので問題を入れない
+    expect(ids, isNot(contains('ans')));
   });
 
   test('SAPの問題を新しい形式で読み込める', () async {
