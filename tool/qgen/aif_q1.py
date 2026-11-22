@@ -197,7 +197,7 @@ E.q('d1', 'SNS に投稿された画像に、不適切なコンテンツが含�
      ('Amazon Polly', '文章を音声に変えるサービスです。'),
      ('Amazon Textract', '文書から文字やデータを取り出すサービスです。')],
     [0], 'Rekognition は、モデルを作らずに、画像や動画の物体・顔・テキストの検出や、不適切なコンテンツの検出ができるサービスです。',
-    ['rekognition'], ev={'rekognition': ['content moderation']}, group='aif-ai-service',
+    ['rekognition'], ev={'rekognition': ['content moderation']},
     drills=[
         mc('文書の読み取り', 'スキャンした請求書から、金額や日付などの項目とその値を自動で取り出したい。どのサービスを使うか。',
            [('Amazon Textract', '文書から、文字・手書き・表・フォームのデータを取り出します。'),

@@ -451,8 +451,7 @@
           "title": "Amazon Rekognition とは",
           "url": "https://docs.aws.amazon.com/ja_jp/rekognition/latest/dg/what-is.html"
         }
-      ],
-      "group": "aif-ai-service"
+      ]
     },
     {
       "id": "aif-014",
