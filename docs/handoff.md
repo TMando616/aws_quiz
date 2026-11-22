@@ -8,9 +8,10 @@
 - 2026-11-22：ホームを作り直し。一番上に**全冠ボード**（全12試験をレベル別に並べ、タップで取得済みの印。印を付けた瞬間だけ判子の動き）、その下に**今日の学習**（今日の問題数・連続日数・1日10問の目標のバー）、解ける試験の一覧。準備中の試験の一覧はボードに統合して外した。DESIGN.md のモーションを3か所に変更
 - 2026-11-22：ホームに「続きから解く」（ホームの主ボタン。最後に解いた試験の一問一答を、未回答 → 不正解 → 正解の順に出す。`lib/logic/continue_order.dart`）と、1日の目標の変更（「目標 10問 ⌄」をタップ。5・10・20・30・50問。`lib/settings/daily_goal.dart`）を追加。判子の動き（240ms・1.15倍）は本人確認済み
 - 本人が挙げた残りの課題：全体の味気なさ（ほかに案として出した「模試の結果を盛り上げる（数え上げ・合格ラインの目安・前回比）」「正解・不正解で端末が震える」は今回は見送り）、タイトルがダサい（→ 同日、アプリ名を CertStack に決定）
-- 問題：SAP 本番形式75問＋一問一答161問、SAA 本番形式65問＋一問一答130問（どちらも本番と同じ問題数・比重）。品質チェック エラー0・警告0
+- 2026-11-22：**CLF・DVA・SOA の問題を追加**（各 本番形式65問＋一問一答130問、分野の比重どおり）。本人の希望（DVA と SOA は本人が受けたい試験）。正解のサービスは各試験ガイドの範囲内のサービスから選び、根拠リンクは全件の実在と、解説の決め手の語句が根拠ページにあることを機械的に照合した（作成と照合のスクリプトは `tool/qgen/`、使い方は `tool/qgen/README.md`）。○×の正誤の比率も偏らないように調整
+- 問題：CLF・SAA・DVA・SOA 各 本番形式65問＋一問一答130問、SAP 本番形式75問＋一問一答161問（どれも本番と同じ問題数・比重）。品質チェック エラー0・警告0（5ファイル・1016問）
 - デザイン：`DESIGN.md`（「通勤電車で開く単語帳」）に全画面を移行済み。ライト・ダークでスクリーンショット確認済み
-- `flutter analyze` 指摘なし、`flutter test` 47件通過、iOS シミュレーターでビルド・起動を確認
+- `flutter analyze` 指摘なし、`flutter test` 49件通過、iOS シミュレーターでビルド・起動を確認
 - 本人がまだ触って確認していない（下の「未確認のこと」）。最初の作業は本人の確認結果を受けての修正になる見込み
 - 次の実装：v1 に入れると決めた「苦手分野のレーダーチャート」と「間違えた問題だけ解き直す」
 - 本人の判断待ち：なし（アプリ名 CertStack・バンドルID `com.tmando616.certstack`・問い合わせ用のメールアドレスは決定済み）。プライバシーポリシーの制定日はまだ空欄（開発者名は本名の Takashi Mandokoro。App Store の販売元の表示と揃える）
@@ -253,6 +254,9 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - 今あるグループ
   - SAA：s3-storage-class（4問）、messaging-service（3問）、db-availability-or-read（3問）、compute-pricing（3問）
   - SAP：vpc-connectivity（4問）、s3-storage-class・compute-pricing・messaging-service・permission-guardrails（各2問）
+  - CLF：clf-migration-strategy（3問）、clf-shared-resp（3問）、clf-security-finding（3問）、clf-hybrid-connect（2問）、clf-storage-type（3問）、clf-db-type（3問）、clf-pricing-model（3問）
+  - DVA：dva-integration-pattern（3問）、dva-api-auth（3問）、dva-config-store（3問）、dva-deploy-strategy（3問）、dva-cache（3問）
+  - SOA：soa-scaling（3問）、soa-r53-routing（4問）、soa-dr-strategy（2問）、soa-vpc-egress（3問）
 - 類題を足す候補：混同しやすい論点（SAP の s3-storage-class・messaging-service に3問目、DR の方式の使い分け、Route 53 のルーティングポリシーの使い分けなど）
 
 ### 一問一答（2026-11-21 追加）
@@ -265,7 +269,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - 本番形式の解説の下に「ポイント別の一問一答（n問）」、一問一答の解説の下に「元の問題（本番形式）に挑戦」が出る
 - 模試・分野別の出題・ホームの問題数（「n問」）は本番形式だけ。一問一答の数は「一問一答 n問」と別に出す
 - 学習記録は `mode = 'drill'` で記録する。分野ごとの正答率は本番形式と一問一答を合わせて計算
-- 今あるもの：SAP の本番形式75問をすべて分解し161問（sap-d001〜d161）、SAA の本番形式65問をすべて分解し130問（saa-d001〜d130）。どちらも4択と○×の混在。本番形式の問題を足したら、一問一答への分解もセットで行う
+- 今あるもの：SAP の本番形式75問をすべて分解し161問（sap-d001〜d161）、SAA の本番形式65問をすべて分解し130問（saa-d001〜d130）。CLF・DVA・SOA も本番形式65問をすべて2つずつに分解し各130問。どれも4択と○×の混在。本番形式の問題を足したら、一問一答への分解もセットで行う
 
 ## 6. 次にやること（優先順）
 
@@ -280,7 +284,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 4. ~~GitHub にリポジトリを作って push~~（2026-11-21 済み）。次はプライバシーポリシーを GitHub Pages で公開する
 5. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アイコン、上の「リリース前にやること（広告まわり）」。アプリ名は「CertStack」（`CFBundleDisplayName`・`android:label`・`lib/config/app_info.dart` の `appName` の3か所に反映済み）
 6. Androidの環境構築とGoogle Playへの公開
-7. ほかの試験の問題を追加（次に受ける試験から）
+7. ほかの試験の問題を追加（2026-11-22 に CLF・DVA・SOA を追加済み。残りは AIF・DEA・MLA・DOP・AIP・SCS）
 
 ### 後で追加したい機能
 
@@ -315,6 +319,13 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - タブ表示の「選択肢へ」ボタン、一問一答の「元の問題に挑戦」「ポイント別の一問一答」「類題に挑戦」ボタン
 - 「この問題の誤りを報告」でメールアプリが開くか（`supportEmail` を入れてから。シミュレーターにはメールアプリが無いので実機で）
 - 「このアプリについて」→「ライセンス」
+
+### CLF・DVA・SOA の問題を作るときに見つかった、AWS 側の最近の変更（2026-11-22）
+- **サポートプラン**：Basic・Business Support+・Enterprise Support・Unified Operations に改定。Developer・Business・Enterprise On-Ramp は2027-01-01で終了。CLF の問題は新旧どちらでも変わらない事実（Basic は全員に無料、指定の TAM は Enterprise 系、本番システム停止に1時間未満の応答は Business 系から）だけで作った。試験の側がいつ新しいプランに追随するかは未確認
+- **RDS の Performance Insights**：CloudWatch Database Insights に統合（SOA の問題は「CloudWatch Database Insights（旧 Performance Insights）」と表記）
+- **Well-Architected フレームワーク**：英語版の構成が変わり、6本の柱の一覧ページは日本語版にだけ残っている。CLF の柱の問題は日本語版のページを根拠にした
+- **AWS Application Migration Service**：ドキュメント上の名前は AWS Transform MGN（日本語版のページは無い）
+- **X-Ray**：「サービスマップ」は「トレースマップ」という名前になっている
 
 ### 試験情報で未確認・期限があるもの（2026-11-21時点）
 - **AIP-C01**：180分・75問（採点対象65問＋採点対象外10問）を公式ページで確認済み
