@@ -8,7 +8,7 @@ class AppInfo {
   static const appName = 'CertStack';
 
   /// 問題の誤りの報告や問い合わせを受けるメールアドレス
-  static const supportEmail = '';
+  static const supportEmail = 'tmando616.apps+certstack@gmail.com';
 
   /// 公開したプライバシーポリシーのURL（下書きは docs/privacy_policy.md）
   static const privacyPolicyUrl = '';

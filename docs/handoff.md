@@ -12,7 +12,7 @@
 - `flutter analyze` 指摘なし、`flutter test` 47件通過、iOS シミュレーターでビルド・起動を確認
 - 本人がまだ触って確認していない（下の「未確認のこと」）。最初の作業は本人の確認結果を受けての修正になる見込み
 - 次の実装：v1 に入れると決めた「苦手分野のレーダーチャート」と「間違えた問題だけ解き直す」
-- 本人の判断待ち：問い合わせ用のメールアドレス（アプリ名 CertStack・バンドルID `com.tmando616.certstack` は決定済み）
+- 本人の判断待ち：なし（アプリ名 CertStack・バンドルID `com.tmando616.certstack`・問い合わせ用のメールアドレスは決定済み）。プライバシーポリシーの開発者名と制定日はまだ空欄
 - GitHub：2026-11-21 にリポジトリを作成して push 済み（`git@github.com:TMando616/aws_quiz.git`。HTTPS はトークンが無効なので SSH で push する）
 
 ## 1. このアプリの目的
@@ -231,7 +231,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - `Info.plist` の `SKAdNetworkItems` は、Google の一覧（2026-01-30 更新版、50件）を入れ済み。リリース前に https://developers.google.com/admob/ios/3p-skadnetworks の更新日を確認する
 - AdMobの管理画面で、同意画面（GDPR用）とATT前の説明画面（IDFAメッセージ）の文面を日本語で作る
 - プライバシーポリシー：下書きは `docs/privacy_policy.md`。`［ ］` を埋めて公開し（GitHub Pages など）、URLを `lib/config/app_info.dart` の `privacyPolicyUrl` に入れる
-- 問い合わせ用のメールアドレスを決めて `lib/config/app_info.dart` の `supportEmail` に入れる（解説の下の「この問題の誤りを報告」と「このアプリについて」で使う。空だと「未設定」と表示される）
+- ~~問い合わせ用のメールアドレスを `supportEmail` に入れる~~（2026-11-22 済み）
 - ~~バンドルIDを自分のものに変える~~（2026-11-22 済み：`com.tmando616.certstack`）
 
 ### デザイン（2026-11-21 追加）
@@ -289,9 +289,9 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 
 ## 7. 未決事項（本人の判断待ち。Claude は勝手に決めない）
 
-- **問い合わせ用のメールアドレス**：アプリ用に新しく作る（個人のアドレスは公開しない）。作ったら `lib/config/app_info.dart` の `supportEmail` とプライバシーポリシーに入れる
 
 ### 2026-11-22 に決まったこと
+- 問い合わせ用のメールアドレス：**`tmando616.apps@gmail.com`**（個人開発の全アプリで共有）。アプリとプライバシーポリシーには `tmando616.apps+certstack@gmail.com` を入れ、Gmail のフィルタでアプリごとに分ける
 - バンドルID：**`com.tmando616.certstack`**（iOS・Android・macOS 共通）。同じ `tools` にある camp_gear（`com.tmando616.campgear`）に合わせた。公開後は変えられない
 - アプリ名：**CertStack**（サートスタック）。資格を1つずつ積み上げて全冠を目指す、の意味。英語・本格派・「全冠／スキマ時間／積み上げ」を込める、という本人の好みから選んだ。2026-11-22 時点で、Web検索の範囲では同名のアプリは見つからなかった（App Store Connect での名前の予約はまだ）
 
