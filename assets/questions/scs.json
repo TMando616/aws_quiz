@@ -1,0 +1,6065 @@
+{
+  "examId": "scs",
+  "examCode": "SCS-C03",
+  "questions": [
+    {
+      "id": "scs-001",
+      "domain": "d1",
+      "question": "AWS Organizations の全アカウント・全リージョンの API の操作を記録したい。新しいアカウントが組織に加わっても自動で記録の対象にし、メンバーアカウントの管理者が記録を止められないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "IAM Access Analyzer を有効にする",
+          "explanation": "アクセスの分析で、API の記録ではありません。"
+        },
+        {
+          "text": "各アカウントで個別に証跡を作るよう依頼する",
+          "explanation": "漏れが起き、メンバーアカウントの管理者が止められます。"
+        },
+        {
+          "text": "CloudWatch のダッシュボードを作る",
+          "explanation": "記録の仕組みではありません。"
+        },
+        {
+          "text": "管理アカウント（または委任管理者）で組織の証跡を作る",
+          "explanation": "組織の証跡は、組織のすべてのアカウントのイベントを記録し、メンバーアカウントは証跡を変更・削除できません。新しいアカウントにも自動で適用されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "組織の証跡は、管理アカウントや委任管理者のアカウントで作り、組織のすべてのメンバーアカウントのイベントを記録します。メンバーアカウントのユーザーは、組織の証跡を見られますが、変更や削除はできません。",
+      "references": [
+        {
+          "title": "組織の証跡の作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-002",
+      "domain": "d1",
+      "question": "組織の複数のアカウントのセキュリティのログ（CloudTrail・VPC フローログ・Route 53 Resolver のクエリのログなど）を、標準化された形式で1か所のデータレイクに集め、サードパーティの SIEM でも分析したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Security Lake",
+          "explanation": "セキュリティのデータを Open Cybersecurity Schema Framework（OCSF）の形式に正規化して、自分のアカウントのデータレイクに集めます。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を見つけるサービスです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "S3 の機密データを見つけるサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Security Lake は、AWS の環境・SaaS・オンプレミスなどのセキュリティのデータを、OCSF の形式でデータレイクに一元化します。サブスクライバーとして、分析のツールやサードパーティのツールにデータを渡せます。",
+      "references": [
+        {
+          "title": "Amazon Security Lake とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-lake/latest/userguide/what-is-security-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-003",
+      "domain": "d1",
+      "question": "EKS のクラスターのコンテナや EC2 インスタンスの中で、不審なプロセスの実行やファイルへのアクセスなど、OS のレベルの脅威を検出したい。最も適切な機能はどれか。",
+      "choices": [
+        {
+          "text": "AWS Config",
+          "explanation": "設定の記録と評価のサービスです。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "GuardDuty のランタイムモニタリング",
+          "explanation": "エージェントで OS のレベルのイベントを監視し、実行中のワークロードの脅威を検出します。"
+        },
+        {
+          "text": "GuardDuty の基本の脅威検出だけ",
+          "explanation": "CloudTrail やフローログなどのデータソースの分析で、OS の中のプロセスの活動までは見ません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "GuardDuty のランタイムモニタリングは、EKS・ECS（Fargate を含む）・EC2 のワークロードで、ファイルへのアクセス・プロセスの実行・ネットワークの接続などのランタイムの活動を監視します。",
+      "references": [
+        {
+          "title": "GuardDuty のランタイムモニタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/runtime-monitoring.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-004",
+      "domain": "d1",
+      "question": "組織の全アカウントで、セキュリティの設定のルール（CIS の基準など）をまとめてデプロイし、定期的に評価したい。複数のルールと修復のアクションを1つの単位として管理したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudTrail Lake でクエリを書く",
+          "explanation": "記録の分析で、設定の継続的な評価の仕組みではありません。"
+        },
+        {
+          "text": "AWS Config のコンフォーマンスパックを組織にデプロイする",
+          "explanation": "コンフォーマンスパックは、Config のルールと修復のアクションをまとめたもので、組織全体に1つの単位としてデプロイできます。"
+        },
+        {
+          "text": "Amazon Inspector を有効にする",
+          "explanation": "脆弱性のスキャンです。"
+        },
+        {
+          "text": "各アカウントで Config のルールを1つずつ手で作る",
+          "explanation": "漏れや差が生じます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "コンフォーマンスパックは、Config のルールと修復のアクションの集まりで、アカウント・リージョン・組織にまとめてデプロイし、準拠の状況を管理できます。",
+      "references": [
+        {
+          "title": "AWS Config のコンフォーマンスパック",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/conformance-packs.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-005",
+      "domain": "d1",
+      "question": "S3 のバケットのログを Athena で調べるのと同じように、CloudTrail のログ（S3 に保存されている）に SQL でクエリを実行して、特定のユーザーの操作を調べたい。最も手軽な方法はどれか。",
+      "choices": [
+        {
+          "text": "ログを手でダウンロードして、テキストエディタで検索する",
+          "explanation": "大量のログでは非効率です。"
+        },
+        {
+          "text": "Athena で CloudTrail のログのテーブルを作り、SQL でクエリする",
+          "explanation": "S3 の CloudTrail のログに、Athena でテーブルを定義して SQL で検索できます。"
+        },
+        {
+          "text": "AWS Artifact でクエリする",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "Amazon Inspector でクエリする",
+          "explanation": "脆弱性のスキャンのサービスです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Athena を使うと、S3 に保存された CloudTrail のログに SQL でクエリできます。パーティション射影で、クエリを速く安くできます。CloudTrail Lake を使う方法もあります。",
+      "references": [
+        {
+          "title": "Athena による CloudTrail のログのクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/cloudtrail-logs.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-006",
+      "domain": "d1",
+      "question": "Transit Gateway を経由する VPC 間の通信を調査したい。どの VPC のどの IP アドレスから、どこに、どれだけの通信があったかを記録したい。最も適切なログはどれか。",
+      "choices": [
+        {
+          "text": "Transit Gateway のフローログ",
+          "explanation": "Transit Gateway を通る通信の情報を記録します。"
+        },
+        {
+          "text": "Route 53 Resolver のクエリのログ",
+          "explanation": "DNS のクエリの記録です。"
+        },
+        {
+          "text": "CloudFront のアクセスログ",
+          "explanation": "CloudFront へのリクエストの記録です。"
+        },
+        {
+          "text": "CloudTrail のログ",
+          "explanation": "API の操作の記録で、ネットワークの通信の内容は記録しません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Transit Gateway のフローログは、Transit Gateway を通る IP の通信の情報を記録します。VPC のネットワークインターフェイスの通信は VPC フローログ、DNS のクエリは Route 53 Resolver のクエリのログで記録します。",
+      "references": [
+        {
+          "title": "Transit Gateway のフローログ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/tgw-flow-logs.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-007",
+      "domain": "d1",
+      "question": "API Gateway の REST API で、誰がどの API を呼び出し、どんなエラーが返ったかを調べたいが、CloudWatch Logs にログが出ていない。最も可能性の高い原因と対処はどれか。",
+      "choices": [
+        {
+          "text": "API Gateway はログを出力できない",
+          "explanation": "ログを出力できます。"
+        },
+        {
+          "text": "Lambda 関数のメモリが足りない",
+          "explanation": "API Gateway のログが出ない原因ではありません。"
+        },
+        {
+          "text": "ステージの CloudWatch のログ記録（実行ログやアクセスログ）が有効になっていない、または API Gateway がログを書き込むための IAM ロールが設定されていないので、設定する",
+          "explanation": "API Gateway のログを CloudWatch Logs に送るには、ステージでログ記録を有効にし、アカウントにログ記録用のロールを設定します。"
+        },
+        {
+          "text": "CloudTrail を無効にする",
+          "explanation": "ログの出力の対処になりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "API Gateway では、実行ログとアクセスログを CloudWatch Logs に出力できます。そのためには、API Gateway が CloudWatch Logs に書き込むための IAM ロールの ARN をアカウントの設定に指定し、ステージでログ記録を有効にします。",
+      "references": [
+        {
+          "title": "API Gateway の CloudWatch のログ記録の設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/set-up-logging.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-008",
+      "domain": "d1",
+      "question": "EC2 インスタンスのアプリケーションのログが CloudWatch Logs に届かなくなった。CloudWatch エージェントは動いている。最も可能性の高い原因はどれか。",
+      "choices": [
+        {
+          "text": "Route 53 のヘルスチェックが無効",
+          "explanation": "関係ありません。"
+        },
+        {
+          "text": "S3 のバケットのバージョニングが無効",
+          "explanation": "CloudWatch Logs へのログの送信とは関係ありません。"
+        },
+        {
+          "text": "Security Hub が無効",
+          "explanation": "関係ありません。"
+        },
+        {
+          "text": "インスタンスのロールに CloudWatch Logs への書き込み（logs:PutLogEvents など）の権限がない、またはエージェントの設定ファイルのログのパスが誤っている",
+          "explanation": "エージェントがログを送るには、適切な権限と正しい設定が必要です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CloudWatch エージェントでログが届かないときは、インスタンスのロールの権限（CloudWatchAgentServerPolicy など）、エージェントの設定（ログのファイルのパス）、ネットワークの経路などを確認します。",
+      "references": [
+        {
+          "title": "CloudWatch エージェントでメトリクスとログを収集する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+        },
+        {
+          "title": "CloudWatch エージェントの IAM の権限",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/create-iam-roles-for-cloudwatch-agent-commandline.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-009",
+      "domain": "d1",
+      "question": "GuardDuty で重大度の高い検出結果が出たら、数分以内にセキュリティチームに通知し、該当するインスタンスの情報をチケットのシステムに登録したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie で通知する",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "GuardDuty を無効にする",
+          "explanation": "検出できなくなります。"
+        },
+        {
+          "text": "GuardDuty の検出結果のイベントを EventBridge のルールで受け取り、SNS と Lambda をターゲットにする",
+          "explanation": "GuardDuty の検出結果は EventBridge に送られるので、ルールで重大度などを絞り込んで、通知や自動の処理につなげられます。"
+        },
+        {
+          "text": "毎週、GuardDuty のコンソールを確認する",
+          "explanation": "すぐには対応できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "GuardDuty の検出結果は、EventBridge のイベントとして送られます。ルールで重大度や種類を絞り込み、SNS での通知や Lambda・Step Functions での自動の対応につなげます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge による GuardDuty の検出結果の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_findings_eventbridge.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-010",
+      "domain": "d1",
+      "question": "複数のアカウントの CloudWatch のメトリクスとログを、セキュリティの監視用のアカウントで一元的に見たい。各アカウントに切り替えて確認する手間をなくしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudWatch のクロスアカウントのオブザーバビリティで、監視用のアカウントをモニタリングアカウントに設定し、ほかのアカウントをソースアカウントにつなぐ",
+          "explanation": "モニタリングアカウントで、ソースアカウントのメトリクス・ログ・トレースを確認できます。"
+        },
+        {
+          "text": "メトリクスを手で表計算に写す",
+          "explanation": "現実的ではありません。"
+        },
+        {
+          "text": "各アカウントのルートユーザーで順にサインインする",
+          "explanation": "ルートユーザーは日常の作業に使いません。"
+        },
+        {
+          "text": "Amazon Inspector で確認する",
+          "explanation": "脆弱性のスキャンです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudWatch のクロスアカウントのオブザーバビリティでは、モニタリングアカウントから、複数のソースアカウントのメトリクス・ログ・トレースを確認できます。",
+      "references": [
+        {
+          "title": "CloudWatch のクロスアカウントのオブザーバビリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-011",
+      "domain": "d2",
+      "question": "GuardDuty が、ある EC2 インスタンスが暗号通貨のマイニングの通信をしていると検出した。フォレンジックの調査のために証拠を残しつつ、被害の拡大を止めたい。最初に行う対応として最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "すぐにインスタンスを終了する",
+          "explanation": "メモリやディスクの証拠が失われます。"
+        },
+        {
+          "text": "何もせず様子を見る",
+          "explanation": "被害が広がるおそれがあります。"
+        },
+        {
+          "text": "インスタンスを再起動する",
+          "explanation": "メモリの証拠が失われ、攻撃も止まらないおそれがあります。"
+        },
+        {
+          "text": "EBS ボリュームのスナップショットを取り、インスタンスを、すべての通信を拒否する隔離用のセキュリティグループに変える",
+          "explanation": "証拠を保全しつつ、ネットワークから隔離して封じ込めます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "インシデントへの対応では、証拠の保全（スナップショットなど）と封じ込め（隔離）を行ってから、根絶と復旧に進みます。隔離では、通信を許可しないセキュリティグループに変えるなどの方法があります。",
+      "references": [
+        {
+          "title": "AWS Security Incident Response の封じ込め",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/contain.html"
+        },
+        {
+          "title": "Amazon EBS のスナップショット",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-snapshots.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-012",
+      "domain": "d2",
+      "question": "セキュリティのインシデントが起きたときの対応の手順を、事前にランブックとして用意し、対応の進み具合を一元的に管理したい。最も適切なサービスの組み合わせはどれか。",
+      "choices": [
+        {
+          "text": "対応の手順は決めず、起きてから考える",
+          "explanation": "対応が遅れ、ミスも起きやすくなります。"
+        },
+        {
+          "text": "Systems Manager Automation のランブックで手順を自動化し、OpsCenter で運用上の問題（OpsItem）として管理する",
+          "explanation": "ランブックで対応を自動化し、OpsCenter で問題の調査と対応を一元管理できます。"
+        },
+        {
+          "text": "Amazon Macie で手順を管理する",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Artifact にランブックを保存する",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "インシデントへの備えとして、対応の計画とランブックを用意します。Systems Manager Automation で手順を自動化し、OpsCenter で運用上の問題を一元的に管理・調査できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager OpsCenter",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/OpsCenter.html"
+        },
+        {
+          "title": "AWS Systems Manager Automation",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-automation.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-013",
+      "domain": "d2",
+      "question": "インシデント対応の計画が実際に機能するかを、本番に近い環境で確かめたい。インスタンスの停止やネットワークの遅延などの障害を意図的に起こして、検知と対応の手順を試したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Fault Injection Service",
+          "explanation": "管理された実験で、障害を意図的に起こし、システムの反応や対応の手順を確かめられます。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理のサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS FIS は、障害注入の実験を行うフルマネージドのサービスです。インシデント対応やレジリエンスの計画の有効性を確かめるのに使えます。",
+      "references": [
+        {
+          "title": "AWS Fault Injection Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fis/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-014",
+      "domain": "d2",
+      "question": "GuardDuty の検出結果について、関係する IAM ロール・IP アドレス・EC2 インスタンスの活動を時系列でたどり、攻撃の範囲と根本原因を調べたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理のサービスです。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性のスキャンのサービスです。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "設定の記録と評価のサービスです。"
+        },
+        {
+          "text": "Amazon Detective",
+          "explanation": "ログをもとにリソースの関係と活動を可視化し、セキュリティの問題の根本原因の調査を助けます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Detective は、CloudTrail・VPC フローログ・GuardDuty の検出結果などからグラフを作り、セキュリティの検出結果や不審な活動の根本原因の分析・調査を助けます。",
+      "references": [
+        {
+          "title": "Amazon Detective とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/detective/latest/userguide/what-is-detective.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-015",
+      "domain": "d2",
+      "question": "不正に作られた IAM ユーザーのアクセスキーが使われた形跡がある。被害を最小限にするための最初の対応として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "ルートユーザーのパスワードを公開する",
+          "explanation": "さらに危険です。"
+        },
+        {
+          "text": "アクセスキーを無効化し、CloudTrail でそのキーで行われた操作を調べて、作られたリソースや変更を確認する",
+          "explanation": "まず認証情報を無効にして被害を止め、記録から影響の範囲を調べます。"
+        },
+        {
+          "text": "アクセスキーはそのままにして、様子を見る",
+          "explanation": "被害が続くおそれがあります。"
+        },
+        {
+          "text": "アカウントのすべての S3 バケットを削除する",
+          "explanation": "必要なデータまで失われます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "認証情報の漏えいへの対応では、漏れた認証情報の無効化（封じ込め）、操作の記録の調査（影響の範囲の把握）、不正なリソースの削除（根絶）、復旧の順に進めます。",
+      "references": [
+        {
+          "title": "AWS Security Incident Response とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/what-is.html"
+        },
+        {
+          "title": "AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-016",
+      "domain": "d2",
+      "question": "ランサムウェアの攻撃に備えて、バックアップを、攻撃者や管理者の誤操作でも削除・変更できないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バックアップを公開の S3 バケットに置く",
+          "explanation": "誰でも読めてしまいます。"
+        },
+        {
+          "text": "バックアップを取らない",
+          "explanation": "復旧できなくなります。"
+        },
+        {
+          "text": "AWS Backup ボールトロック（コンプライアンスモード）で、保持期間の間バックアップを削除できないようにする",
+          "explanation": "ボールトロックで、バックアップの削除や保持期間の短縮を防げます（WORM）。"
+        },
+        {
+          "text": "バックアップを本番と同じ IAM ロールで自由に削除できるようにする",
+          "explanation": "攻撃者に削除されるおそれがあります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS Backup ボールトロックは、バックアップボールトの復旧ポイントを、WORM（書き込みは1回、読み取りは何度でも）で保護します。コンプライアンスモードでは、ロックしたあとは誰も解除できません。",
+      "references": [
+        {
+          "title": "AWS Backup ボールトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-017",
+      "domain": "d2",
+      "question": "インシデントの調査のため、攻撃を受けた EC2 インスタンスのシステムのログとアプリケーションのログを、改ざんされないように保存したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ログを削除する",
+          "explanation": "調査できなくなります。"
+        },
+        {
+          "text": "ログを侵害されたインスタンスのディスクにだけ置いておく",
+          "explanation": "攻撃者に消されるおそれがあります。"
+        },
+        {
+          "text": "ログを公開の Web サイトに置く",
+          "explanation": "情報が漏れます。"
+        },
+        {
+          "text": "ログを専用のアカウントの S3 バケットに保存し、S3 オブジェクトロックで一定期間変更・削除できないようにする",
+          "explanation": "別のアカウントに保存し、オブジェクトロックで保護すると、攻撃者がログを消しにくくなります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "フォレンジックのアーティファクトは、侵害された環境から分離した場所に保存し、改ざんから守ります。S3 オブジェクトロックで WORM の保護ができます。",
+      "references": [
+        {
+          "title": "S3 オブジェクトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-018",
+      "domain": "d2",
+      "question": "ある Web アプリケーションが、大規模な DDoS 攻撃を受けている。Shield Advanced を契約している。対応として最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie で攻撃を止める",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "Shield Response Team（SRT）に支援を依頼し、WAF のルールの作成などの緩和の支援を受ける",
+          "explanation": "Shield Advanced では、24時間体制の Shield Response Team の支援を受けられます。"
+        },
+        {
+          "text": "アプリケーションを停止して攻撃が終わるのを待つ",
+          "explanation": "利用者がサービスを使えなくなります。"
+        },
+        {
+          "text": "攻撃元の IP アドレスを手で1つずつセキュリティグループに追加する",
+          "explanation": "セキュリティグループは許可のルールだけで、拒否のルールは書けません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Shield Advanced では、DDoS への高度な保護、Shield Response Team（SRT）の支援、DDoS による費用の増加に対する保護などが受けられます。",
+      "references": [
+        {
+          "title": "AWS Shield Advanced の概要",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-advanced-summary.html"
+        },
+        {
+          "title": "Shield Response Team (SRT) による DDoS イベントの対応の支援",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-srt-support.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-019",
+      "domain": "d2",
+      "question": "インシデントで侵害された EC2 インスタンスを復旧したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "侵害されたインスタンスは使い続けず、信頼できるイメージ（ゴールデンイメージ）から新しいインスタンスを作り、必要ならバックアップからデータを復元する",
+          "explanation": "侵害されたインスタンスには攻撃者の仕掛けが残っている可能性があるので、信頼できる状態から作り直します。"
+        },
+        {
+          "text": "インスタンスを再起動するだけにする",
+          "explanation": "仕掛けが残ったままになるおそれがあります。"
+        },
+        {
+          "text": "侵害されたインスタンスのパスワードだけを変えて使い続ける",
+          "explanation": "攻撃者の仕掛けが残っているおそれがあります。"
+        },
+        {
+          "text": "インスタンスのタグを変える",
+          "explanation": "復旧にはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "復旧では、侵害されたリソースを信頼できる状態から作り直し、脆弱性を修正してから戻します。EC2 Image Builder でパッチを当てたゴールデンイメージを用意しておくと、早く復旧できます。",
+      "references": [
+        {
+          "title": "EC2 Image Builder とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/imagebuilder/latest/userguide/what-is-image-builder.html"
+        },
+        {
+          "title": "AWS Security Incident Response とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-020",
+      "domain": "d3",
+      "question": "ログインの API に、1つの IP アドレスから短時間に大量のリクエストが送られてくる（総当たりの攻撃）。1つの IP アドレスからのリクエストが5分間に一定数を超えたら、自動でブロックしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ログインの API を停止する",
+          "explanation": "正規の利用者も使えなくなります。"
+        },
+        {
+          "text": "Amazon Macie で検出する",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS WAF のレートベースのルールで、IP アドレスごとのリクエストの数の上限を決めてブロックする",
+          "explanation": "レートベースのルールは、一定の期間のリクエストの数を集計し、上限を超えた送信元をブロックします。"
+        },
+        {
+          "text": "セキュリティグループで、その IP アドレスを拒否する",
+          "explanation": "セキュリティグループには拒否のルールがありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS WAF のレートベースのルールは、IP アドレスなどの単位でリクエストの数を集計し、指定した上限を超えたらブロックなどのアクションを行います。",
+      "references": [
+        {
+          "title": "レートベースのルールステートメント",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+        }
+      ],
+      "group": "scs-waf-rule"
+    },
+    {
+      "id": "scs-021",
+      "domain": "d3",
+      "question": "国内向けの EC サイトで、契約上サービスを提供していない国からのアクセスを、CloudFront の前でブロックしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS WAF のレートベースのルールを使う",
+          "explanation": "リクエストの数で制限するもので、国での制限ではありません。"
+        },
+        {
+          "text": "ネットワーク ACL で国ごとの IP アドレスを手で登録する",
+          "explanation": "数が多く、変化もあるので現実的ではありません。"
+        },
+        {
+          "text": "AWS WAF の地理的一致のルールで、許可しない国からのリクエストをブロックする",
+          "explanation": "リクエストの送信元の国や地域で、許可・ブロックを決められます。"
+        },
+        {
+          "text": "Amazon Inspector を使う",
+          "explanation": "脆弱性のスキャンのサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS WAF の地理的一致のルールは、リクエストの送信元の国や地域で、Web リクエストを許可またはブロックします。CloudFront の地域制限の機能を使う方法もあります。",
+      "references": [
+        {
+          "title": "地理的一致のルールステートメント",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-geo-match.html"
+        }
+      ],
+      "group": "scs-waf-rule"
+    },
+    {
+      "id": "scs-022",
+      "domain": "d3",
+      "question": "CloudFront で配信している S3 の静的なサイトに、CloudFront を経由せずに S3 の URL で直接アクセスされるのを防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "オリジンアクセスコントロール（OAC）を設定し、バケットポリシーで CloudFront のディストリビューションからのアクセスだけを許可する",
+          "explanation": "OAC で、S3 のオリジンへのアクセスを CloudFront からに限定できます。"
+        },
+        {
+          "text": "バケットを公開のままにする",
+          "explanation": "S3 に直接アクセスされます。"
+        },
+        {
+          "text": "S3 のバージョニングを有効にする",
+          "explanation": "アクセスの制限にはなりません。"
+        },
+        {
+          "text": "CloudFront のキャッシュを無効にする",
+          "explanation": "アクセスの制限にはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "オリジンアクセスコントロール（OAC）を使うと、S3 のバケットを非公開にしたまま、CloudFront を経由したアクセスだけを許可できます。",
+      "references": [
+        {
+          "title": "Amazon S3 オリジンへのアクセスを制限する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ],
+      "group": "scs-edge"
+    },
+    {
+      "id": "scs-023",
+      "domain": "d3",
+      "question": "Web のフォームで入力されたクレジットカード番号を、CloudFront のエッジで暗号化し、オリジンの中でもその番号を扱う特定のアプリケーションだけが復号できるようにしたい。最も適切な機能はどれか。",
+      "choices": [
+        {
+          "text": "AWS WAF のレートベースのルール",
+          "explanation": "リクエストの数の制限です。"
+        },
+        {
+          "text": "CloudFront のフィールドレベル暗号化",
+          "explanation": "POST のリクエストの特定のフィールドを、エッジで公開鍵で暗号化し、秘密鍵を持つアプリケーションだけが復号できます。"
+        },
+        {
+          "text": "オリジンアクセスコントロール",
+          "explanation": "S3 のオリジンへのアクセスを制限する機能です。"
+        },
+        {
+          "text": "CloudFront のキャッシュポリシー",
+          "explanation": "キャッシュの設定です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "フィールドレベル暗号化は、HTTPS に加えて、特定の機密のデータをエッジで暗号化し、オリジンの処理の途中でも保護します。",
+      "references": [
+        {
+          "title": "フィールドレベル暗号化",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html"
+        }
+      ],
+      "group": "scs-edge"
+    },
+    {
+      "id": "scs-024",
+      "domain": "d3",
+      "question": "すべての EC2 インスタンスを、CIS の基準に沿ってハードニングし、最新のパッチを当てた AMI から起動させたい。AMI の作成とテストを自動化したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie を使う",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Artifact を使う",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "毎回、インスタンスを起動してから手でハードニングする",
+          "explanation": "手作業で漏れや差が生じます。"
+        },
+        {
+          "text": "EC2 Image Builder のパイプラインで、ハードニングとテストを含むゴールデンイメージを自動で作る",
+          "explanation": "Image Builder で、安全で最新のイメージの作成・テスト・配布を自動化できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EC2 Image Builder は、カスタマイズされた、安全で最新のサーバーのイメージの作成・管理・デプロイを自動化します。",
+      "references": [
+        {
+          "title": "EC2 Image Builder とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/imagebuilder/latest/userguide/what-is-image-builder.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-025",
+      "domain": "d3",
+      "question": "EC2 インスタンスへの管理のための接続で、SSH の22番ポートを開けたくない。踏み台のサーバーも置かず、接続の操作の記録も残したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "22番ポートをすべての IP アドレスに開ける",
+          "explanation": "攻撃を受けやすくなります。"
+        },
+        {
+          "text": "ルートユーザーで接続する",
+          "explanation": "ルートユーザーは使いません。"
+        },
+        {
+          "text": "SSH の鍵を全員で共有する",
+          "explanation": "誰が操作したかを追えず、漏えいのリスクもあります。"
+        },
+        {
+          "text": "Systems Manager Session Manager で接続し、セッションのログを S3 や CloudWatch Logs に記録する",
+          "explanation": "Session Manager は、インバウンドのポートや踏み台、SSH の鍵なしで接続でき、セッションのログも残せます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Session Manager を使うと、インバウンドのポートを開けず、踏み台や SSH の鍵を管理せずに、インスタンスに安全に接続できます。IAM で接続を制御し、ログで監査できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-026",
+      "domain": "d3",
+      "question": "生成 AI のチャットのアプリケーションで、OWASP Top 10 for LLM Applications で挙げられているプロンプトインジェクションや機密情報の漏えいに備えたい。最も適切な対策はどれか。",
+      "choices": [
+        {
+          "text": "温度を最大にする",
+          "explanation": "出力のばらつきが増えるだけです。"
+        },
+        {
+          "text": "Amazon Bedrock のガードレールで、プロンプト攻撃のフィルターと機密情報のフィルターを入出力に適用する",
+          "explanation": "ガードレールで、プロンプト攻撃の検出と、PII などの機密情報のマスクやブロックができます。"
+        },
+        {
+          "text": "ログを取らない",
+          "explanation": "調査ができなくなります。"
+        },
+        {
+          "text": "すべての利用者に管理者の権限を与える",
+          "explanation": "被害が大きくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Bedrock のガードレールは、コンテンツフィルター（プロンプト攻撃を含む）、拒否するトピック、機密情報のフィルターなどで、生成 AI のアプリケーションを保護します。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のガードレール",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/guardrails.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-027",
+      "domain": "d3",
+      "question": "複数の VPC からインターネットに出る通信を、中央の検査用の VPC に集め、ドメイン名の許可リストや侵入防止のルールで検査したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "ネットワーク ACL だけ",
+          "explanation": "ステートレスな IP アドレスとポートの制御です。"
+        },
+        {
+          "text": "AWS Network Firewall",
+          "explanation": "VPC のためのマネージドなネットワークファイアウォールで、ステートフルな検査・ドメインのフィルタリング・侵入防止（IPS）のルールを使えます。"
+        },
+        {
+          "text": "セキュリティグループだけ",
+          "explanation": "インスタンス単位の許可のルールで、ドメインのフィルタリングや侵入防止の検査はできません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS Network Firewall は、VPC の通信をステートフルに検査し、ドメインのリストや Suricata 互換の侵入防止のルールでフィルタリングできます。Transit Gateway と組み合わせて、通信を中央で検査する構成にできます。",
+      "references": [
+        {
+          "title": "AWS Network Firewall とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-028",
+      "domain": "d3",
+      "question": "オンプレミスと AWS を Direct Connect の専用線でつないでいる。規制の要件で、専用線を流れるデータも、レイヤー2で暗号化する必要がある。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Direct Connect の接続で MACsec を有効にする",
+          "explanation": "MACsec は、IEEE 802.1AE の規格で、Direct Connect の接続をレイヤー2で暗号化します。"
+        },
+        {
+          "text": "CloudFront を経由させる",
+          "explanation": "オンプレミスとの接続の暗号化にはなりません。"
+        },
+        {
+          "text": "Direct Connect の通信は常に暗号化されているので、何もしなくてよい",
+          "explanation": "Direct Connect は、それだけでは暗号化されません。"
+        },
+        {
+          "text": "Amazon Macie を使う",
+          "explanation": "機密データの検出のサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Direct Connect は、それだけでは通信を暗号化しません。MACsec（対応する専用接続）を使うとレイヤー2で暗号化でき、Direct Connect の上に Site-to-Site VPN を張って IPsec で暗号化する方法もあります。",
+      "references": [
+        {
+          "title": "AWS Direct Connect の MACsec",
+          "url": "https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/MACsec.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-029",
+      "domain": "d3",
+      "question": "社員が社内のアプリケーションに、VPN を使わずにアクセスできるようにしたい。アクセスのたびに、ID プロバイダーの認証と、端末のセキュリティの状態を確かめてから許可したい（ゼロトラスト）。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Verified Access",
+          "explanation": "ID と端末の状態などをもとに、リクエストごとにアクセスを評価して、VPN なしで社内のアプリケーションへのアクセスを提供します。"
+        },
+        {
+          "text": "ネットワーク ACL",
+          "explanation": "サブネットの通信の制御です。"
+        },
+        {
+          "text": "AWS Client VPN",
+          "explanation": "VPN で接続する方法で、VPN を使わない要件に合いません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Verified Access は、ゼロトラストの原則に沿って、ID や端末の状態などの条件で、リクエストごとにアクセスを評価し、VPN なしで企業のアプリケーションへの安全なアクセスを提供します。",
+      "references": [
+        {
+          "title": "AWS Verified Access とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verified-access/latest/ug/what-is-verified-access.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-030",
+      "domain": "d3",
+      "question": "Web・アプリケーション・データベースの3層のシステムで、データベースへの通信を、アプリケーションの層からのものだけに限定したい。IP アドレスの範囲で書くと、アプリケーションのサーバーが増減するたびに変更が必要になる。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "データベースをパブリックサブネットに置く",
+          "explanation": "インターネットから到達できる場所になります。"
+        },
+        {
+          "text": "データベースのセキュリティグループで 0.0.0.0/0 を許可する",
+          "explanation": "誰でも接続できてしまいます。"
+        },
+        {
+          "text": "データベースのセキュリティグループのインバウンドのルールで、送信元にアプリケーションの層のセキュリティグループを指定する",
+          "explanation": "セキュリティグループを送信元に指定すると、そのセキュリティグループのリソースからの通信だけを許可でき、台数の増減に追従します。"
+        },
+        {
+          "text": "ネットワーク ACL ですべての通信を許可する",
+          "explanation": "制限になりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "セキュリティグループのルールの送信元に、別のセキュリティグループを指定できます。層ごとにセキュリティグループを分けると、ネットワークの分割（セグメンテーション）を管理しやすくなります。",
+      "references": [
+        {
+          "title": "セキュリティグループ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-security-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-031",
+      "domain": "d3",
+      "question": "CI/CD のパイプラインで、コードの中の脆弱性や、ハードコードされた認証情報を、デプロイの前に自動で見つけたい。最も適切な考え方はどれか。",
+      "choices": [
+        {
+          "text": "コードのレビューは一切しない",
+          "explanation": "問題を見つけられません。"
+        },
+        {
+          "text": "認証情報はコードに書くのが推奨である",
+          "explanation": "漏えいの原因になります。"
+        },
+        {
+          "text": "本番にデプロイしてから、問題が起きたら直す",
+          "explanation": "脆弱性が本番に出てしまいます。"
+        },
+        {
+          "text": "パイプラインにコードのセキュリティスキャンの段階を入れ、問題が見つかったらデプロイを止める",
+          "explanation": "デプロイの前に自動でスキャンすると、脆弱性を本番に出す前に見つけられます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "パイプラインの中で、コードの脆弱性やシークレットの検出、コンテナイメージのスキャン（Amazon Inspector など）を自動で行い、問題があれば止めることで、安全なデプロイを保ちます。",
+      "references": [
+        {
+          "title": "Amazon Inspector とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/inspector/latest/user/what-is-inspector.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-032",
+      "domain": "d4",
+      "question": "社員が、社内の ID プロバイダー（SAML 2.0 に対応）のアカウントで、組織の複数の AWS アカウントにシングルサインオンし、アカウントごとに決められた権限で作業できるようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "IAM アイデンティティセンターで外部の ID プロバイダーとつなぎ、アカウントとアクセス許可セットを割り当てる",
+          "explanation": "アイデンティティセンターで、ID プロバイダーの利用者に、複数のアカウントへのアクセスとアクセス許可セットを割り当てられます。"
+        },
+        {
+          "text": "アカウントごとに IAM ユーザーを作る",
+          "explanation": "管理が煩雑になり、長期の認証情報も増えます。"
+        },
+        {
+          "text": "Amazon Cognito のユーザープールを使う",
+          "explanation": "アプリケーションの利用者（顧客）の認証のサービスです。"
+        },
+        {
+          "text": "ルートユーザーのパスワードを共有する",
+          "explanation": "使ってはいけない方法です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM アイデンティティセンターは、社員などの複数の AWS アカウントとアプリケーションへのアクセスを一元管理します。外部の ID プロバイダーとつなぎ、アクセス許可セットで権限を割り当てます。",
+      "references": [
+        {
+          "title": "IAM アイデンティティセンターとは",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/what-is.html"
+        },
+        {
+          "title": "IAM アイデンティティセンターのアクセス許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-033",
+      "domain": "d4",
+      "question": "オンプレミスのサーバーで動くアプリケーションから、AWS の S3 にアクセスさせたい。長期のアクセスキーをサーバーに置きたくない。サーバーには社内の認証局が発行した X.509 の証明書がある。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のバケットを公開する",
+          "explanation": "誰でもアクセスできてしまいます。"
+        },
+        {
+          "text": "ルートユーザーのアクセスキーを使う",
+          "explanation": "使ってはいけない方法です。"
+        },
+        {
+          "text": "IAM Roles Anywhere で、証明書を使ってロールを引き受け、一時的な認証情報を得る",
+          "explanation": "IAM Roles Anywhere は、X.509 の証明書で AWS の外のワークロードを認証し、一時的な認証情報を発行します。"
+        },
+        {
+          "text": "IAM ユーザーのアクセスキーをサーバーに保存する",
+          "explanation": "長期の認証情報を置くことになります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "IAM Roles Anywhere を使うと、AWS の外で動くワークロードが、信頼された認証局の X.509 の証明書で認証し、IAM ロールの一時的な認証情報を得られます。",
+      "references": [
+        {
+          "title": "IAM Roles Anywhere とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/rolesanywhere/latest/userguide/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-034",
+      "domain": "d4",
+      "question": "開発者に IAM ロールを作る権限を与えたいが、開発者が自分より強い権限のロールを作って権限を広げること（権限の昇格）は防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "開発者に AdministratorAccess を与える",
+          "explanation": "権限の昇格を防げません。"
+        },
+        {
+          "text": "開発者に IAM の権限を一切与えない",
+          "explanation": "ロールを作れなくなり、要件に合いません。"
+        },
+        {
+          "text": "ロールの名前の付け方のルールを口頭で伝える",
+          "explanation": "技術的に防げません。"
+        },
+        {
+          "text": "アクセス許可の境界を使い、開発者が作るロールに特定の境界をアタッチすることを条件にする",
+          "explanation": "アクセス許可の境界は、エンティティが持てる権限の上限を決めるので、境界を超える権限を持つロールは作れなくなります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "アクセス許可の境界は、IAM のユーザーやロールが持てる最大の権限を決めるポリシーです。ID ベースのポリシーと境界の両方で許可された操作だけができます。",
+      "references": [
+        {
+          "title": "IAM エンティティのアクセス許可の境界",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-035",
+      "domain": "d4",
+      "question": "数百のプロジェクトがあり、各開発者には自分のプロジェクトのリソースだけを操作させたい。プロジェクトが増えるたびに IAM ポリシーを書き換えたくない。最も適切なアクセス制御の方式はどれか。",
+      "choices": [
+        {
+          "text": "プロジェクトごとに IAM ポリシーを作り、増えるたびに書き換える",
+          "explanation": "数百のプロジェクトでは管理が大変です。"
+        },
+        {
+          "text": "属性ベースのアクセス制御（ABAC）で、プリンシパルのタグ（project）とリソースのタグ（project）が一致するときだけ許可する",
+          "explanation": "タグが一致する条件で許可すると、新しいプロジェクトでもタグを付けるだけで、ポリシーを変えずに済みます。"
+        },
+        {
+          "text": "リソースに名前を付けない",
+          "explanation": "制御の手がかりがなくなります。"
+        },
+        {
+          "text": "全員に全プロジェクトの権限を与える",
+          "explanation": "最小権限に反します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ABAC は、タグなどの属性に基づいて権限を決める方式です。リソースが増えてもポリシーを書き換えずに済み、大規模な環境に向いています。役割ごとに権限を決める RBAC と組み合わせて使えます。",
+      "references": [
+        {
+          "title": "ABAC（属性ベースのアクセス制御）とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-036",
+      "domain": "d4",
+      "question": "アプリケーションの中で、「この利用者は、この文書を編集できるか」のような、アプリケーション固有の細かい認可の判断を、コードから切り離したポリシーで管理したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Verified Permissions",
+          "explanation": "Cedar のポリシーで、アプリケーションの中の細かい認可を管理・評価するサービスです。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "IAM のポリシー",
+          "explanation": "AWS のリソースへのアクセスの制御で、アプリケーションの中の文書などの認可には向きません。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Verified Permissions は、Cedar というポリシーの言語で、アプリケーションの中の細かい認可を定義し、評価します。認可のロジックをコードから切り離せます。",
+      "references": [
+        {
+          "title": "Amazon Verified Permissions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verifiedpermissions/latest/userguide/what-is-avp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-037",
+      "domain": "d4",
+      "question": "アカウント A の Lambda 関数に、アカウント B の S3 バケットのオブジェクトを読ませたい。アカウント B 側で、アカウント A の関数のロールにだけ読み取りを許可したい。最も簡単な方法はどれか。",
+      "choices": [
+        {
+          "text": "アカウント B のバケットポリシーで、アカウント A のロールの ARN をプリンシパルに指定して s3:GetObject を許可し、アカウント A のロールの ID ベースのポリシーでも許可する",
+          "explanation": "クロスアカウントのアクセスでは、リソースベースのポリシーと、アクセス元の ID ベースのポリシーの両方で許可します。"
+        },
+        {
+          "text": "アカウント B の IAM ユーザーのアクセスキーを関数に入れる",
+          "explanation": "長期の認証情報の共有になります。"
+        },
+        {
+          "text": "バケットを公開する",
+          "explanation": "誰でも読めてしまいます。"
+        },
+        {
+          "text": "アカウント A のポリシーだけで許可する",
+          "explanation": "アカウント B のリソース側の許可も必要です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リソースベースのポリシー（バケットポリシーなど）で別のアカウントのプリンシパルを許可できます。クロスアカウントでは、アクセス元のアカウントの ID ベースのポリシーでも許可が必要です。ロールを引き受ける方法（信頼ポリシー）もあります。",
+      "references": [
+        {
+          "title": "ロールの信頼ポリシーとクロスアカウントのアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-038",
+      "domain": "d4",
+      "question": "ある開発者が「S3 のバケットのオブジェクトを削除できない」と言っている。ID ベースのポリシー・バケットポリシー・SCP のどれで拒否されているかを、実際の削除を試さずに調べたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットを削除して作り直す",
+          "explanation": "データが失われます。"
+        },
+        {
+          "text": "Amazon Macie で調べる",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "開発者に一時的に管理者の権限を与えて試させる",
+          "explanation": "最小権限に反し、原因の特定にもなりません。"
+        },
+        {
+          "text": "IAM ポリシーシミュレーターで、その開発者と操作をシミュレーションする",
+          "explanation": "関係するポリシーを評価し、どのポリシーで許可・拒否されるかを確認できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "IAM ポリシーシミュレーターで、ID ベースのポリシーやリソースベースのポリシーなどの効果を、実際の操作なしに確認できます。実際に拒否された操作は、CloudTrail のエラーのイベントでも確認できます。",
+      "references": [
+        {
+          "title": "IAM ポリシーシミュレーター",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_testing-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-039",
+      "domain": "d4",
+      "question": "組織の外のアカウントや公開のアクセスを許可してしまっている S3 バケット・KMS キー・IAM ロールなどを、継続的に見つけたい。また、実際には使われていないアクセス許可も見つけて削りたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性のスキャンのサービスです。"
+        },
+        {
+          "text": "IAM Access Analyzer の外部アクセスの分析と未使用のアクセスの分析",
+          "explanation": "リソースのポリシーを分析して外部との共有を見つけ、使われていないロールやアクセス許可も見つけます。"
+        },
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理のサービスです。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "IAM Access Analyzer は、外部のエンティティと共有されているリソースを見つける外部アクセスの分析、使われていないアクセスの分析、ポリシーの検証などの機能を持ちます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-040",
+      "domain": "d4",
+      "question": "モバイルアプリの利用者に、S3 の自分のフォルダにだけファイルをアップロードさせたい。サインインした利用者に、AWS の一時的な認証情報を発行したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットを公開して、誰でも書き込めるようにする",
+          "explanation": "誰でも書き込めてしまいます。"
+        },
+        {
+          "text": "全利用者で1つの IAM ユーザーのアクセスキーを共有する",
+          "explanation": "利用者ごとの制限ができず、漏えいのリスクもあります。"
+        },
+        {
+          "text": "Cognito アイデンティティプールで一時的な認証情報を発行し、IAM ポリシーの変数（利用者の ID）でフォルダを限定する",
+          "explanation": "アイデンティティプールが認証済みの利用者に一時的な認証情報を発行し、ポリシーの変数で利用者ごとの範囲に絞れます。"
+        },
+        {
+          "text": "ルートユーザーの認証情報をアプリに埋め込む",
+          "explanation": "使ってはいけない方法です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Cognito アイデンティティプールは、認証済みの利用者に、IAM ロールに基づく一時的な認証情報を発行します。ポリシーの変数を使うと、利用者ごとにアクセスできる範囲を絞れます。",
+      "references": [
+        {
+          "title": "Amazon Cognito とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/what-is-amazon-cognito.html"
+        },
+        {
+          "title": "AWS STS の一時的なセキュリティ認証情報",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-041",
+      "domain": "d4",
+      "question": "IAM アイデンティティセンターで、ある社員が特定のアカウントにサインインできないと問い合わせてきた。最も可能性の高い原因の確認として適切なものはどれか。",
+      "choices": [
+        {
+          "text": "その社員（またはグループ）に、そのアカウントとアクセス許可セットが割り当てられているかを確認する",
+          "explanation": "アカウントへのアクセスには、利用者やグループへのアカウントとアクセス許可セットの割り当てが必要です。"
+        },
+        {
+          "text": "EC2 のインスタンスタイプを確認する",
+          "explanation": "関係ありません。"
+        },
+        {
+          "text": "S3 のバケットのバージョニングを確認する",
+          "explanation": "関係ありません。"
+        },
+        {
+          "text": "CloudFront のキャッシュを削除する",
+          "explanation": "関係ありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM アイデンティティセンターでは、利用者やグループに、アカウントとアクセス許可セットを割り当てて、アクセスを許可します。認証の問題の調査には、割り当て・ID ソースの同期・CloudTrail のイベントなどを確認します。",
+      "references": [
+        {
+          "title": "IAM アイデンティティセンターのアクセス許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-042",
+      "domain": "d4",
+      "question": "EC2 インスタンス・Lambda 関数・ECS のタスクのそれぞれに、AWS のサービスへのアクセスを許可したい。長期の認証情報を使わない、それぞれに適した方法の組み合わせとして正しいものはどれか。",
+      "choices": [
+        {
+          "text": "すべてにルートユーザーの認証情報を渡す",
+          "explanation": "使ってはいけない方法です。"
+        },
+        {
+          "text": "すべてに同じ IAM ユーザーのアクセスキーを環境変数で渡す",
+          "explanation": "長期の認証情報の共有になります。"
+        },
+        {
+          "text": "EC2 はインスタンスプロファイル、Lambda は実行ロール、ECS はタスクロール",
+          "explanation": "それぞれのサービスで IAM ロールを渡し、一時的な認証情報でアクセスさせます。"
+        },
+        {
+          "text": "認証情報は渡さず、すべてのバケットを公開する",
+          "explanation": "誰でもアクセスできてしまいます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "コンピューティングのワークロードには、EC2 のインスタンスプロファイル、Lambda の実行ロール、ECS のタスクロールなどで IAM ロールを渡し、必要な権限だけを与えます。",
+      "references": [
+        {
+          "title": "AWS STS の一時的なセキュリティ認証情報",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-043",
+      "domain": "d4",
+      "question": "組織の全アカウントで、S3 のバケットや KMS キーなどのリソースに対して、組織の外の ID からのアクセスを、リソースのポリシーの設定に関係なく一元的に防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各バケットのポリシーを1つずつ確認する",
+          "explanation": "漏れが起き、一元的な防止になりません。"
+        },
+        {
+          "text": "リソースコントロールポリシー（RCP）で、組織の外のプリンシパルからのアクセスを拒否する",
+          "explanation": "RCP は、組織のアカウントのリソースに対して、使えるアクセス許可の上限を一元的に決めるポリシーです。"
+        },
+        {
+          "text": "サービスコントロールポリシーだけを使う",
+          "explanation": "SCP は組織の中のプリンシパルの権限の上限を決めるもので、外部の ID からのアクセスを防ぐ目的には RCP が向いています。"
+        },
+        {
+          "text": "Amazon Macie で調べる",
+          "explanation": "機密データの検出のサービスです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "RCP は、組織のリソースに対する最大のアクセス許可を決めるポリシーで、外部からのアクセスなどのデータ境界を一元的に作るのに使えます。SCP は組織のプリンシパルの最大の権限を決めます。",
+      "references": [
+        {
+          "title": "リソースコントロールポリシー (RCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_rcps.html"
+        },
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-044",
+      "domain": "d4",
+      "question": "外部の監視サービスの会社に、自社のアカウントのリソースを読み取らせるため、IAM ロールを引き受けさせる。その会社は多くの顧客のロールを引き受けるので、別の顧客がこの会社をだまして自社のロールを使わせる「混乱した代理」の問題を防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "信頼ポリシーで、すべての AWS アカウントを許可する",
+          "explanation": "誰でもロールを引き受けられてしまいます。"
+        },
+        {
+          "text": "その会社に、自社の IAM ユーザーのアクセスキーを渡す",
+          "explanation": "長期の認証情報の共有になります。"
+        },
+        {
+          "text": "ルートユーザーの認証情報を渡す",
+          "explanation": "使ってはいけない方法です。"
+        },
+        {
+          "text": "ロールの信頼ポリシーで、その会社のアカウントを許可し、条件に外部 ID（sts:ExternalId）を指定する",
+          "explanation": "外部 ID は、自社とその会社だけが知る値で、ロールを引き受けるときに一致を求めることで、混乱した代理の問題を防ぎます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "サードパーティーにロールを引き受けさせる場合は、信頼ポリシーで相手のアカウントを指定し、外部 ID を条件にします。外部 ID の主な目的は、混乱した代理の問題を防ぐことです。",
+      "references": [
+        {
+          "title": "サードパーティーにアクセスを許可するときの外部 ID",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+        },
+        {
+          "title": "ロールの信頼ポリシーとクロスアカウントのアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-045",
+      "domain": "d5",
+      "question": "Application Load Balancer で受ける HTTPS の通信で、古いバージョンの TLS（TLS 1.0 や 1.1）を使わせず、TLS 1.2 以上だけを許可したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie で制限する",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "HTTP のリスナーだけを使う",
+          "explanation": "通信が暗号化されなくなります。"
+        },
+        {
+          "text": "HTTPS のリスナーに、TLS 1.2 以上だけを許可するセキュリティポリシーを設定する",
+          "explanation": "ALB のセキュリティポリシーで、使えるプロトコルと暗号スイートを決められます。"
+        },
+        {
+          "text": "セキュリティグループで TLS のバージョンを制限する",
+          "explanation": "セキュリティグループは IP アドレスとポートの制御で、TLS のバージョンは制限できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ELB のセキュリティポリシーは、クライアントとの TLS のネゴシエーションで使うプロトコルと暗号スイートの組み合わせです。古いプロトコルを使わないポリシーを選んで、接続の暗号化を強制します。",
+      "references": [
+        {
+          "title": "Application Load Balancer のセキュリティポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/describe-ssl-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-046",
+      "domain": "d5",
+      "question": "オンプレミスのデータセンターの社員に、VPC の中のプライベートなリソース（社内のツール）に、TLS で暗号化されたクライアントの VPN で接続させたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Client VPN",
+          "explanation": "クライアントの端末から、TLS で暗号化された VPN の接続で、VPC やオンプレミスのリソースにアクセスできるマネージドのサービスです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "コンテンツの配信のサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Client VPN は、クライアントベースのマネージドな VPN のサービスで、利用者は OpenVPN 系のクライアントで、TLS で暗号化された接続を使えます。",
+      "references": [
+        {
+          "title": "AWS Client VPN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpn/latest/clientvpn-admin/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-047",
+      "domain": "d5",
+      "question": "Amazon EMR のクラスターで処理する機密のデータについて、ノードの間の通信（シャッフルなど）も暗号化したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "EMR のクラスターを公開する",
+          "explanation": "安全ではありません。"
+        },
+        {
+          "text": "Amazon Macie で暗号化する",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "ノードの間の通信は暗号化できない",
+          "explanation": "転送中の暗号化を設定できます。"
+        },
+        {
+          "text": "EMR のセキュリティ設定で、転送中の暗号化を有効にする",
+          "explanation": "EMR のセキュリティ設定で、保存時と転送中の暗号化を設定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Amazon EMR のセキュリティ設定では、保存データの暗号化と、転送中のデータの暗号化（アプリケーションのフレームワークごとの TLS など）を指定できます。",
+      "references": [
+        {
+          "title": "Amazon EMR のデータの暗号化のオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-data-encryption-options.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-048",
+      "domain": "d5",
+      "question": "規制の要件で、暗号化の鍵を、FIPS 140 の認定を受けた、自社だけが使う専用のハードウェアセキュリティモジュール（HSM）で管理し、鍵の操作を自社で完全に制御する必要がある。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS KMS の AWS マネージドキー",
+          "explanation": "鍵は AWS が管理し、専用の HSM ではありません。"
+        },
+        {
+          "text": "AWS CloudHSM",
+          "explanation": "AWS クラウドで、自社専用の HSM のクラスターを使えるサービスです。鍵は利用者が管理します。"
+        },
+        {
+          "text": "S3 マネージドキーによるサーバー側の暗号化",
+          "explanation": "鍵は S3 が管理します。"
+        },
+        {
+          "text": "AWS Secrets Manager",
+          "explanation": "シークレットの保管のサービスです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudHSM は、専用のシングルテナントの HSM を提供し、利用者が鍵を管理します。多くの用途では、マネージドで AWS のサービスと統合された KMS が向いています。",
+      "references": [
+        {
+          "title": "AWS CloudHSM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cloudhsm/latest/userguide/introduction.html"
+        },
+        {
+          "title": "AWS Key Management Service",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/overview.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-049",
+      "domain": "d5",
+      "question": "金融の規制により、取引の記録を7年間、誰も（ルートユーザーも含めて）削除や上書きができない状態で S3 に保存しなければならない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 オブジェクトロックをガバナンスモードで使う",
+          "explanation": "特別な権限を持つユーザーは、保持の設定を変えたり削除したりできます。"
+        },
+        {
+          "text": "S3 オブジェクトロックをコンプライアンスモードで使い、保持期間を7年にする",
+          "explanation": "コンプライアンスモードでは、保持期間の間、ルートユーザーを含めて誰もオブジェクトを上書き・削除できません。"
+        },
+        {
+          "text": "S3 のバージョニングだけを有効にする",
+          "explanation": "古い版も削除できます。"
+        },
+        {
+          "text": "バケットポリシーで削除を拒否するだけにする",
+          "explanation": "ポリシーは権限のある人に変更されてしまいます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "S3 オブジェクトロックは、オブジェクトを WORM（書き込みは1回、読み取りは何度でも）で保護します。コンプライアンスモードでは、保持期間中はルートユーザーでも削除できません。",
+      "references": [
+        {
+          "title": "S3 オブジェクトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ],
+      "group": "scs-worm"
+    },
+    {
+      "id": "scs-050",
+      "domain": "d5",
+      "question": "Lambda 関数として、信頼できる開発者が署名したコードだけをデプロイできるようにし、改ざんされたコードのデプロイを防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Lambda 関数のメモリを増やす",
+          "explanation": "コードの完全性の確認にはなりません。"
+        },
+        {
+          "text": "Lambda 関数のタイムアウトを短くする",
+          "explanation": "コードの完全性の確認にはなりません。"
+        },
+        {
+          "text": "Lambda のコード署名を設定し、署名のプロファイルで許可した署名だけを受け付ける",
+          "explanation": "コード署名を使うと、信頼できる発行者が署名し、改ざんされていないコードだけをデプロイできます。"
+        },
+        {
+          "text": "Amazon Macie を使う",
+          "explanation": "機密データの検出のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lambda のコード署名は、AWS Signer の署名のプロファイルと組み合わせて、信頼できる発行者のコードで、署名後に変更されていないものだけがデプロイされるようにします。",
+      "references": [
+        {
+          "title": "Lambda のコード署名",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-codesigning.html"
+        }
+      ],
+      "group": "scs-worm"
+    },
+    {
+      "id": "scs-051",
+      "domain": "d5",
+      "question": "EC2 インスタンスの EBS ボリュームのスナップショットを、毎日自動で作成し、30日たったものを自動で削除したい。最も簡単な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Data Lifecycle Manager のライフサイクルポリシーで、スナップショットの作成と保持を自動化する",
+          "explanation": "Data Lifecycle Manager で、EBS のスナップショットや EBS-backed AMI の作成・保持・削除を自動化できます。"
+        },
+        {
+          "text": "担当者が毎日手でスナップショットを作る",
+          "explanation": "手作業で漏れが起きます。"
+        },
+        {
+          "text": "スナップショットは作らない",
+          "explanation": "復旧できなくなります。"
+        },
+        {
+          "text": "Amazon Macie を使う",
+          "explanation": "機密データの検出のサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Data Lifecycle Manager は、EBS のスナップショットと EBS-backed AMI の作成・保持・削除を、ポリシーで自動化します。複数のサービスのバックアップを一元管理するなら AWS Backup も使えます。",
+      "references": [
+        {
+          "title": "Amazon Data Lifecycle Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/snapshot-lifecycle.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-052",
+      "domain": "d5",
+      "question": "RDS のデータベースのパスワードを、アプリケーションのサーバーに書かずに管理し、定期的に自動で変更したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "パスワードを Base64 でエンコードしてコードに書く",
+          "explanation": "Base64 は暗号化ではありません。"
+        },
+        {
+          "text": "パスワードを設定ファイルに平文で書く",
+          "explanation": "漏えいの危険があります。"
+        },
+        {
+          "text": "パスワードを変えない",
+          "explanation": "漏えいのリスクが続きます。"
+        },
+        {
+          "text": "AWS Secrets Manager に保存し、自動ローテーションを設定する",
+          "explanation": "Secrets Manager はシークレットを暗号化して保管し、自動でローテーションできます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管し、ローテーションを自動化します。マネージドローテーションや、Lambda 関数によるローテーションがあります。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-053",
+      "domain": "d5",
+      "question": "規制の要件で、KMS のキーの素材を自社で生成し、AWS の外の自社の HSM でも保管しておきたい。AWS の KMS のキーでは、その自社の素材を使いたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "外部のキー素材を持つ KMS キーを作り、自社で生成したキーの素材をインポートする",
+          "explanation": "キーの素材をインポートすると、自社で生成した素材を KMS のキーで使えます。素材のコピーを自社でも保持できます。"
+        },
+        {
+          "text": "KMS のキーの素材を AWS からダウンロードする",
+          "explanation": "KMS が生成したキーの素材は、KMS の外に平文で取り出せません。"
+        },
+        {
+          "text": "キーの素材をコードに書く",
+          "explanation": "安全ではありません。"
+        },
+        {
+          "text": "AWS マネージドキーを使う",
+          "explanation": "AWS が素材を生成・管理します。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "KMS では、キーの素材をインポートできます。インポートした素材は、利用者が有効期限を設定したり、削除したりでき、元の素材のコピーは利用者が保管します。",
+      "references": [
+        {
+          "title": "AWS KMS のキーへのキーマテリアルのインポート",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/importing-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-054",
+      "domain": "d5",
+      "question": "規制により、暗号化の鍵を AWS の外の自社の鍵管理システムに置いたまま、AWS のサービスのデータの暗号化に使いたい。鍵が AWS に保存されないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "鍵の素材を KMS にインポートする",
+          "explanation": "インポートした素材は KMS に保存されます。"
+        },
+        {
+          "text": "AWS KMS の外部キーストア（XKS）を使い、AWS の外の外部キーマネージャーの鍵で暗号化の操作を行う",
+          "explanation": "外部キーストアでは、鍵は AWS の外の外部キーマネージャーに置かれ、暗号化の操作もそこで行われます。"
+        },
+        {
+          "text": "AWS マネージドキーを使う",
+          "explanation": "鍵は AWS が管理します。"
+        },
+        {
+          "text": "S3 マネージドキーを使う",
+          "explanation": "鍵は S3 が管理します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "KMS の外部キーストアは、AWS の外にある外部のキーマネージャーの鍵で KMS のキーを裏付けます。鍵は AWS の外に保管され、暗号化と復号の操作も外部で行われます。可用性や遅延は外部のシステムに依存します。",
+      "references": [
+        {
+          "title": "AWS KMS の外部キーストア",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/keystore-external.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-055",
+      "domain": "d5",
+      "question": "社内のマイクロサービスどうしの mTLS 通信のために、社内専用のプライベートな証明書を、複数のリージョンで発行・管理したい。認証局を自分で運用したくない。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS KMS",
+          "explanation": "暗号化の鍵の管理のサービスです。"
+        },
+        {
+          "text": "AWS Certificate Manager の公開証明書",
+          "explanation": "インターネットで信頼される公開の証明書で、社内専用の認証局の代わりにはなりません。"
+        },
+        {
+          "text": "AWS Private CA",
+          "explanation": "マネージドなプライベートの認証局で、社内向けのプライベートな証明書を発行できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "AWS Private CA は、認証局のインフラを運用せずに、プライベートな証明書の発行と管理ができるマネージドなサービスです。",
+      "references": [
+        {
+          "title": "AWS Private CA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/privateca/latest/userguide/PcaWelcome.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-056",
+      "domain": "d5",
+      "question": "S3 のデータのうち、90日たったログは安いストレージクラスに移し、法令の保存期間の7年を過ぎたら自動で削除したい。保持とライフサイクルを自動で管理したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "すべてのログを S3 Standard にずっと置く",
+          "explanation": "費用がかかり、削除もされません。"
+        },
+        {
+          "text": "ログを取らない",
+          "explanation": "法令の要件を満たせません。"
+        },
+        {
+          "text": "S3 ライフサイクルのルールで、移行のアクションと有効期限のアクションを設定する",
+          "explanation": "ライフサイクルで、ストレージクラスの移行と、期限の来たオブジェクトの削除を自動化できます。"
+        },
+        {
+          "text": "担当者が毎年手で削除する",
+          "explanation": "漏れが起きます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 ライフサイクルの設定で、オブジェクトの移行と有効期限（削除）を自動化できます。EFS のライフサイクルポリシーや FSx のバックアップのポリシーも、データの保持の管理に使えます。",
+      "references": [
+        {
+          "title": "Amazon S3 のオブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-057",
+      "domain": "d6",
+      "question": "ベストプラクティスに沿ったマルチアカウントの環境（ランディングゾーン）を作り、新しいアカウントにも自動でガードレール（予防と検出のコントロール）を適用したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Control Tower",
+          "explanation": "ベストプラクティスに沿ったマルチアカウントの環境を作り、コントロール（ガードレール）で管理します。"
+        },
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理のサービスです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Control Tower は、Organizations などを組み合わせて、管理されたマルチアカウントの環境（ランディングゾーン）をすばやく作ります。予防・検出・プロアクティブのコントロールを適用できます。",
+      "references": [
+        {
+          "title": "AWS Control Tower とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide/what-is-control-tower.html"
+        },
+        {
+          "title": "AWS Control Tower のコントロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/controlreference/controls.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-058",
+      "domain": "d6",
+      "question": "組織のすべてのアカウントで、AWS の AI サービスが利用者のコンテンツをサービスの改善のために保存・使用しないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各アカウントで AI サービスを使わないよう通知する",
+          "explanation": "技術的な制御になりません。"
+        },
+        {
+          "text": "S3 のバケットを暗号化する",
+          "explanation": "AI サービスのデータの使用のオプトアウトにはなりません。"
+        },
+        {
+          "text": "AWS Organizations の AI サービスのオプトアウトポリシーを組織にアタッチする",
+          "explanation": "オプトアウトポリシーで、AI サービスによるコンテンツの保存と使用を、組織全体でオプトアウトできます。"
+        },
+        {
+          "text": "Amazon Macie を有効にする",
+          "explanation": "機密データの検出のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AI サービスのオプトアウトポリシーは、Organizations のポリシーの一種で、AWS の AI サービスが利用者のコンテンツを保存・使用することを、組織全体でオプトアウトできます。",
+      "references": [
+        {
+          "title": "AI サービスのオプトアウトポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_ai-opt-out.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-059",
+      "domain": "d6",
+      "question": "Security Hub や GuardDuty を、組織の管理アカウントではなく、セキュリティの専用のアカウントから組織全体に一元管理したい。管理アカウントの使用は最小限にしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "すべてのアカウントでそれぞれ個別に管理する",
+          "explanation": "一元管理になりません。"
+        },
+        {
+          "text": "セキュリティの専用のアカウントを、そのサービスの委任管理者に指定する",
+          "explanation": "委任管理者のアカウントで、組織全体のそのサービスを管理でき、管理アカウントを日常的に使わずに済みます。"
+        },
+        {
+          "text": "管理アカウントのルートユーザーで毎日作業する",
+          "explanation": "管理アカウントの使用を最小限にする要件に反します。"
+        },
+        {
+          "text": "サービスを無効にする",
+          "explanation": "保護されなくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Organizations の委任管理者の機能で、メンバーアカウントにサービスの管理を任せられます。セキュリティのサービスは、専用のセキュリティのアカウントを委任管理者にするのが一般的です。",
+      "references": [
+        {
+          "title": "AWS Organizations の委任管理者",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_delegate_policies.html"
+        },
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-060",
+      "domain": "d6",
+      "question": "CloudFormation のテンプレートをデプロイする前に、「S3 のバケットは必ず暗号化されている」「セキュリティグループで 0.0.0.0/0 の SSH を許可していない」などのルールに違反していないかを、自動で確かめたい。最も適切なツールはどれか。",
+      "choices": [
+        {
+          "text": "デプロイしてから問題を探す",
+          "explanation": "違反がデプロイされてしまいます。"
+        },
+        {
+          "text": "Amazon Macie で検証する",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Artifact で検証する",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "AWS CloudFormation Guard でポリシーのルールを書き、テンプレートを検証する",
+          "explanation": "CloudFormation Guard は、ポリシーをコードとして書き、テンプレートなどの JSON・YAML がルールに沿っているかを検証します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CloudFormation Guard は、汎用のポリシーをコードとして評価するツールで、IaC のテンプレートがルールに沿っているかを、デプロイの前に検証できます。",
+      "references": [
+        {
+          "title": "AWS CloudFormation Guard とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cfn-guard/latest/ug/what-is-guard.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-061",
+      "domain": "d6",
+      "question": "組織のすべてのアカウントの CloudFront と ALB に、共通の AWS WAF のルールを一元的に適用し、新しく作られたリソースにも自動で適用したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Firewall Manager のセキュリティポリシーで、組織全体に WAF のルールを適用する",
+          "explanation": "Firewall Manager で、組織のアカウントとリソースに、WAF などのファイアウォールのルールを一元的に適用できます。"
+        },
+        {
+          "text": "Amazon Macie を使う",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "各アカウントで WAF のルールを手で設定する",
+          "explanation": "漏れや差が生じます。"
+        },
+        {
+          "text": "AWS Artifact を使う",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Firewall Manager は、AWS Organizations の複数のアカウントとリソースに、WAF・Shield Advanced・セキュリティグループ・Network Firewall などのルールを一元的に適用・管理します。",
+      "references": [
+        {
+          "title": "AWS Firewall Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/fms-chapter.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-062",
+      "domain": "d6",
+      "question": "ネットワークの専用のアカウントで管理している Transit Gateway を、組織のほかのアカウントでも使わせたい。安全に共有する方法として最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "ネットワークのアカウントの IAM ユーザーを全員で共有する",
+          "explanation": "認証情報の共有は避けます。"
+        },
+        {
+          "text": "Transit Gateway を公開する",
+          "explanation": "そのような共有の方法はありません。"
+        },
+        {
+          "text": "Transit Gateway をアカウントごとに作る",
+          "explanation": "一元管理の目的に合わず、管理が煩雑になります。"
+        },
+        {
+          "text": "AWS Resource Access Manager（AWS RAM）で、Transit Gateway を組織や OU と共有する",
+          "explanation": "RAM で、リソースをほかのアカウントや組織と安全に共有できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "AWS RAM は、Transit Gateway・サブネット・Route 53 Resolver のルールなどのリソースを、アカウント間や組織内で安全に共有するサービスです。",
+      "references": [
+        {
+          "title": "AWS Resource Access Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-063",
+      "domain": "d6",
+      "question": "外部の監査に備えて、AWS の環境の設定や操作の証拠（エビデンス）を、規制の枠組み（PCI DSS など）に沿って継続的に自動で集め、評価のレポートを作りたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Artifact",
+          "explanation": "AWS 自身のコンプライアンスのレポートを入手するサービスで、自社の環境の証拠の収集ではありません。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出のサービスです。"
+        },
+        {
+          "text": "AWS Audit Manager",
+          "explanation": "監査の証拠の収集を自動化し、規制や基準の枠組みに沿って評価を管理します。"
+        },
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS Audit Manager は、AWS の利用状況を継続的に監査し、リスクと規制や業界の基準への準拠を評価するために、証拠の収集を自動化します。AWS 自身の認証のレポートは AWS Artifact で入手します。",
+      "references": [
+        {
+          "title": "AWS Audit Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/audit-manager/latest/userguide/what-is.html"
+        },
+        {
+          "title": "AWS Artifact とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/artifact/latest/ug/what-is-aws-artifact.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-064",
+      "domain": "d6",
+      "question": "組織の全アカウントで、S3 のバケットのパブリックアクセスのブロックが無効になっていたら、自動で検知して有効に戻し、セキュリティチームに通知したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie で修復する",
+          "explanation": "機密データの検出のサービスで、設定の修復は行いません。"
+        },
+        {
+          "text": "AWS Config のルールで検知し、Systems Manager Automation による自動修復を設定して、通知も送る",
+          "explanation": "Config のルールで非準拠を検知し、自動修復と通知を組み合わせられます。"
+        },
+        {
+          "text": "毎月、担当者が全バケットを手で確認する",
+          "explanation": "すぐには気づけず、漏れも起きます。"
+        },
+        {
+          "text": "S3 のバケットをすべて削除する",
+          "explanation": "データが失われます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Config のルールで非準拠のリソースを検知し、Systems Manager Automation のドキュメントで自動で修復できます。Security Hub で検出結果を集約し、通知にもつなげられます。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠のリソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-065",
+      "domain": "d6",
+      "question": "組織の SCP で、特定のリージョン以外を拒否している。ところが、グローバルなサービス（IAM など）の操作までできなくなってしまった。最も適切な修正はどれか。",
+      "choices": [
+        {
+          "text": "SCP を組織から削除して、制限をなくす",
+          "explanation": "リージョンの制限ができなくなります。"
+        },
+        {
+          "text": "SCP の拒否の条件から、グローバルなサービスの操作を除外する（NotAction などを使う）",
+          "explanation": "グローバルなサービスの操作は特定のリージョンで処理されるので、リージョンの制限の対象から除外します。"
+        },
+        {
+          "text": "すべての利用者に管理者の権限を与える",
+          "explanation": "SCP の拒否は IAM の許可より優先されるので、解決しません。"
+        },
+        {
+          "text": "グローバルなサービスを使うのをやめる",
+          "explanation": "業務に必要な操作ができません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "リージョンを制限する SCP では、グローバルなサービスの操作を除外しないと、必要な操作まで拒否されます。SCP の拒否は、IAM のポリシーの許可より優先されます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d001",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-001",
+      "point": "メンバーアカウントの権限",
+      "question": "メンバーアカウントの管理者は、組織の証跡を変更・削除できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。組織の証跡は、メンバーアカウントからは変更・削除できません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織の証跡は、管理アカウントや委任管理者のアカウントで作り、組織のすべてのメンバーアカウントのイベントを記録します。メンバーアカウントのユーザーは、組織の証跡を見られますが、変更や削除はできません。",
+      "references": [
+        {
+          "title": "組織の証跡の作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d002",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-001",
+      "point": "ログの改ざんの検知",
+      "question": "CloudTrail のログファイルの整合性の検証を有効にしても、配信されたログファイルが変更・削除されたかどうかは確かめられない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ダイジェストファイルとデジタル署名で、ログファイルが変更・削除されていないかを確かめられます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "組織の証跡は、管理アカウントや委任管理者のアカウントで作り、組織のすべてのメンバーアカウントのイベントを記録します。メンバーアカウントのユーザーは、組織の証跡を見られますが、変更や削除はできません。",
+      "references": [
+        {
+          "title": "CloudTrail のログファイルの整合性の検証",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d003",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-002",
+      "point": "データの保存場所",
+      "question": "Amazon Security Lake で集めたデータは、AWS が管理する見えない場所に保存され、利用者のアカウントには残らない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Security Lake のデータは、利用者のアカウントの S3 のデータレイクに保存されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Security Lake は、AWS の環境・SaaS・オンプレミスなどのセキュリティのデータを、OCSF の形式でデータレイクに一元化します。サブスクライバーとして、分析のツールやサードパーティのツールにデータを渡せます。",
+      "references": [
+        {
+          "title": "Amazon Security Lake とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-lake/latest/userguide/what-is-security-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d004",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-002",
+      "point": "検出結果の集約",
+      "question": "GuardDuty・Inspector・Macie などの検出結果を集めて、優先度を付けて確認し、セキュリティの基準に対する状況も見たい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Amazon OpenSearch Service",
+          "explanation": "検索と分析のエンジンで、検出結果の集約の専用サービスではありません。"
+        },
+        {
+          "text": "AWS Config のアグリゲーター",
+          "explanation": "設定の情報を集める機能です。"
+        },
+        {
+          "text": "Amazon Detective",
+          "explanation": "個別の問題の根本原因を調べるサービスです。"
+        },
+        {
+          "text": "AWS Security Hub",
+          "explanation": "セキュリティの検出結果を集約し、セキュリティの基準のチェックも行います。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Security Hub は、検出結果の集約とセキュリティの基準のチェックを行います。",
+      "references": [
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d005",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-003",
+      "point": "マルウェアのスキャン",
+      "question": "GuardDuty の Malware Protection は、EC2 にアタッチされた EBS ボリュームや S3 のオブジェクトのマルウェアをスキャンできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Malware Protection で、EBS ボリュームや S3 にアップロードされたオブジェクトをスキャンできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "GuardDuty のランタイムモニタリングは、EKS・ECS（Fargate を含む）・EC2 のワークロードで、ファイルへのアクセス・プロセスの実行・ネットワークの接続などのランタイムの活動を監視します。",
+      "references": [
+        {
+          "title": "GuardDuty の Malware Protection",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/malware-protection.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d006",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-003",
+      "point": "ランタイムモニタリングの方式",
+      "question": "GuardDuty のランタイムモニタリングは、エージェントを使わず、VPC フローログだけを分析する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ランタイムモニタリングは、セキュリティエージェントで OS のレベルのイベントを集めます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "GuardDuty のランタイムモニタリングは、EKS・ECS（Fargate を含む）・EC2 のワークロードで、ファイルへのアクセス・プロセスの実行・ネットワークの接続などのランタイムの活動を監視します。",
+      "references": [
+        {
+          "title": "GuardDuty のランタイムモニタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/runtime-monitoring.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d007",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-004",
+      "point": "全アカウントの設定の集約",
+      "question": "組織の全アカウント・全リージョンの Config のデータを、1つのアカウントで集めて確認したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出です。"
+        },
+        {
+          "text": "GuardDuty の Malware Protection",
+          "explanation": "マルウェアのスキャンです。"
+        },
+        {
+          "text": "Config のアグリゲーター",
+          "explanation": "複数のアカウントとリージョンの設定とコンプライアンスのデータを集約します。"
+        },
+        {
+          "text": "CloudTrail のログファイルの整合性の検証",
+          "explanation": "ログの改ざんを検知する機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Config のアグリゲーターで、組織の設定のデータを一元的に確認できます。",
+      "references": [
+        {
+          "title": "AWS Config のマルチアカウント・マルチリージョンのデータの集約",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/aggregate-data.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d008",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-004",
+      "point": "State Manager",
+      "question": "Systems Manager State Manager は、インスタンスの設定を一度だけ適用し、その後は状態を確認しない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。State Manager は、定義した状態を繰り返し適用して保ちます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "コンフォーマンスパックは、Config のルールと修復のアクションの集まりで、アカウント・リージョン・組織にまとめてデプロイし、準拠の状況を管理できます。",
+      "references": [
+        {
+          "title": "AWS Config のコンフォーマンスパック",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/conformance-packs.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d009",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-005",
+      "point": "CloudTrail Lake",
+      "question": "CloudTrail Lake では、イベントを集めて保存し、SQL でクエリできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。CloudTrail Lake は、イベントのデータストアに SQL でクエリできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Athena を使うと、S3 に保存された CloudTrail のログに SQL でクエリできます。パーティション射影で、クエリを速く安くできます。CloudTrail Lake を使う方法もあります。",
+      "references": [
+        {
+          "title": "AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d010",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-005",
+      "point": "Logs Insights の対象",
+      "question": "CloudWatch Logs Insights は、CloudWatch Logs のログにはクエリできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Logs Insights は、CloudWatch Logs のロググループのログをクエリするサービスです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Athena を使うと、S3 に保存された CloudTrail のログに SQL でクエリできます。パーティション射影で、クエリを速く安くできます。CloudTrail Lake を使う方法もあります。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d011",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-006",
+      "point": "DNS の調査",
+      "question": "インスタンスがどのドメインの名前解決をしたかは、VPC の中では記録する方法がない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Route 53 Resolver のクエリのログで、VPC の中からの DNS のクエリを記録できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Transit Gateway のフローログは、Transit Gateway を通る IP の通信の情報を記録します。VPC のネットワークインターフェイスの通信は VPC フローログ、DNS のクエリは Route 53 Resolver のクエリのログで記録します。",
+      "references": [
+        {
+          "title": "Route 53 Resolver のクエリのログ記録",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-query-logs.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d012",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-006",
+      "point": "フローログの内容",
+      "question": "VPC フローログには、通信のパケットの中身（ペイロード）がすべて記録される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。フローログは、送信元・送信先・ポート・バイト数などのメタデータを記録し、ペイロードは記録しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Transit Gateway のフローログは、Transit Gateway を通る IP の通信の情報を記録します。VPC のネットワークインターフェイスの通信は VPC フローログ、DNS のクエリは Route 53 Resolver のクエリのログで記録します。",
+      "references": [
+        {
+          "title": "VPC フローログ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/flow-logs.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d013",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-007",
+      "point": "アクセスログ",
+      "question": "API Gateway のアクセスログでは、誰が API にアクセスしたかなどの情報を、決めた形式で記録できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。アクセスログの形式を指定して、呼び出し元などの情報を記録できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "API Gateway では、実行ログとアクセスログを CloudWatch Logs に出力できます。そのためには、API Gateway が CloudWatch Logs に書き込むための IAM ロールの ARN をアカウントの設定に指定し、ステージでログ記録を有効にします。",
+      "references": [
+        {
+          "title": "API Gateway の CloudWatch のログ記録の設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/set-up-logging.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d014",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-007",
+      "point": "CloudFront のログ",
+      "question": "CloudFront へのリクエストの記録（標準ログ）は、有効にしなくても自動で必ず保存される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。CloudFront の標準ログは、有効にして保存先を設定する必要があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "API Gateway では、実行ログとアクセスログを CloudWatch Logs に出力できます。そのためには、API Gateway が CloudWatch Logs に書き込むための IAM ロールの ARN をアカウントの設定に指定し、ステージでログ記録を有効にします。",
+      "references": [
+        {
+          "title": "CloudFront の標準ログ（アクセスログ）",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d015",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-008",
+      "point": "エージェントの権限の付け方",
+      "question": "CloudWatch エージェントの権限は、インスタンスのロールではなく、アクセスキーをインスタンスに置いて与えるのが推奨である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。EC2 インスタンスでは、インスタンスプロファイルのロールに権限を与えるのが推奨です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudWatch エージェントでログが届かないときは、インスタンスのロールの権限（CloudWatchAgentServerPolicy など）、エージェントの設定（ログのファイルのパス）、ネットワークの経路などを確認します。",
+      "references": [
+        {
+          "title": "CloudWatch エージェントでメトリクスとログを収集する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+        },
+        {
+          "title": "CloudWatch エージェントの IAM の権限",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/create-iam-roles-for-cloudwatch-agent-commandline.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d016",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-008",
+      "point": "ログの専用アカウント",
+      "question": "ログを1つの専用のアカウントに集めると、ほかのアカウントの管理者がログを削除・改ざんしにくくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ログを専用のアカウントに集めると、ログを守りやすくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudWatch エージェントでログが届かないときは、インスタンスのロールの権限（CloudWatchAgentServerPolicy など）、エージェントの設定（ログのファイルのパス）、ネットワークの経路などを確認します。",
+      "references": [
+        {
+          "title": "CloudWatch エージェントでメトリクスとログを収集する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+        },
+        {
+          "title": "CloudWatch エージェントの IAM の権限",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/create-iam-roles-for-cloudwatch-agent-commandline.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d017",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-009",
+      "point": "委任管理者",
+      "question": "GuardDuty は、組織の委任管理者のアカウントで、メンバーアカウントの検出結果をまとめて管理できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。委任管理者のアカウントで、組織の GuardDuty を一元的に管理できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "GuardDuty の検出結果は、EventBridge のイベントとして送られます。ルールで重大度や種類を絞り込み、SNS での通知や Lambda・Step Functions での自動の対応につなげます。",
+      "references": [
+        {
+          "title": "Amazon GuardDuty とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/what-is-guardduty.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d018",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-009",
+      "point": "検出結果の通知の頻度",
+      "question": "GuardDuty の新しい検出結果の EventBridge への通知の頻度は、変更できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。更新された検出結果の通知の頻度は設定で変えられます（新しい検出結果はすぐに送られます）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "GuardDuty の検出結果は、EventBridge のイベントとして送られます。ルールで重大度や種類を絞り込み、SNS での通知や Lambda・Step Functions での自動の対応につなげます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge による GuardDuty の検出結果の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_findings_eventbridge.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d019",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-010",
+      "point": "ソースアカウント",
+      "question": "CloudWatch のクロスアカウントのオブザーバビリティでは、ソースアカウントのデータをモニタリングアカウントで見られる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ソースアカウントのデータを、モニタリングアカウントで一元的に確認します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudWatch のクロスアカウントのオブザーバビリティでは、モニタリングアカウントから、複数のソースアカウントのメトリクス・ログ・トレースを確認できます。",
+      "references": [
+        {
+          "title": "CloudWatch のクロスアカウントのオブザーバビリティ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d020",
+      "type": "drill",
+      "domain": "d1",
+      "source": "scs-010",
+      "point": "ログの関連付け",
+      "question": "さまざまなログを集めて、検索・可視化・関連付けをして調べたい。オープンソースの検索と分析のエンジンを使いたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートのサービスです。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性のスキャンです。"
+        },
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理です。"
+        },
+        {
+          "text": "Amazon OpenSearch Service",
+          "explanation": "ログの検索・分析・可視化に使えるマネージドのサービスです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "OpenSearch Service で、ログを集めて分析できます。",
+      "references": [
+        {
+          "title": "Amazon OpenSearch Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/opensearch-service/latest/developerguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d021",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-011",
+      "point": "既存の接続",
+      "question": "セキュリティグループを変えても、すでに追跡されている既存の接続は、すぐには切れない場合がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。セキュリティグループは接続を追跡するので、追跡中の接続は、ルールを変えてもすぐには遮断されないことがあります。ネットワーク ACL も組み合わせて遮断します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "インシデントへの対応では、証拠の保全（スナップショットなど）と封じ込め（隔離）を行ってから、根絶と復旧に進みます。隔離では、通信を許可しないセキュリティグループに変えるなどの方法があります。",
+      "references": [
+        {
+          "title": "セキュリティグループの接続の追跡",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/security-group-connection-tracking.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d022",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-011",
+      "point": "証拠の保全の順番",
+      "question": "フォレンジックの調査では、まずインスタンスを終了してから、証拠を集めるのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。終了するとメモリやディスクの証拠が失われるので、先に証拠を保全します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "インシデントへの対応では、証拠の保全（スナップショットなど）と封じ込め（隔離）を行ってから、根絶と復旧に進みます。隔離では、通信を許可しないセキュリティグループに変えるなどの方法があります。",
+      "references": [
+        {
+          "title": "AWS Security Incident Response の封じ込め",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/contain.html"
+        },
+        {
+          "title": "Amazon EBS のスナップショット",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-snapshots.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d023",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-012",
+      "point": "ランブックの自動化",
+      "question": "Systems Manager Automation のランブックでは、インスタンスの隔離などの対応を自動化することはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ランブックで、インスタンスの隔離などの手順を自動で実行できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "インシデントへの備えとして、対応の計画とランブックを用意します。Systems Manager Automation で手順を自動化し、OpsCenter で運用上の問題を一元的に管理・調査できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Automation",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-automation.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d024",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-012",
+      "point": "事前の準備",
+      "question": "インシデント対応の計画は、インシデントが起きてから作れば十分である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。対応の計画・アクセス・ツールは事前に準備しておきます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "インシデントへの備えとして、対応の計画とランブックを用意します。Systems Manager Automation で手順を自動化し、OpsCenter で運用上の問題を一元的に管理・調査できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager OpsCenter",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/OpsCenter.html"
+        },
+        {
+          "title": "AWS Systems Manager Automation",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-automation.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d025",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-013",
+      "point": "停止条件",
+      "question": "AWS FIS の実験では、CloudWatch のアラームを停止条件にして、影響が大きくなったら実験を止められる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。停止条件で、実験の影響が想定を超えたら自動で止められます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS FIS は、障害注入の実験を行うフルマネージドのサービスです。インシデント対応やレジリエンスの計画の有効性を確かめるのに使えます。",
+      "references": [
+        {
+          "title": "AWS Fault Injection Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/fis/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d026",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-013",
+      "point": "レジリエンスの評価",
+      "question": "アプリケーションの RTO と RPO の目標を満たせるかを評価し、改善の推奨を得たい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートです。"
+        },
+        {
+          "text": "Amazon Cognito",
+          "explanation": "利用者の認証です。"
+        },
+        {
+          "text": "AWS Resilience Hub",
+          "explanation": "アプリケーションのレジリエンスの目標（RTO・RPO など）を定義し、その目標に照らして評価して、改善の推奨を示します。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Resilience Hub で、レジリエンスの評価と改善の推奨を得られます。",
+      "references": [
+        {
+          "title": "AWS Resilience Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d027",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-014",
+      "point": "Detective のデータ",
+      "question": "Amazon Detective を使うには、利用者が調査用のデータを手で集めて取り込む必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Detective は、ログのデータを自動で集めて、調査用のグラフを作ります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Detective は、CloudTrail・VPC フローログ・GuardDuty の検出結果などからグラフを作り、セキュリティの検出結果や不審な活動の根本原因の分析・調査を助けます。",
+      "references": [
+        {
+          "title": "Amazon Detective とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/detective/latest/userguide/what-is-detective.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d028",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-014",
+      "point": "検出結果の検証",
+      "question": "セキュリティのサービスの検出結果は、誤検知の可能性もあるので、範囲と影響を検証してから対応を決める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。検出結果を検証し、影響の範囲を見極めてから対応します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Detective は、CloudTrail・VPC フローログ・GuardDuty の検出結果などからグラフを作り、セキュリティの検出結果や不審な活動の根本原因の分析・調査を助けます。",
+      "references": [
+        {
+          "title": "Amazon Detective とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/detective/latest/userguide/what-is-detective.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d029",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-015",
+      "point": "一時的な認証情報の取り消し",
+      "question": "漏えいした IAM ロールの一時的な認証情報は、ロールのセッションを取り消すことで無効にできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ロールの「アクティブなセッションの取り消し」で、それ以前に発行されたセッションを拒否できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "認証情報の漏えいへの対応では、漏れた認証情報の無効化（封じ込め）、操作の記録の調査（影響の範囲の把握）、不正なリソースの削除（根絶）、復旧の順に進めます。",
+      "references": [
+        {
+          "title": "AWS Security Incident Response とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/what-is.html"
+        },
+        {
+          "title": "AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d030",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-015",
+      "point": "記録の確認",
+      "question": "漏えいした認証情報で何が行われたかは、確認する方法がない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。CloudTrail の記録で、その認証情報で行われた API の操作を調べられます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "認証情報の漏えいへの対応では、漏れた認証情報の無効化（封じ込め）、操作の記録の調査（影響の範囲の把握）、不正なリソースの削除（根絶）、復旧の順に進めます。",
+      "references": [
+        {
+          "title": "AWS Security Incident Response とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/what-is.html"
+        },
+        {
+          "title": "AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d031",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-016",
+      "point": "ガバナンスモード",
+      "question": "AWS Backup ボールトロックのガバナンスモードでは、十分な IAM の権限を持つユーザーはロックを管理・解除できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ガバナンスモードは、適切な権限があれば変更できます。コンプライアンスモードは、猶予期間の後は変更できません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Backup ボールトロックは、バックアップボールトの復旧ポイントを、WORM（書き込みは1回、読み取りは何度でも）で保護します。コンプライアンスモードでは、ロックしたあとは誰も解除できません。",
+      "references": [
+        {
+          "title": "AWS Backup ボールトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d032",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-016",
+      "point": "復元の確認",
+      "question": "バックアップは取るだけでよく、実際に復元できるかを試す必要はない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。インシデントから復旧できるように、復元の手順を定期的に試しておきます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Backup ボールトロックは、バックアップボールトの復旧ポイントを、WORM（書き込みは1回、読み取りは何度でも）で保護します。コンプライアンスモードでは、ロックしたあとは誰も解除できません。",
+      "references": [
+        {
+          "title": "AWS Backup ボールトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d033",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-017",
+      "point": "オブジェクトロックの前提",
+      "question": "S3 オブジェクトロックを使うには、バケットのバージョニングが必要である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。オブジェクトロックは、バージョニングが有効なバケットで使います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "フォレンジックのアーティファクトは、侵害された環境から分離した場所に保存し、改ざんから守ります。S3 オブジェクトロックで WORM の保護ができます。",
+      "references": [
+        {
+          "title": "S3 オブジェクトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d034",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-017",
+      "point": "ログの関連付け",
+      "question": "インシデントの調査では、アプリケーションのログと AWS のサービスのログを関連付けて、一連の出来事を再構成する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。複数のログを関連付けることで、攻撃の流れを把握できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "フォレンジックのアーティファクトは、侵害された環境から分離した場所に保存し、改ざんから守ります。S3 オブジェクトロックで WORM の保護ができます。",
+      "references": [
+        {
+          "title": "S3 オブジェクトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d035",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-018",
+      "point": "WAF の料金",
+      "question": "Shield Advanced のサブスクリプションには、保護しているリソースで使う標準の AWS WAF の料金が含まれる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Shield Advanced で保護しているリソースでは、標準の WAF の機能の料金がサブスクリプションに含まれます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Shield Advanced では、DDoS への高度な保護、Shield Response Team（SRT）の支援、DDoS による費用の増加に対する保護などが受けられます。",
+      "references": [
+        {
+          "title": "AWS Shield Advanced の概要",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-advanced-summary.html"
+        },
+        {
+          "title": "Shield Response Team (SRT) による DDoS イベントの対応の支援",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-srt-support.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d036",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-018",
+      "point": "Shield Standard の SRT",
+      "question": "Shield Standard でも、Shield Response Team の支援を受けられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SRT の支援は Shield Advanced の機能です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Shield Advanced では、DDoS への高度な保護、Shield Response Team（SRT）の支援、DDoS による費用の増加に対する保護などが受けられます。",
+      "references": [
+        {
+          "title": "AWS Shield Advanced の概要",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-advanced-summary.html"
+        },
+        {
+          "title": "Shield Response Team (SRT) による DDoS イベントの対応の支援",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-srt-support.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d037",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-019",
+      "point": "根本原因の修正",
+      "question": "復旧の前に、侵入の原因になった脆弱性や設定の誤りを修正しておかないと、同じ攻撃を再び受けるおそれがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。根本原因を修正してから復旧します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "復旧では、侵害されたリソースを信頼できる状態から作り直し、脆弱性を修正してから戻します。EC2 Image Builder でパッチを当てたゴールデンイメージを用意しておくと、早く復旧できます。",
+      "references": [
+        {
+          "title": "EC2 Image Builder とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/imagebuilder/latest/userguide/what-is-image-builder.html"
+        },
+        {
+          "title": "AWS Security Incident Response とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d038",
+      "type": "drill",
+      "domain": "d2",
+      "source": "scs-019",
+      "point": "自動の修復",
+      "question": "インシデントへの対応は、すべて人が手作業で行う必要があり、自動化はできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Systems Manager や Step Functions などで、対応の一部を自動化できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "復旧では、侵害されたリソースを信頼できる状態から作り直し、脆弱性を修正してから戻します。EC2 Image Builder でパッチを当てたゴールデンイメージを用意しておくと、早く復旧できます。",
+      "references": [
+        {
+          "title": "EC2 Image Builder とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/imagebuilder/latest/userguide/what-is-image-builder.html"
+        },
+        {
+          "title": "AWS Security Incident Response とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/security-ir/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d039",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-020",
+      "point": "集計の単位",
+      "question": "AWS WAF のレートベースのルールでは、IP アドレスだけでなく、ヘッダーなどの値で集計の単位を決めることもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。レートベースのルールは、IP アドレスのほか、ヘッダーなどの集約キーで集計できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS WAF のレートベースのルールは、IP アドレスなどの単位でリクエストの数を集計し、指定した上限を超えたらブロックなどのアクションを行います。",
+      "references": [
+        {
+          "title": "レートベースのルールステートメント",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d040",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-020",
+      "point": "ブロックの解除",
+      "question": "AWS WAF のレートベースのルールでブロックされた IP アドレスは、リクエストの数が上限を下回っても、手で解除するまでずっとブロックされる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。リクエストのレートが上限を下回ると、ブロックは自動で解除されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS WAF のレートベースのルールは、IP アドレスなどの単位でリクエストの数を集計し、指定した上限を超えたらブロックなどのアクションを行います。",
+      "references": [
+        {
+          "title": "レートベースのルールステートメント",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d041",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-021",
+      "point": "既知の攻撃のパターン",
+      "question": "OWASP Top 10 のような一般的な Web の攻撃（SQL インジェクションなど）を、自分でルールを書かずに防ぎたい。どれを使うか。",
+      "choices": [
+        {
+          "text": "レートベースのルール",
+          "explanation": "リクエストの数の制限です。"
+        },
+        {
+          "text": "ネットワーク ACL",
+          "explanation": "IP アドレスとポートでの制御で、リクエストの中身は検査しません。"
+        },
+        {
+          "text": "地理的一致のルール",
+          "explanation": "国や地域での制限です。"
+        },
+        {
+          "text": "AWS マネージドルールのルールグループ",
+          "explanation": "AWS が管理する、一般的な脅威に対応したルールの集まりです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "マネージドルールで、一般的な脅威からすばやく保護できます。",
+      "references": [
+        {
+          "title": "AWS マネージドルールのルールグループ",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/aws-managed-rule-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d042",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-021",
+      "point": "ボットの制御",
+      "question": "AWS WAF では、自動化されたボットの通信を検出する仕組みは提供されていない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AWS WAF の Bot Control で、ボットの通信を検出・管理できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS WAF の地理的一致のルールは、リクエストの送信元の国や地域で、Web リクエストを許可またはブロックします。CloudFront の地域制限の機能を使う方法もあります。",
+      "references": [
+        {
+          "title": "AWS WAF Bot Control",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-bot-control.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d043",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-022",
+      "point": "セキュリティのヘッダー",
+      "question": "CloudFront のレスポンスヘッダーポリシーで、HSTS などのセキュリティのヘッダーを応答に追加できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。レスポンスヘッダーポリシーで、セキュリティのヘッダーを付けられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "オリジンアクセスコントロール（OAC）を使うと、S3 のバケットを非公開にしたまま、CloudFront を経由したアクセスだけを許可できます。",
+      "references": [
+        {
+          "title": "CloudFront のレスポンスヘッダーポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/modifying-response-headers.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d044",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-022",
+      "point": "OAC と署名",
+      "question": "OAC を使う場合、CloudFront から S3 へのリクエストには署名が付かない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。OAC は、CloudFront から S3 へのリクエストに署名（SigV4）を付けて認証します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オリジンアクセスコントロール（OAC）を使うと、S3 のバケットを非公開にしたまま、CloudFront を経由したアクセスだけを許可できます。",
+      "references": [
+        {
+          "title": "Amazon S3 オリジンへのアクセスを制限する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d045",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-023",
+      "point": "鍵の種類",
+      "question": "CloudFront のフィールドレベル暗号化では、公開鍵で暗号化し、対応する秘密鍵で復号する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。非対称鍵の公開鍵でエッジで暗号化し、秘密鍵を持つアプリケーションで復号します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "フィールドレベル暗号化は、HTTPS に加えて、特定の機密のデータをエッジで暗号化し、オリジンの処理の途中でも保護します。",
+      "references": [
+        {
+          "title": "フィールドレベル暗号化",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d046",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-023",
+      "point": "IoT の機器の権限",
+      "question": "IoT の機器が、自分のトピックにだけメッセージを発行できるようにしたい。どれで制御するか。",
+      "choices": [
+        {
+          "text": "S3 のバケットポリシー",
+          "explanation": "S3 のアクセスの制御です。"
+        },
+        {
+          "text": "CloudFront のキャッシュポリシー",
+          "explanation": "キャッシュの設定です。"
+        },
+        {
+          "text": "AWS IoT Core のポリシー",
+          "explanation": "機器（証明書）ごとに、接続・発行・購読などの操作を許可するリソースを制御します。"
+        },
+        {
+          "text": "ネットワーク ACL",
+          "explanation": "サブネットの通信の制御です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "IoT Core のポリシーで、機器の操作を制御します。",
+      "references": [
+        {
+          "title": "AWS IoT Core のポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/iot/latest/developerguide/iot-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d047",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-024",
+      "point": "脆弱性のスキャン",
+      "question": "ECR のコンテナイメージと Lambda 関数に、既知の脆弱性がないかを継続的にスキャンしたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートです。"
+        },
+        {
+          "text": "Amazon Detective",
+          "explanation": "調査のサービスです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出です。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "EC2・ECR のコンテナイメージ・Lambda 関数を継続的にスキャンします。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Inspector で、ワークロードの脆弱性を継続的にスキャンできます。",
+      "references": [
+        {
+          "title": "Amazon Inspector とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/inspector/latest/user/what-is-inspector.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d048",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-024",
+      "point": "パッチの自動化",
+      "question": "Systems Manager Patch Manager は、パッチの適用の状況を確認する機能だけで、パッチの適用そのものは自動化できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Patch Manager でパッチの適用を自動化し、コンプライアンスを報告できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EC2 Image Builder は、カスタマイズされた、安全で最新のサーバーのイメージの作成・管理・デプロイを自動化します。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/patch-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d049",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-025",
+      "point": "EC2 Instance Connect",
+      "question": "EC2 Instance Connect では、一時的な SSH の公開鍵を使って接続し、IAM のポリシーで接続を制御できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。EC2 Instance Connect は、一時的な鍵と IAM で SSH の接続を管理します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Session Manager を使うと、インバウンドのポートを開けず、踏み台や SSH の鍵を管理せずに、インスタンスに安全に接続できます。IAM で接続を制御し、ログで監査できます。",
+      "references": [
+        {
+          "title": "EC2 Instance Connect",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/connect-linux-inst-eic.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d050",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-025",
+      "point": "Session Manager の制御",
+      "question": "Session Manager の接続は、IAM のポリシーでは制御できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Session Manager の接続は、IAM のポリシーで誰がどのインスタンスに接続できるかを制御できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Session Manager を使うと、インバウンドのポートを開けず、踏み台や SSH の鍵を管理せずに、インスタンスに安全に接続できます。IAM で接続を制御し、ログで監査できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d051",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-026",
+      "point": "入力と出力",
+      "question": "Bedrock のガードレールは、利用者の入力とモデルの出力の両方を評価できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ガードレールは、入力と出力の両方に適用できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Bedrock のガードレールは、コンテンツフィルター（プロンプト攻撃を含む）、拒否するトピック、機密情報のフィルターなどで、生成 AI のアプリケーションを保護します。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のガードレール",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/guardrails.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d052",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-026",
+      "point": "ガードレールだけで十分",
+      "question": "生成 AI のアプリケーションのセキュリティは、ガードレールを有効にすれば、アクセス制御やログの監視は不要である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ガードレールに加えて、アクセス制御・暗号化・ログの監視などを組み合わせます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Bedrock のガードレールは、コンテンツフィルター（プロンプト攻撃を含む）、拒否するトピック、機密情報のフィルターなどで、生成 AI のアプリケーションを保護します。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のガードレール",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/guardrails.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d053",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-027",
+      "point": "DNS でのブロック",
+      "question": "VPC のインスタンスが、悪意のあるドメインの名前を解決できないようにしたい。どれを使うか。",
+      "choices": [
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性のスキャンです。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートです。"
+        },
+        {
+          "text": "Route 53 Resolver DNS Firewall",
+          "explanation": "VPC からの DNS のクエリを、ドメインのリストでブロック・許可します。"
+        },
+        {
+          "text": "セキュリティグループ",
+          "explanation": "IP アドレスとポートの制御です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "DNS Firewall で、DNS のクエリをドメインで制御できます。",
+      "references": [
+        {
+          "title": "Route 53 Resolver DNS Firewall",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-dns-firewall.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d054",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-027",
+      "point": "ネットワーク ACL の性質",
+      "question": "ネットワーク ACL はステートレスなので、戻りの通信も明示的に許可する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ネットワーク ACL では、応答の通信のルールも必要です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Network Firewall は、VPC の通信をステートフルに検査し、ドメインのリストや Suricata 互換の侵入防止のルールでフィルタリングできます。Transit Gateway と組み合わせて、通信を中央で検査する構成にできます。",
+      "references": [
+        {
+          "title": "ネットワーク ACL",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-network-acls.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d055",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-028",
+      "point": "VPN による暗号化",
+      "question": "Direct Connect の上で Site-to-Site VPN を使うと、IPsec で通信を暗号化できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Direct Connect とプライベートな VPN を組み合わせて、IPsec で暗号化できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Direct Connect は、それだけでは通信を暗号化しません。MACsec（対応する専用接続）を使うとレイヤー2で暗号化でき、Direct Connect の上に Site-to-Site VPN を張って IPsec で暗号化する方法もあります。",
+      "references": [
+        {
+          "title": "AWS Site-to-Site VPN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/VPC_VPN.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d056",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-028",
+      "point": "Direct Connect と暗号化",
+      "question": "AWS Direct Connect の専用線の通信は、設定しなくても常に IPsec で暗号化される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Direct Connect はそれだけでは暗号化されません。MACsec や VPN で暗号化します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Direct Connect は、それだけでは通信を暗号化しません。MACsec（対応する専用接続）を使うとレイヤー2で暗号化でき、Direct Connect の上に Site-to-Site VPN を張って IPsec で暗号化する方法もあります。",
+      "references": [
+        {
+          "title": "AWS Direct Connect の MACsec",
+          "url": "https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/MACsec.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d057",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-029",
+      "point": "ゼロトラスト",
+      "question": "ゼロトラストの考え方では、社内のネットワークからのアクセスは常に自動で信頼する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ゼロトラストでは、場所に関係なく、リクエストごとに認証と認可を行います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Verified Access は、ゼロトラストの原則に沿って、ID や端末の状態などの条件で、リクエストごとにアクセスを評価し、VPN なしで企業のアプリケーションへの安全なアクセスを提供します。",
+      "references": [
+        {
+          "title": "AWS Verified Access とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verified-access/latest/ug/what-is-verified-access.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d058",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-029",
+      "point": "不要な経路の発見",
+      "question": "VPC で、インターネットから到達できる意図しないネットワークの経路（例：インターネットゲートウェイからデータベースへの経路）を見つけたい。どれを使うか。",
+      "choices": [
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートです。"
+        },
+        {
+          "text": "Amazon Cognito",
+          "explanation": "利用者の認証です。"
+        },
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理です。"
+        },
+        {
+          "text": "Network Access Analyzer",
+          "explanation": "ネットワークのアクセスの要件を定義し、それに合わない経路を見つけます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Network Access Analyzer で、意図しないネットワークのアクセスを見つけられます。",
+      "references": [
+        {
+          "title": "Network Access Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/network-access-analyzer/what-is-network-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d059",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-030",
+      "point": "分離されたサブネット",
+      "question": "インターネットへの経路もインターネットからの経路も持たないサブネット（分離されたサブネット）は、データベースなどを置くのに向いている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。外部への経路を持たないサブネットで、重要なリソースを分離できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "セキュリティグループのルールの送信元に、別のセキュリティグループを指定できます。層ごとにセキュリティグループを分けると、ネットワークの分割（セグメンテーション）を管理しやすくなります。",
+      "references": [
+        {
+          "title": "セキュリティグループ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-security-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d060",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-030",
+      "point": "east-west の通信",
+      "question": "VPC の中のリソースどうしの通信（east-west の通信）は、インターネットとの通信ではないので、制御する必要はない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。内部の通信も、侵入後の横移動を防ぐために、必要なものだけを許可します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "セキュリティグループのルールの送信元に、別のセキュリティグループを指定できます。層ごとにセキュリティグループを分けると、ネットワークの分割（セグメンテーション）を管理しやすくなります。",
+      "references": [
+        {
+          "title": "セキュリティグループ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-security-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d061",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-031",
+      "point": "シークレットの管理",
+      "question": "パイプラインで使う認証情報は、Secrets Manager などで管理し、コードに書かないのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。シークレットをコードに書かないことは、基本のセキュリティの対策です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "パイプラインの中で、コードの脆弱性やシークレットの検出、コンテナイメージのスキャン（Amazon Inspector など）を自動で行い、問題があれば止めることで、安全なデプロイを保ちます。",
+      "references": [
+        {
+          "title": "Amazon Inspector とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/inspector/latest/user/what-is-inspector.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d062",
+      "type": "drill",
+      "domain": "d3",
+      "source": "scs-031",
+      "point": "スキャンの頻度",
+      "question": "コンテナイメージの脆弱性のスキャンは、イメージを作ったときに一度だけ行えば十分である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。新しい脆弱性が見つかることがあるので、継続的にスキャンします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "パイプラインの中で、コードの脆弱性やシークレットの検出、コンテナイメージのスキャン（Amazon Inspector など）を自動で行い、問題があれば止めることで、安全なデプロイを保ちます。",
+      "references": [
+        {
+          "title": "Amazon Inspector とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/inspector/latest/user/what-is-inspector.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d063",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-032",
+      "point": "アクセス許可セットの実体",
+      "question": "アクセス許可セットを割り当てると、各アカウントに、それに対応する IAM ロールが作られる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。アクセス許可セットは、割り当てたアカウントで IAM ロールとして作られます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM アイデンティティセンターは、社員などの複数の AWS アカウントとアプリケーションへのアクセスを一元管理します。外部の ID プロバイダーとつなぎ、アクセス許可セットで権限を割り当てます。",
+      "references": [
+        {
+          "title": "IAM アイデンティティセンターのアクセス許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d064",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-032",
+      "point": "顧客の認証",
+      "question": "自社の Web アプリケーションの顧客に、サインアップとサインイン、MFA を提供したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "IAM アイデンティティセンター",
+          "explanation": "社員の AWS アカウントや業務アプリへのアクセスのサービスです。"
+        },
+        {
+          "text": "AWS STS",
+          "explanation": "一時的な認証情報を発行するサービスで、顧客のサインアップの機能はありません。"
+        },
+        {
+          "text": "Amazon Cognito",
+          "explanation": "アプリケーションの利用者の認証と認可を提供します。"
+        },
+        {
+          "text": "AWS Directory Service",
+          "explanation": "マネージドな Active Directory などのサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "顧客は Cognito、社員はアイデンティティセンターで認証します。",
+      "references": [
+        {
+          "title": "Amazon Cognito とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/what-is-amazon-cognito.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d065",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-033",
+      "point": "信頼アンカー",
+      "question": "IAM Roles Anywhere では、信頼する認証局を信頼アンカーとして登録する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。信頼アンカーで、証明書を発行する認証局との信頼関係を作ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM Roles Anywhere を使うと、AWS の外で動くワークロードが、信頼された認証局の X.509 の証明書で認証し、IAM ロールの一時的な認証情報を得られます。",
+      "references": [
+        {
+          "title": "IAM Roles Anywhere とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/rolesanywhere/latest/userguide/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d066",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-033",
+      "point": "一時的な認証情報の利点",
+      "question": "一時的な認証情報は有効期限があるので、漏れたときの影響が、長期のアクセスキーより小さい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。一時的な認証情報は期限が来ると使えなくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM Roles Anywhere を使うと、AWS の外で動くワークロードが、信頼された認証局の X.509 の証明書で認証し、IAM ロールの一時的な認証情報を得られます。",
+      "references": [
+        {
+          "title": "AWS STS の一時的なセキュリティ認証情報",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d067",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-034",
+      "point": "境界と許可",
+      "question": "アクセス許可の境界だけを設定すると、その範囲の操作が許可される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。境界は上限を決めるだけで、権限を与えません。ID ベースのポリシーでも許可が必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アクセス許可の境界は、IAM のユーザーやロールが持てる最大の権限を決めるポリシーです。ID ベースのポリシーと境界の両方で許可された操作だけができます。",
+      "references": [
+        {
+          "title": "IAM エンティティのアクセス許可の境界",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d068",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-034",
+      "point": "セッションポリシー",
+      "question": "ロールを引き受けるときにセッションポリシーを渡すと、そのセッションの権限を、ロールの権限よりさらに絞れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。セッションポリシーで、セッションの権限を、ロールのポリシーとの共通部分に絞れます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アクセス許可の境界は、IAM のユーザーやロールが持てる最大の権限を決めるポリシーです。ID ベースのポリシーと境界の両方で許可された操作だけができます。",
+      "references": [
+        {
+          "title": "セッションポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d069",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-035",
+      "point": "RBAC",
+      "question": "ロールベースのアクセス制御（RBAC）では、リソースのタグが一致するかどうかだけで権限を決める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。それは ABAC の説明です。RBAC は、職務（役割）ごとに権限を決めて割り当てる方式です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ABAC は、タグなどの属性に基づいて権限を決める方式です。リソースが増えてもポリシーを書き換えずに済み、大規模な環境に向いています。役割ごとに権限を決める RBAC と組み合わせて使えます。",
+      "references": [
+        {
+          "title": "ABAC（属性ベースのアクセス制御）とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d070",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-035",
+      "point": "ABAC とポリシーの数",
+      "question": "ABAC では、新しいリソースを作るたびに、そのリソース専用の IAM ポリシーを作る必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ABAC では、タグを付けるだけで、既存のポリシーで制御できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ABAC は、タグなどの属性に基づいて権限を決める方式です。リソースが増えてもポリシーを書き換えずに済み、大規模な環境に向いています。役割ごとに権限を決める RBAC と組み合わせて使えます。",
+      "references": [
+        {
+          "title": "ABAC（属性ベースのアクセス制御）とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d071",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-036",
+      "point": "認可と認証",
+      "question": "Amazon Verified Permissions は、主に利用者のサインイン（認証）を提供するサービスである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Verified Permissions は認可（何ができるか）の判断のサービスです。認証には Cognito などを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon Verified Permissions は、Cedar というポリシーの言語で、アプリケーションの中の細かい認可を定義し、評価します。認可のロジックをコードから切り離せます。",
+      "references": [
+        {
+          "title": "Amazon Verified Permissions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verifiedpermissions/latest/userguide/what-is-avp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d072",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-036",
+      "point": "認可の外部化",
+      "question": "認可のロジックをアプリケーションのコードから切り離すと、権限の変更や監査がしやすくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ポリシーとして管理すると、コードを変えずに権限を変えられ、監査もしやすくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Verified Permissions は、Cedar というポリシーの言語で、アプリケーションの中の細かい認可を定義し、評価します。認可のロジックをコードから切り離せます。",
+      "references": [
+        {
+          "title": "Amazon Verified Permissions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/verifiedpermissions/latest/userguide/what-is-avp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d073",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-037",
+      "point": "信頼ポリシー",
+      "question": "ロールの信頼ポリシーには、そのロールを引き受けられるプリンシパルを指定する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。信頼ポリシーで、誰がロールを引き受けられるかを決めます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リソースベースのポリシー（バケットポリシーなど）で別のアカウントのプリンシパルを許可できます。クロスアカウントでは、アクセス元のアカウントの ID ベースのポリシーでも許可が必要です。ロールを引き受ける方法（信頼ポリシー）もあります。",
+      "references": [
+        {
+          "title": "ロールの信頼ポリシーとクロスアカウントのアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d074",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-037",
+      "point": "一時的なアクセスの共有",
+      "question": "S3 の署名付き URL を使えば、相手に AWS の認証情報を渡さずに、期限付きでオブジェクトへのアクセスを許可できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。署名付き URL は、期限付きのアクセスを共有する方法です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リソースベースのポリシー（バケットポリシーなど）で別のアカウントのプリンシパルを許可できます。クロスアカウントでは、アクセス元のアカウントの ID ベースのポリシーでも許可が必要です。ロールを引き受ける方法（信頼ポリシー）もあります。",
+      "references": [
+        {
+          "title": "署名付き URL を使用したオブジェクトの共有",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d075",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-038",
+      "point": "拒否の記録",
+      "question": "実際に拒否された API の呼び出しは、CloudTrail に AccessDenied などのエラーとして記録される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。CloudTrail の記録で、拒否された操作と原因の手がかりを確かめられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM ポリシーシミュレーターで、ID ベースのポリシーやリソースベースのポリシーなどの効果を、実際の操作なしに確認できます。実際に拒否された操作は、CloudTrail のエラーのイベントでも確認できます。",
+      "references": [
+        {
+          "title": "IAM ポリシーシミュレーター",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_testing-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d076",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-038",
+      "point": "明示的な拒否の優先",
+      "question": "ID ベースのポリシーで許可されていれば、SCP で明示的に拒否されていても操作できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。明示的な拒否は、どのポリシーの許可よりも優先されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "IAM ポリシーシミュレーターで、ID ベースのポリシーやリソースベースのポリシーなどの効果を、実際の操作なしに確認できます。実際に拒否された操作は、CloudTrail のエラーのイベントでも確認できます。",
+      "references": [
+        {
+          "title": "IAM ポリシーシミュレーター",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_testing-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d077",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-039",
+      "point": "ポリシーの検証",
+      "question": "IAM Access Analyzer には、ポリシーの文法やセキュリティのベストプラクティスに照らして、ポリシーを検証する機能がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ポリシーの検証で、誤りや広すぎる権限を見つけられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM Access Analyzer は、外部のエンティティと共有されているリソースを見つける外部アクセスの分析、使われていないアクセスの分析、ポリシーの検証などの機能を持ちます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d078",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-039",
+      "point": "使われていない権限",
+      "question": "一度与えたアクセス許可は、使われていなくても削るべきではない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。使われていない権限は、最小権限の原則に沿って削ります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "IAM Access Analyzer は、外部のエンティティと共有されているリソースを見つける外部アクセスの分析、使われていないアクセスの分析、ポリシーの検証などの機能を持ちます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d079",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-040",
+      "point": "STS の役割",
+      "question": "AWS STS は、IAM ロールを引き受けたときなどに、有効期限のある一時的な認証情報を発行する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。STS は一時的なセキュリティ認証情報を発行します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Cognito アイデンティティプールは、認証済みの利用者に、IAM ロールに基づく一時的な認証情報を発行します。ポリシーの変数を使うと、利用者ごとにアクセスできる範囲を絞れます。",
+      "references": [
+        {
+          "title": "AWS STS の一時的なセキュリティ認証情報",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d080",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-040",
+      "point": "一時的な認証情報の期限",
+      "question": "STS が発行する一時的な認証情報には、有効期限がない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。一時的な認証情報には有効期限があり、期限が来ると使えなくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Cognito アイデンティティプールは、認証済みの利用者に、IAM ロールに基づく一時的な認証情報を発行します。ポリシーの変数を使うと、利用者ごとにアクセスできる範囲を絞れます。",
+      "references": [
+        {
+          "title": "Amazon Cognito とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/what-is-amazon-cognito.html"
+        },
+        {
+          "title": "AWS STS の一時的なセキュリティ認証情報",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d081",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-041",
+      "point": "Directory Service",
+      "question": "AWS Directory Service では、AWS Managed Microsoft AD などのマネージドな Active Directory を使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Directory Service は、マネージドな Active Directory などを提供します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM アイデンティティセンターでは、利用者やグループに、アカウントとアクセス許可セットを割り当てて、アクセスを許可します。認証の問題の調査には、割り当て・ID ソースの同期・CloudTrail のイベントなどを確認します。",
+      "references": [
+        {
+          "title": "AWS Directory Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/what_is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d082",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-041",
+      "point": "MFA の必須化",
+      "question": "IAM アイデンティティセンターでは、サインインのときに MFA を必須にすることはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。アイデンティティセンターでは、MFA を必須にするなどの設定ができます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "IAM アイデンティティセンターでは、利用者やグループに、アカウントとアクセス許可セットを割り当てて、アクセスを許可します。認証の問題の調査には、割り当て・ID ソースの同期・CloudTrail のイベントなどを確認します。",
+      "references": [
+        {
+          "title": "IAM アイデンティティセンターのアクセス許可セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d083",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-042",
+      "point": "サービスロール",
+      "question": "AWS のサービスが利用者の代わりに操作するためのロールは存在せず、サービスには必ずアクセスキーを渡す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。サービスが利用者の代わりに操作を行うために引き受けるロールを、サービスロールといいます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "コンピューティングのワークロードには、EC2 のインスタンスプロファイル、Lambda の実行ロール、ECS のタスクロールなどで IAM ロールを渡し、必要な権限だけを与えます。",
+      "references": [
+        {
+          "title": "AWS STS の一時的なセキュリティ認証情報",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d084",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-042",
+      "point": "ロールの権限の範囲",
+      "question": "Lambda の実行ロールには、念のため AdministratorAccess を付けておくのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。実行ロールにも、関数に必要な最小限の権限だけを付けます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "コンピューティングのワークロードには、EC2 のインスタンスプロファイル、Lambda の実行ロール、ECS のタスクロールなどで IAM ロールを渡し、必要な権限だけを与えます。",
+      "references": [
+        {
+          "title": "AWS STS の一時的なセキュリティ認証情報",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d085",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-043",
+      "point": "RCP と許可",
+      "question": "RCP は、リソースへのアクセスを新しく許可するためのポリシーである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。RCP は許可を与えず、使えるアクセス許可の上限を決めます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "RCP は、組織のリソースに対する最大のアクセス許可を決めるポリシーで、外部からのアクセスなどのデータ境界を一元的に作るのに使えます。SCP は組織のプリンシパルの最大の権限を決めます。",
+      "references": [
+        {
+          "title": "リソースコントロールポリシー (RCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_rcps.html"
+        },
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d086",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-043",
+      "point": "SCP の対象",
+      "question": "SCP は、組織のメンバーアカウントの IAM のユーザーとロールの権限の上限を決める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SCP はプリンシパルの権限の上限、RCP はリソースのアクセスの上限を決めます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "RCP は、組織のリソースに対する最大のアクセス許可を決めるポリシーで、外部からのアクセスなどのデータ境界を一元的に作るのに使えます。SCP は組織のプリンシパルの最大の権限を決めます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d087",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-044",
+      "point": "外部 ID の扱い",
+      "question": "AWS は外部 ID をシークレットとして扱うので、一度設定すると誰も値を見られない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AWS は外部 ID をシークレットとして扱いません。ロールを見られる人は外部 ID も見られます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "サードパーティーにロールを引き受けさせる場合は、信頼ポリシーで相手のアカウントを指定し、外部 ID を条件にします。外部 ID の主な目的は、混乱した代理の問題を防ぐことです。",
+      "references": [
+        {
+          "title": "サードパーティーにアクセスを許可するときの外部 ID",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+        },
+        {
+          "title": "ロールの信頼ポリシーとクロスアカウントのアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d088",
+      "type": "drill",
+      "domain": "d4",
+      "source": "scs-044",
+      "point": "認証情報の共有を避ける",
+      "question": "IAM ロールを使うと、サードパーティーに自社の AWS のセキュリティ認証情報を渡さずに、アクセスを許可できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ロールを引き受けさせることで、認証情報を共有せずにアクセスを委任できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "サードパーティーにロールを引き受けさせる場合は、信頼ポリシーで相手のアカウントを指定し、外部 ID を条件にします。外部 ID の主な目的は、混乱した代理の問題を防ぐことです。",
+      "references": [
+        {
+          "title": "サードパーティーにアクセスを許可するときの外部 ID",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+        },
+        {
+          "title": "ロールの信頼ポリシーとクロスアカウントのアクセス",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d089",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-045",
+      "point": "S3 での HTTPS の強制",
+      "question": "S3 のバケットポリシーで、aws:SecureTransport が false のリクエストを拒否すると、HTTPS 以外のアクセスを防げる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。aws:SecureTransport の条件で、暗号化されていない通信を拒否できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ELB のセキュリティポリシーは、クライアントとの TLS のネゴシエーションで使うプロトコルと暗号スイートの組み合わせです。古いプロトコルを使わないポリシーを選んで、接続の暗号化を強制します。",
+      "references": [
+        {
+          "title": "Amazon S3 のセキュリティのベストプラクティス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/security-best-practices.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d090",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-045",
+      "point": "TLS の終端",
+      "question": "ALB で TLS を終端した場合、ALB からターゲットまでの通信は、設定にかかわらず必ず暗号化される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ALB からターゲットまでも暗号化したい場合は、ターゲットのプロトコルを HTTPS にするなどの設定が必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ELB のセキュリティポリシーは、クライアントとの TLS のネゴシエーションで使うプロトコルと暗号スイートの組み合わせです。古いプロトコルを使わないポリシーを選んで、接続の暗号化を強制します。",
+      "references": [
+        {
+          "title": "Application Load Balancer のセキュリティポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/describe-ssl-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d091",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-046",
+      "point": "サービスへのプライベートな接続",
+      "question": "VPC から、自社の別の VPC で提供しているサービスや AWS のサービスに、インターネットを経由せずにプライベートに接続したい。どの技術を使うか。",
+      "choices": [
+        {
+          "text": "インターネットゲートウェイ",
+          "explanation": "インターネットへの出入り口です。"
+        },
+        {
+          "text": "NAT ゲートウェイ",
+          "explanation": "インターネットへの外向きの通信の仕組みです。"
+        },
+        {
+          "text": "CloudFront",
+          "explanation": "コンテンツの配信のサービスです。"
+        },
+        {
+          "text": "AWS PrivateLink（インターフェイス VPC エンドポイント）",
+          "explanation": "VPC からサービスに、あたかも VPC の中にあるかのようにプライベートに接続できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "PrivateLink で、サービスにプライベートに接続できます。",
+      "references": [
+        {
+          "title": "AWS PrivateLink とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/what-is-privatelink.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d092",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-046",
+      "point": "Client VPN の認証",
+      "question": "AWS Client VPN では、Active Directory や SAML による認証、相互の証明書による認証を使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Client VPN は、複数の認証の方式に対応しています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Client VPN は、クライアントベースのマネージドな VPN のサービスで、利用者は OpenVPN 系のクライアントで、TLS で暗号化された接続を使えます。",
+      "references": [
+        {
+          "title": "AWS Client VPN とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpn/latest/clientvpn-admin/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d093",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-047",
+      "point": "Nitro の暗号化",
+      "question": "一部の Nitro ベースのインスタンスでは、インスタンスの間の通信が、ハードウェアで自動的に暗号化される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。対応するインスタンスの種類どうしの通信は、Nitro のハードウェアで自動的に暗号化されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon EMR のセキュリティ設定では、保存データの暗号化と、転送中のデータの暗号化（アプリケーションのフレームワークごとの TLS など）を指定できます。",
+      "references": [
+        {
+          "title": "EC2 の転送中の暗号化（Nitro）",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/data-protection.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d094",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-047",
+      "point": "保存時と転送中",
+      "question": "データの保存時の暗号化を有効にすれば、転送中のデータも自動で暗号化される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。保存時の暗号化と転送中の暗号化は別の設定です。両方を設定します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon EMR のセキュリティ設定では、保存データの暗号化と、転送中のデータの暗号化（アプリケーションのフレームワークごとの TLS など）を指定できます。",
+      "references": [
+        {
+          "title": "Amazon EMR のデータの暗号化のオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-data-encryption-options.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d095",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-048",
+      "point": "KMS の HSM",
+      "question": "AWS KMS のキーも、FIPS で検証された HSM で保護されている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。KMS のキーは、FIPS 140-3 のセキュリティレベル3で検証された HSM で保護されています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudHSM は、専用のシングルテナントの HSM を提供し、利用者が鍵を管理します。多くの用途では、マネージドで AWS のサービスと統合された KMS が向いています。",
+      "references": [
+        {
+          "title": "AWS Key Management Service",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/overview.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d096",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-048",
+      "point": "暗号化の場所",
+      "question": "データを AWS に送る前に、アプリケーションで暗号化して、AWS 側では平文を一切扱わないようにしたい。どの方式か。",
+      "choices": [
+        {
+          "text": "サーバー側の暗号化（SSE-KMS）",
+          "explanation": "AWS が受け取ってから暗号化します。"
+        },
+        {
+          "text": "サーバー側の暗号化（SSE-S3）",
+          "explanation": "AWS が受け取ってから暗号化します。"
+        },
+        {
+          "text": "クライアント側の暗号化",
+          "explanation": "データを送る前にアプリケーションで暗号化します。"
+        },
+        {
+          "text": "TLS だけ",
+          "explanation": "転送中の暗号化で、保存時には AWS 側で平文になります（サーバー側の暗号化がなければ）。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "クライアント側の暗号化では、AWS に届く前にデータが暗号化されます。",
+      "references": [
+        {
+          "title": "AWS CloudHSM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cloudhsm/latest/userguide/introduction.html"
+        },
+        {
+          "title": "AWS Key Management Service",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/overview.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d097",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-049",
+      "point": "リーガルホールド",
+      "question": "S3 オブジェクトロックのリーガルホールドには、必ず保持の期限を指定する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。リーガルホールドには期限がなく、解除されるまで保護が続きます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "S3 オブジェクトロックは、オブジェクトを WORM（書き込みは1回、読み取りは何度でも）で保護します。コンプライアンスモードでは、保持期間中はルートユーザーでも削除できません。",
+      "references": [
+        {
+          "title": "S3 オブジェクトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d098",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-049",
+      "point": "Glacier のアーカイブ",
+      "question": "S3 Glacier のボールトのアーカイブに、変更できない WORM のコンプライアンスの制御をかけたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "S3 のライフサイクル",
+          "explanation": "移行と削除の仕組みです。"
+        },
+        {
+          "text": "S3 Transfer Acceleration",
+          "explanation": "転送を速くする機能です。"
+        },
+        {
+          "text": "S3 Glacier のボールトロック",
+          "explanation": "ボールトロックのポリシーで、変更できないコンプライアンスの制御をかけられます。"
+        },
+        {
+          "text": "S3 のイベント通知",
+          "explanation": "イベントの通知の機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Glacier のボールトロックで、ボールトに WORM の制御をかけられます。",
+      "references": [
+        {
+          "title": "S3 Glacier のボールトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazonglacier/latest/dev/vault-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d099",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-050",
+      "point": "アップロードの完全性",
+      "question": "S3 にオブジェクトをアップロードするときにチェックサムを指定すると、データが途中で壊れていないかを確かめられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。チェックサムで、アップロードとダウンロードのデータの完全性を確かめられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lambda のコード署名は、AWS Signer の署名のプロファイルと組み合わせて、信頼できる発行者のコードで、署名後に変更されていないものだけがデプロイされるようにします。",
+      "references": [
+        {
+          "title": "S3 のオブジェクトの整合性の確認（チェックサム）",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/checking-object-integrity.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d100",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-050",
+      "point": "コード署名の効果",
+      "question": "Lambda のコード署名を設定すると、関数の実行時のメモリの使用量が自動で最適化される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。コード署名は、コードの発行者と完全性を確かめるための機能です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Lambda のコード署名は、AWS Signer の署名のプロファイルと組み合わせて、信頼できる発行者のコードで、署名後に変更されていないものだけがデプロイされるようにします。",
+      "references": [
+        {
+          "title": "Lambda のコード署名",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-codesigning.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d101",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-051",
+      "point": "別のリージョンへのコピー",
+      "question": "Data Lifecycle Manager のポリシーで、スナップショットを別のリージョンにコピーすることもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。災害に備えて、別のリージョンやアカウントにバックアップするポリシーを作れます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Data Lifecycle Manager は、EBS のスナップショットと EBS-backed AMI の作成・保持・削除を、ポリシーで自動化します。複数のサービスのバックアップを一元管理するなら AWS Backup も使えます。",
+      "references": [
+        {
+          "title": "Amazon Data Lifecycle Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/snapshot-lifecycle.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d102",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-051",
+      "point": "保持期間",
+      "question": "Data Lifecycle Manager で作ったスナップショットは、保持の設定にかかわらず、ずっと残り続ける。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。保持のルールに従って、古いスナップショットは自動で削除されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon Data Lifecycle Manager は、EBS のスナップショットと EBS-backed AMI の作成・保持・削除を、ポリシーで自動化します。複数のサービスのバックアップを一元管理するなら AWS Backup も使えます。",
+      "references": [
+        {
+          "title": "Amazon Data Lifecycle Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/snapshot-lifecycle.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d103",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-052",
+      "point": "ログのマスク",
+      "question": "CloudWatch Logs のデータ保護ポリシーで、ログに含まれる機密データをマスクできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。データ保護ポリシーで、機密データを検出してマスクできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管し、ローテーションを自動化します。マネージドローテーションや、Lambda 関数によるローテーションがあります。",
+      "references": [
+        {
+          "title": "CloudWatch Logs のマスキングによる機密データの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d104",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-052",
+      "point": "メッセージの保護",
+      "question": "SNS のトピックに発行されるメッセージに含まれる PII を検出して、マスクしたり配信を拒否したりしたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "SNS の FIFO トピック",
+          "explanation": "順番を守る機能です。"
+        },
+        {
+          "text": "SNS のメッセージのフィルタリング",
+          "explanation": "購読者が受け取るメッセージを絞る機能です。"
+        },
+        {
+          "text": "SNS の配信の再試行",
+          "explanation": "配信の失敗時の再試行です。"
+        },
+        {
+          "text": "SNS のメッセージのデータ保護",
+          "explanation": "データ保護ポリシーで、メッセージの機密データを検出し、監査・マスク・拒否できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "SNS のメッセージのデータ保護で、PII などを保護できます。",
+      "references": [
+        {
+          "title": "Amazon SNS のメッセージのデータ保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/message-data-protection.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d105",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-053",
+      "point": "インポートした素材の削除",
+      "question": "インポートしたキーの素材は、利用者が KMS から削除でき、削除するとそのキーでの暗号化と復号はできなくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。インポートした素材は削除でき、必要なら同じ素材を再インポートします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "KMS では、キーの素材をインポートできます。インポートした素材は、利用者が有効期限を設定したり、削除したりでき、元の素材のコピーは利用者が保管します。",
+      "references": [
+        {
+          "title": "AWS KMS のキーへのキーマテリアルのインポート",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/importing-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d106",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-053",
+      "point": "自動ローテーション",
+      "question": "インポートしたキーの素材を持つ KMS キーも、AWS が生成した素材のキーと同じように、自動ローテーションで新しい素材が自動生成される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。インポートしたキーの素材は KMS が自動では生成できないので、自動ローテーションの対象外で、利用者が手動でローテーションします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "KMS では、キーの素材をインポートできます。インポートした素材は、利用者が有効期限を設定したり、削除したりでき、元の素材のコピーは利用者が保管します。",
+      "references": [
+        {
+          "title": "AWS KMS キーのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/rotate-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d107",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-054",
+      "point": "可用性の責任",
+      "question": "KMS の外部キーストアを使う場合、外部のキーマネージャーの可用性と性能は、利用者の責任になる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。外部のシステムが使えないと、暗号化と復号もできなくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "KMS の外部キーストアは、AWS の外にある外部のキーマネージャーの鍵で KMS のキーを裏付けます。鍵は AWS の外に保管され、暗号化と復号の操作も外部で行われます。可用性や遅延は外部のシステムに依存します。",
+      "references": [
+        {
+          "title": "AWS KMS の外部キーストア",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/keystore-external.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d108",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-054",
+      "point": "複数のリージョン",
+      "question": "別のリージョンで、同じキーの ID と同じキーの素材を持つ KMS キーを使い、データを再暗号化せずに復号したい。どれを使うか。",
+      "choices": [
+        {
+          "text": "AWS マネージドキー",
+          "explanation": "リージョンごとの別のキーです。"
+        },
+        {
+          "text": "S3 マネージドキー",
+          "explanation": "S3 が管理するキーです。"
+        },
+        {
+          "text": "外部キーストア",
+          "explanation": "鍵を AWS の外に置く仕組みです。"
+        },
+        {
+          "text": "マルチリージョンキー",
+          "explanation": "複数のリージョンで、同じキーの素材とキーの ID を持つ関連したキーを使えます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "マルチリージョンキーで、リージョンをまたいで暗号化したデータを扱えます。",
+      "references": [
+        {
+          "title": "AWS KMS のマルチリージョンキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/multi-region-keys-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d109",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-055",
+      "point": "Private CA と ACM",
+      "question": "AWS Private CA で発行したプライベートな証明書は、ACM と組み合わせて管理できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ACM でプライベートな証明書を発行・管理できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Private CA は、認証局のインフラを運用せずに、プライベートな証明書の発行と管理ができるマネージドなサービスです。",
+      "references": [
+        {
+          "title": "AWS Private CA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/privateca/latest/userguide/PcaWelcome.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d110",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-055",
+      "point": "プライベートな証明書の信頼",
+      "question": "AWS Private CA で発行した証明書は、一般のブラウザで最初から信頼されている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。プライベートな証明書は、組織の中で信頼を設定して使います。一般のブラウザでは最初から信頼されていません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Private CA は、認証局のインフラを運用せずに、プライベートな証明書の発行と管理ができるマネージドなサービスです。",
+      "references": [
+        {
+          "title": "AWS Private CA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/privateca/latest/userguide/PcaWelcome.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d111",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-056",
+      "point": "ロックと新しいバージョン",
+      "question": "S3 オブジェクトロックの保持期間やリーガルホールドがあっても、同じキーで新しいバージョンを作ったり、削除マーカーを付けたりすることは妨げられない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ロックされるのはそのオブジェクトのバージョンで、新しいバージョンの作成や削除マーカーの追加は妨げられません。ロックされたバージョン自体は削除・上書きされません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "S3 ライフサイクルの設定で、オブジェクトの移行と有効期限（削除）を自動化できます。EFS のライフサイクルポリシーや FSx のバックアップのポリシーも、データの保持の管理に使えます。",
+      "references": [
+        {
+          "title": "S3 オブジェクトロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d112",
+      "type": "drill",
+      "domain": "d5",
+      "source": "scs-056",
+      "point": "移行のアクション",
+      "question": "S3 ライフサイクルでは、オブジェクトを別のストレージクラスに移すことはできず、削除だけができる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ライフサイクルには、移行のアクションと有効期限のアクションの両方があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "S3 ライフサイクルの設定で、オブジェクトの移行と有効期限（削除）を自動化できます。EFS のライフサイクルポリシーや FSx のバックアップのポリシーも、データの保持の管理に使えます。",
+      "references": [
+        {
+          "title": "Amazon S3 のオブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d113",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-057",
+      "point": "コントロールの種類",
+      "question": "Control Tower のコントロールには、予防・検出・プロアクティブの種類がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。予防のコントロールは SCP など、検出のコントロールは Config のルールなどで実装されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Control Tower は、Organizations などを組み合わせて、管理されたマルチアカウントの環境（ランディングゾーン）をすばやく作ります。予防・検出・プロアクティブのコントロールを適用できます。",
+      "references": [
+        {
+          "title": "AWS Control Tower のコントロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/controlreference/controls.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d114",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-057",
+      "point": "既存の環境",
+      "question": "AWS Control Tower は、新しく作る組織にしか導入できず、既存の Organizations の組織には導入できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Control Tower は、既存の組織にも導入できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Control Tower は、Organizations などを組み合わせて、管理されたマルチアカウントの環境（ランディングゾーン）をすばやく作ります。予防・検出・プロアクティブのコントロールを適用できます。",
+      "references": [
+        {
+          "title": "AWS Control Tower とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide/what-is-control-tower.html"
+        },
+        {
+          "title": "AWS Control Tower のコントロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/controltower/latest/controlreference/controls.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d115",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-058",
+      "point": "設定の一元的な強制",
+      "question": "EC2 の IMDSv2 の必須化や、EBS のスナップショットの公開の禁止などの設定を、組織全体で宣言的に強制したい。どのポリシーを使うか。",
+      "choices": [
+        {
+          "text": "AI サービスのオプトアウトポリシー",
+          "explanation": "AI サービスのデータの利用のオプトアウトです。"
+        },
+        {
+          "text": "タグポリシー",
+          "explanation": "タグの付け方を標準化するポリシーです。"
+        },
+        {
+          "text": "宣言型ポリシー",
+          "explanation": "サービスの設定の望ましい状態を宣言し、組織全体で強制します。"
+        },
+        {
+          "text": "バックアップポリシー",
+          "explanation": "バックアップの計画を管理するポリシーです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "宣言型ポリシーで、サービスの設定を組織全体で強制できます。",
+      "references": [
+        {
+          "title": "宣言型ポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_declarative.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d116",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-058",
+      "point": "ポリシーの種類",
+      "question": "AWS Organizations のポリシーには、SCP のほかに、RCP やタグポリシーなどの種類がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Organizations には、認可のポリシー（SCP・RCP）と管理のポリシー（タグ・バックアップ・AI のオプトアウト・宣言型など）があります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AI サービスのオプトアウトポリシーは、Organizations のポリシーの一種で、AWS の AI サービスが利用者のコンテンツを保存・使用することを、組織全体でオプトアウトできます。",
+      "references": [
+        {
+          "title": "AWS Organizations とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d117",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-059",
+      "point": "管理アカウントの使い方",
+      "question": "組織の管理アカウントは、ワークロードを動かしたり、日常の作業をしたりするのに積極的に使うべきである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。管理アカウントは権限が強いので、使用を最小限にし、ワークロードは置きません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Organizations の委任管理者の機能で、メンバーアカウントにサービスの管理を任せられます。セキュリティのサービスは、専用のセキュリティのアカウントを委任管理者にするのが一般的です。",
+      "references": [
+        {
+          "title": "AWS Organizations の委任管理者",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_delegate_policies.html"
+        },
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d118",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-059",
+      "point": "ルートアクセスの一元管理",
+      "question": "IAM で、メンバーアカウントのルートユーザーの認証情報を一元的に管理し、メンバーアカウントのルートの認証情報を削除できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ルートアクセスの一元管理で、メンバーアカウントのルートユーザーの認証情報をなくし、必要な特権の操作を一元的に行えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Organizations の委任管理者の機能で、メンバーアカウントにサービスの管理を任せられます。セキュリティのサービスは、専用のセキュリティのアカウントを委任管理者にするのが一般的です。",
+      "references": [
+        {
+          "title": "メンバーアカウントのルートアクセスの一元管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_root-user.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d119",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-060",
+      "point": "複数アカウントへの一貫したデプロイ",
+      "question": "セキュリティのベースラインの設定（IAM ロールや Config のルールなど）を、組織の全アカウントと全リージョンに一貫してデプロイしたい。どれを使うか。",
+      "choices": [
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "証明書の管理です。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出です。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートです。"
+        },
+        {
+          "text": "CloudFormation StackSets",
+          "explanation": "複数のアカウントとリージョンに、1回の操作でスタックをデプロイします。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "StackSets で、セキュリティのベースラインを組織に配れます。",
+      "references": [
+        {
+          "title": "CloudFormation StackSets",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d120",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-060",
+      "point": "ポリシーのコード化",
+      "question": "セキュリティのルールをコードとして書いておくと、パイプラインで自動的に検証できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ポリシーのコード化で、ルールの適用を自動化できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudFormation Guard は、汎用のポリシーをコードとして評価するツールで、IaC のテンプレートがルールに沿っているかを、デプロイの前に検証できます。",
+      "references": [
+        {
+          "title": "AWS CloudFormation Guard とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cfn-guard/latest/ug/what-is-guard.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d121",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-061",
+      "point": "Firewall Manager の前提",
+      "question": "AWS Firewall Manager を使うには、AWS Organizations の組織に属している必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Firewall Manager は、Organizations の組織で使います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Firewall Manager は、AWS Organizations の複数のアカウントとリソースに、WAF・Shield Advanced・セキュリティグループ・Network Firewall などのルールを一元的に適用・管理します。",
+      "references": [
+        {
+          "title": "AWS Firewall Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/fms-chapter.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d122",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-061",
+      "point": "承認された製品の提供",
+      "question": "社内で承認された構成のリソース（暗号化済みの S3 など）だけを、開発者がセルフサービスで作れるようにしたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データの検出です。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートです。"
+        },
+        {
+          "text": "AWS Service Catalog",
+          "explanation": "承認された製品のカタログを作り、利用者がセルフサービスでデプロイできます。"
+        },
+        {
+          "text": "Amazon Detective",
+          "explanation": "調査のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Service Catalog で、承認された構成のリソースを提供できます。",
+      "references": [
+        {
+          "title": "AWS Service Catalog とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/servicecatalog/latest/adminguide/introduction.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d123",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-062",
+      "point": "タグの戦略",
+      "question": "リソースに部門・コストセンター・環境などのタグを付けておくと、管理・権限の制御・費用の集計に使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。タグでリソースを整理し、ABAC や費用の配分にも使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS RAM は、Transit Gateway・サブネット・Route 53 Resolver のルールなどのリソースを、アカウント間や組織内で安全に共有するサービスです。",
+      "references": [
+        {
+          "title": "AWS リソースのタグ付けのベストプラクティス",
+          "url": "https://docs.aws.amazon.com/ja_jp/whitepapers/latest/tagging-best-practices/tagging-best-practices.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d124",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-062",
+      "point": "RAM と所有権",
+      "question": "AWS RAM でリソースを共有すると、リソースの所有権も共有先のアカウントに移る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。RAM で共有しても、所有権は元のアカウントに残ります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS RAM は、Transit Gateway・サブネット・Route 53 Resolver のルールなどのリソースを、アカウント間や組織内で安全に共有するサービスです。",
+      "references": [
+        {
+          "title": "AWS Resource Access Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d125",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-063",
+      "point": "Artifact と Audit Manager",
+      "question": "AWS Artifact は AWS 自身のコンプライアンスのレポートを提供し、Audit Manager は自社の環境の監査の証拠を集める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Artifact は AWS のレポート、Audit Manager は自社の環境の証拠の収集に使います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Audit Manager は、AWS の利用状況を継続的に監査し、リスクと規制や業界の基準への準拠を評価するために、証拠の収集を自動化します。AWS 自身の認証のレポートは AWS Artifact で入手します。",
+      "references": [
+        {
+          "title": "AWS Artifact とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/artifact/latest/ug/what-is-aws-artifact.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d126",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-063",
+      "point": "Well-Architected Tool",
+      "question": "AWS Well-Architected Tool では、ワークロードをベストプラクティスに照らしてレビューすることはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Well-Architected Tool で、ワークロードをセキュリティなどのベストプラクティスに照らしてレビューできます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Audit Manager は、AWS の利用状況を継続的に監査し、リスクと規制や業界の基準への準拠を評価するために、証拠の収集を自動化します。AWS 自身の認証のレポートは AWS Artifact で入手します。",
+      "references": [
+        {
+          "title": "AWS Well-Architected Tool",
+          "url": "https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/userguide/well-architected.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d127",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-064",
+      "point": "アラートの集約",
+      "question": "Security Hub で、Config のルールの評価やほかのサービスの検出結果を集約して、一元的に確認できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Security Hub は、複数のサービスの検出結果を集約します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Config のルールで非準拠のリソースを検知し、Systems Manager Automation のドキュメントで自動で修復できます。Security Hub で検出結果を集約し、通知にもつなげられます。",
+      "references": [
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d128",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-064",
+      "point": "修復の方式",
+      "question": "AWS Config の修復のアクションは、手動でしか実行できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。修復のアクションは、自動でも手動でも実行できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Config のルールで非準拠のリソースを検知し、Systems Manager Automation のドキュメントで自動で修復できます。Security Hub で検出結果を集約し、通知にもつなげられます。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠のリソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d129",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-065",
+      "point": "SCP のテスト",
+      "question": "SCP は影響が小さいので、テストせずにいきなり組織のルートに適用してよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP は組織に大きな影響を与えるので、テスト用の OU で確かめてから段階的に適用します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "リージョンを制限する SCP では、グローバルなサービスの操作を除外しないと、必要な操作まで拒否されます。SCP の拒否は、IAM のポリシーの許可より優先されます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "scs-d130",
+      "type": "drill",
+      "domain": "d6",
+      "source": "scs-065",
+      "point": "SCP と管理アカウント",
+      "question": "SCP で拒否した操作は、組織の管理アカウントでもできなくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP は管理アカウントには影響しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "リージョンを制限する SCP では、グローバルなサービスの操作を除外しないと、必要な操作まで拒否されます。SCP の拒否は、IAM のポリシーの許可より優先されます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    }
+  ]
+}
