@@ -86,7 +86,7 @@ class AppTokens extends ThemeExtension<AppTokens> {
   double get stampScale => 1.15;
 
   // ---------- 学習の目標 ----------
-  /// 1日の目標の問題数（通勤の片道 3〜5 分で一問一答を解き切れる数）
+  /// 1日の目標の問題数の初期値（通勤の片道 3〜5 分で一問一答を解き切れる数）。本人が選び直した値は DailyGoalSetting に保存する
   int get dailyGoal => 10;
 
   // ---------- 文字 ----------

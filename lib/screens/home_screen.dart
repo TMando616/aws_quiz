@@ -7,8 +7,11 @@ import '../data/certification_repository.dart';
 import '../data/exam_repository.dart';
 import '../data/question_repository.dart';
 import '../data/study_repository.dart';
+import '../logic/continue_order.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
+import '../models/question.dart';
+import '../settings/daily_goal.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/certification_board.dart';
 import '../widgets/design_parts.dart';
@@ -52,8 +55,49 @@ class _ExamSummary {
   bool get ready => (questionCount ?? 0) > 0;
 }
 
+/// 「続きから解く」で始める一問一答
+class _ContinueTarget {
+  const _ContinueTarget(
+    this.exam,
+    this.questions, {
+    required this.unansweredCount,
+    required this.wrongCount,
+  });
+
+  final Exam exam;
+
+  /// 未回答 → 不正解 → 正解 の順に並べた一問一答
+  final List<Question> questions;
+  final int unansweredCount;
+
+  /// 最新の回答が不正解の問題の数
+  final int wrongCount;
+
+  /// ボタンの下に出す補足（どこから始まるか）
+  String get caption {
+    final from = unansweredCount > 0
+        ? '未回答 $unansweredCount問から'
+        : wrongCount > 0
+        ? '間違えた $wrongCount問から'
+        : '全問正解済み・最初から';
+    return '${exam.shortName} の一問一答・$from';
+  }
+}
+
 class _HomeData {
-  const _HomeData(this.summaries, this.certified, this.activity);
+  const _HomeData(
+    this.summaries,
+    this.certified,
+    this.activity, {
+    this.continueTarget,
+    this.goal,
+  });
+
+  /// 続きから解く一問一答。一問一答のある試験が無ければ null
+  final _ContinueTarget? continueTarget;
+
+  /// 1日の目標の問題数。まだ選んでいなければ null（DESIGN.md の `dailyGoal` を使う）
+  final int? goal;
 
   final List<_ExamSummary> summaries;
 
@@ -67,6 +111,7 @@ class _HomeData {
 class _HomeScreenState extends State<HomeScreen> {
   late Future<_HomeData> _future;
   final _certRepo = CertificationRepository();
+  final _goalSetting = DailyGoalSetting();
   Map<String, DateTime> _certified = {};
   bool _privacyOptionsRequired = false;
 
@@ -214,12 +259,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final summaries = <_ExamSummary>[];
+    final questionsByExam = <String, List<Question>>{};
     for (final exam in exams) {
       if (!available.contains(exam.id)) {
         summaries.add(_ExamSummary(exam, null, Accuracy.empty));
         continue;
       }
       final questions = await questionRepo.load(exam.id);
+      questionsByExam[exam.id] = questions;
       final accuracy =
           await study?.accuracyOfExam(exam.id, questions) ?? Accuracy.empty;
       final drillCount = questions.where((q) => q.isDrill).length;
@@ -246,7 +293,41 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       debugPrint('今日の学習を集計できませんでした: $e');
     }
-    return _HomeData(summaries, _certified, activity);
+
+    // 続きから解く：最後に解いた試験（まだ無ければ、一問一答のある最初の試験）
+    _ContinueTarget? continueTarget;
+    try {
+      final lastId = await study?.lastExamId();
+      final withDrills = summaries.where((s) => s.drillCount > 0);
+      final target =
+          withDrills.where((s) => s.exam.id == lastId).firstOrNull ??
+          withDrills.firstOrNull;
+      if (target != null) {
+        final drills = questionsByExam[target.exam.id]!
+            .where((q) => q.isDrill)
+            .toList();
+        final latest = await study?.latestResults(target.exam.id) ?? {};
+        continueTarget = _ContinueTarget(
+          target.exam,
+          orderForContinue(drills, latest),
+          unansweredCount: drills
+              .where((q) => !latest.containsKey(q.id))
+              .length,
+          wrongCount: drills.where((q) => latest[q.id] == false).length,
+        );
+      }
+    } catch (e) {
+      debugPrint('続きから解く問題を用意できませんでした: $e');
+    }
+
+    final goal = await _goalSetting.load();
+    return _HomeData(
+      summaries,
+      _certified,
+      activity,
+      continueTarget: continueTarget,
+      goal: goal,
+    );
   }
 
   Future<void> _toggleCertified(Exam exam) async {
@@ -255,16 +336,68 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) setState(() => _certified = updated);
   }
 
-  Future<void> _openExam(Exam exam) async {
-    await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => ExamScreen(exam: exam)));
-    // 正答率や取得済みの印が変わっているかもしれないので読み直す
+  Future<void> _openExam(Exam exam) =>
+      _pushAndReload(MaterialPageRoute(builder: (_) => ExamScreen(exam: exam)));
+
+  Future<void> _continue(_ContinueTarget target) => _pushAndReload(
+    MaterialPageRoute(
+      builder: (_) => QuizScreen(
+        exam: target.exam,
+        questions: target.questions,
+        title: '一問一答',
+      ),
+    ),
+  );
+
+  /// 画面を開き、戻ってきたら読み直す（正答率・今日の問題数・取得済みの印が変わっているかもしれないため）
+  Future<void> _pushAndReload(Route<void> route) async {
+    await Navigator.of(context).push(route);
+    _reload();
+  }
+
+  void _reload() {
     // アロー関数だと Future を返してしまい setState が例外になるので、ブロックで書く
     if (mounted) {
       setState(() {
         _future = _load();
       });
     }
+  }
+
+  /// 1日の目標の問題数を選ぶシート
+  Future<void> _pickGoal(int current) async {
+    final picked = await showModalBottomSheet<int>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        final t = context.tokens;
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(t.space5, 0, t.space5, t.space5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SectionLabel('1日の目標'),
+                for (final goal in DailyGoalSetting.choices)
+                  ListRow(
+                    title: '$goal問',
+                    titleStyle: t.numeric(t.body),
+                    showChevron: false,
+                    trailing: goal == current
+                        ? Icon(Icons.check, color: t.ink)
+                        : null,
+                    onTap: () => Navigator.of(context).pop(goal),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (picked == null || picked == current) return;
+    await _goalSetting.save(picked);
+    _reload();
   }
 
   @override
@@ -316,7 +449,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 onToggle: _toggleCertified,
               ),
               SizedBox(height: t.space6),
-              _TodayActivity(snapshot.data!.activity),
+              _TodayActivity(
+                activity: snapshot.data!.activity,
+                goal: snapshot.data!.goal ?? t.dailyGoal,
+                continueTarget: snapshot.data!.continueTarget,
+                onPickGoal: _pickGoal,
+                onContinue: _continue,
+              ),
               // 問題を解く入口。問題を収録している試験だけ並べる（ほかの試験はボードに出ている）
               const _LevelHeader('解ける試験'),
               for (final s in summaries.where((s) => s.ready))
@@ -333,14 +472,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
 /// 今日の学習。回答数と連続日数、1日の目標に対する進み具合
 class _TodayActivity extends StatelessWidget {
-  const _TodayActivity(this.activity);
+  const _TodayActivity({
+    required this.activity,
+    required this.goal,
+    required this.continueTarget,
+    required this.onPickGoal,
+    required this.onContinue,
+  });
 
   final DailyActivity activity;
+  final int goal;
+  final _ContinueTarget? continueTarget;
+  final ValueChanged<int> onPickGoal;
+  final ValueChanged<_ContinueTarget> onContinue;
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final goal = t.dailyGoal;
+    final target = continueTarget;
     final count = activity.todayCount;
     final numberStyle = t.numeric(t.title);
     final unitStyle = t.body.copyWith(fontWeight: FontWeight.w700);
@@ -348,7 +497,23 @@ class _TodayActivity extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionLabel('今日の学習', trailing: '目標 $goal問'),
+        Row(
+          children: [
+            Expanded(child: Text('今日の学習', style: t.label)),
+            // タップで目標の問題数を変える
+            TextButton.icon(
+              onPressed: () => onPickGoal(goal),
+              // 右端を下の数字の右端に揃える（高さはタップの的として残す）
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size(0, t.tapTarget),
+              ),
+              iconAlignment: IconAlignment.end,
+              icon: const Icon(Icons.expand_more),
+              label: Text('目標 $goal問', style: t.numeric(t.label)),
+            ),
+          ],
+        ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
@@ -380,6 +545,20 @@ class _TodayActivity extends StatelessWidget {
           count >= goal ? '今日の目標に到達' : '目標まで あと ${goal - count}問',
           style: t.numeric(t.caption),
         ),
+        // ホームの主ボタン。通勤で開いて、すぐ解き始められるように
+        if (target != null) ...[
+          SizedBox(height: t.space4),
+          FilledButton(
+            onPressed: () => onContinue(target),
+            child: const Text('続きから解く'),
+          ),
+          SizedBox(height: t.space2),
+          Text(
+            target.caption,
+            style: t.numeric(t.caption),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ],
     );
   }

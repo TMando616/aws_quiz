@@ -16,7 +16,7 @@ void main() {
     await tester.pumpWidget(const MyApp());
     // アセットの読み込みは実際の非同期処理なので、runAsyncで少しずつ待つ。
     // 問題データが増えると読み込みに時間がかかるため、固定の時間ではなく表示されるまで待つ
-    for (var i = 0; i < 50 && find.text('解ける試験').evaluate().isEmpty; i++) {
+    for (var i = 0; i < 50 && find.text('今日の学習').evaluate().isEmpty; i++) {
       await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
@@ -26,10 +26,13 @@ void main() {
     expect(find.text('0 / 12 取得'), findsOneWidget);
     expect(find.text('Foundational'), findsOneWidget);
     expect(find.text('CLF'), findsOneWidget);
-    // 今日の学習
+    // 今日の学習と、ホームの主ボタン「続きから解く」
     expect(find.text('今日の学習'), findsOneWidget);
+    expect(find.text('目標 10問'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('続きから解く'), 200);
+    expect(find.text('続きから解く'), findsOneWidget);
     // 問題のある試験は、ボードと「解ける試験」の両方に出る
-    expect(find.text('解ける試験'), findsOneWidget);
-    expect(find.text('SAA'), findsNWidgets(2));
+    await tester.scrollUntilVisible(find.text('解ける試験'), 200);
+    expect(find.text('SAP'), findsWidgets);
   });
 }

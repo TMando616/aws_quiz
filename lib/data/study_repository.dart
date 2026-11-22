@@ -197,6 +197,17 @@ class StudyRepository {
     return Accuracy(answered: answered, correct: correct);
   }
 
+  /// 最後に回答した試験のID（まだ1問も解いていなければ null）
+  Future<String?> lastExamId() async {
+    final rows = await _db.query(
+      'answers',
+      columns: ['exam_id'],
+      orderBy: 'id DESC',
+      limit: 1,
+    );
+    return rows.isEmpty ? null : rows.first['exam_id'] as String;
+  }
+
   /// 今日の回答数と、連続して解いた日数
   Future<DailyActivity> dailyActivity({DateTime? now}) async {
     // 日付は端末のタイムゾーンで区切る（SQLite の localtime と Dart の DateTime は同じ設定を使う）
