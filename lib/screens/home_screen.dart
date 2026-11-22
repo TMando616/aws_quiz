@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
-  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`drill` で一問一答まで進む（`drill-answered` はさらに1問目に自動で回答する）
+  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`drill` で一問一答まで進む（`drill-answered` はさらに1問目に自動で回答する。`quiz-selected` は出題画面で1問目の A を選んだ状態にする）
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
 
   Future<void> _openDebugRoute(_HomeData data) async {
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     }
-    if (_debugRoute == 'quiz') {
+    if (_debugRoute == 'quiz' || _debugRoute == 'quiz-selected') {
       final questions = await QuestionRepository().load(target.exam.id);
       navigator.push(
         MaterialPageRoute(
@@ -170,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
             exam: target.exam,
             questions: questions.where((q) => !q.isDrill).toList(),
             title: '全分野',
+            debugAutoAnswer: _debugRoute == 'quiz-selected',
           ),
         ),
       );

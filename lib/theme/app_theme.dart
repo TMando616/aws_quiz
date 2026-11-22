@@ -33,6 +33,9 @@ class AppTheme {
       outlineVariant: t.hairline,
       primaryContainer: t.surfaceMuted,
       onPrimaryContainer: t.textPrimary,
+      // 決めないと secondary（墨）になり、選択中のチップなどが墨の塗りになって中の印が見えなくなる
+      secondaryContainer: t.surfaceMuted,
+      onSecondaryContainer: t.textPrimary,
     );
 
     final base = ThemeData(
@@ -103,6 +106,21 @@ class AppTheme {
         style: TextButton.styleFrom(
           foregroundColor: t.textPrimary,
           textStyle: t.label,
+        ),
+      ),
+      // 選択肢のタイルと同じく、選択中は薄いグレーの塗り＋墨の枠
+      chipTheme: ChipThemeData(
+        backgroundColor: t.surface,
+        selectedColor: t.surfaceMuted,
+        checkmarkColor: t.ink,
+        labelStyle: t.label.copyWith(color: t.textPrimary),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(t.radiusSmall),
+        ),
+        side: WidgetStateBorderSide.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? BorderSide(color: t.ink, width: t.borderControlSelected)
+              : BorderSide(color: t.hairline, width: t.borderControl),
         ),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(

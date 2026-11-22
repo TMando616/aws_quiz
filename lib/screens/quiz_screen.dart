@@ -31,7 +31,8 @@ class QuizScreen extends StatefulWidget {
   /// AppBarに出す出題範囲の名前（例: 全分野）
   final String title;
 
-  /// 開発用：開いたら1問目の最初の選択肢を自動で選んで回答する（`DEBUG_ROUTE=drill-answered`）
+  /// 開発用：開いたら1問目の最初の選択肢を自動で選ぶ。一問一答はそのまま回答まで進む
+  /// （`DEBUG_ROUTE=drill-answered`・`quiz-selected`）
   final bool debugAutoAnswer;
 
   @override
