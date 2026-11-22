@@ -52,5 +52,5 @@
 
 ## 6. お問い合わせ先
 
-開発者：［開発者名または屋号］
+開発者：Takashi Mandokoro
 メールアドレス：tmando616.apps+certstack@gmail.com
