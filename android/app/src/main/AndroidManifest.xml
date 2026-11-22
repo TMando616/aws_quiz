@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="クラウド認定"
+        android:label="CertStack"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!-- AdMobのアプリID（今はGoogle公式のテスト用ID） -->

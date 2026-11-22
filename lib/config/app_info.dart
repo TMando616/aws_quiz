@@ -5,7 +5,7 @@
 class AppInfo {
   AppInfo._();
 
-  static const appName = 'クラウド認定 学習';
+  static const appName = 'CertStack';
 
   /// 問題の誤りの報告や問い合わせを受けるメールアドレス
   static const supportEmail = '';
