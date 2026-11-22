@@ -1,0 +1,6342 @@
+{
+  "examId": "dva",
+  "examCode": "DVA-C03",
+  "questions": [
+    {
+      "id": "dva-001",
+      "domain": "d1",
+      "question": "モバイルアプリから商品の在庫数を問い合わせる API を作る。アプリは結果をすぐ画面に表示する必要があり、処理は数百ミリ秒で終わる。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "Amazon API Gateway から AWS Lambda を同期的に呼び出し、結果をそのまま返す",
+          "explanation": "呼び出し元が結果を待つ必要があり処理も短いので、同期の呼び出しが合っています。"
+        },
+        {
+          "text": "Amazon SQS にリクエストを送り、Lambda があとで処理する",
+          "explanation": "非同期なので、アプリはその場で結果を受け取れません。"
+        },
+        {
+          "text": "Amazon SNS のトピックに発行し、メールで結果を送る",
+          "explanation": "画面にすぐ表示する要件に合いません。"
+        },
+        {
+          "text": "Amazon EventBridge にイベントを送り、ルールで Lambda を呼び出す",
+          "explanation": "イベントの配信は非同期で、呼び出し元に結果は返りません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "呼び出し元がその場で結果を必要とし、処理が短いなら同期のパターン（API Gateway → Lambda）を使います。時間がかかる処理や、呼び出し元が結果を待たなくてよい処理は非同期にします。",
+      "references": [
+        {
+          "title": "Lambda プロキシ統合",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html"
+        }
+      ],
+      "group": "dva-integration-pattern"
+    },
+    {
+      "id": "dva-002",
+      "domain": "d1",
+      "question": "注文の受付 API のあとに、数分かかる請求書の PDF 作成を行う。注文の受付はすぐに完了させ、PDF 作成は失敗しても再試行できるようにしたい。注文が急増しても取りこぼしたくない。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "受付の Lambda 関数の中で PDF 作成まで続けて行い、終わってから応答する",
+          "explanation": "受付の応答が遅くなり、急増時にタイムアウトしやすくなります。"
+        },
+        {
+          "text": "受付の処理で Amazon SQS キューにメッセージを送り、別の Lambda 関数がキューから取り出して PDF を作る",
+          "explanation": "キューに受け付けをためておけば、受付はすぐ終わり、PDF 作成は自分のペースで処理・再試行できます。"
+        },
+        {
+          "text": "API Gateway のキャッシュに注文をためる",
+          "explanation": "キャッシュはレスポンスを再利用する仕組みで、処理待ちのバッファではありません。"
+        },
+        {
+          "text": "PDF 作成を EC2 インスタンス1台で同期的に処理する",
+          "explanation": "1台では急増に耐えられず、障害時に取りこぼします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "時間のかかる処理は SQS で切り離す（非同期・疎結合にする）と、受付側はすぐに応答でき、処理側は自分のペースで処理できます。処理に失敗したメッセージはキューに戻り、再試行されます。",
+      "references": [
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        },
+        {
+          "title": "Amazon SQS の可視性タイムアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+        }
+      ],
+      "group": "dva-integration-pattern"
+    },
+    {
+      "id": "dva-003",
+      "domain": "d1",
+      "question": "会員登録のイベントを、メール送信・ポイント付与・分析の3つのシステムに配信したい。今後、配信先は増える予定で、プランが「プレミアム」の会員のイベントだけをポイント付与に送りたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon SQS のキュー1つに送り、3つのシステムで取り合う",
+          "explanation": "1つのメッセージは1つの受信者にしか処理されないので、3つすべてには届きません。"
+        },
+        {
+          "text": "登録の処理から3つのシステムの API を順番に直接呼び出す",
+          "explanation": "密結合になり、配信先が増えるたびにコードの変更が必要です。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams に送り、配信先ごとに手動でフィルタのコードを書く",
+          "explanation": "可能ですが、内容による振り分けは EventBridge のルールのほうが簡単です。"
+        },
+        {
+          "text": "Amazon EventBridge のイベントバスに送り、ルールのイベントパターンで配信先ごとに絞り込む",
+          "explanation": "ルールでイベントの内容に一致するものだけを各ターゲットに送れます。配信先はルールを足すだけで増やせます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EventBridge は、イベントをイベントパターンで絞り込み、一致したものを複数のターゲットに配信します。イベント駆動の疎結合な構成にできます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        },
+        {
+          "title": "Amazon EventBridge のイベントパターン",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-event-patterns.html"
+        }
+      ],
+      "group": "dva-integration-pattern"
+    },
+    {
+      "id": "dva-004",
+      "domain": "d1",
+      "question": "Lambda 関数が SQS キューからメッセージを受け取り、外部の API を呼び出す処理をしている。処理に平均2分かかるが、同じメッセージが別の呼び出しでも処理され、重複が発生している。キューの可視性タイムアウトは30秒である。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "キューの保持期間を短くする",
+          "explanation": "保持期間はメッセージを保持する期間で、処理中の重複とは関係ありません。"
+        },
+        {
+          "text": "メッセージの遅延を2分に設定する",
+          "explanation": "キューに入ってから見えるまでを遅らせるだけで、処理中の重複は防げません。"
+        },
+        {
+          "text": "キューの可視性タイムアウトを、関数のタイムアウトより長くする",
+          "explanation": "可視性タイムアウトが処理時間より短いと、処理中のメッセージがまた見えるようになり、別の呼び出しが受け取ってしまいます。"
+        },
+        {
+          "text": "ロングポーリングを無効にする",
+          "explanation": "ポーリングの方式は重複とは関係ありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "可視性タイムアウトは、受信したメッセージをほかの受信者から見えなくしておく時間です。処理が終わる前にタイムアウトすると、メッセージがまた配信されて重複します。Lambda と使う場合は、関数のタイムアウトより長くします。",
+      "references": [
+        {
+          "title": "Amazon SQS の可視性タイムアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+        },
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-005",
+      "domain": "d1",
+      "question": "SQS キューの一部のメッセージは、形式が壊れていて何度処理しても失敗する。失敗し続けるメッセージがキューに残り続けて、ほかのメッセージの処理を妨げている。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "可視性タイムアウトを0秒にする",
+          "explanation": "処理中のメッセージがすぐ再配信され、重複が増えます。"
+        },
+        {
+          "text": "キューの保持期間を最大の14日にする",
+          "explanation": "失敗するメッセージが長く残るだけです。"
+        },
+        {
+          "text": "キューを FIFO キューに作り直す",
+          "explanation": "順番は守られますが、失敗し続けるメッセージの問題は解決しません。"
+        },
+        {
+          "text": "デッドレターキューを設定し、一定回数（maxReceiveCount）受信しても処理できないメッセージを移す",
+          "explanation": "失敗し続けるメッセージを別のキューに隔離し、あとから原因を調べられます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "デッドレターキューを使うと、指定した回数受信しても処理に成功しないメッセージを、元のキューから移して隔離できます。",
+      "references": [
+        {
+          "title": "Amazon SQS のデッドレターキューの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-006",
+      "domain": "d1",
+      "question": "EC2 上のアプリケーションが SQS キューを1秒ごとにポーリングしているが、ほとんどの応答が空で、API の呼び出しの費用がかさんでいる。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "メッセージの遅延を20秒にする",
+          "explanation": "メッセージが見えるまでの時間を遅らせるだけで、空の応答は減りません。"
+        },
+        {
+          "text": "ReceiveMessage の待機時間を1〜20秒に設定し、ロングポーリングにする",
+          "explanation": "ロングポーリングでは、メッセージが届くまで最大20秒待って応答するので、空の応答と呼び出しの回数が減ります。"
+        },
+        {
+          "text": "ポーリングの間隔を0.1秒にする",
+          "explanation": "空の応答と費用がさらに増えます。"
+        },
+        {
+          "text": "キューを2つに分ける",
+          "explanation": "空の応答は減りません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ロングポーリングは、メッセージが届くか待機時間が過ぎるまで応答を待つので、空の応答と誤った空の応答を減らし、費用を下げられます。",
+      "references": [
+        {
+          "title": "Amazon SQS のショートポーリングとロングポーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-short-and-long-polling.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-007",
+      "domain": "d1",
+      "question": "銀行口座の入出金のメッセージを処理する。同じ口座のメッセージは、送られた順番どおりに一度だけ処理しなければならない。最も適切な SQS の設定はどれか。",
+      "choices": [
+        {
+          "text": "FIFO キューを使い、口座 ID をメッセージグループ ID にする",
+          "explanation": "FIFO キューは同じメッセージグループの中で順番を守り、重複排除で一度だけの処理を助けます。"
+        },
+        {
+          "text": "標準キューの可視性タイムアウトを長くする",
+          "explanation": "順番の保証にはなりません。"
+        },
+        {
+          "text": "標準キューを使い、受信側で並べ替える",
+          "explanation": "標準キューは順番と一度だけの配信を保証しません。"
+        },
+        {
+          "text": "遅延キューを使う",
+          "explanation": "メッセージを遅らせるだけで、順番は保証されません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "FIFO キューは、メッセージグループごとに送った順番を守り、重複排除 ID で重複したメッセージを取り除きます。グループを分ければ、別の口座どうしは並行して処理できます。",
+      "references": [
+        {
+          "title": "Amazon SQS FIFO キュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-008",
+      "domain": "d1",
+      "question": "1つの「注文確定」のメッセージを、在庫・配送・分析の3つの SQS キューに同時に届け、それぞれ独立して処理させたい。分析のキューには、金額が1万円以上の注文だけを届けたい。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "送り手のコードから3つのキューに順番にメッセージを送る",
+          "explanation": "送り手が配信先を知る必要があり、密結合になります。"
+        },
+        {
+          "text": "SQS の遅延キューを使う",
+          "explanation": "メッセージを遅らせるだけです。"
+        },
+        {
+          "text": "Amazon SNS のトピックに発行して3つのキューを購読させ、分析のキューの購読にフィルターポリシーを設定する",
+          "explanation": "SNS から複数のキューにファンアウトでき、購読ごとのフィルターポリシーで届けるメッセージを絞れます。"
+        },
+        {
+          "text": "1つの SQS キューに送り、3つのシステムで取り合う",
+          "explanation": "1つのメッセージは1つの受信者にしか処理されません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "SNS のトピックを複数の SQS キューで購読させる「ファンアウト」で、1つのメッセージを並行して処理させられます。購読ごとのフィルターポリシーで、必要なメッセージだけを届けられます。",
+      "references": [
+        {
+          "title": "Amazon SQS キューへの Amazon SNS メッセージのファンアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-sqs-as-subscriber.html"
+        },
+        {
+          "title": "Amazon SNS のメッセージフィルタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-message-filtering.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-009",
+      "domain": "d1",
+      "question": "アプリケーションが DynamoDB を呼び出すと、ときどき ThrottlingException（スロットリングのエラー）が返る。一時的なエラーにうまく対処する方法として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "エラーを無視して処理を続ける",
+          "explanation": "データが失われます。"
+        },
+        {
+          "text": "ジッター付きの指数バックオフで再試行する（AWS SDK の再試行の設定を使う）",
+          "explanation": "待ち時間を少しずつ延ばし、ばらつき（ジッター）を加えて再試行すると、一斉の再試行による負荷の集中を避けられます。"
+        },
+        {
+          "text": "エラーが出たら、待たずにすぐ何度も再試行する",
+          "explanation": "負荷がさらに高まり、スロットリングが悪化します。"
+        },
+        {
+          "text": "再試行はせず、利用者にエラーを表示する",
+          "explanation": "一時的なエラーは再試行で成功することが多く、まず再試行するのが適切です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "一時的なエラー（スロットリングなど）は、指数バックオフとジッターで再試行するのが基本です。AWS SDK には再試行の仕組みが組み込まれていて、最大の試行回数などを設定できます。",
+      "references": [
+        {
+          "title": "AWS SDK の再試行の動作",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/feature-retry-behavior.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-010",
+      "domain": "d1",
+      "question": "REST API で、必須のクエリパラメータが無いリクエストや、ボディの JSON の形式が正しくないリクエストを、Lambda 関数を呼び出す前に API Gateway で拒否したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "使用量プランで1秒あたりのリクエスト数を制限する",
+          "explanation": "量の制限で、形式の検証はしません。"
+        },
+        {
+          "text": "API Gateway のキャッシュを有効にする",
+          "explanation": "キャッシュはレスポンスを再利用する仕組みで、検証は行いません。"
+        },
+        {
+          "text": "Lambda 関数の最初で入力をチェックする",
+          "explanation": "可能ですが、不正なリクエストでも関数が呼び出され、費用がかかります。"
+        },
+        {
+          "text": "API Gateway のリクエストの検証を有効にし、必須パラメータとモデル（JSON スキーマ）を設定する",
+          "explanation": "API Gateway が検証に失敗したリクエストを 400 エラーで返すので、バックエンドを呼び出しません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "API Gateway のリクエストの検証では、必須のパラメータやボディのモデルを検証し、失敗したリクエストを統合先に送らずに拒否できます。",
+      "references": [
+        {
+          "title": "API Gateway でのリクエストの検証",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-method-request-validation.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-011",
+      "domain": "d1",
+      "question": "IoT 機器から毎秒数万件のセンサーの値を受け取り、機器ごとに届いた順番どおりに処理したい。複数のアプリケーションが同じデータを読み取る。最も適切なサービスと設定はどれか。",
+      "choices": [
+        {
+          "text": "Amazon S3 に1件ずつオブジェクトとして保存する",
+          "explanation": "リアルタイムの大量の取り込みと順番どおりの処理には向きません。"
+        },
+        {
+          "text": "Amazon SNS のトピックに発行する",
+          "explanation": "順番の保証やデータの保持・再読み込みには向きません。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams を使い、機器 ID をパーティションキーにする",
+          "explanation": "同じパーティションキーのレコードは同じシャードに入り、シャード内では順番が保たれます。複数のコンシューマーが同じデータを読めます。"
+        },
+        {
+          "text": "Amazon SQS の標準キューを使う",
+          "explanation": "順番が保証されず、1つのメッセージは1つの受信者にしか処理されません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Kinesis Data Streams では、パーティションキーでレコードをシャードに振り分け、シャード内では順番が保たれます。データは保持期間の間、複数のアプリケーションから読み取れます。",
+      "references": [
+        {
+          "title": "Amazon Kinesis Data Streams の用語と概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/key-concepts.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-012",
+      "domain": "d1",
+      "question": "Lambda 関数から、VPC のプライベートサブネットにある Amazon RDS のデータベースに接続したい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "関数に VPC のプライベートサブネットとセキュリティグループを設定し、DB のセキュリティグループで関数からの接続を許可する",
+          "explanation": "関数を VPC に接続すると、VPC 内のプライベートなリソースにアクセスできます。"
+        },
+        {
+          "text": "関数の環境変数に VPC の ID を入れる",
+          "explanation": "環境変数を設定しても、ネットワークは VPC に接続されません。"
+        },
+        {
+          "text": "データベースをパブリックサブネットに移し、インターネットに公開する",
+          "explanation": "データベースを公開するのは安全ではありません。"
+        },
+        {
+          "text": "関数のメモリを増やす",
+          "explanation": "メモリはネットワークの接続とは関係ありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lambda 関数の VPC の設定でサブネットとセキュリティグループを指定すると、関数は VPC 内のリソースにアクセスできるようになります。",
+      "references": [
+        {
+          "title": "Lambda 関数に VPC 内のリソースへのアクセスを許可する",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-vpc.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-013",
+      "domain": "d1",
+      "question": "同じ Lambda 関数のコードを、開発環境と本番環境で使い分けたい。接続先のテーブル名などの設定をコードに書かずに切り替えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "関数のメモリの値でテーブル名を判定する",
+          "explanation": "メモリは設定値の受け渡しの仕組みではありません。"
+        },
+        {
+          "text": "Lambda の環境変数にテーブル名を設定し、コードで読み取る",
+          "explanation": "環境変数を使うと、コードを変えずに関数の設定を切り替えられます。"
+        },
+        {
+          "text": "テーブル名をレイヤーのファイル名にする",
+          "explanation": "レイヤーはライブラリなどを共有する仕組みです。"
+        },
+        {
+          "text": "環境ごとにテーブル名を書き換えたコードをデプロイする",
+          "explanation": "コードが環境ごとに分かれ、管理が煩雑になります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "環境変数を使うと、コードを更新せずに関数の動作を変えられます。機密の値は Secrets Manager や Parameter Store に置き、暗号化して扱います。",
+      "references": [
+        {
+          "title": "Lambda の環境変数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-envvars.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-014",
+      "domain": "d1",
+      "question": "S3 のイベントで非同期に呼び出される Lambda 関数が、何度か再試行しても失敗したときに、失敗したイベントの内容とエラーの情報を SQS キューに送って調べたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "関数の非同期呼び出しの設定で、失敗時の送信先（on-failure destination）に SQS キューを指定する",
+          "explanation": "送信先には、イベントに加えて、呼び出しの結果やエラーの情報も送られます。"
+        },
+        {
+          "text": "S3 のバージョニングを有効にする",
+          "explanation": "オブジェクトの版を残すだけで、失敗したイベントの記録にはなりません。"
+        },
+        {
+          "text": "関数のタイムアウトを最大にする",
+          "explanation": "失敗したイベントの保存にはなりません。"
+        },
+        {
+          "text": "関数のメモリを増やす",
+          "explanation": "失敗したイベントの保存にはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "非同期呼び出しでは、Lambda が失敗したイベントを再試行し、それでも失敗したら送信先に送れます。送信先には呼び出しの詳細も含まれるので、デッドレターキューより多くの情報を得られます。",
+      "references": [
+        {
+          "title": "Lambda の非同期呼び出しの送信先",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async-retain-records.html"
+        },
+        {
+          "title": "Lambda の非同期呼び出し",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-015",
+      "domain": "d1",
+      "question": "Lambda 関数が SQS キューからメッセージを10件ずつまとめて受け取っている。1件だけ処理に失敗すると、バッチ全体が再処理され、成功した9件も重複して処理されてしまう。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "バッチサイズを最大にする",
+          "explanation": "1件の失敗で再処理される件数がさらに増えます。"
+        },
+        {
+          "text": "関数のタイムアウトを短くする",
+          "explanation": "失敗が増えるだけです。"
+        },
+        {
+          "text": "イベントソースマッピングで部分的なバッチの失敗の報告（ReportBatchItemFailures）を有効にし、失敗したメッセージの ID だけを返す",
+          "explanation": "失敗したメッセージだけがキューに戻り、成功したメッセージは再処理されません。"
+        },
+        {
+          "text": "可視性タイムアウトを短くする",
+          "explanation": "重複が増えるおそれがあります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "部分的なバッチの失敗の報告を有効にすると、関数は失敗したメッセージの ID だけを返し、そのメッセージだけが再び見えるようになります。",
+      "references": [
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        },
+        {
+          "title": "Lambda のイベントソースマッピング",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-eventsourcemapping.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-016",
+      "domain": "d1",
+      "question": "Web アプリケーションのセッション情報を DynamoDB に保存している。最後のアクセスから24時間たったセッションを、アプリケーションで削除の処理を書かずに自動で消したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎日 Scan してすべての項目を調べ、古いものを削除する",
+          "explanation": "大きなテーブルでは時間と費用がかかります。"
+        },
+        {
+          "text": "テーブルを毎日作り直す",
+          "explanation": "有効なセッションまで消えてしまいます。"
+        },
+        {
+          "text": "DynamoDB Streams を無効にする",
+          "explanation": "変更の記録を止めるだけで、項目は削除されません。"
+        },
+        {
+          "text": "項目に有効期限の時刻（エポック秒）の属性を入れ、DynamoDB の TTL を有効にする",
+          "explanation": "TTL を使うと、有効期限を過ぎた項目を DynamoDB が自動で削除します。書き込みのキャパシティも消費しません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DynamoDB の TTL は、項目ごとの有効期限のタイムスタンプを過ぎた項目を自動で削除します。削除に書き込みのスループットを消費しません。",
+      "references": [
+        {
+          "title": "DynamoDB の有効期限 (TTL)",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/TTL.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-017",
+      "domain": "d1",
+      "question": "DynamoDB のテーブルで、パーティションキーを「注文の日付」にしたところ、当日の注文が1つのパーティションに集中し、スロットリングが起きている。最も適切な改善はどれか。",
+      "choices": [
+        {
+          "text": "ソートキーを削除する",
+          "explanation": "ソートキーの有無は、パーティションへの集中を解消しません。"
+        },
+        {
+          "text": "Scan で読み取るように変える",
+          "explanation": "Scan は全件を読むので、効率がさらに悪くなります。"
+        },
+        {
+          "text": "注文 ID など、値の種類が多く（カーディナリティが高く）アクセスが分散する属性をパーティションキーにする",
+          "explanation": "パーティションキーの値が多様だと、読み書きがパーティション全体に均等に分散します。"
+        },
+        {
+          "text": "項目のサイズを大きくする",
+          "explanation": "消費するキャパシティが増え、悪化します。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "パーティションキーは、値の種類が多く、アクセスが均等に分散する属性を選びます。特定の値にアクセスが集中する「ホットパーティション」を避けるためです。",
+      "references": [
+        {
+          "title": "パーティションキーの設計のベストプラクティス",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-design.html"
+        },
+        {
+          "title": "パーティションキーの設計によるワークロードの分散",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-018",
+      "domain": "d1",
+      "question": "「顧客 ID」をパーティションキーにした注文テーブルがある。新たに「商品 ID」で注文を検索する必要が出てきた。テーブル全体を読む Scan は避けたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "テーブルのソートキーを商品 ID に変更する",
+          "explanation": "既存のテーブルのキーは変更できません。"
+        },
+        {
+          "text": "ローカルセカンダリインデックス（LSI）をあとから追加する",
+          "explanation": "LSI はテーブルの作成時にしか作れず、パーティションキーはテーブルと同じです。"
+        },
+        {
+          "text": "毎回 Scan して商品 ID でフィルタする",
+          "explanation": "全件を読むので、遅く費用もかかります。フィルタは読み取った後に適用されます。"
+        },
+        {
+          "text": "商品 ID をパーティションキーにしたグローバルセカンダリインデックス（GSI）を作り、Query する",
+          "explanation": "GSI を使うと、テーブルとは別のキーで効率よく Query できます。既存のテーブルにあとから追加できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "別のアクセスパターンで検索するなら GSI を作ります。GSI はテーブルと異なるパーティションキーとソートキーを持て、あとから追加できます。",
+      "references": [
+        {
+          "title": "DynamoDB のグローバルセカンダリインデックス",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GSI.html"
+        },
+        {
+          "title": "DynamoDB のローカルセカンダリインデックス",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/LSI.html"
+        },
+        {
+          "title": "DynamoDB のスキャン",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Scan.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-019",
+      "domain": "d1",
+      "question": "在庫の数を更新した直後に、同じ項目を読み取って最新の値を必ず得たい。DynamoDB の読み取りの設定として最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "既定の結果整合性のある読み取りを使う",
+          "explanation": "直前の書き込みが反映されていないデータが返ることがあります。"
+        },
+        {
+          "text": "GetItem で ConsistentRead を true にして、強力な整合性のある読み取りを行う",
+          "explanation": "強力な整合性のある読み取りは、それまでに成功した書き込みをすべて反映した最新のデータを返します。"
+        },
+        {
+          "text": "グローバルセカンダリインデックスから読む",
+          "explanation": "GSI は結果整合性の読み取りだけで、強力な整合性の読み取りはできません。"
+        },
+        {
+          "text": "Scan で読む",
+          "explanation": "整合性の問題は解決せず、効率も悪くなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DynamoDB の既定の読み取りは結果整合性です。最新の値が必要なら ConsistentRead を指定して強力な整合性のある読み取りを行います（読み込みキャパシティは2倍消費します）。",
+      "references": [
+        {
+          "title": "DynamoDB の読み取り整合性",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-020",
+      "domain": "d2",
+      "question": "モバイルアプリに会員登録とサインインの機能を付け、サインインした会員だけが API Gateway の REST API を呼び出せるようにしたい。認証の仕組みを自前で作りたくない。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Cognito ユーザープールで会員を管理し、API Gateway に Cognito ユーザープールのオーソライザーを設定する",
+          "explanation": "ユーザープールが発行するトークンを、API Gateway がオーソライザーで検証します。"
+        },
+        {
+          "text": "IAM ユーザーを会員ごとに作り、アクセスキーをアプリに埋め込む",
+          "explanation": "利用者ごとの IAM ユーザーと長期の認証情報は、管理も安全性も問題があります。"
+        },
+        {
+          "text": "API Gateway のリソースポリシーで、会員のスマートフォンの IP アドレスを許可する",
+          "explanation": "利用者の IP アドレスは変わるので、認証には使えません。"
+        },
+        {
+          "text": "API キーを全会員に共通で配り、API Gateway で検証する",
+          "explanation": "API キーは利用者の認証の仕組みではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Cognito ユーザープールは、アプリの利用者のサインアップ・サインインを提供するユーザーディレクトリです。API Gateway のオーソライザーで、ユーザープールのトークンを検証できます。",
+      "references": [
+        {
+          "title": "Amazon Cognito ユーザープール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-user-pools.html"
+        },
+        {
+          "title": "Amazon Cognito ユーザープールをオーソライザーとして使用する",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html"
+        }
+      ],
+      "group": "dva-api-auth"
+    },
+    {
+      "id": "dva-021",
+      "domain": "d2",
+      "question": "ある企業は、自社の既存の認証サーバーが発行する独自形式のトークンで API Gateway の API を保護したい。トークンの検証にはカスタムのロジックが必要である。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Cognito ユーザープールのオーソライザーを使う",
+          "explanation": "ユーザープールが発行したトークンの検証用で、独自形式のトークンには使えません。"
+        },
+        {
+          "text": "リクエストの検証を有効にする",
+          "explanation": "形式の検証で、トークンの正しさの検証はしません。"
+        },
+        {
+          "text": "Lambda オーソライザーでトークンを検証し、IAM ポリシーを返す",
+          "explanation": "Lambda オーソライザーは、独自のトークンなどを Lambda 関数で検証し、アクセスを許可するポリシーを返します。"
+        },
+        {
+          "text": "API キーを必須にする",
+          "explanation": "API キーでは独自のトークンを検証できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lambda オーソライザーは、ベアラートークンなどの独自の認証方式で API へのアクセスを制御したいときに使います。関数がポリシーを返し、API Gateway がそれに従ってアクセスを許可します。",
+      "references": [
+        {
+          "title": "API Gateway の Lambda オーソライザー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html"
+        }
+      ],
+      "group": "dva-api-auth"
+    },
+    {
+      "id": "dva-022",
+      "domain": "d2",
+      "question": "モバイルアプリの利用者が、自分の写真を S3 のバケットに直接アップロードできるようにしたい。アプリに長期の AWS 認証情報は埋め込みたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 バケットを公開して誰でも書き込めるようにする",
+          "explanation": "誰でも書き込めてしまいます。"
+        },
+        {
+          "text": "IAM ユーザーのアクセスキーをアプリに埋め込む",
+          "explanation": "長期の認証情報が漏れると、誰でも使えてしまいます。"
+        },
+        {
+          "text": "ルートユーザーのアクセスキーを使う",
+          "explanation": "ルートユーザーのアクセスキーは作らないのが原則です。"
+        },
+        {
+          "text": "Cognito アイデンティティプールで、サインインした利用者に一時的な AWS 認証情報を発行する",
+          "explanation": "アイデンティティプールは、認証された利用者に、IAM ロールに基づく一時的な認証情報を発行します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Cognito アイデンティティプール（フェデレーテッドアイデンティティ）は、ユーザープールや外部の ID プロバイダーで認証された利用者に、AWS のサービスにアクセスするための一時的な認証情報を発行します。",
+      "references": [
+        {
+          "title": "Amazon Cognito アイデンティティプール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-identity.html"
+        }
+      ],
+      "group": "dva-api-auth"
+    },
+    {
+      "id": "dva-023",
+      "domain": "d2",
+      "question": "アカウント A の Lambda 関数から、アカウント B の DynamoDB テーブルを読み取りたい。長期の認証情報を共有せずに実現する方法として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "アカウント B の IAM ユーザーのアクセスキーを、関数の環境変数に入れる",
+          "explanation": "長期の認証情報を共有することになり、漏えいのリスクがあります。"
+        },
+        {
+          "text": "アカウント B に、アカウント A を信頼するロールを作り、関数から AWS STS の AssumeRole で引き受ける",
+          "explanation": "AssumeRole で一時的な認証情報を受け取り、アカウント B のリソースにアクセスします。"
+        },
+        {
+          "text": "テーブルを公開して誰でも読めるようにする",
+          "explanation": "DynamoDB のテーブルを公開する方法は適切ではありません。"
+        },
+        {
+          "text": "アカウント A とアカウント B を同じ VPC にする",
+          "explanation": "ネットワークをつないでも、IAM の認可は解決しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "クロスアカウントのアクセスには、アクセス先のアカウントにロールを作り、信頼ポリシーでアクセス元を許可します。アクセス元は AssumeRole で一時的な認証情報を受け取ります。",
+      "references": [
+        {
+          "title": "AssumeRole",
+          "url": "https://docs.aws.amazon.com/ja_jp/STS/latest/APIReference/API_AssumeRole.html"
+        },
+        {
+          "title": "IAM ロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-024",
+      "domain": "d2",
+      "question": "ある IAM ロールのアイデンティティベースのポリシーでは s3:DeleteObject を許可しているが、同じロールにアタッチされた別のポリシーで s3:DeleteObject を明示的に拒否している。このロールで削除を実行するとどうなるか。",
+      "choices": [
+        {
+          "text": "明示的な拒否が優先され、削除は拒否される",
+          "explanation": "IAM のポリシーの評価では、明示的な拒否が常に許可より優先されます。"
+        },
+        {
+          "text": "許可が優先され、削除は成功する",
+          "explanation": "明示的な拒否がある場合、許可があっても拒否されます。"
+        },
+        {
+          "text": "あとからアタッチしたポリシーが優先される",
+          "explanation": "アタッチの順番は評価に影響しません。"
+        },
+        {
+          "text": "ポリシーが矛盾しているので、ロールが使えなくなる",
+          "explanation": "ロールは使えますが、その操作だけが拒否されます。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM のポリシーの評価では、まず明示的な拒否があるかを確認し、あればリクエストを拒否します。明示的な許可がなければ、暗黙的に拒否されます。",
+      "references": [
+        {
+          "title": "ポリシーの評価論理",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
+        },
+        {
+          "title": "リクエストの許可と拒否の判定",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-025",
+      "domain": "d2",
+      "question": "Web ブラウザから、大きな動画ファイルを S3 に直接アップロードさせたい。バケットは非公開のままにし、アプリケーションのサーバーを通さずに、15分間だけアップロードを許可したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットポリシーで、誰でも PutObject できるようにする",
+          "explanation": "誰でも書き込めてしまいます。"
+        },
+        {
+          "text": "サーバー側で、PutObject の署名付き URL を有効期限付きで発行し、ブラウザに渡す",
+          "explanation": "署名付き URL を使えば、認証情報を渡さずに、期限付きでアップロードを許可できます。"
+        },
+        {
+          "text": "ブラウザに IAM ユーザーのアクセスキーを渡す",
+          "explanation": "長期の認証情報を渡すことになります。"
+        },
+        {
+          "text": "ファイルをいったんアプリケーションのサーバーにアップロードしてから S3 に転送する",
+          "explanation": "サーバーを通さないという要件に合わず、サーバーの負荷も増えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "署名付き URL を使うと、相手に AWS の認証情報やアクセス許可がなくても、URL を知っている人に期限付きでアップロードを許可できます。",
+      "references": [
+        {
+          "title": "署名付き URL を使用したオブジェクトのアップロード",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/PresignedUrlUploadObject.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-026",
+      "domain": "d2",
+      "question": "Amazon ECS の Fargate で動くコンテナのアプリケーションから、DynamoDB にアクセスさせたい。コンテナごとに必要な権限だけを与えたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "タスクの実行ロールに DynamoDB の権限を与える",
+          "explanation": "実行ロールはイメージの取得やログの送信など、ECS エージェントが使うロールです。アプリケーションの権限はタスクロールに与えます。"
+        },
+        {
+          "text": "コンテナイメージにアクセスキーを入れておく",
+          "explanation": "イメージに長期の認証情報が残り、漏えいのリスクがあります。"
+        },
+        {
+          "text": "タスク定義でタスクの IAM ロールを指定し、DynamoDB へのアクセス許可を与える",
+          "explanation": "タスクロールの認証情報はコンテナの中で SDK が自動で取得し、タスクごとに権限を分けられます。"
+        },
+        {
+          "text": "環境変数にルートユーザーのアクセスキーを入れる",
+          "explanation": "ルートユーザーのアクセスキーは使いません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ECS のタスクロールを使うと、コンテナのアプリケーションに一時的な認証情報が提供されます。AWS SDK は認証情報プロバイダーチェーンでこれを自動で見つけます。",
+      "references": [
+        {
+          "title": "Amazon ECS タスクの IAM ロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task-iam-roles.html"
+        },
+        {
+          "title": "AWS SDK の認証情報プロバイダーチェーン",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/standardized-credentials.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-027",
+      "domain": "d2",
+      "question": "本番の DynamoDB のテーブルを削除する API の呼び出しは、MFA でサインインした開発者にだけ許可したい。IAM ポリシーでどのように設定するか。",
+      "choices": [
+        {
+          "text": "Principal にルートユーザーを指定する",
+          "explanation": "MFA の有無の条件にはなりません。"
+        },
+        {
+          "text": "Resource に MFA デバイスの ARN を指定する",
+          "explanation": "Resource はアクセス対象のリソースを指定する要素です。"
+        },
+        {
+          "text": "Action に mfa:* を追加する",
+          "explanation": "MFA の有無を条件にする方法ではありません。"
+        },
+        {
+          "text": "Condition に aws:MultiFactorAuthPresent が true であることを指定して許可する",
+          "explanation": "MFA で認証されたセッションからのリクエストだけに許可を限定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "IAM ポリシーの Condition で aws:MultiFactorAuthPresent を使うと、MFA で認証した場合だけ API の呼び出しを許可できます。",
+      "references": [
+        {
+          "title": "MFA で保護された API アクセスの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_mfa_configure-api-require.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-028",
+      "domain": "d2",
+      "question": "アプリケーションで、数百 MB のファイルを AWS KMS の鍵で保護して暗号化したい。KMS の Encrypt API に直接ファイルを渡すと失敗する。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "GenerateDataKey でデータキーを生成し、平文のデータキーでファイルをローカルで暗号化して、暗号化されたデータキーを一緒に保存する",
+          "explanation": "エンベロープ暗号化です。KMS の鍵はデータキーを暗号化し、大きなデータはデータキーで暗号化します。"
+        },
+        {
+          "text": "KMS の鍵をダウンロードして、ローカルで暗号化する",
+          "explanation": "KMS の鍵は KMS の外に平文で取り出せません。"
+        },
+        {
+          "text": "ファイルを4 KB ずつに分けて、それぞれ Encrypt API を呼び出す",
+          "explanation": "可能でも非効率で、呼び出しの回数と遅延が大きくなります。"
+        },
+        {
+          "text": "Secrets Manager にファイルを保存する",
+          "explanation": "Secrets Manager はシークレットの保管用で、大きなファイルには向きません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "KMS の Encrypt API で直接暗号化できるのは4 KB までです。大きなデータは、GenerateDataKey で作ったデータキーで暗号化し、データキー自体を KMS の鍵で暗号化して保存します（エンベロープ暗号化）。",
+      "references": [
+        {
+          "title": "GenerateDataKey（AWS KMS API）",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/APIReference/API_GenerateDataKey.html"
+        },
+        {
+          "title": "Encrypt（AWS KMS API）",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/APIReference/API_Encrypt.html"
+        },
+        {
+          "title": "AWS KMS の暗号化の基礎（エンベロープ暗号化）",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/kms-cryptography.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-029",
+      "domain": "d2",
+      "question": "S3 に保存するデータを暗号化したい。鍵の使用を誰がいつ行ったかを AWS CloudTrail で監査でき、鍵のポリシーで使える人を細かく制御したい。最も適切な暗号化の方式はどれか。",
+      "choices": [
+        {
+          "text": "Amazon S3 マネージドキーによるサーバー側の暗号化（SSE-S3）",
+          "explanation": "鍵は S3 が管理し、鍵ごとの利用者の制御や鍵の使用の監査はできません。"
+        },
+        {
+          "text": "暗号化しない",
+          "explanation": "要件を満たしません。"
+        },
+        {
+          "text": "オブジェクトの名前を推測しにくい文字列にする",
+          "explanation": "暗号化ではありません。"
+        },
+        {
+          "text": "AWS KMS の鍵によるサーバー側の暗号化（SSE-KMS）",
+          "explanation": "KMS の鍵の使用は CloudTrail に記録され、鍵のポリシーで利用者を制御できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "SSE-KMS では、KMS の鍵でオブジェクトを暗号化します。鍵のポリシーで利用者を制御でき、鍵の使用は CloudTrail で監査できます。",
+      "references": [
+        {
+          "title": "サーバー側の暗号化によるデータの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/serv-side-encryption.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-030",
+      "domain": "d2",
+      "question": "アプリケーションが使う RDS のデータベースのパスワードを、30日ごとに自動で変更したい。アプリケーションは実行時に最新のパスワードを取得する。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Secrets Manager にパスワードを保存し、自動ローテーションを設定する",
+          "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを、スケジュールに沿って自動でローテーションできます。"
+        },
+        {
+          "text": "AWS AppConfig のフィーチャーフラグに保存する",
+          "explanation": "AppConfig はアプリケーションの設定や機能の切り替えのサービスで、シークレットの保管には向きません。"
+        },
+        {
+          "text": "Systems Manager Parameter Store の標準パラメータに保存する",
+          "explanation": "Parameter Store には、Secrets Manager のような組み込みの自動ローテーションの仕組みはありません。"
+        },
+        {
+          "text": "Lambda の環境変数に保存する",
+          "explanation": "パスワードを変えるたびに関数の設定の更新が必要で、自動ローテーションの仕組みもありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Secrets Manager は、シークレットの保管・取得に加え、スケジュールでの自動ローテーションを提供します。RDS などのデータベースの認証情報のローテーションを設定できます。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ],
+      "group": "dva-config-store"
+    },
+    {
+      "id": "dva-031",
+      "domain": "d2",
+      "question": "アプリケーションの接続先の URL や機能の設定値（機密ではない）を、環境ごとの階層（/prod/app/url など）で一元管理し、無料の範囲で保管したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon S3 のバケットに JSON を置く",
+          "explanation": "可能ですが、階層での取得や暗号化された値の管理などの機能はありません。"
+        },
+        {
+          "text": "AWS Systems Manager Parameter Store の標準パラメータ",
+          "explanation": "設定値を階層的に保管でき、標準パラメータは追加料金なしで使えます。機密の値は SecureString で暗号化もできます。"
+        },
+        {
+          "text": "AWS Secrets Manager",
+          "explanation": "シークレットごとに料金がかかり、機密ではない設定値の保管には割高です。"
+        },
+        {
+          "text": "Lambda のレイヤー",
+          "explanation": "ライブラリなどの共有の仕組みで、設定値の一元管理には向きません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Parameter Store は、設定データやシークレットを階層的に保管するサービスです。標準パラメータは追加料金なしで使え、SecureString で KMS による暗号化もできます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ],
+      "group": "dva-config-store"
+    },
+    {
+      "id": "dva-032",
+      "domain": "d2",
+      "question": "社内の VPC の中だけで使うマイクロサービスどうしの通信を TLS で暗号化したい。インターネットで信頼される公開の証明書ではなく、自社で管理するプライベートな証明書を発行したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS KMS",
+          "explanation": "暗号化の鍵を管理するサービスで、証明書は発行しません。"
+        },
+        {
+          "text": "Amazon Cognito",
+          "explanation": "利用者の認証のサービスです。"
+        },
+        {
+          "text": "AWS Private CA",
+          "explanation": "自社専用のプライベートな認証局を作り、社内向けのプライベート証明書を発行できます。"
+        },
+        {
+          "text": "AWS Certificate Manager の公開証明書",
+          "explanation": "公開のドメイン向けの証明書で、社内専用のプライベートな証明書の発行とは目的が違います。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS Private CA は、組織内で使うプライベートな証明書を発行する認証局を、自分で運用せずに使えるサービスです。ACM と組み合わせて証明書を管理できます。",
+      "references": [
+        {
+          "title": "AWS Private CA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/privateca/latest/userguide/PcaWelcome.html"
+        },
+        {
+          "title": "AWS Certificate Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/acm-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-033",
+      "domain": "d2",
+      "question": "Amazon Bedrock を使ったチャットボットで、利用者の入力やモデルの出力に含まれる個人情報を伏せ字にし、自社が禁止する話題（投資の勧誘など）への回答を防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon Bedrock のガードレールで、機密情報フィルターと拒否するトピックを設定する",
+          "explanation": "ガードレールは、入力と出力の両方に対して、有害なコンテンツや個人情報、拒否するトピックなどのフィルターを適用します。"
+        },
+        {
+          "text": "API Gateway のリクエストの検証を使う",
+          "explanation": "形式の検証で、内容のフィルタリングはできません。"
+        },
+        {
+          "text": "モデルの温度（temperature）を0にする",
+          "explanation": "出力のばらつきを減らすだけで、個人情報や禁止の話題は防げません。"
+        },
+        {
+          "text": "AWS WAF のレートベースのルールを使う",
+          "explanation": "リクエストの量の制限で、内容のフィルタリングではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Bedrock のガードレールでは、コンテンツフィルター、拒否するトピック、単語のフィルター、機密情報（PII）のフィルターなどを設定し、入力と出力の両方に適用できます。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のガードレール",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/guardrails.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-034",
+      "domain": "d2",
+      "question": "ある企業は、Amazon Bedrock に送るプロンプトに社外秘の情報を含める。VPC の中のアプリケーションからインターネットを経由せずに Bedrock を呼び出したい。また、送った内容がモデルの学習に使われるかを確認したい。正しい組み合わせはどれか。",
+      "choices": [
+        {
+          "text": "VPC ピアリングで Bedrock の VPC とつなぐ",
+          "explanation": "Bedrock の VPC とピアリングすることはできません。"
+        },
+        {
+          "text": "インターフェイス VPC エンドポイント（AWS PrivateLink）で Bedrock を呼び出す。Bedrock はプロンプトと出力をモデルの学習に使わない",
+          "explanation": "PrivateLink でプライベートに接続でき、Bedrock は利用者のプロンプトや出力を AWS やサードパーティのモデルの学習に使いません。"
+        },
+        {
+          "text": "NAT ゲートウェイ経由で呼び出す。プロンプトは常にモデルの学習に使われる",
+          "explanation": "NAT ゲートウェイはインターネットへの出口です。また、Bedrock はプロンプトを学習に使いません。"
+        },
+        {
+          "text": "パブリックサブネットから呼び出す。学習への利用はモデルの提供元が決める",
+          "explanation": "インターネットを経由しない要件に合わず、学習への利用の説明も誤りです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "インターフェイス VPC エンドポイントを使うと、VPC から Bedrock にインターネットを経由せずに接続できます。また Bedrock は、利用者のプロンプトや出力をモデルの学習に使いません。",
+      "references": [
+        {
+          "title": "インターフェイス VPC エンドポイントで Amazon Bedrock を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/vpc-interface-endpoints.html"
+        },
+        {
+          "title": "Amazon Bedrock のよくある質問",
+          "url": "https://aws.amazon.com/jp/bedrock/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "dva-035",
+      "domain": "d2",
+      "question": "アプリケーションのログに、利用者のメールアドレスやクレジットカード番号が出力されてしまうことがある。CloudWatch Logs で、閲覧する人の権限に応じて、これらの値を自動で伏せ字にしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ロググループの保持期間を1日にする",
+          "explanation": "保存期間が短くなるだけで、機密データは見えてしまいます。"
+        },
+        {
+          "text": "ロググループを KMS で暗号化する",
+          "explanation": "保存時は暗号化されますが、閲覧する人には平文で見えます。"
+        },
+        {
+          "text": "ログを S3 にエクスポートしてから削除する",
+          "explanation": "機密データの保護にはなりません。"
+        },
+        {
+          "text": "CloudWatch Logs のデータ保護ポリシーを設定し、機密データをマスクする",
+          "explanation": "データ保護ポリシーで、機密データを検出して自動でマスクできます。マスクを外して見るには、専用の権限が必要です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CloudWatch Logs のデータ保護では、データ識別子を使ってログの中の機密データを検出し、マスクできます。マスクされていないデータを見るには logs:Unmask の権限が必要です。",
+      "references": [
+        {
+          "title": "CloudWatch Logs のマスキングによる機密データの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-036",
+      "domain": "d2",
+      "question": "CI/CD のツール（OIDC に対応した外部の ID プロバイダーを持つ）から、AWS にデプロイしたい。ツールに長期のアクセスキーを保存したくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ルートユーザーのアクセスキーを使う",
+          "explanation": "ルートユーザーのアクセスキーは使いません。"
+        },
+        {
+          "text": "ツールの IP アドレスを、すべての操作を許可するバケットポリシーに入れる",
+          "explanation": "IP アドレスだけでは認証にならず、権限も広すぎます。"
+        },
+        {
+          "text": "IAM に OIDC の ID プロバイダーを作り、ツールが AssumeRoleWithWebIdentity でロールを引き受けて一時的な認証情報を得る",
+          "explanation": "外部の ID プロバイダーが発行したトークンを使ってロールを引き受けるので、長期の認証情報を保存しなくて済みます。"
+        },
+        {
+          "text": "IAM ユーザーのアクセスキーをツールのシークレットに保存する",
+          "explanation": "長期の認証情報の保存になり、漏えいのリスクやローテーションの手間があります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "IAM の OIDC の ID プロバイダーは、OpenID Connect に対応した外部の ID プロバイダーを表します。外部で認証されたワークロードは、AssumeRoleWithWebIdentity で一時的な認証情報を受け取れます（ID フェデレーション）。",
+      "references": [
+        {
+          "title": "OpenID Connect (OIDC) ID プロバイダーを作成する",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"
+        },
+        {
+          "title": "AssumeRoleWithWebIdentity",
+          "url": "https://docs.aws.amazon.com/ja_jp/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-037",
+      "domain": "d3",
+      "question": "新しい決済画面を、まず一部の利用者にだけ公開し、問題がなければ徐々に全員に広げたい。問題が起きたら、コードを再デプロイせずにすぐ元に戻したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Lambda の環境変数を書き換える",
+          "explanation": "変更のたびに関数の設定の更新が必要で、一部の利用者だけに段階的に広げる仕組みはありません。"
+        },
+        {
+          "text": "新しい画面のコードを全員に一度にデプロイする",
+          "explanation": "問題があったときに全員に影響し、戻すにも再デプロイが必要です。"
+        },
+        {
+          "text": "AWS AppConfig のフィーチャーフラグを使い、段階的なデプロイ戦略で配信する",
+          "explanation": "AppConfig は設定やフィーチャーフラグを段階的に配信でき、CloudWatch のアラームで自動的にロールバックすることもできます。"
+        },
+        {
+          "text": "AWS Secrets Manager にフラグの値を保存する",
+          "explanation": "シークレットの保管用で、段階的な配信やロールバックの仕組みはありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AppConfig を使うと、アプリケーションの設定やフィーチャーフラグを、コードのデプロイと切り離して変更できます。段階的に配信し、問題があればロールバックできます。",
+      "references": [
+        {
+          "title": "AWS AppConfig とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/appconfig/latest/userguide/what-is-appconfig.html"
+        }
+      ],
+      "group": "dva-config-store"
+    },
+    {
+      "id": "dva-038",
+      "domain": "d3",
+      "question": "API Gateway の REST API に dev と prod の2つのステージがある。同じ API の定義のまま、dev ステージは Lambda 関数の dev エイリアスを、prod ステージは prod エイリアスを呼び出したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ステージ変数にエイリアス名を設定し、統合先の Lambda 関数の ARN でステージ変数を参照する",
+          "explanation": "ステージ変数を使うと、ステージごとに異なる値を統合先などで参照できます。"
+        },
+        {
+          "text": "使用量プランをステージごとに作る",
+          "explanation": "使用量プランは利用量の制限で、統合先の切り替えではありません。"
+        },
+        {
+          "text": "Lambda 関数の中で、リクエストの URL から環境を判断して処理を分ける",
+          "explanation": "可能ですが、関数のコードが環境の判断に依存し、エイリアスの使い分けにもなりません。"
+        },
+        {
+          "text": "ステージごとに別の API を作り、定義をコピーして管理する",
+          "explanation": "定義が重複し、管理が煩雑になります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ステージ変数は、ステージに関連付けた名前と値の組です。統合先の Lambda 関数の ARN などで参照すると、同じ API の定義のまま、ステージごとに呼び出し先を変えられます。",
+      "references": [
+        {
+          "title": "API Gateway のステージ変数",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/stage-variables.html"
+        },
+        {
+          "title": "Lambda のエイリアス",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-aliases.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-039",
+      "domain": "d3",
+      "question": "Amazon ECR のリポジトリで、本番で使っている「v1.2.0」のタグのイメージが、誤って別のイメージで上書きされる事故が起きた。同じタグでの上書きを防ぎたい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "ライフサイクルポリシーで古いイメージを削除する",
+          "explanation": "古いイメージの整理で、上書きは防げません。"
+        },
+        {
+          "text": "イメージのスキャンを有効にする",
+          "explanation": "脆弱性を調べる機能で、上書きは防げません。"
+        },
+        {
+          "text": "リポジトリを公開リポジトリにする",
+          "explanation": "上書きは防げず、イメージが公開されてしまいます。"
+        },
+        {
+          "text": "リポジトリのイメージタグの変更可能性を IMMUTABLE（変更不可）にする",
+          "explanation": "変更不可にすると、既にあるタグと同じタグでイメージをプッシュできなくなります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ECR のイメージタグの変更不可を有効にすると、同じタグでのイメージの上書きを防げます。本番のイメージを確実に特定でき、意図しない変更を防げます。",
+      "references": [
+        {
+          "title": "Amazon ECR のイメージタグの変更可能性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/image-tag-mutability.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-040",
+      "domain": "d3",
+      "question": "社内で作った共通ライブラリ（npm のパッケージ）を、複数のチームのビルドで使いたい。公開のリポジトリからのパッケージも、社内で承認したものを経由して取得したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon ECR",
+          "explanation": "コンテナイメージのレジストリで、npm のパッケージの保管には使いません。"
+        },
+        {
+          "text": "AWS CodeArtifact",
+          "explanation": "ソフトウェアのパッケージを保管・共有するマネージドなリポジトリです。公開のリポジトリからパッケージを取り込む上流（アップストリーム）の設定もできます。"
+        },
+        {
+          "text": "AWS CodeDeploy",
+          "explanation": "アプリケーションをデプロイするサービスです。"
+        },
+        {
+          "text": "Amazon S3 の公開バケット",
+          "explanation": "パッケージマネージャーとの連携や承認の仕組みがありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CodeArtifact は、npm・pip・Maven などのパッケージマネージャーで使えるマネージドなアーティファクトのリポジトリです。社内のパッケージの共有や、公開のリポジトリからの取り込みを管理できます。",
+      "references": [
+        {
+          "title": "AWS CodeArtifact とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/codeartifact/latest/ug/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-041",
+      "domain": "d3",
+      "question": "AWS SAM で作ったサーバーレスアプリケーションの Lambda 関数を、AWS にデプロイする前に、手元の PC で S3 のイベントの JSON を入力にしてテストしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "関数のメモリを増やしてからデプロイする",
+          "explanation": "テストの方法ではありません。"
+        },
+        {
+          "text": "sam local invoke に、イベントの JSON ファイルを指定して関数を実行する",
+          "explanation": "SAM CLI でローカルに関数を実行でき、テスト用のイベントを渡せます。"
+        },
+        {
+          "text": "本番の S3 バケットに実際にファイルをアップロードして試す",
+          "explanation": "本番に影響し、デプロイ前のテストになりません。"
+        },
+        {
+          "text": "CloudFormation の変更セットを作る",
+          "explanation": "変更内容のプレビューで、関数のテストではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SAM CLI の sam local invoke を使うと、Lambda 関数をローカルで実行してテストできます。sam local generate-event でサンプルのイベントを作ることもできます。",
+      "references": [
+        {
+          "title": "sam local invoke による Lambda 関数のローカルでのテスト",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/using-sam-cli-local-invoke.html"
+        },
+        {
+          "title": "AWS SAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/what-is-sam.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-042",
+      "domain": "d3",
+      "question": "フロントエンドの開発チームは、バックエンドの API がまだ完成していないうちに、決まった形式のレスポンスを返す API を使って開発を進めたい。バックエンドのコードは書きたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "API Gateway のキャッシュに手動でレスポンスを入れる",
+          "explanation": "キャッシュに手動で値を入れる仕組みではありません。"
+        },
+        {
+          "text": "EC2 にスタブのサーバーを立てる",
+          "explanation": "サーバーの用意と管理が必要です。"
+        },
+        {
+          "text": "Lambda 関数で固定のレスポンスを返すコードを書く",
+          "explanation": "可能ですが、コードを書く必要があります。"
+        },
+        {
+          "text": "API Gateway のモック統合で、決まったレスポンスを返すようにする",
+          "explanation": "モック統合では、バックエンドに送らずに API Gateway がレスポンスを返します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "API Gateway のモック統合を使うと、統合先のバックエンドを用意せずに API のレスポンスを返せます。バックエンドが完成する前の開発やテストに使えます。",
+      "references": [
+        {
+          "title": "API Gateway のモック統合",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/how-to-mock-integration.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-043",
+      "domain": "d3",
+      "question": "Lambda 関数を更新するたびに、検証済みのコードのスナップショットを残し、本番からは常に検証済みのものを呼び出したい。開発中のコードが本番に影響しないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "本番から常に $LATEST を呼び出す",
+          "explanation": "$LATEST は開発中のコードも含めて常に最新を指すので、未検証のコードが本番に出ます。"
+        },
+        {
+          "text": "関数を環境ごとに手でコピーして作る",
+          "explanation": "管理が煩雑で、ロールバックもしにくくなります。"
+        },
+        {
+          "text": "検証が終わったら関数のバージョンを発行し、prod エイリアスでそのバージョンを指す",
+          "explanation": "バージョンは変更できないスナップショットです。本番はエイリアス経由で呼び出し、検証済みのバージョンを指します。"
+        },
+        {
+          "text": "関数のタイムアウトを短くする",
+          "explanation": "バージョンの管理とは関係ありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lambda のバージョンは、コードと設定の変更できないスナップショットです。エイリアスで特定のバージョンを指すと、呼び出し側を変えずに本番のバージョンを切り替えられます。",
+      "references": [
+        {
+          "title": "Lambda のバージョン",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-versions.html"
+        },
+        {
+          "title": "Lambda のエイリアス",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-aliases.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-044",
+      "domain": "d3",
+      "question": "機械学習のライブラリを含む Lambda 関数の依存関係が大きくなり、.zip のデプロイパッケージのサイズの上限を超えてしまった。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "関数をコンテナイメージとしてパッケージし、Amazon ECR からデプロイする",
+          "explanation": "コンテナイメージは最大10 GB まで使えるので、大きな依存関係も含められます。"
+        },
+        {
+          "text": "関数のメモリを最大にする",
+          "explanation": "メモリはパッケージのサイズの上限とは関係ありません。"
+        },
+        {
+          "text": "依存関係を毎回の実行時にインターネットからダウンロードする",
+          "explanation": "起動が遅くなり、失敗の原因にもなります。"
+        },
+        {
+          "text": "関数のタイムアウトを延ばす",
+          "explanation": "パッケージのサイズの上限とは関係ありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": ".zip のデプロイパッケージ（レイヤーを含む）には展開後のサイズの上限があります。コンテナイメージなら最大10 GB まで使えるので、大きなライブラリを含む関数に向いています。",
+      "references": [
+        {
+          "title": "コンテナイメージで Lambda 関数をデプロイする",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/images-create.html"
+        },
+        {
+          "title": "Lambda のクォータ",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-045",
+      "domain": "d3",
+      "question": "Lambda 関数の新しいバージョンを本番に出すとき、まずトラフィックの10%だけを新しいバージョンに送り、5分間問題がなければ残りの90%を一度に切り替えたい。最も適切な CodeDeploy のデプロイ設定はどれか。",
+      "choices": [
+        {
+          "text": "Linear10PercentEvery10Minutes",
+          "explanation": "10分ごとに10%ずつ増やすリニアの設定です。"
+        },
+        {
+          "text": "Linear10PercentEvery1Minute",
+          "explanation": "1分ごとに10%ずつ増やすリニアの設定で、一度に切り替えるのではありません。"
+        },
+        {
+          "text": "AllAtOnce",
+          "explanation": "すべてのトラフィックを一度に新しいバージョンに切り替えます。"
+        },
+        {
+          "text": "Canary10Percent5Minutes",
+          "explanation": "最初に10%を新しいバージョンに送り、5分後に残りの90%を切り替えるカナリアの設定です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Lambda の CodeDeploy のデプロイ設定には、カナリア（2段階で切り替え）、リニア（同じ割合ずつ増やす）、一括（AllAtOnce）があります。",
+      "references": [
+        {
+          "title": "CodeDeploy のデプロイ設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployment-configurations.html"
+        }
+      ],
+      "group": "dva-deploy-strategy"
+    },
+    {
+      "id": "dva-046",
+      "domain": "d3",
+      "question": "Elastic Beanstalk で動く Web アプリケーションの新しいバージョンを出すとき、本番の環境に一切影響を与えずに新しい環境で検証し、問題がなければすぐ切り替え、問題があればすぐ元に戻したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "一度にすべて（All at once）でデプロイする",
+          "explanation": "全インスタンスに同時に展開するので、デプロイ中に停止し、失敗すると全体に影響します。"
+        },
+        {
+          "text": "ブルー/グリーンデプロイ：新しい環境を作ってデプロイし、環境の URL（CNAME）を入れ替える",
+          "explanation": "別の環境で検証してから URL を入れ替えるので、戻すときも入れ替え直すだけです。"
+        },
+        {
+          "text": "本番のインスタンスに SSH で入って手でファイルを置き換える",
+          "explanation": "手作業でミスが起きやすく、戻すのも大変です。"
+        },
+        {
+          "text": "ローリングでデプロイする",
+          "explanation": "本番の環境のインスタンスを順番に更新するので、本番に影響が出ます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Elastic Beanstalk のブルー/グリーンデプロイでは、別の環境に新しいバージョンをデプロイし、CNAME を入れ替えて切り替えます。元の環境を残しておけば、すぐに戻せます。",
+      "references": [
+        {
+          "title": "Elastic Beanstalk のブルー/グリーンデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticbeanstalk/latest/dg/using-features.CNAMESwap.html"
+        },
+        {
+          "title": "Elastic Beanstalk のデプロイポリシーと設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html"
+        }
+      ],
+      "group": "dva-deploy-strategy"
+    },
+    {
+      "id": "dva-047",
+      "domain": "d3",
+      "question": "Amazon ECS のサービスで、ローリング更新を使って新しいタスク定義を出す。更新中も、必要なタスクの数の100%を常に動かしておきたい。どの設定を調整するか。",
+      "choices": [
+        {
+          "text": "サービスのデプロイ設定の minimumHealthyPercent を100、maximumPercent を200 にする",
+          "explanation": "新しいタスクを先に起動してから古いタスクを止めるので、更新中も必要な数を保てます。"
+        },
+        {
+          "text": "タスクのロールを変更する",
+          "explanation": "アクセス許可の設定で、タスクの数とは関係ありません。"
+        },
+        {
+          "text": "サービスの必要なタスクの数を0にする",
+          "explanation": "すべてのタスクが止まります。"
+        },
+        {
+          "text": "タスク定義の CPU とメモリを2倍にする",
+          "explanation": "性能は上がりますが、更新中のタスクの数の保証にはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ECS のローリング更新では、minimumHealthyPercent が更新中に動かしておく最小のタスクの割合、maximumPercent が同時に動かせる最大の割合を決めます。",
+      "references": [
+        {
+          "title": "Amazon ECS のローリング更新のデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/deployment-type-ecs.html"
+        }
+      ],
+      "group": "dva-deploy-strategy"
+    },
+    {
+      "id": "dva-048",
+      "domain": "d3",
+      "question": "CloudFormation のスタックの本番のテンプレートを更新する前に、どのリソースが変更・置き換え・削除されるかを確認してから実行したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "スタックを削除して作り直す",
+          "explanation": "データが失われるおそれがあり、停止も発生します。"
+        },
+        {
+          "text": "テンプレートを直接更新して、結果を見る",
+          "explanation": "置き換えや削除が予期せず起きるおそれがあります。"
+        },
+        {
+          "text": "変更セットを作成し、変更の内容を確認してから実行する",
+          "explanation": "変更セットで、スタックの更新がどのリソースにどう影響するか（置き換えの有無など）を事前に確認できます。"
+        },
+        {
+          "text": "ドリフトの検出を実行する",
+          "explanation": "ドリフトの検出は、テンプレートと実際の設定の差を調べるもので、更新の影響のプレビューではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "変更セットを使うと、スタックを更新する前に、変更の内容（追加・変更・削除、置き換えの有無）を確認できます。確認してから実行するので、意図しない変更を防げます。",
+      "references": [
+        {
+          "title": "CloudFormation の変更セットを使用したスタックの更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-049",
+      "domain": "d3",
+      "question": "CodeDeploy で Lambda 関数を段階的にデプロイしている。新しいバージョンでエラーの率が上がったら、人が気づく前に自動で前のバージョンに戻したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎回のデプロイのあとに、担当者が手でログを確認する",
+          "explanation": "人が気づくまで影響が続きます。"
+        },
+        {
+          "text": "関数のタイムアウトを短くする",
+          "explanation": "ロールバックの仕組みにはなりません。"
+        },
+        {
+          "text": "デプロイ設定を AllAtOnce にする",
+          "explanation": "一度に全部切り替わるので、影響が大きくなります。"
+        },
+        {
+          "text": "デプロイグループに CloudWatch のアラームを設定し、アラームの状態になったら自動でロールバックする設定にする",
+          "explanation": "デプロイ中にアラームが発生すると、CodeDeploy が自動で前のバージョンに戻します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CodeDeploy では、デプロイが失敗したときや、指定した CloudWatch のアラームのしきい値に達したときに、自動でロールバックするよう設定できます。",
+      "references": [
+        {
+          "title": "CodeDeploy でのロールバックと再デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployments-rollback-and-redeploy.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-050",
+      "domain": "d3",
+      "question": "CodePipeline で、ステージング環境へのデプロイのあと、本番へのデプロイの前に、リリースの担当者が内容を確認して承認するまで止めたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ステージング環境のデプロイを毎回失敗させる",
+          "explanation": "意図的に失敗させる運用は適切ではありません。"
+        },
+        {
+          "text": "パイプラインを2つに分けて、担当者が手で2つ目を実行する",
+          "explanation": "可能ですが、承認の記録や通知の仕組みがなく、管理が煩雑です。"
+        },
+        {
+          "text": "本番のデプロイのステージの前に、手動承認のアクションを追加する",
+          "explanation": "手動承認のアクションでパイプラインが止まり、承認されると次に進みます。SNS で担当者に通知もできます。"
+        },
+        {
+          "text": "CodeBuild のビルドに sleep を入れる",
+          "explanation": "待つだけで、承認にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "CodePipeline の手動承認のアクションを使うと、パイプラインの実行を止めて、担当者が承認または却下するまで待てます。",
+      "references": [
+        {
+          "title": "CodePipeline の手動承認アクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/approvals.html"
+        },
+        {
+          "title": "AWS CodePipeline とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-051",
+      "domain": "d3",
+      "question": "フロントエンドの Web アプリケーションを AWS Amplify でホスティングしている。Git の機能ブランチごとに、独立したプレビュー用の環境を自動で作り、レビューしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudFormation の変更セットを使う",
+          "explanation": "インフラの変更のプレビューで、ブランチごとの環境は作れません。"
+        },
+        {
+          "text": "Amplify のブランチのデプロイ（機能ブランチごとの環境）を設定する",
+          "explanation": "Amplify は、接続したリポジトリのブランチごとに、別々の環境としてビルド・デプロイできます。"
+        },
+        {
+          "text": "ブランチごとに手で EC2 インスタンスを用意する",
+          "explanation": "手間がかかり、Amplify のホスティングの機能を生かせません。"
+        },
+        {
+          "text": "すべてのブランチを本番の環境にデプロイする",
+          "explanation": "レビュー前の変更が本番に出てしまいます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amplify のホスティングでは、Git のブランチごとに環境を作り、ブランチへのコミットのたびに自動でビルド・デプロイできます。",
+      "references": [
+        {
+          "title": "Amplify のフィーチャーブランチのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/amplify/latest/userguide/multi-environments.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-052",
+      "domain": "d4",
+      "question": "API Gateway → Lambda → DynamoDB と外部の API を呼び出すアプリケーションで、ときどき応答が遅くなる。どの呼び出しで時間がかかっているかを、リクエスト単位で可視化したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS X-Ray でトレースを有効にし、トレースマップとトレースで各呼び出しの時間を確認する",
+          "explanation": "X-Ray はリクエストがたどる経路と、各区間（セグメント・サブセグメント）の時間を記録します。"
+        },
+        {
+          "text": "Lambda のメモリを最大にする",
+          "explanation": "原因を特定せずに設定を変えても、解決するとは限りません。"
+        },
+        {
+          "text": "CloudTrail のログを見る",
+          "explanation": "API の操作の記録で、処理の時間の内訳はわかりません。"
+        },
+        {
+          "text": "CloudWatch のメトリクスで、Lambda の平均の実行時間だけを見る",
+          "explanation": "平均の時間はわかっても、どの呼び出しが遅いかはわかりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "X-Ray は、分散したアプリケーションのリクエストを追跡し、トレースマップと各区間の時間で、遅い部分やエラーの原因を見つけやすくします。",
+      "references": [
+        {
+          "title": "AWS X-Ray とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/aws-xray.html"
+        },
+        {
+          "title": "Lambda で AWS X-Ray を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/services-xray.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-053",
+      "domain": "d4",
+      "question": "Lambda 関数のログが CloudWatch Logs に大量に出ている。直近1時間で「ERROR」を含むログを、時間帯ごとに件数を集計して調べたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudWatch Logs Insights で、filter と stats を使ったクエリを実行する",
+          "explanation": "Logs Insights は、ログをクエリ言語で検索・集計でき、結果をグラフでも確認できます。"
+        },
+        {
+          "text": "ロググループをすべてダウンロードして、手元で検索する",
+          "explanation": "時間がかかり、効率がよくありません。"
+        },
+        {
+          "text": "CloudTrail のイベント履歴で検索する",
+          "explanation": "API の操作の記録で、アプリケーションのログは含まれません。"
+        },
+        {
+          "text": "X-Ray のトレースマップを見る",
+          "explanation": "トレースの図で、ログの集計はできません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudWatch Logs Insights は、ログのデータを対話的に検索・分析できるサービスです。fields・filter・stats・sort などのコマンドでクエリを書きます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights でログデータを分析する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-054",
+      "domain": "d4",
+      "question": "デプロイした Lambda 関数が DynamoDB に書き込む処理で、ログに AccessDeniedException が出ている。関数のコードは正しい。最も可能性の高い原因と対処はどれか。",
+      "choices": [
+        {
+          "text": "DynamoDB のテーブルのキャパシティが足りないので増やす",
+          "explanation": "キャパシティ不足ならスロットリングのエラーになります。"
+        },
+        {
+          "text": "関数のメモリが足りないので増やす",
+          "explanation": "メモリ不足ではアクセス拒否のエラーは出ません。"
+        },
+        {
+          "text": "関数の実行ロールに dynamodb:PutItem などの権限がないので、実行ロールのポリシーに必要な権限を追加する",
+          "explanation": "Lambda 関数は実行ロールの権限で AWS のサービスを呼び出します。権限がないとアクセスが拒否されます。"
+        },
+        {
+          "text": "関数のタイムアウトが短いので延ばす",
+          "explanation": "タイムアウトではアクセス拒否のエラーは出ません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AccessDeniedException は、呼び出しに必要な権限がないことを示します。Lambda 関数の場合は、まず実行ロールのポリシーを確認します。",
+      "references": [
+        {
+          "title": "IAM ロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html"
+        },
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-055",
+      "domain": "d4",
+      "question": "Lambda 関数のログを、注文 ID や処理時間などのフィールドで検索しやすくしたい。ログの出力の方法として最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "すべてのリクエストとレスポンスの全文を、個人情報も含めてそのまま出力する",
+          "explanation": "ログが膨らみ、機密データの漏えいにもつながります。"
+        },
+        {
+          "text": "Lambda のログ形式を JSON にし、構造化されたログとしてフィールドを出力する",
+          "explanation": "JSON の構造化ログにすると、Logs Insights などでフィールドごとに検索・集計できます。"
+        },
+        {
+          "text": "ログを出力しない",
+          "explanation": "トラブルの原因が調べられなくなります。"
+        },
+        {
+          "text": "自由な文章でログを出力する",
+          "explanation": "人には読めても、フィールドでの検索や集計がしにくくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Lambda では、ログ形式に JSON を選ぶと、ログが構造化されたキーと値の組で出力されます。検索やフィルタ、集計がしやすくなります。",
+      "references": [
+        {
+          "title": "Lambda 関数のログ形式（JSON 形式の構造化ログ）",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/monitoring-cloudwatchlogs-logformat.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-056",
+      "domain": "d4",
+      "question": "Lambda 関数で、処理した注文の金額をカスタムメトリクスとして CloudWatch に送りたい。メトリクスを送るための API の呼び出しで、関数の処理時間を増やしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 に金額のファイルを保存する",
+          "explanation": "CloudWatch のメトリクスにはなりません。"
+        },
+        {
+          "text": "X-Ray のメタデータに金額を記録する",
+          "explanation": "メタデータはメトリクスになりません。"
+        },
+        {
+          "text": "関数の中で、注文ごとに PutMetricData を同期で呼び出す",
+          "explanation": "呼び出しのたびに時間がかかり、スロットリングのおそれもあります。"
+        },
+        {
+          "text": "埋め込みメトリクスフォーマット（EMF）の形式でログを出力し、ログからメトリクスを自動で作らせる",
+          "explanation": "EMF の形式のログを出力すると、CloudWatch がメトリクスを自動で抽出します。関数から PutMetricData を呼び出す必要がありません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "埋め込みメトリクスフォーマットを使うと、構造化されたログの中にメトリクスを埋め込み、CloudWatch が自動でメトリクスを作ります。Lambda などで、API を呼び出さずにカスタムメトリクスを発行できます。",
+      "references": [
+        {
+          "title": "CloudWatch の埋め込みメトリクスフォーマット",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format.html"
+        },
+        {
+          "title": "カスタムメトリクスを発行する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/publishingMetrics.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-057",
+      "domain": "d4",
+      "question": "Lambda 関数がスロットリングされたら、すぐに開発チームにメールで知らせたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "関数のコードで、スロットリングのたびにメールを送る",
+          "explanation": "スロットリングされた呼び出しでは、関数のコードは実行されません。"
+        },
+        {
+          "text": "関数の Throttles メトリクスに CloudWatch のアラームを作り、Amazon SNS のトピックに通知する",
+          "explanation": "Throttles メトリクスが0より大きくなったらアラームを発生させ、SNS でメールを送れます。"
+        },
+        {
+          "text": "X-Ray のトレースマップを毎日確認する",
+          "explanation": "人が見るまで気づけません。"
+        },
+        {
+          "text": "関数の予約された同時実行数を0にする",
+          "explanation": "関数がまったく動かなくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudWatch のアラームは、メトリクスがしきい値を超えたときに SNS のトピックに通知できます。Lambda には Throttles・Errors・ConcurrentExecutions などのメトリクスがあります。",
+      "references": [
+        {
+          "title": "CloudWatch アラームの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html"
+        },
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-058",
+      "domain": "d4",
+      "question": "Application Load Balancer の背後の EC2 インスタンスで、アプリケーションのプロセスが固まっても、OS は動いているため異常として扱われず、通信が送られ続けている。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "ヘルスチェックを無効にする",
+          "explanation": "異常なターゲットにも通信が送られ続けます。"
+        },
+        {
+          "text": "ALB のアイドルタイムアウトを延ばす",
+          "explanation": "異常の検出にはなりません。"
+        },
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "プロセスが固まる問題の検出にはなりません。"
+        },
+        {
+          "text": "ターゲットグループのヘルスチェックのパスを、アプリケーションの状態を確かめるエンドポイント（例：/health）にする",
+          "explanation": "アプリケーションが応答しなければヘルスチェックに失敗し、ALB はそのターゲットに通信を送らなくなります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ALB はターゲットグループのヘルスチェックで、正常なターゲットにだけ通信を送ります。アプリケーションの状態を返すパスを指定すると、プロセスの異常も検出できます。",
+      "references": [
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-059",
+      "domain": "d4",
+      "question": "API Gateway の背後の Lambda 関数で、しばらく呼び出されなかったあとの最初のリクエストだけ、応答が数秒遅くなる（コールドスタート）。朝の始業時刻の急な増加でも、遅延なく応答したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "API Gateway のスロットリングの上限を下げる",
+          "explanation": "受け付けられるリクエストが減るだけです。"
+        },
+        {
+          "text": "予約された同時実行数を設定する",
+          "explanation": "同時実行数の確保と上限の設定で、実行環境の事前の初期化は行いません。"
+        },
+        {
+          "text": "プロビジョニングされた同時実行数を設定し、実行環境をあらかじめ初期化しておく",
+          "explanation": "初期化済みの実行環境が用意されるので、すぐに応答できます。"
+        },
+        {
+          "text": "関数のタイムアウトを延ばす",
+          "explanation": "コールドスタートの遅延は減りません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "プロビジョニングされた同時実行数を使うと、指定した数の実行環境が事前に初期化され、二桁ミリ秒の範囲で応答できるようになります。予約された同時実行数とは目的が違います。",
+      "references": [
+        {
+          "title": "Lambda のプロビジョニングされた同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/provisioned-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-060",
+      "domain": "d4",
+      "question": "SQS をきっかけに動く Lambda 関数が、急増時に大量に同時実行され、接続先の RDS のデータベースの接続数が上限に達してしまった。関数の同時実行数に上限を設けて、データベースを守りたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "関数に予約された同時実行数を設定して、同時実行数の上限にする",
+          "explanation": "予約された同時実行数は、その関数が同時に実行できる最大数にもなります。"
+        },
+        {
+          "text": "関数のメモリを増やす",
+          "explanation": "1回の処理は速くなりますが、同時実行数の上限にはなりません。"
+        },
+        {
+          "text": "SQS の可視性タイムアウトを短くする",
+          "explanation": "再配信が増え、負荷がかえって増えるおそれがあります。"
+        },
+        {
+          "text": "プロビジョニングされた同時実行数を増やす",
+          "explanation": "事前に初期化する数を増やすだけで、上限の設定にはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "予約された同時実行数を設定すると、その数の同時実行がその関数のために確保され、同時に関数の同時実行数の上限にもなります。下流のリソースを守るために使えます。",
+      "references": [
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-061",
+      "domain": "d4",
+      "question": "CPU を多く使う画像の変換を行う Lambda 関数の処理が遅い。関数のメモリは128 MB に設定されている。最も効果的な改善はどれか。",
+      "choices": [
+        {
+          "text": "関数のメモリを増やす（割り当てられる CPU の性能も比例して上がる）",
+          "explanation": "Lambda では、メモリの設定に比例して CPU の性能も割り当てられます。"
+        },
+        {
+          "text": "関数の予約された同時実行数を設定する",
+          "explanation": "同時実行数の確保で、1回の処理の速さは変わりません。"
+        },
+        {
+          "text": "関数のタイムアウトを延ばす",
+          "explanation": "処理が速くなるわけではありません。"
+        },
+        {
+          "text": "関数を VPC に接続する",
+          "explanation": "処理の速さは上がりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lambda はメモリの設定に比例して CPU を割り当てます。CPU を多く使う処理では、メモリを増やすと実行時間が短くなり、全体の費用が下がることもあります。",
+      "references": [
+        {
+          "title": "Lambda のメモリの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-memory.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-062",
+      "domain": "d4",
+      "question": "ゲームのランキングを DynamoDB から何度も読み取っており、読み取りの応答をミリ秒からマイクロ秒に縮めたい。アプリケーションのコードの変更はできるだけ少なくしたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "DynamoDB の強力な整合性のある読み取り",
+          "explanation": "最新の値は得られますが、速くはなりません。"
+        },
+        {
+          "text": "DynamoDB Accelerator（DAX）",
+          "explanation": "DynamoDB 用のインメモリのキャッシュで、DynamoDB と互換性のある API を使うので、コードの変更が少なく済みます。"
+        },
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "HTTP のコンテンツの配信用で、DynamoDB の読み取りのキャッシュではありません。"
+        },
+        {
+          "text": "Amazon ElastiCache",
+          "explanation": "キャッシュとして使えますが、キャッシュの読み書きのロジックをアプリケーションに実装する必要があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DAX は DynamoDB 用のフルマネージドのインメモリキャッシュです。DynamoDB の API と互換性があり、読み取りの応答をマイクロ秒にできます。",
+      "references": [
+        {
+          "title": "DynamoDB Accelerator (DAX) によるインメモリアクセラレーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ],
+      "group": "dva-cache"
+    },
+    {
+      "id": "dva-063",
+      "domain": "d4",
+      "question": "RDS の商品マスタの読み取りが多いので、ElastiCache でキャッシュしたい。実際に読み取られたデータだけをキャッシュに入れ、キャッシュに無ければデータベースから読んでキャッシュに入れる方式にしたい。この戦略はどれか。",
+      "choices": [
+        {
+          "text": "TTL を0にする",
+          "explanation": "キャッシュがすぐ期限切れになり、効果がありません。"
+        },
+        {
+          "text": "ライトスルー",
+          "explanation": "データベースに書き込むたびにキャッシュも更新する戦略です。"
+        },
+        {
+          "text": "遅延読み込み（レイジーローディング）",
+          "explanation": "必要になったデータだけをキャッシュに入れる戦略です。キャッシュが無い（ミス）ときにデータベースから読み、キャッシュに書き込みます。"
+        },
+        {
+          "text": "キャッシュを使わずに読み取る",
+          "explanation": "キャッシュの戦略ではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "遅延読み込みでは、要求されたデータだけがキャッシュされ、キャッシュの障害にも強い一方で、データが古くなることがあります。ライトスルーは常に最新ですが、使われないデータもキャッシュされます。",
+      "references": [
+        {
+          "title": "ElastiCache のキャッシュ戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Strategies.html"
+        }
+      ],
+      "group": "dva-cache"
+    },
+    {
+      "id": "dva-064",
+      "domain": "d4",
+      "question": "世界中の利用者が読み込む、Web アプリケーションの JavaScript や画像の配信が遅い。オリジンの S3 への負荷も減らしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Lambda のメモリを増やす",
+          "explanation": "静的なコンテンツの配信とは関係ありません。"
+        },
+        {
+          "text": "S3 のバケットを複数作る",
+          "explanation": "配信の遅延は改善しません。"
+        },
+        {
+          "text": "DynamoDB Accelerator を使う",
+          "explanation": "DynamoDB 用のキャッシュです。"
+        },
+        {
+          "text": "Amazon CloudFront を S3 の前に置き、静的なコンテンツをエッジでキャッシュする",
+          "explanation": "利用者に近いエッジロケーションからキャッシュを返すので、遅延とオリジンへの負荷が減ります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CloudFront は、コンテンツをエッジロケーションにキャッシュし、利用者に近い場所から配信します。キャッシュの期間は Cache-Control のヘッダーやキャッシュポリシーで制御できます。",
+      "references": [
+        {
+          "title": "CloudFront のキャッシュの有効期間",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Expiration.html"
+        },
+        {
+          "title": "Amazon S3 オリジンへのアクセスを制限する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ],
+      "group": "dva-cache"
+    },
+    {
+      "id": "dva-065",
+      "domain": "d4",
+      "question": "公開している REST API で、アクセスが急に増えたときに、一部のクライアントが「429 Too Many Requests」のエラーを受け取っている。クライアント側の対処として最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "429 はサーバーの不具合なので、再送せずに処理をあきらめる",
+          "explanation": "一時的な制限なので、再送で成功することが多いです。"
+        },
+        {
+          "text": "429 を受け取ったら、バックオフ（間隔を空けながら）してリクエストを再送する",
+          "explanation": "429 はスロットリングを示します。間隔を空けて再送すれば、上限の範囲に収まって成功しやすくなります。"
+        },
+        {
+          "text": "リクエストのボディを大きくする",
+          "explanation": "スロットリングとは関係ありません。"
+        },
+        {
+          "text": "429 を受け取ったら、すぐに同じリクエストを連続で再送する",
+          "explanation": "負荷が増えて、スロットリングがさらに続きます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "API Gateway は、定常のレートとバーストの上限を超えたリクエストをスロットリングし、429 を返します。クライアントは、レートを抑えながら再送します。必要なら API の側で上限やキャッシュを見直します。",
+      "references": [
+        {
+          "title": "API Gateway のリクエストのスロットリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-request-throttling.html"
+        },
+        {
+          "title": "AWS SDK の再試行の動作",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/feature-retry-behavior.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d001",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-001",
+      "point": "プロキシ統合",
+      "question": "API Gateway の Lambda プロキシ統合では、リクエストの内容がそのまま Lambda 関数のイベントとして渡される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。プロキシ統合では、API Gateway がリクエスト全体を関数への入力として渡し、関数の出力を HTTP のレスポンスに変換します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "プロキシ統合では、API Gateway がリクエスト全体を関数への入力として渡し、関数の出力を HTTP のレスポンスに変換します。",
+      "references": [
+        {
+          "title": "Lambda プロキシ統合",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d002",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-001",
+      "point": "API Gateway のタイムアウト",
+      "question": "API Gateway から同期で呼び出す処理は、数十分かかってもクライアントにそのまま結果を返せる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。API Gateway の統合にはタイムアウトがあり、長時間の処理は同期では返せません。時間がかかる処理は非同期にします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "API Gateway の統合にはタイムアウトがあり、長時間の処理は同期では返せません。時間がかかる処理は非同期にします。",
+      "references": [
+        {
+          "title": "API Gateway のリクエストのスロットリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-request-throttling.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d003",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-002",
+      "point": "SQS とメッセージの削除",
+      "question": "Lambda が SQS のメッセージのバッチを正常に処理すると、そのメッセージはキューから削除される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。イベントソースマッピングを使うと、関数がバッチを正常に処理したあと、Lambda がメッセージを削除します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "イベントソースマッピングを使うと、関数がバッチを正常に処理したあと、Lambda がメッセージを削除します。",
+      "references": [
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d004",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-002",
+      "point": "疎結合の利点",
+      "question": "SQS でシステムの部品を切り離す利点として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "処理の結果がすぐに送り手に返る",
+          "explanation": "非同期なので、結果はすぐには返りません。"
+        },
+        {
+          "text": "メッセージを永久に保存できる",
+          "explanation": "SQS のメッセージには保持期間（最長14日）があります。"
+        },
+        {
+          "text": "送る側と受け取る側が、互いの処理速度や障害の影響を受けにくくなる",
+          "explanation": "キューがバッファになるので、片方が遅くなったり止まったりしても、もう片方は動き続けられます。"
+        },
+        {
+          "text": "メッセージが必ず送った順番どおりに一度だけ届く",
+          "explanation": "標準キューでは順番と一度だけの配信は保証されません。FIFO キューの特徴です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "キューを挟むと、送る側と受け取る側を独立してスケール・運用できます。",
+      "references": [
+        {
+          "title": "Amazon SQS FIFO キュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d005",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-003",
+      "point": "ルールとターゲット",
+      "question": "EventBridge の1つのルールに、複数のターゲットを設定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ルールに一致したイベントを、複数のターゲットに送れます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ルールに一致したイベントを、複数のターゲットに送れます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        },
+        {
+          "title": "Amazon EventBridge のイベントパターン",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-event-patterns.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d006",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-003",
+      "point": "イベントパターン",
+      "question": "EventBridge のイベントパターンの役割として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "イベントの保存期間を決める",
+          "explanation": "保存期間の設定ではありません。"
+        },
+        {
+          "text": "ターゲットの処理の結果を変換する",
+          "explanation": "ターゲットの結果を変換するものではありません。"
+        },
+        {
+          "text": "イベントを暗号化する鍵を指定する",
+          "explanation": "暗号化の設定ではありません。"
+        },
+        {
+          "text": "どのイベントをルールに一致させるかを、イベントの構造と値で定義する",
+          "explanation": "イベントパターンに一致したイベントだけが、ルールのターゲットに送られます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "イベントパターンは、ルールが一致させるイベントの条件を定義します。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        },
+        {
+          "title": "Amazon EventBridge のイベントパターン",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-event-patterns.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d007",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-004",
+      "point": "可視性タイムアウトの意味",
+      "question": "SQS の可視性タイムアウトの間、受信されたメッセージはほかの受信者から見えなくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。可視性タイムアウトの間は、ほかの受信者がそのメッセージを受け取れません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "可視性タイムアウトの間は、ほかの受信者がそのメッセージを受け取れません。",
+      "references": [
+        {
+          "title": "Amazon SQS の可視性タイムアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+        },
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d008",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-004",
+      "point": "処理後の削除",
+      "question": "SQS では、受信したメッセージは処理が終わると自動で削除されるので、受信者が削除する必要はない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SQS は受信しただけではメッセージを削除しません。受信者が処理後に削除します（Lambda のイベントソースマッピングでは Lambda が削除します）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SQS は受信しただけではメッセージを削除しません。受信者が処理後に削除します（Lambda のイベントソースマッピングでは Lambda が削除します）。",
+      "references": [
+        {
+          "title": "Amazon SQS の可視性タイムアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+        },
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d009",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-005",
+      "point": "DLQ の保持期間",
+      "question": "デッドレターキューのメッセージの保持期間は、元のキューの保持期間より長く設定するのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。メッセージがデッドレターキューに移っても期限切れで消えないよう、保持期間は元のキューより長くします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "メッセージがデッドレターキューに移っても期限切れで消えないよう、保持期間は元のキューより長くします。",
+      "references": [
+        {
+          "title": "Amazon SQS のデッドレターキューの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d010",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-005",
+      "point": "DLQ からの戻し",
+      "question": "デッドレターキューに移したメッセージは、原因を直したあとで元のキューに戻す（再処理する）ことができる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。デッドレターキューの再処理（redrive）で、メッセージを元のキューなどに戻せます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "デッドレターキューの再処理（redrive）で、メッセージを元のキューなどに戻せます。",
+      "references": [
+        {
+          "title": "Amazon SQS のデッドレターキューの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d011",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-006",
+      "point": "ショートポーリング",
+      "question": "ショートポーリングでは、キューにメッセージがあっても空の応答が返ることがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ショートポーリングは一部のサーバーだけを調べるので、メッセージがあっても空の応答が返ることがあります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ショートポーリングは一部のサーバーだけを調べるので、メッセージがあっても空の応答が返ることがあります。",
+      "references": [
+        {
+          "title": "Amazon SQS のショートポーリングとロングポーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-short-and-long-polling.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d012",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-006",
+      "point": "ロングポーリングの最大",
+      "question": "SQS のロングポーリングで設定できる待機時間の最大はどれか。",
+      "choices": [
+        {
+          "text": "15分",
+          "explanation": "最大は20秒です。"
+        },
+        {
+          "text": "60秒",
+          "explanation": "最大は20秒です。"
+        },
+        {
+          "text": "20秒",
+          "explanation": "ReceiveMessage の待機時間は最大20秒です。"
+        },
+        {
+          "text": "5分",
+          "explanation": "最大は20秒です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "WaitTimeSeconds（待機時間）は1〜20秒の範囲で設定します。",
+      "references": [
+        {
+          "title": "Amazon SQS のショートポーリングとロングポーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-short-and-long-polling.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d013",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-007",
+      "point": "標準キューの順番",
+      "question": "SQS の標準キューは、メッセージが送られた順番どおりに届くことを保証する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。標準キューはベストエフォートの順番で、まれに重複して届くこともあります。順番が必要なら FIFO キューを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "標準キューはベストエフォートの順番で、まれに重複して届くこともあります。順番が必要なら FIFO キューを使います。",
+      "references": [
+        {
+          "title": "Amazon SQS FIFO キュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d014",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-007",
+      "point": "メッセージグループ",
+      "question": "FIFO キューでメッセージグループ ID を口座ごとに分ける利点はどれか。",
+      "choices": [
+        {
+          "text": "メッセージが暗号化される",
+          "explanation": "暗号化とは関係ありません。"
+        },
+        {
+          "text": "キューの保持期間が延びる",
+          "explanation": "保持期間とは関係ありません。"
+        },
+        {
+          "text": "メッセージのサイズの上限が増える",
+          "explanation": "サイズの上限とは関係ありません。"
+        },
+        {
+          "text": "口座ごとの順番を守りながら、別の口座のメッセージは並行して処理できる",
+          "explanation": "順番が守られるのは同じグループの中だけなので、グループを分けると並行して処理できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "FIFO キューの順番は、メッセージグループの単位で守られます。",
+      "references": [
+        {
+          "title": "Amazon SQS FIFO キュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d015",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-008",
+      "point": "フィルターポリシーの単位",
+      "question": "SNS のフィルターポリシーは、トピック全体に1つだけ設定する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。フィルターポリシーは購読（サブスクリプション）ごとに設定し、購読者が受け取るメッセージを絞ります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "フィルターポリシーは購読（サブスクリプション）ごとに設定し、購読者が受け取るメッセージを絞ります。",
+      "references": [
+        {
+          "title": "Amazon SNS のメッセージフィルタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-message-filtering.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d016",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-008",
+      "point": "プッシュとプル",
+      "question": "SNS は購読者にメッセージをプッシュし、SQS は受信者がメッセージを取りに行く（プルする）。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SNS はプッシュ型、SQS はポーリングで取りに行くプル型です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SNS はプッシュ型、SQS はポーリングで取りに行くプル型です。",
+      "references": [
+        {
+          "title": "Amazon SQS キューへの Amazon SNS メッセージのファンアウト",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-sqs-as-subscriber.html"
+        },
+        {
+          "title": "Amazon SNS のメッセージフィルタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-message-filtering.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d017",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-009",
+      "point": "SDK の再試行",
+      "question": "AWS SDK には、スロットリングなどの一時的なエラーを自動で再試行する仕組みがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SDK は一時的なエラーを再試行し、再試行のモードや最大の試行回数を設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SDK は一時的なエラーを再試行し、再試行のモードや最大の試行回数を設定できます。",
+      "references": [
+        {
+          "title": "AWS SDK の再試行の動作",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/feature-retry-behavior.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d018",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-009",
+      "point": "ジッターの目的",
+      "question": "再試行の待ち時間にジッター（ランダムなばらつき）を加える目的はどれか。",
+      "choices": [
+        {
+          "text": "再試行の回数を無制限にする",
+          "explanation": "ジッターは回数とは関係ありません。"
+        },
+        {
+          "text": "エラーの内容を暗号化する",
+          "explanation": "暗号化とは関係ありません。"
+        },
+        {
+          "text": "レスポンスをキャッシュする",
+          "explanation": "キャッシュとは関係ありません。"
+        },
+        {
+          "text": "多くのクライアントが同時に再試行して負荷が集中するのを避ける",
+          "explanation": "待ち時間をばらつかせることで、再試行のタイミングが分散します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ジッターは、再試行のタイミングを分散させ、負荷の集中を防ぎます。",
+      "references": [
+        {
+          "title": "AWS SDK の再試行の動作",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/feature-retry-behavior.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d019",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-010",
+      "point": "検証の失敗",
+      "question": "API Gateway のリクエストの検証に失敗すると、リクエストはバックエンドに送られずにエラーが返る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。検証に失敗すると、API Gateway はすぐにエラーの応答を返します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "検証に失敗すると、API Gateway はすぐにエラーの応答を返します。",
+      "references": [
+        {
+          "title": "API Gateway でのリクエストの検証",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-method-request-validation.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d020",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-010",
+      "point": "利用者ごとの制限",
+      "question": "API の利用者ごとに API キーを発行し、1日のリクエスト数の上限を決めたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "リクエストの検証",
+          "explanation": "形式を検証する機能です。"
+        },
+        {
+          "text": "ステージ変数",
+          "explanation": "ステージごとの設定値を持つ機能です。"
+        },
+        {
+          "text": "使用量プラン",
+          "explanation": "API キーに対して、スロットリングとクォータ（期間あたりの上限）を設定できます。"
+        },
+        {
+          "text": "Lambda オーソライザー",
+          "explanation": "認可の判断を Lambda で行う機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "使用量プランと API キーで、利用者ごとのスロットリングとクォータを設定できます。",
+      "references": [
+        {
+          "title": "API Gateway の使用量プランと API キー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d021",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-011",
+      "point": "スループットの増やし方",
+      "question": "Kinesis Data Streams のストリームのスループットは、シャードの数を増やすことで上げられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ストリームの容量はシャードの数で決まります（プロビジョンドモード）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ストリームの容量はシャードの数で決まります（プロビジョンドモード）。",
+      "references": [
+        {
+          "title": "Amazon Kinesis Data Streams の用語と概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/key-concepts.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d022",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-011",
+      "point": "コードなしで S3 へ",
+      "question": "ストリーミングデータを、変換やバッファリングをしながら、コードを書かずに S3 に届けたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "AWS Step Functions",
+          "explanation": "ワークフローのサービスです。"
+        },
+        {
+          "text": "Amazon Cognito",
+          "explanation": "認証のサービスです。"
+        },
+        {
+          "text": "Amazon Data Firehose",
+          "explanation": "ストリーミングデータを S3 などの宛先に、ほぼリアルタイムで自動的に届けるフルマネージドのサービスです。"
+        },
+        {
+          "text": "Amazon SQS",
+          "explanation": "メッセージキューで、S3 への自動の配信機能はありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Firehose は、ストリーミングデータを宛先に配信するフルマネージドのサービスです。",
+      "references": [
+        {
+          "title": "Amazon Data Firehose とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/what-is-this-service.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d023",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-012",
+      "point": "VPC 接続とインターネット",
+      "question": "VPC に接続した Lambda 関数は、何も設定しなくてもインターネットにアクセスできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。VPC に接続した関数は、それだけではインターネットにアクセスできません（パブリックサブネットに接続しても同じです）。プライベートサブネットから NAT ゲートウェイを経由するなどの設定が必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "VPC に接続した関数は、それだけではインターネットにアクセスできません（パブリックサブネットに接続しても同じです）。プライベートサブネットから NAT ゲートウェイを経由するなどの設定が必要です。",
+      "references": [
+        {
+          "title": "Lambda 関数に VPC 内のリソースへのアクセスを許可する",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-vpc.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d024",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-012",
+      "point": "実行ロールの権限",
+      "question": "Lambda 関数を VPC に接続するには、関数の実行ロールにネットワークインターフェイスを作成・管理する権限が必要である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Lambda は VPC 内にネットワークインターフェイスを作るので、実行ロールに ec2:CreateNetworkInterface などの権限が必要です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lambda は VPC 内にネットワークインターフェイスを作るので、実行ロールに ec2:CreateNetworkInterface などの権限が必要です。",
+      "references": [
+        {
+          "title": "Lambda 関数に VPC 内のリソースへのアクセスを許可する",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-vpc.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d025",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-013",
+      "point": "ライブラリの共有",
+      "question": "複数の Lambda 関数で同じライブラリを使っている。デプロイパッケージを小さくし、共通部分をまとめて管理したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "エイリアス",
+          "explanation": "バージョンを指す名前です。"
+        },
+        {
+          "text": "送信先",
+          "explanation": "非同期呼び出しの結果を送る先です。"
+        },
+        {
+          "text": "環境変数",
+          "explanation": "設定値を渡す仕組みです。"
+        },
+        {
+          "text": "Lambda レイヤー",
+          "explanation": "ライブラリや依存関係などを .zip にまとめ、複数の関数で共有できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "レイヤーは、ライブラリなどの追加のコードやデータを関数と分けて管理し、複数の関数で共有する仕組みです。",
+      "references": [
+        {
+          "title": "Lambda レイヤー",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/chapter-layers.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d026",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-013",
+      "point": "環境変数の暗号化",
+      "question": "Lambda の環境変数は、保存時に暗号化される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Lambda は環境変数を保存時に暗号化します。独自の KMS キーを使うこともできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lambda は環境変数を保存時に暗号化します。独自の KMS キーを使うこともできます。",
+      "references": [
+        {
+          "title": "Lambda の環境変数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-envvars.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d027",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-014",
+      "point": "非同期呼び出しの再試行",
+      "question": "Lambda は、非同期呼び出しで関数がエラーを返すと、自動で再試行する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。非同期呼び出しでは、関数がエラーを返すと、既定で Lambda がさらに2回再試行します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "非同期呼び出しでは、関数がエラーを返すと、既定で Lambda がさらに2回再試行します。",
+      "references": [
+        {
+          "title": "Lambda の非同期呼び出しでのエラーと再試行の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d028",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-014",
+      "point": "送信先と DLQ",
+      "question": "失敗時の送信先が、デッドレターキュー（DLQ）より優れている点はどれか。",
+      "choices": [
+        {
+          "text": "再試行の回数が無制限になる",
+          "explanation": "回数は無制限になりません。"
+        },
+        {
+          "text": "イベントの順番が保証される",
+          "explanation": "順番は保証されません。"
+        },
+        {
+          "text": "関数のコードを書かずに処理できる",
+          "explanation": "どちらも処理の仕組みは別に必要です。"
+        },
+        {
+          "text": "イベントの内容に加えて、呼び出しの結果やエラーの詳細も送られる",
+          "explanation": "送信先のレコードには、関数の応答やエラーなどの詳細が含まれます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "送信先は DLQ より多くの情報（呼び出しの詳細）を送れます。",
+      "references": [
+        {
+          "title": "Lambda の非同期呼び出しの送信先",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async-retain-records.html"
+        },
+        {
+          "title": "Lambda の非同期呼び出し",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d029",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-015",
+      "point": "既定の動作",
+      "question": "部分的なバッチの失敗の報告を使わない場合、バッチの中の1件が失敗すると、バッチ全体が再び処理される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。既定では、バッチのどれかが失敗すると、成功したメッセージも含めて再試行されます。部分的なバッチの応答で、これを防げます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "既定では、バッチのどれかが失敗すると、成功したメッセージも含めて再試行されます。部分的なバッチの応答で、これを防げます。",
+      "references": [
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        },
+        {
+          "title": "Lambda のイベントソースマッピング",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-eventsourcemapping.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d030",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-015",
+      "point": "イベントソースマッピング",
+      "question": "Lambda のイベントソースマッピングの説明として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "関数の結果を別のサービスに送る仕組み",
+          "explanation": "これは送信先の説明です。"
+        },
+        {
+          "text": "S3 が Lambda 関数を直接呼び出す仕組み",
+          "explanation": "S3 のイベント通知は、S3 が関数を非同期に呼び出します。イベントソースマッピングではありません。"
+        },
+        {
+          "text": "SQS・Kinesis・DynamoDB Streams などから Lambda がレコードを読み取り、関数を呼び出す仕組み",
+          "explanation": "Lambda 側がソースをポーリングして、バッチで関数を呼び出します。"
+        },
+        {
+          "text": "API Gateway が関数を同期で呼び出す仕組み",
+          "explanation": "これは同期の呼び出しです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "イベントソースマッピングは、ストリームやキューから Lambda がレコードを読み取って関数を呼び出すリソースです。",
+      "references": [
+        {
+          "title": "Lambda のイベントソースマッピング",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-eventsourcemapping.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d031",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-016",
+      "point": "TTL の削除のタイミング",
+      "question": "DynamoDB の TTL では、有効期限を過ぎた項目は、その瞬間に必ず削除される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。期限切れの項目は、通常は数日以内に削除されます。期限切れでも削除前の項目は読めるので、必要ならクエリで除外します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "期限切れの項目は、通常は数日以内に削除されます。期限切れでも削除前の項目は読めるので、必要ならクエリで除外します。",
+      "references": [
+        {
+          "title": "DynamoDB の有効期限 (TTL)",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/TTL.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d032",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-016",
+      "point": "S3 のデータの寿命",
+      "question": "S3 のログを、30日後に S3 Glacier に移し、1年後に削除したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "S3 の CORS の設定",
+          "explanation": "ブラウザからのクロスオリジンのアクセスを許可する機能です。"
+        },
+        {
+          "text": "S3 のイベント通知",
+          "explanation": "オブジェクトの作成などのイベントを通知する機能です。"
+        },
+        {
+          "text": "S3 ライフサイクルの設定",
+          "explanation": "オブジェクトを別のストレージクラスに移す移行のアクションと、削除する有効期限のアクションを設定できます。"
+        },
+        {
+          "text": "署名付き URL",
+          "explanation": "一時的なアクセスを許可する機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 ライフサイクルで、オブジェクトの移行と削除を自動化できます。",
+      "references": [
+        {
+          "title": "Amazon S3 のオブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d033",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-017",
+      "point": "パーティションキーの選び方",
+      "question": "DynamoDB のパーティションキーには、値の種類が少ない属性（例：性別）を選ぶのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。値の種類が少ないとアクセスが一部のパーティションに集中します。値の種類が多い属性を選びます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "値の種類が少ないとアクセスが一部のパーティションに集中します。値の種類が多い属性を選びます。",
+      "references": [
+        {
+          "title": "パーティションキーの設計のベストプラクティス",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-design.html"
+        },
+        {
+          "title": "パーティションキーの設計によるワークロードの分散",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d034",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-017",
+      "point": "書き込みのシャーディング",
+      "question": "書き込みが特定のキーに集中する場合、キーにランダムな接尾辞を付けて分散させる方法がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。パーティションキーに乱数などの接尾辞を付けると、書き込みを複数のパーティションに分散できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "パーティションキーに乱数などの接尾辞を付けると、書き込みを複数のパーティションに分散できます。",
+      "references": [
+        {
+          "title": "書き込みのシャーディングによるワークロードの均等な分散",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-sharding.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d035",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-018",
+      "point": "Scan のフィルタ",
+      "question": "DynamoDB の Scan でフィルタ式を使うと、条件に合う項目だけが読み取られるので、消費する読み込みキャパシティも減る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。フィルタ式は読み取った後に適用されるので、消費するキャパシティは減りません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "フィルタ式は読み取った後に適用されるので、消費するキャパシティは減りません。",
+      "references": [
+        {
+          "title": "DynamoDB のスキャン",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Scan.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d036",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-018",
+      "point": "Query の条件",
+      "question": "DynamoDB の Query では、パーティションキーの値を必ず指定する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Query はパーティションキーの値を指定し、必要に応じてソートキーの条件で絞り込みます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Query はパーティションキーの値を指定し、必要に応じてソートキーの条件で絞り込みます。",
+      "references": [
+        {
+          "title": "DynamoDB のクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Query.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d037",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-019",
+      "point": "GSI の整合性",
+      "question": "グローバルセカンダリインデックスからは、強力な整合性のある読み取りができる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。GSI がサポートするのは結果整合性のある読み取りだけです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "GSI がサポートするのは結果整合性のある読み取りだけです。",
+      "references": [
+        {
+          "title": "DynamoDB の読み取り整合性",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d038",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dva-019",
+      "point": "キャパシティの消費",
+      "question": "強力な整合性のある読み取りは、結果整合性のある読み取りと比べて、読み込みキャパシティをどれだけ消費するか。",
+      "choices": [
+        {
+          "text": "同じ",
+          "explanation": "同じではありません。"
+        },
+        {
+          "text": "10倍",
+          "explanation": "10倍ではありません。"
+        },
+        {
+          "text": "半分",
+          "explanation": "半分ではありません。"
+        },
+        {
+          "text": "2倍",
+          "explanation": "強力な整合性のある読み取りは、結果整合性のある読み取りの2倍のキャパシティを消費します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "1 RCU で、4 KB までの項目を、強力な整合性で1回、結果整合性で2回読み取れます。",
+      "references": [
+        {
+          "title": "DynamoDB の読み取り整合性",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d039",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-020",
+      "point": "ユーザープールのトークン",
+      "question": "Cognito ユーザープールでサインインに成功すると、ID トークンやアクセストークンなどの JWT が発行される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ユーザープールは、認証に成功した利用者に JSON Web Token（JWT）を発行します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ユーザープールは、認証に成功した利用者に JSON Web Token（JWT）を発行します。",
+      "references": [
+        {
+          "title": "Amazon Cognito ユーザープール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-user-pools.html"
+        },
+        {
+          "title": "Amazon Cognito ユーザープールをオーソライザーとして使用する",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d040",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-020",
+      "point": "API キーの役割",
+      "question": "API Gateway の API キーは、利用者の認証と認可の仕組みとして使うのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。API キーは使用量プランで利用量を管理するためのもので、認証や認可には IAM・Cognito・Lambda オーソライザーを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "API キーは使用量プランで利用量を管理するためのもので、認証や認可には IAM・Cognito・Lambda オーソライザーを使います。",
+      "references": [
+        {
+          "title": "API Gateway の使用量プランと API キー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d041",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-021",
+      "point": "オーソライザーの種類",
+      "question": "Lambda オーソライザーの2つの種類の組み合わせとして正しいものはどれか。",
+      "choices": [
+        {
+          "text": "同期型と非同期型",
+          "explanation": "オーソライザーの種類ではありません。"
+        },
+        {
+          "text": "パブリック型とプライベート型",
+          "explanation": "オーソライザーの種類ではありません。"
+        },
+        {
+          "text": "トークンベースとリクエストパラメータベース",
+          "explanation": "ベアラートークンを受け取るものと、ヘッダーやクエリ文字列などを受け取るものがあります。"
+        },
+        {
+          "text": "ステートフル型とステートレス型",
+          "explanation": "オーソライザーの種類ではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lambda オーソライザーには、TOKEN（トークンベース）と REQUEST（リクエストパラメータベース）があります。",
+      "references": [
+        {
+          "title": "API Gateway の Lambda オーソライザー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d042",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-021",
+      "point": "結果のキャッシュ",
+      "question": "Lambda オーソライザーの結果はキャッシュできないので、リクエストのたびに必ず関数が呼び出される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。オーソライザーの結果（ポリシー）はキャッシュでき、同じトークンでのリクエストでは関数を呼び出さずに済みます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オーソライザーの結果（ポリシー）はキャッシュでき、同じトークンでのリクエストでは関数を呼び出さずに済みます。",
+      "references": [
+        {
+          "title": "API Gateway の Lambda オーソライザー",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d043",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-022",
+      "point": "ユーザープールとアイデンティティプール",
+      "question": "Cognito ユーザープールは主に認証（サインイン）を、アイデンティティプールは主に AWS のリソースへのアクセスのための認証情報の発行を担う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ユーザープールはユーザーディレクトリで認証を、アイデンティティプールは一時的な AWS 認証情報の発行を担います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ユーザープールはユーザーディレクトリで認証を、アイデンティティプールは一時的な AWS 認証情報の発行を担います。",
+      "references": [
+        {
+          "title": "Amazon Cognito アイデンティティプール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-identity.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d044",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-022",
+      "point": "ゲストアクセス",
+      "question": "Cognito アイデンティティプールは、サインインしていないゲストの利用者に認証情報を発行することはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。アイデンティティプールは、認証されていない（ゲストの）利用者にも、権限を絞ったロールの認証情報を発行できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アイデンティティプールは、認証されていない（ゲストの）利用者にも、権限を絞ったロールの認証情報を発行できます。",
+      "references": [
+        {
+          "title": "Amazon Cognito アイデンティティプール",
+          "url": "https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-identity.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d045",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-023",
+      "point": "一時的な認証情報",
+      "question": "AssumeRole で受け取る認証情報は、アクセスキー ID・シークレットアクセスキー・セッショントークンからなる一時的なものである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。AssumeRole は、アクセスキー ID・シークレットアクセスキー・セキュリティトークンの一時的な認証情報を返します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AssumeRole は、アクセスキー ID・シークレットアクセスキー・セキュリティトークンの一時的な認証情報を返します。",
+      "references": [
+        {
+          "title": "AssumeRole",
+          "url": "https://docs.aws.amazon.com/ja_jp/STS/latest/APIReference/API_AssumeRole.html"
+        },
+        {
+          "title": "IAM ロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d046",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-023",
+      "point": "信頼ポリシー",
+      "question": "ロールを「誰が引き受けられるか」を決めるポリシーはどれか。",
+      "choices": [
+        {
+          "text": "サービスコントロールポリシー",
+          "explanation": "組織のアカウントで使える権限の上限を決めます。"
+        },
+        {
+          "text": "アクセス許可ポリシー",
+          "explanation": "ロールを引き受けたあとに何ができるかを定義します。"
+        },
+        {
+          "text": "バケットポリシー",
+          "explanation": "S3 バケットのリソースベースのポリシーです。"
+        },
+        {
+          "text": "信頼ポリシー",
+          "explanation": "ロールを引き受けられるプリンシパルを定義します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ロールには、誰が引き受けられるかの信頼ポリシーと、何ができるかのアクセス許可ポリシーがあります。",
+      "references": [
+        {
+          "title": "IAM ロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d047",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-024",
+      "point": "暗黙的な拒否",
+      "question": "どのポリシーでも明示的に拒否されていない操作は、既定で許可される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。既定ではすべてのリクエストが暗黙的に拒否され（ルートユーザーを除く）、明示的な許可があるときだけ許可されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "既定ではすべてのリクエストが暗黙的に拒否され（ルートユーザーを除く）、明示的な許可があるときだけ許可されます。",
+      "references": [
+        {
+          "title": "リクエストの許可と拒否の判定",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d048",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-024",
+      "point": "リソースベースのポリシー",
+      "question": "S3 のバケットポリシーのような、リソースに直接アタッチするポリシーの特徴はどれか。",
+      "choices": [
+        {
+          "text": "IAM ユーザーにしかアタッチできない",
+          "explanation": "リソースにアタッチするポリシーです。"
+        },
+        {
+          "text": "同じアカウントの中でしか使えない",
+          "explanation": "クロスアカウントのアクセスの許可にも使えます。"
+        },
+        {
+          "text": "権限の上限だけを決め、許可は与えない",
+          "explanation": "これはアクセス許可の境界や SCP の説明です。"
+        },
+        {
+          "text": "ポリシーの中で、アクセスを許可するプリンシパル（別のアカウントなど）を指定する",
+          "explanation": "リソースベースのポリシーには Principal 要素があり、誰にアクセスを許すかを書きます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "リソースベースのポリシーでは、リソースにアクセスできるプリンシパルを指定します。",
+      "references": [
+        {
+          "title": "アイデンティティベースのポリシーとリソースベースのポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_identity-vs-resource.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d049",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-025",
+      "point": "署名付き URL の権限",
+      "question": "S3 の署名付き URL を使えば、URL を作成したプリンシパル自身に権限がない操作も、相手に許可できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。署名付き URL でできる操作は、URL を作成したプリンシパルのアクセス許可の範囲に限られます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "署名付き URL でできる操作は、URL を作成したプリンシパルのアクセス許可の範囲に限られます。",
+      "references": [
+        {
+          "title": "署名付き URL を使用したオブジェクトのアップロード",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/PresignedUrlUploadObject.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d050",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-025",
+      "point": "CloudFront での限定配信",
+      "question": "有料会員だけに、CloudFront で配信する複数の動画ファイルへのアクセスを、期限付きでまとめて許可したい。URL は変えたくない。どの方法を使うか。",
+      "choices": [
+        {
+          "text": "S3 の署名付き URL",
+          "explanation": "ファイルごとに URL が変わり、CloudFront の配信にはなりません。"
+        },
+        {
+          "text": "S3 バケットの公開",
+          "explanation": "誰でもアクセスできてしまいます。"
+        },
+        {
+          "text": "CloudFront の署名付き Cookie",
+          "explanation": "署名付き Cookie を使うと、URL を変えずに複数のファイルへのアクセスを許可できます。"
+        },
+        {
+          "text": "API Gateway の API キー",
+          "explanation": "配信のアクセス制御の仕組みではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "CloudFront では、1つのファイルには署名付き URL、複数のファイルや URL を変えたくない場合には署名付き Cookie を使います。",
+      "references": [
+        {
+          "title": "CloudFront の署名付き URL と署名付き Cookie を使用したプライベートコンテンツの提供",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d051",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-026",
+      "point": "SDK の認証情報の探し方",
+      "question": "AWS SDK は、決まった順番で複数の場所から認証情報を探す（認証情報プロバイダーチェーン）。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SDK は、環境変数・共有の認証情報ファイル・コンテナや EC2 のロールなどを順番に探します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SDK は、環境変数・共有の認証情報ファイル・コンテナや EC2 のロールなどを順番に探します。",
+      "references": [
+        {
+          "title": "AWS SDK の認証情報プロバイダーチェーン",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/standardized-credentials.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d052",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-026",
+      "point": "タスクロールと実行ロール",
+      "question": "ECS のタスクの実行ロール（task execution role）の主な用途はどれか。",
+      "choices": [
+        {
+          "text": "アプリケーションから DynamoDB を読み書きする",
+          "explanation": "これはタスクロールの役割です。"
+        },
+        {
+          "text": "利用者のサインインを処理する",
+          "explanation": "Cognito などの役割です。"
+        },
+        {
+          "text": "VPC のルートテーブルを変更する",
+          "explanation": "タスクの実行ロールの用途ではありません。"
+        },
+        {
+          "text": "ECR からのイメージの取得や、CloudWatch Logs へのログの送信",
+          "explanation": "ECS がタスクを起動・実行するために使う権限です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "タスクロールはアプリケーション用、タスクの実行ロールは ECS エージェントのイメージの取得やログの送信用です。",
+      "references": [
+        {
+          "title": "Amazon ECS タスクの IAM ロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task-iam-roles.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d053",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-027",
+      "point": "MFA と API",
+      "question": "MFA を条件にしたポリシーで保護された API を CLI から呼び出すには、MFA のコードを使って一時的な認証情報を取得する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。STS の GetSessionToken などに MFA のコードを渡して一時的な認証情報を取得し、それで API を呼び出します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "STS の GetSessionToken などに MFA のコードを渡して一時的な認証情報を取得し、それで API を呼び出します。",
+      "references": [
+        {
+          "title": "MFA で保護された API アクセスの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_mfa_configure-api-require.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d054",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-027",
+      "point": "Condition 要素",
+      "question": "IAM ポリシーの Condition 要素を使うと、特定の条件を満たすときだけポリシーを有効にできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Condition で、MFA の有無・送信元 IP・タグなどの条件を指定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Condition で、MFA の有無・送信元 IP・タグなどの条件を指定できます。",
+      "references": [
+        {
+          "title": "ポリシーの評価論理",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d055",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-028",
+      "point": "平文のデータキー",
+      "question": "エンベロープ暗号化では、データの暗号化に使った平文のデータキーは、使い終わったらすぐにメモリから消すのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。平文のデータキーは使ったらすぐに消し、暗号化されたデータキーだけを保存します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "平文のデータキーは使ったらすぐに消し、暗号化されたデータキーだけを保存します。",
+      "references": [
+        {
+          "title": "GenerateDataKey（AWS KMS API）",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/APIReference/API_GenerateDataKey.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d056",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-028",
+      "point": "復号のとき",
+      "question": "エンベロープ暗号化したデータを復号する手順として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "暗号化されたデータを KMS の Decrypt にそのまま渡す",
+          "explanation": "大きなデータは KMS に直接渡せません。"
+        },
+        {
+          "text": "KMS の鍵をダウンロードしてデータを直接復号する",
+          "explanation": "KMS の鍵は取り出せません。"
+        },
+        {
+          "text": "暗号化されたデータキーを KMS の Decrypt で復号し、得られた平文のデータキーでデータを復号する",
+          "explanation": "まずデータキーを KMS で復号し、そのデータキーでデータを復号します。"
+        },
+        {
+          "text": "データキーは不要で、データを Base64 でデコードする",
+          "explanation": "Base64 は暗号化ではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "復号では、暗号化されたデータキーを KMS で復号してから、そのデータキーでデータを復号します。",
+      "references": [
+        {
+          "title": "AWS KMS の暗号化の基礎（エンベロープ暗号化）",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/kms-cryptography.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d057",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-029",
+      "point": "既定の暗号化",
+      "question": "S3 では、利用者が暗号化を設定しない限り、新しいオブジェクトは暗号化されずに保存される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。S3 は、すべての新しいオブジェクトを既定で SSE-S3 で暗号化します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "S3 は、すべての新しいオブジェクトを既定で SSE-S3 で暗号化します。",
+      "references": [
+        {
+          "title": "サーバー側の暗号化によるデータの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/serv-side-encryption.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d058",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-029",
+      "point": "クライアント側の暗号化",
+      "question": "データを AWS に送る前に、アプリケーション側で暗号化したい。この方式はどれか。",
+      "choices": [
+        {
+          "text": "SSE-S3",
+          "explanation": "S3 が受け取ったあとに暗号化するサーバー側の暗号化です。"
+        },
+        {
+          "text": "TLS の終端",
+          "explanation": "通信の暗号化で、保存データの暗号化ではありません。"
+        },
+        {
+          "text": "クライアント側の暗号化",
+          "explanation": "データを送る前に、アプリケーション側で暗号化します。"
+        },
+        {
+          "text": "SSE-KMS",
+          "explanation": "S3 が受け取ったあとに暗号化するサーバー側の暗号化です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "サーバー側の暗号化は AWS が保存時に暗号化し、クライアント側の暗号化はアプリケーションが送る前に暗号化します。",
+      "references": [
+        {
+          "title": "サーバー側の暗号化によるデータの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/serv-side-encryption.html"
+        },
+        {
+          "title": "クライアント側の暗号化によるデータの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/UsingClientSideEncryption.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d059",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-030",
+      "point": "ローテーションの仕組み",
+      "question": "Secrets Manager のローテーションは、Lambda 関数またはマネージドローテーションでシークレットを更新する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ローテーションは、ローテーション用の Lambda 関数か、マネージドローテーションで行います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ローテーションは、ローテーション用の Lambda 関数か、マネージドローテーションで行います。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d060",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-030",
+      "point": "キャッシュ",
+      "question": "Secrets Manager からシークレットを取得するたびに API を呼び出すと、費用と遅延が増えるので、クライアント側でキャッシュするのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Secrets Manager のクライアント側のキャッシュを使うと、呼び出しの回数を減らせます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Secrets Manager のクライアント側のキャッシュを使うと、呼び出しの回数を減らせます。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d061",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-031",
+      "point": "SecureString",
+      "question": "Parameter Store の SecureString のパラメータは、暗号化されずに平文で保存される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SecureString は、機密データを KMS の鍵で暗号化して保管するパラメータです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SecureString は、機密データを KMS の鍵で暗号化して保管するパラメータです。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d062",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-031",
+      "point": "使い分け",
+      "question": "データベースのパスワードを自動でローテーションしたい場合に向いているのはどれか。",
+      "choices": [
+        {
+          "text": "S3 のバケット",
+          "explanation": "ローテーションの仕組みはありません。"
+        },
+        {
+          "text": "Parameter Store の標準パラメータ",
+          "explanation": "自動ローテーションの仕組みはありません。"
+        },
+        {
+          "text": "Lambda の環境変数",
+          "explanation": "ローテーションの仕組みはありません。"
+        },
+        {
+          "text": "AWS Secrets Manager",
+          "explanation": "組み込みの自動ローテーションがあります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "機密ではない設定値は Parameter Store、ローテーションが必要なシークレットは Secrets Manager が向いています。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d063",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-032",
+      "point": "ACM の更新",
+      "question": "ACM で発行した公開証明書は、有効期限が来るたびに利用者が手で更新しなければならない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ACM が発行した証明書は、マネージドな更新で自動的に更新されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ACM が発行した証明書は、マネージドな更新で自動的に更新されます。",
+      "references": [
+        {
+          "title": "AWS Certificate Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/acm-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d064",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-032",
+      "point": "転送中の暗号化",
+      "question": "TLS は、保存されているデータを暗号化するための仕組みである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。TLS は転送中（通信中）のデータを暗号化する仕組みです。保存データの暗号化には KMS などを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "TLS は転送中（通信中）のデータを暗号化する仕組みです。保存データの暗号化には KMS などを使います。",
+      "references": [
+        {
+          "title": "AWS Private CA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/privateca/latest/userguide/PcaWelcome.html"
+        },
+        {
+          "title": "AWS Certificate Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/acm-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d065",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-033",
+      "point": "プロンプト攻撃",
+      "question": "Bedrock のガードレールには、プロンプトインジェクションなどのプロンプト攻撃を検出する機能がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ガードレールのコンテンツフィルターで、プロンプト攻撃を検出してブロックできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ガードレールのコンテンツフィルターで、プロンプト攻撃を検出してブロックできます。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のガードレール",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/guardrails.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d066",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-033",
+      "point": "ガードレールの適用範囲",
+      "question": "Bedrock のガードレールは、モデルの出力にだけ適用でき、利用者の入力には適用できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ガードレールは、利用者の入力とモデルの出力の両方を評価できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ガードレールは、利用者の入力とモデルの出力の両方を評価できます。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のガードレール",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/guardrails.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d067",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-034",
+      "point": "プロンプトの扱い",
+      "question": "Amazon Bedrock は、利用者のプロンプトとモデルの出力を、AWS のモデルの学習に使う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Bedrock は、プロンプトや出力をモデルの学習に使わず、サードパーティにも配布しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Bedrock は、プロンプトや出力をモデルの学習に使わず、サードパーティにも配布しません。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のよくある質問",
+          "url": "https://aws.amazon.com/jp/bedrock/faqs/"
+        }
+      ]
+    },
+    {
+      "id": "dva-d068",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-034",
+      "point": "呼び出しの記録",
+      "question": "Bedrock のモデルの呼び出しの入力と出力を、監査のために記録したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "プロビジョンドスループット",
+          "explanation": "処理能力を確保する機能です。"
+        },
+        {
+          "text": "ガードレール",
+          "explanation": "内容をフィルタリングする機能です。"
+        },
+        {
+          "text": "VPC エンドポイント",
+          "explanation": "プライベートに接続する機能です。"
+        },
+        {
+          "text": "モデル呼び出しのログ記録",
+          "explanation": "呼び出しのリクエストとレスポンスを CloudWatch Logs や S3 に記録できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "モデル呼び出しのログ記録で、入出力を記録できます。記録に機密情報が含まれる場合は、ログの保護も必要です。",
+      "references": [
+        {
+          "title": "Amazon Bedrock のモデル呼び出しのログ記録",
+          "url": "https://docs.aws.amazon.com/ja_jp/bedrock/latest/userguide/model-invocation-logging.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d069",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-035",
+      "point": "マスクの解除",
+      "question": "CloudWatch Logs でマスクされた機密データは、どんな権限があっても二度と見られない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。logs:Unmask の権限があれば、マスクされていないデータを表示できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "logs:Unmask の権限があれば、マスクされていないデータを表示できます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs のマスキングによる機密データの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d070",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-035",
+      "point": "ログに出さない工夫",
+      "question": "そもそも機密データをログに出力しないよう、アプリケーションのログ記録を設計することも大切である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。マスクは保険で、まずはログに機密データを出さない設計にします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "マスクは保険で、まずはログに機密データを出さない設計にします。",
+      "references": [
+        {
+          "title": "CloudWatch Logs のマスキングによる機密データの保護",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d071",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-036",
+      "point": "フェデレーションの利点",
+      "question": "ID フェデレーションを使うと、外部の ID プロバイダーで認証された利用者やワークロードに、AWS の長期の認証情報を配らずに済む。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。外部で認証された相手は、ロールを引き受けて一時的な認証情報を使います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "外部で認証された相手は、ロールを引き受けて一時的な認証情報を使います。",
+      "references": [
+        {
+          "title": "AssumeRoleWithWebIdentity",
+          "url": "https://docs.aws.amazon.com/ja_jp/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d072",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dva-036",
+      "point": "API の使い分け",
+      "question": "Web の ID プロバイダーが発行したトークンを使って、ロールを引き受ける STS の API はどれか。",
+      "choices": [
+        {
+          "text": "GetCallerIdentity",
+          "explanation": "呼び出し元の ID を確認する API です。"
+        },
+        {
+          "text": "GetSessionToken",
+          "explanation": "IAM ユーザーの一時的な認証情報（MFA など）を得る API です。"
+        },
+        {
+          "text": "AssumeRoleWithWebIdentity",
+          "explanation": "OIDC などの Web の ID プロバイダーのトークンでロールを引き受けます。"
+        },
+        {
+          "text": "AssumeRoleWithSAML",
+          "explanation": "SAML の ID プロバイダーのアサーションでロールを引き受ける API です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Web の ID プロバイダー（OIDC）なら AssumeRoleWithWebIdentity、SAML なら AssumeRoleWithSAML を使います。",
+      "references": [
+        {
+          "title": "AssumeRoleWithWebIdentity",
+          "url": "https://docs.aws.amazon.com/ja_jp/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d073",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-037",
+      "point": "設定とコードの分離",
+      "question": "AWS AppConfig で設定を変えるには、アプリケーションのコードを毎回デプロイし直す必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AppConfig は、設定をコードのデプロイと切り離して更新・配信できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AppConfig は、設定をコードのデプロイと切り離して更新・配信できます。",
+      "references": [
+        {
+          "title": "AWS AppConfig とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/appconfig/latest/userguide/what-is-appconfig.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d074",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-037",
+      "point": "検証",
+      "question": "AWS AppConfig では、設定を配信する前にバリデーター（JSON スキーマや Lambda 関数）で検証できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。バリデーターで、設定の形式や内容の誤りを配信前に見つけられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "バリデーターで、設定の形式や内容の誤りを配信前に見つけられます。",
+      "references": [
+        {
+          "title": "AWS AppConfig とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/appconfig/latest/userguide/what-is-appconfig.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d075",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-038",
+      "point": "ステージの URL",
+      "question": "API Gateway の REST API は、ステージがいくつあっても呼び出し用の URL は1つだけである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。呼び出しの URL にはステージ名が含まれ、ステージごとに URL が分かれます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "呼び出しの URL にはステージ名が含まれ、ステージごとに URL が分かれます。",
+      "references": [
+        {
+          "title": "API Gateway のステージ変数",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/stage-variables.html"
+        },
+        {
+          "title": "Lambda のエイリアス",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-aliases.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d076",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-038",
+      "point": "エイリアスの役割",
+      "question": "Lambda のエイリアスの説明として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "関数を呼び出す API の URL",
+          "explanation": "これは関数 URL や API Gateway の説明です。"
+        },
+        {
+          "text": "関数の環境変数をまとめたもの",
+          "explanation": "環境変数とは別の機能です。"
+        },
+        {
+          "text": "関数のコードの一部を共有する仕組み",
+          "explanation": "これはレイヤーの説明です。"
+        },
+        {
+          "text": "特定のバージョンを指す名前で、指す先のバージョンをあとから変えられる",
+          "explanation": "エイリアスは関数のバージョンへのポインターで、呼び出し側を変えずに指す先を更新できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "エイリアスはバージョンを指す名前です。prod エイリアスの指す先を新しいバージョンに切り替えるだけで、本番に反映できます。",
+      "references": [
+        {
+          "title": "Lambda のエイリアス",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-aliases.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d077",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-039",
+      "point": "古いイメージの整理",
+      "question": "ECR のリポジトリにたまった、タグの付いていない古いイメージを自動で削除したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "イメージタグの変更不可",
+          "explanation": "上書きを防ぐ機能です。"
+        },
+        {
+          "text": "レプリケーション",
+          "explanation": "別のリージョンやアカウントにイメージを複製する機能です。"
+        },
+        {
+          "text": "ライフサイクルポリシー",
+          "explanation": "イメージの経過日数や数をもとに、不要なイメージを自動で期限切れにできます。"
+        },
+        {
+          "text": "リポジトリポリシー",
+          "explanation": "リポジトリへのアクセス許可を決めるポリシーです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ライフサイクルポリシーで、タグなしのイメージなどを自動で削除できます。",
+      "references": [
+        {
+          "title": "Amazon ECR のライフサイクルポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/LifecyclePolicies.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d078",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-039",
+      "point": "タグの付け方",
+      "question": "本番のデプロイでは、latest のような上書きされるタグより、バージョンやコミットのハッシュなど一意のタグでイメージを指定するのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。一意のタグを使うと、どのイメージがデプロイされているかを確実に特定でき、ロールバックもしやすくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "一意のタグを使うと、どのイメージがデプロイされているかを確実に特定でき、ロールバックもしやすくなります。",
+      "references": [
+        {
+          "title": "Amazon ECR のイメージタグの変更可能性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/image-tag-mutability.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d079",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-040",
+      "point": "パッケージマネージャー",
+      "question": "AWS CodeArtifact は独自の形式のパッケージだけを扱い、npm や pip からは使えない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。CodeArtifact は、npm・pip・Maven などのよく使われるパッケージマネージャーと連携します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CodeArtifact は、npm・pip・Maven などのよく使われるパッケージマネージャーと連携します。",
+      "references": [
+        {
+          "title": "AWS CodeArtifact とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/codeartifact/latest/ug/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d080",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-040",
+      "point": "ビルドの手順",
+      "question": "AWS CodeBuild で、ビルドのコマンドや出力するアーティファクトを定義するファイルはどれか。",
+      "choices": [
+        {
+          "text": "appspec.yml",
+          "explanation": "CodeDeploy のデプロイの手順を定義するファイルです。"
+        },
+        {
+          "text": "template.yaml",
+          "explanation": "SAM や CloudFormation のテンプレートによく使う名前です。"
+        },
+        {
+          "text": "Dockerfile",
+          "explanation": "コンテナイメージの作り方を定義するファイルです。"
+        },
+        {
+          "text": "buildspec.yml",
+          "explanation": "ビルドの各フェーズのコマンドや、アーティファクトを定義するビルド仕様のファイルです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CodeBuild は、buildspec のフェーズ（install・pre_build・build・post_build）のコマンドを実行します。",
+      "references": [
+        {
+          "title": "CodeBuild のビルド仕様リファレンス",
+          "url": "https://docs.aws.amazon.com/ja_jp/codebuild/latest/userguide/build-spec-ref.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d081",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-041",
+      "point": "SAM と CloudFormation",
+      "question": "AWS SAM のテンプレートは CloudFormation とは関係なく、SAM 専用の仕組みでデプロイされる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SAM は CloudFormation の拡張で、短い記述をデプロイ時に CloudFormation のリソースに展開します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SAM は CloudFormation の拡張で、短い記述をデプロイ時に CloudFormation のリソースに展開します。",
+      "references": [
+        {
+          "title": "AWS SAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/what-is-sam.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d082",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-041",
+      "point": "コンソールでのテスト",
+      "question": "Lambda のコンソールでは、JSON のテストイベントを保存して、関数を繰り返しテストできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。コンソールでテストイベントを作り、関数を呼び出して結果を確認できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "コンソールでテストイベントを作り、関数を呼び出して結果を確認できます。",
+      "references": [
+        {
+          "title": "コンソールで Lambda 関数をテストする",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/testing-functions.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d083",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-042",
+      "point": "モック統合の動作",
+      "question": "API Gateway のモック統合では、リクエストはバックエンドに送られない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。モック統合では、API Gateway が統合のレスポンスを返し、バックエンドには送りません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "モック統合では、API Gateway が統合のレスポンスを返し、バックエンドには送りません。",
+      "references": [
+        {
+          "title": "API Gateway のモック統合",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/how-to-mock-integration.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d084",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-042",
+      "point": "テストの種類",
+      "question": "外部の決済 API に依存する処理を、決済 API を呼ばずにテストしたい。この考え方として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "外部に依存する処理はテストしない",
+          "explanation": "テストの抜けになります。"
+        },
+        {
+          "text": "テストのたびに決済 API の提供元に連絡する",
+          "explanation": "現実的ではありません。"
+        },
+        {
+          "text": "外部の依存をモックに置き換えてテストする",
+          "explanation": "モックを使うと、外部の状態に左右されず、繰り返しテストできます。"
+        },
+        {
+          "text": "毎回本番の決済 API を呼び出してテストする",
+          "explanation": "費用や副作用があり、テストが不安定になります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "外部の依存をモックにすると、安定して速いテストができます。",
+      "references": [
+        {
+          "title": "API Gateway のモック統合",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/how-to-mock-integration.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d085",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-043",
+      "point": "バージョンの変更",
+      "question": "発行した Lambda のバージョンのコードは、あとから書き換えられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。発行したバージョンは変更できません。変更するには新しいバージョンを発行します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "発行したバージョンは変更できません。変更するには新しいバージョンを発行します。",
+      "references": [
+        {
+          "title": "Lambda のバージョン",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-versions.html"
+        },
+        {
+          "title": "Lambda のエイリアス",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-aliases.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d086",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-043",
+      "point": "エイリアスでの重み付け",
+      "question": "Lambda のエイリアスは、2つのバージョンにトラフィックを重み付けして振り分けられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。エイリアスのルーティングの設定で、新しいバージョンに一部のトラフィックを送れます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "エイリアスのルーティングの設定で、新しいバージョンに一部のトラフィックを送れます。",
+      "references": [
+        {
+          "title": "Lambda のエイリアス",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-aliases.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d087",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-044",
+      "point": "イメージの保存場所",
+      "question": "Lambda 関数のコンテナイメージは、公開のコンテナレジストリの URL をそのまま指定してデプロイする。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Lambda はコンテナイメージを Amazon ECR のリポジトリから取得してデプロイします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Lambda はコンテナイメージを Amazon ECR のリポジトリから取得してデプロイします。",
+      "references": [
+        {
+          "title": "コンテナイメージで Lambda 関数をデプロイする",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/images-create.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d088",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-044",
+      "point": ".zip の上限",
+      "question": "Lambda の .zip のデプロイパッケージ（レイヤーを含む）の、展開後のサイズの上限はどれか。",
+      "choices": [
+        {
+          "text": "10 GB",
+          "explanation": "これはコンテナイメージの上限です。"
+        },
+        {
+          "text": "50 GB",
+          "explanation": "上限は250 MB です。"
+        },
+        {
+          "text": "250 MB",
+          "explanation": "展開後のサイズは、レイヤーを含めて250 MB までです。"
+        },
+        {
+          "text": "1 MB",
+          "explanation": "上限は250 MB です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": ".zip は展開後250 MB まで、コンテナイメージは10 GB までです。",
+      "references": [
+        {
+          "title": "コンテナイメージで Lambda 関数をデプロイする",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/images-create.html"
+        },
+        {
+          "title": "Lambda のクォータ",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d089",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-045",
+      "point": "リニアとカナリア",
+      "question": "リニアのデプロイでは、トラフィックを同じ割合ずつ、同じ間隔で新しいバージョンに移していく。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。リニアは等しい増分で、カナリアは2段階で移します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リニアは等しい増分で、カナリアは2段階で移します。",
+      "references": [
+        {
+          "title": "CodeDeploy のデプロイ設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployment-configurations.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d090",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-045",
+      "point": "SAM での段階的なデプロイ",
+      "question": "AWS SAM で、Lambda 関数の更新をカナリアで段階的に出したい。テンプレートのどこで設定するか。",
+      "choices": [
+        {
+          "text": "関数の Environment",
+          "explanation": "環境変数の設定です。"
+        },
+        {
+          "text": "Outputs セクション",
+          "explanation": "スタックの出力値の設定です。"
+        },
+        {
+          "text": "関数の Layers",
+          "explanation": "レイヤーの設定です。"
+        },
+        {
+          "text": "関数の DeploymentPreference",
+          "explanation": "DeploymentPreference で、CodeDeploy のデプロイ設定やアラーム、フックを指定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "SAM の DeploymentPreference を使うと、裏側で CodeDeploy を使った段階的なデプロイが設定されます。",
+      "references": [
+        {
+          "title": "AWS SAM による Lambda アプリケーションの段階的なデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/automating-updates-to-serverless-apps.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d091",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-046",
+      "point": "デプロイポリシー",
+      "question": "Elastic Beanstalk で、新しいバージョンを新しいインスタンスに展開し、すべて正常になってから古いインスタンスと入れ替える（同じ環境のまま）デプロイポリシーはどれか。",
+      "choices": [
+        {
+          "text": "ローリング",
+          "explanation": "既存のインスタンスを順番に更新します。"
+        },
+        {
+          "text": "一度にすべて",
+          "explanation": "既存のインスタンスに同時に展開します。"
+        },
+        {
+          "text": "イミュータブル",
+          "explanation": "新しいインスタンスの一時的な Auto Scaling グループにデプロイし、正常なら移し替えます。"
+        },
+        {
+          "text": "追加のバッチによるローリング",
+          "explanation": "追加のインスタンスを起動しながら順番に更新します。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Elastic Beanstalk のデプロイポリシー：一度にすべて／ローリング／追加のバッチによるローリング／イミュータブル／トラフィック分割。",
+      "references": [
+        {
+          "title": "Elastic Beanstalk のデプロイポリシーと設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d092",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-046",
+      "point": "一度にすべての特徴",
+      "question": "Elastic Beanstalk の「一度にすべて」のデプロイは、デプロイ中にアプリケーションが短時間止まることがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。全インスタンスに同時に展開するので、短い停止が発生することがあります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "全インスタンスに同時に展開するので、短い停止が発生することがあります。",
+      "references": [
+        {
+          "title": "Elastic Beanstalk のデプロイポリシーと設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticbeanstalk/latest/dg/using-features.rolling-version-deploy.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d093",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-047",
+      "point": "最大の割合",
+      "question": "maximumPercent を200にすると、更新中は必要なタスクの数の最大2倍までタスクを動かせる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。maximumPercent は、デプロイ中に RUNNING や PENDING の状態にできるタスクの上限の割合です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "maximumPercent は、デプロイ中に RUNNING や PENDING の状態にできるタスクの上限の割合です。",
+      "references": [
+        {
+          "title": "Amazon ECS のローリング更新のデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/deployment-type-ecs.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d094",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-047",
+      "point": "Fargate とサーバー",
+      "question": "ECS のタスクを Fargate で動かす場合、タスクを動かす EC2 インスタンスの容量を利用者が管理する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Fargate では、タスクを動かすサーバーの管理は不要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Fargate では、タスクを動かすサーバーの管理は不要です。",
+      "references": [
+        {
+          "title": "Amazon ECS のローリング更新のデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/deployment-type-ecs.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d095",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-048",
+      "point": "失敗時のロールバック",
+      "question": "CloudFormation のスタックの作成や更新が途中で失敗すると、既定では途中まで作られたリソースがそのまま残る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。既定では、失敗したら前の状態にロールバックします。デバッグのためにロールバックせずに残すオプションもあります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "既定では、失敗したら前の状態にロールバックします。デバッグのためにロールバックせずに残すオプションもあります。",
+      "references": [
+        {
+          "title": "CloudFormation のスタックの失敗時のオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/stack-failure-options.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d096",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-048",
+      "point": "CDK のテスト",
+      "question": "AWS CDK で、生成される CloudFormation のテンプレートに想定どおりのリソースが含まれるかを、単体テストで確認したい。どの仕組みを使うか。",
+      "choices": [
+        {
+          "text": "API Gateway のモック統合",
+          "explanation": "API のレスポンスを模擬する仕組みです。"
+        },
+        {
+          "text": "CloudFormation のドリフトの検出",
+          "explanation": "実際の設定とテンプレートの差を調べる仕組みです。"
+        },
+        {
+          "text": "sam local invoke",
+          "explanation": "Lambda 関数をローカルで実行する仕組みです。"
+        },
+        {
+          "text": "CDK の assertions モジュール",
+          "explanation": "合成されたテンプレートに、特定のリソースやプロパティがあるかを検証できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CDK の assertions モジュールで、合成されたテンプレートを検証するテストを書けます。",
+      "references": [
+        {
+          "title": "AWS CDK アプリケーションのテスト",
+          "url": "https://docs.aws.amazon.com/ja_jp/cdk/v2/guide/testing.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d097",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-049",
+      "point": "デプロイ前後の検証",
+      "question": "CodeDeploy で Lambda 関数をデプロイするとき、トラフィックを移す前に検証用の Lambda 関数を実行したい。AppSpec のどのフックを使うか。",
+      "choices": [
+        {
+          "text": "AfterAllowTraffic",
+          "explanation": "トラフィックを移したあとに実行するフックです。"
+        },
+        {
+          "text": "BeforeInstall",
+          "explanation": "EC2/オンプレミスのデプロイで使うフックです。"
+        },
+        {
+          "text": "BeforeAllowTraffic",
+          "explanation": "新しいバージョンにトラフィックを移す前に、検証用の関数を実行するフックです。"
+        },
+        {
+          "text": "ApplicationStop",
+          "explanation": "EC2/オンプレミスのデプロイで使うフックです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lambda のデプロイでは、BeforeAllowTraffic と AfterAllowTraffic のフックで検証の関数を実行できます。",
+      "references": [
+        {
+          "title": "AppSpec の hooks セクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/reference-appspec-file-structure-hooks.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d098",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-049",
+      "point": "ロールバックの中身",
+      "question": "CodeDeploy のロールバックは、最後に正常にデプロイされたリビジョンを新しいデプロイとして再デプロイすることで行われる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。CodeDeploy は、最後の正常なリビジョンを新しいデプロイ ID で再デプロイしてロールバックします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CodeDeploy は、最後の正常なリビジョンを新しいデプロイ ID で再デプロイしてロールバックします。",
+      "references": [
+        {
+          "title": "CodeDeploy でのロールバックと再デプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/codedeploy/latest/userguide/deployments-rollback-and-redeploy.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d099",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-050",
+      "point": "承認の通知",
+      "question": "CodePipeline の手動承認のアクションでは、Amazon SNS で承認の依頼を通知できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。承認のアクションに SNS のトピックを設定すると、承認が必要になったときに通知されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "承認のアクションに SNS のトピックを設定すると、承認が必要になったときに通知されます。",
+      "references": [
+        {
+          "title": "CodePipeline の手動承認アクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/approvals.html"
+        },
+        {
+          "title": "AWS CodePipeline とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d100",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-050",
+      "point": "パイプラインの開始",
+      "question": "CodePipeline は、つないだソースのリポジトリへの変更をきっかけに、自動でパイプラインを開始できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ソースのリポジトリへのプッシュなどをきっかけに、パイプラインが自動で実行されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ソースのリポジトリへのプッシュなどをきっかけに、パイプラインが自動で実行されます。",
+      "references": [
+        {
+          "title": "AWS CodePipeline とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d101",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-051",
+      "point": "継続的なデプロイ",
+      "question": "Amplify のホスティングでは、接続したブランチにコードをプッシュすると、自動でビルドとデプロイが行われる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Amplify は、ブランチへのコミットのたびにビルドとデプロイを実行します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amplify は、ブランチへのコミットのたびにビルドとデプロイを実行します。",
+      "references": [
+        {
+          "title": "Amplify のフィーチャーブランチのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/amplify/latest/userguide/multi-environments.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d102",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dva-051",
+      "point": "ソース管理でのリリース管理",
+      "question": "Git でリリースのバージョンを記録し、あとからそのバージョンのコードを特定しやすくする方法として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "すべての変更を1つのブランチに直接コミットし、何も記録しない",
+          "explanation": "どのコミットがリリースされたかわからなくなります。"
+        },
+        {
+          "text": "リリースのたびにリポジトリを作り直す",
+          "explanation": "履歴が失われます。"
+        },
+        {
+          "text": "コミットのメッセージを空にする",
+          "explanation": "変更の内容がわからなくなります。"
+        },
+        {
+          "text": "リリースのコミットにタグ（例：v1.2.0）を付ける",
+          "explanation": "タグを付けると、リリースしたバージョンのコードをあとから特定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ブランチやタグを使って、リリースのバージョンを管理します。",
+      "references": [
+        {
+          "title": "Amplify のフィーチャーブランチのデプロイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/amplify/latest/userguide/multi-environments.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d103",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-052",
+      "point": "検索できる情報",
+      "question": "X-Ray のトレースに顧客 ID を記録し、その値でトレースを絞り込んで検索したい。どれに記録するか。",
+      "choices": [
+        {
+          "text": "メタデータ",
+          "explanation": "メタデータはインデックスされず、検索には使えません。"
+        },
+        {
+          "text": "トレースマップ",
+          "explanation": "記録されたトレースから作られる図です。"
+        },
+        {
+          "text": "アノテーション",
+          "explanation": "アノテーションはインデックスされ、フィルタ式で検索できます。"
+        },
+        {
+          "text": "サンプリングルール",
+          "explanation": "どのリクエストを記録するかを決める設定です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "検索に使う値はアノテーション、検索しない詳しい情報はメタデータに記録します。",
+      "references": [
+        {
+          "title": "AWS X-Ray の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-concepts.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d104",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-052",
+      "point": "サンプリング",
+      "question": "X-Ray は、既定ですべてのリクエストを記録する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。X-Ray はサンプリングで一部のリクエストを記録し、費用を抑えながら代表的なデータを集めます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "X-Ray はサンプリングで一部のリクエストを記録し、費用を抑えながら代表的なデータを集めます。",
+      "references": [
+        {
+          "title": "AWS X-Ray の概念",
+          "url": "https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-concepts.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d105",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-053",
+      "point": "ログからメトリクス",
+      "question": "CloudWatch Logs のメトリクスフィルターを使うと、ログの中の特定の文字列の出現回数を CloudWatch のメトリクスにできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。メトリクスフィルターで、ログのパターンに一致した回数などをメトリクスにし、アラームに使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "メトリクスフィルターで、ログのパターンに一致した回数などをメトリクスにし、アラームに使えます。",
+      "references": [
+        {
+          "title": "メトリクスフィルターを使用してログイベントからメトリクスを作成する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/MonitoringLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d106",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-053",
+      "point": "Insights のコマンド",
+      "question": "Logs Insights で、件数を時間帯ごとに集計するときに使うコマンドはどれか。",
+      "choices": [
+        {
+          "text": "display",
+          "explanation": "表示するフィールドを指定するコマンドです。"
+        },
+        {
+          "text": "sort",
+          "explanation": "並べ替えのコマンドです。"
+        },
+        {
+          "text": "limit",
+          "explanation": "表示する件数を制限するコマンドです。"
+        },
+        {
+          "text": "stats",
+          "explanation": "count() などの集計関数と bin() で、時間帯ごとに集計できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "stats で集計し、filter で絞り込みます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights でログデータを分析する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d107",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-054",
+      "point": "エラーの種類",
+      "question": "DynamoDB へのリクエストのスロットリングと、権限不足によるアクセス拒否は、同じエラーとして返される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。スロットリングは ThrottlingException など、権限不足は AccessDeniedException と、別のエラーとして返されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "スロットリングは ThrottlingException など、権限不足は AccessDeniedException と、別のエラーとして返されます。",
+      "references": [
+        {
+          "title": "IAM ロール",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html"
+        },
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d108",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-054",
+      "point": "誰が何をしたか",
+      "question": "ある API の呼び出しが、どの IAM ロールから行われ、拒否されたかを確認したい。どのサービスの記録を見るか。",
+      "choices": [
+        {
+          "text": "AWS AppConfig",
+          "explanation": "設定を配信するサービスです。"
+        },
+        {
+          "text": "AWS X-Ray",
+          "explanation": "リクエストの経路と時間を記録するサービスです。"
+        },
+        {
+          "text": "Amazon CloudWatch のメトリクス",
+          "explanation": "数値の時系列データです。"
+        },
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "API の呼び出しを、呼び出し元の ID や結果とともに記録します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CloudTrail は、誰が・いつ・何をしたか（拒否されたかどうかを含む）を記録します。",
+      "references": [
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d109",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-055",
+      "point": "ログレベル",
+      "question": "Lambda のログ形式を JSON にすると、ログレベルで出力するログを絞り込める。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。JSON のログ形式では、アプリケーションのログレベルとシステムのログレベルを設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "JSON のログ形式では、アプリケーションのログレベルとシステムのログレベルを設定できます。",
+      "references": [
+        {
+          "title": "Lambda 関数のログ形式（JSON 形式の構造化ログ）",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/monitoring-cloudwatchlogs-logformat.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d110",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-055",
+      "point": "ログの送り先",
+      "question": "Lambda 関数の標準出力に書いたログは、利用者がエージェントを入れないと CloudWatch Logs に送られない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Lambda は関数の出力を、自動で CloudWatch Logs のロググループに送ります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Lambda は関数の出力を、自動で CloudWatch Logs のロググループに送ります。",
+      "references": [
+        {
+          "title": "Lambda 関数のログ形式（JSON 形式の構造化ログ）",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/monitoring-cloudwatchlogs-logformat.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d111",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-056",
+      "point": "PutMetricData",
+      "question": "カスタムメトリクスは、PutMetricData の API で CloudWatch に送ることもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。AWS CLI や SDK から PutMetricData でカスタムメトリクスを発行できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS CLI や SDK から PutMetricData でカスタムメトリクスを発行できます。",
+      "references": [
+        {
+          "title": "カスタムメトリクスを発行する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/publishingMetrics.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d112",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-056",
+      "point": "高解像度",
+      "question": "1秒単位の細かい粒度でカスタムメトリクスを記録したい。どれを選ぶか。",
+      "choices": [
+        {
+          "text": "標準解像度のメトリクス",
+          "explanation": "1分単位の粒度です。"
+        },
+        {
+          "text": "ダッシュボード",
+          "explanation": "メトリクスを表示する画面です。"
+        },
+        {
+          "text": "高解像度のメトリクス",
+          "explanation": "1秒単位の粒度でデータを記録できます。"
+        },
+        {
+          "text": "メトリクスフィルター",
+          "explanation": "ログからメトリクスを作る仕組みです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "カスタムメトリクスは、標準解像度（1分）と高解像度（1秒）を選べます。",
+      "references": [
+        {
+          "title": "カスタムメトリクスを発行する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/publishingMetrics.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d113",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-057",
+      "point": "アラームの状態",
+      "question": "CloudWatch のアラームの状態は、OK と ALARM の2つだけである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。アラームの状態は、OK・ALARM・INSUFFICIENT_DATA の3つです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アラームの状態は、OK・ALARM・INSUFFICIENT_DATA の3つです。",
+      "references": [
+        {
+          "title": "CloudWatch アラームの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html"
+        },
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d114",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-057",
+      "point": "アカウントの同時実行数",
+      "question": "Lambda で、1つのリージョンのアカウント全体で同時に実行できる数に上限があることを意識すべき理由はどれか。",
+      "choices": [
+        {
+          "text": "上限を超えると関数のコードが削除されるから",
+          "explanation": "コードは削除されません。"
+        },
+        {
+          "text": "上限を超えるとアカウントが停止されるから",
+          "explanation": "アカウントは停止されません。"
+        },
+        {
+          "text": "上限はメモリの合計で決まるから",
+          "explanation": "同時実行数の上限は、同時に実行できる数で決まります。"
+        },
+        {
+          "text": "1つの関数が上限を使い切ると、ほかの関数がスロットリングされることがあるから",
+          "explanation": "同時実行数はアカウントのリージョンごとに共有されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "同時実行数はリージョンごとにアカウントで共有されるので、重要な関数には予約された同時実行数を設定します。",
+      "references": [
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d115",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-058",
+      "point": "ヘルスチェックの判定",
+      "question": "ALB のヘルスチェックでは、正常と判定する HTTP のステータスコードを指定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。成功とみなすコード（matcher）を設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "成功とみなすコード（matcher）を設定できます。",
+      "references": [
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d116",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-058",
+      "point": "異常なターゲット",
+      "question": "ALB は、ヘルスチェックに失敗したターゲットにも、通常どおり通信を送り続ける。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ALB は、異常と判定したターゲットへの通信の振り分けを止めます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ALB は、異常と判定したターゲットへの通信の振り分けを止めます。",
+      "references": [
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d117",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-059",
+      "point": "予約とプロビジョニング",
+      "question": "予約された同時実行数を設定すると、実行環境が事前に初期化され、コールドスタートがなくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。予約された同時実行数は、関数の同時実行数を確保し上限にするだけです。事前の初期化はプロビジョニングされた同時実行数の役割です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "予約された同時実行数は、関数の同時実行数を確保し上限にするだけです。事前の初期化はプロビジョニングされた同時実行数の役割です。",
+      "references": [
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d118",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-059",
+      "point": "プロビジョニングの料金",
+      "question": "プロビジョニングされた同時実行数は、追加の料金なしで使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。プロビジョニングされた同時実行数には、確保している間の料金がかかります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "プロビジョニングされた同時実行数には、確保している間の料金がかかります。",
+      "references": [
+        {
+          "title": "Lambda のプロビジョニングされた同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/provisioned-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d119",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-060",
+      "point": "接続のプール",
+      "question": "Lambda から RDS への大量の接続を、プールして効率よく共有し、データベースの負荷を減らしたい。どれを使うか。",
+      "choices": [
+        {
+          "text": "Amazon ElastiCache",
+          "explanation": "キャッシュのサービスで、接続のプールではありません。"
+        },
+        {
+          "text": "AWS AppConfig",
+          "explanation": "設定を配信するサービスです。"
+        },
+        {
+          "text": "Amazon RDS Proxy",
+          "explanation": "データベースの接続をプールして共有し、多数の接続からデータベースを守ります。"
+        },
+        {
+          "text": "Amazon SQS の FIFO キュー",
+          "explanation": "メッセージの順番を守るキューです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "RDS Proxy は、アプリケーションとデータベースの間で接続をプールし、Lambda のように接続が急増する用途に向いています。",
+      "references": [
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d120",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-060",
+      "point": "SQS のイベントソースの最大同時実行数",
+      "question": "SQS のイベントソースマッピングでは、最大同時実行数を設定して、そのキューで呼び出される関数の同時実行数を制限できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SQS のイベントソースマッピングの最大同時実行数で、同時に呼び出す数を制限できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SQS のイベントソースマッピングの最大同時実行数で、同時に呼び出す数を制限できます。",
+      "references": [
+        {
+          "title": "Lambda で Amazon SQS を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d121",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-061",
+      "point": "メモリと費用",
+      "question": "Lambda のメモリを増やすと、1ミリ秒あたりの料金は上がるが、実行時間が短くなって合計の費用が下がることもある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。実行時間とメモリの積で料金が決まるので、処理が速くなれば合計が下がる場合があります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "実行時間とメモリの積で料金が決まるので、処理が速くなれば合計が下がる場合があります。",
+      "references": [
+        {
+          "title": "Lambda のメモリの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-memory.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d122",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-061",
+      "point": "メモリの範囲",
+      "question": "Lambda 関数に設定できるメモリの範囲として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "128 MB〜512 MB",
+          "explanation": "範囲が違います。"
+        },
+        {
+          "text": "1 GB〜100 GB",
+          "explanation": "範囲が違います。"
+        },
+        {
+          "text": "64 MB〜1,024 MB",
+          "explanation": "範囲が違います。"
+        },
+        {
+          "text": "128 MB〜10,240 MB",
+          "explanation": "メモリは128 MB から10,240 MB まで、1 MB 単位で設定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Lambda のメモリは128 MB〜10,240 MB の範囲で設定します。",
+      "references": [
+        {
+          "title": "Lambda のメモリの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-memory.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d123",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-062",
+      "point": "DAX の向き不向き",
+      "question": "DAX は、強力な整合性のある読み取りが必要な用途に最も向いている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。DAX は結果整合性の読み取りをキャッシュします。強力な整合性のある読み取りは DynamoDB にそのまま送られます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DAX は結果整合性の読み取りをキャッシュします。強力な整合性のある読み取りは DynamoDB にそのまま送られます。",
+      "references": [
+        {
+          "title": "DynamoDB Accelerator (DAX) によるインメモリアクセラレーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d124",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-062",
+      "point": "DAX と書き込み",
+      "question": "書き込みが非常に多いアプリケーションは、DAX の効果が最も出やすい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。DAX は読み取りの多いアプリケーション向けです。書き込みが多いと、クラスター内の複製が増えて資源を多く使うので、向いていません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DAX は読み取りの多いアプリケーション向けです。書き込みが多いと、クラスター内の複製が増えて資源を多く使うので、向いていません。",
+      "references": [
+        {
+          "title": "DynamoDB Accelerator (DAX) によるインメモリアクセラレーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d125",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-063",
+      "point": "遅延読み込みの弱点",
+      "question": "遅延読み込みでは、データベースが更新されると、キャッシュのデータも同時に自動で更新される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。キャッシュのデータはミスのときにしか更新されないので、古くなることがあります。TTL を組み合わせて対処します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "キャッシュのデータはミスのときにしか更新されないので、古くなることがあります。TTL を組み合わせて対処します。",
+      "references": [
+        {
+          "title": "ElastiCache のキャッシュ戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d126",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-063",
+      "point": "TTL の役割",
+      "question": "キャッシュに TTL（有効期限）を設定する目的として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "キャッシュのデータを暗号化する",
+          "explanation": "暗号化とは関係ありません。"
+        },
+        {
+          "text": "キャッシュの容量を増やす",
+          "explanation": "容量とは関係ありません。"
+        },
+        {
+          "text": "一定時間たったキャッシュを期限切れにし、古いデータが返り続けるのを防ぐ",
+          "explanation": "TTL を過ぎるとデータベースから読み直すので、古いデータが長く残りません。"
+        },
+        {
+          "text": "データベースへの書き込みを速くする",
+          "explanation": "書き込みの速さとは関係ありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "TTL を設定すると、古いデータを一定時間で入れ替えられます。",
+      "references": [
+        {
+          "title": "ElastiCache のキャッシュ戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d127",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-064",
+      "point": "S3 への直接アクセスの制限",
+      "question": "オリジンアクセスコントロール（OAC）を使うと、S3 のバケットを CloudFront 経由でしかアクセスできないようにできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。OAC で、S3 のオリジンへのアクセスを CloudFront だけに制限できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "OAC で、S3 のオリジンへのアクセスを CloudFront だけに制限できます。",
+      "references": [
+        {
+          "title": "Amazon S3 オリジンへのアクセスを制限する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d128",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-064",
+      "point": "API のレスポンスのキャッシュ",
+      "question": "API Gateway の REST API で、同じリクエストへのレスポンスをキャッシュし、バックエンドの呼び出しを減らしたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "リクエストの検証",
+          "explanation": "形式を検証する機能です。"
+        },
+        {
+          "text": "ステージ変数",
+          "explanation": "ステージごとの設定値の機能です。"
+        },
+        {
+          "text": "API Gateway のステージのキャッシュ",
+          "explanation": "ステージでキャッシュを有効にすると、指定した TTL の間レスポンスを返します。"
+        },
+        {
+          "text": "使用量プラン",
+          "explanation": "利用量を制限する機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "API Gateway のキャッシュで、バックエンドの呼び出しを減らし、遅延を下げられます。",
+      "references": [
+        {
+          "title": "API Gateway のキャッシュ",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-caching.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d129",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-065",
+      "point": "スロットリングの仕組み",
+      "question": "API Gateway は、トークンバケットのアルゴリズムでリクエストのレートとバーストを制限する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。API Gateway は、トークンバケットのアルゴリズムでスロットリングを行います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "API Gateway は、トークンバケットのアルゴリズムでスロットリングを行います。",
+      "references": [
+        {
+          "title": "API Gateway のリクエストのスロットリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-request-throttling.html"
+        },
+        {
+          "title": "AWS SDK の再試行の動作",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/feature-retry-behavior.html"
+        }
+      ]
+    },
+    {
+      "id": "dva-d130",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dva-065",
+      "point": "上限の単位",
+      "question": "API Gateway のスロットリングのアカウントの上限は、どの単位で適用されるか。",
+      "choices": [
+        {
+          "text": "API キーごと",
+          "explanation": "API キーごとの制限は、使用量プランで設定するものです。"
+        },
+        {
+          "text": "Lambda 関数ごと",
+          "explanation": "Lambda 関数とは関係ありません。"
+        },
+        {
+          "text": "ステージ変数ごと",
+          "explanation": "ステージ変数とは関係ありません。"
+        },
+        {
+          "text": "アカウントのリージョンごと",
+          "explanation": "アカウント内のすべての API に対して、リージョンごとに適用されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "アカウントレベルの上限は、リージョンごとのアカウント内のすべての API に適用されます。",
+      "references": [
+        {
+          "title": "API Gateway のリクエストのスロットリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-request-throttling.html"
+        },
+        {
+          "title": "AWS SDK の再試行の動作",
+          "url": "https://docs.aws.amazon.com/ja_jp/sdkref/latest/guide/feature-retry-behavior.html"
+        }
+      ]
+    }
+  ]
+}

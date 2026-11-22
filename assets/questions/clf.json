@@ -45,16 +45,16 @@
           "explanation": "展開の速さの話で、単価とは関係ありません。"
         },
         {
-          "text": "データセンターの運用と保守にお金をかけなくてよい",
-          "explanation": "利用者の運用負担が減る話で、単価が下がる理由ではありません。"
+          "text": "固定費を変動費に変えられる",
+          "explanation": "支払い方の変化の説明で、単価が下がる理由ではありません。"
         },
         {
           "text": "規模の経済の恩恵を受けられる",
           "explanation": "多くの利用者の使用量が集まることで、AWS は大きな規模の経済を実現し、従量課金の単価を下げられます。"
         },
         {
-          "text": "固定費を変動費に変えられる",
-          "explanation": "支払い方の変化の説明で、単価が下がる理由ではありません。"
+          "text": "データセンターの運用と保守にお金をかけなくてよい",
+          "explanation": "利用者の運用負担が減る話で、単価が下がる理由ではありません。"
         }
       ],
       "answers": [
@@ -144,10 +144,6 @@
       "question": "Web アプリケーションの可用性を高めるため、EC2 インスタンスの配置を見直したい。最も適切な構成はどれか。",
       "choices": [
         {
-          "text": "1つの AZ に、性能の高いインスタンスを1台だけ配置する",
-          "explanation": "1台・1つの AZ に依存するため、障害時にサービスが止まります。"
-        },
-        {
           "text": "2つ以上の AZ にインスタンスを配置し、ロードバランサーで振り分ける",
           "explanation": "1つの AZ に障害が起きても、ほかの AZ のインスタンスで処理を続けられます。"
         },
@@ -158,10 +154,14 @@
         {
           "text": "1つの AZ に、同じインスタンスを4台並べる",
           "explanation": "台数は増えても、その AZ に障害が起きれば全部止まります。"
+        },
+        {
+          "text": "1つの AZ に、性能の高いインスタンスを1台だけ配置する",
+          "explanation": "1台・1つの AZ に依存するため、障害時にサービスが止まります。"
         }
       ],
       "answers": [
-        1
+        0
       ],
       "explanation": "可用性を上げる基本は、リソースを複数の AZ に分散することです。Elastic Load Balancing は複数の AZ のターゲットに通信を振り分けられます。",
       "references": [
@@ -181,24 +181,24 @@
       "question": "AWS Well-Architected フレームワークの柱に含まれないものはどれか。",
       "choices": [
         {
-          "text": "拡張性",
-          "explanation": "「拡張性」という名前の柱はありません。柱は、運用上の優秀性・セキュリティ・信頼性・パフォーマンス効率・コスト最適化・持続可能性の6つです。"
-        },
-        {
-          "text": "パフォーマンス効率",
-          "explanation": "パフォーマンス効率は6本の柱の1つです。"
+          "text": "持続可能性",
+          "explanation": "持続可能性は6本の柱の1つです。"
         },
         {
           "text": "運用上の優秀性",
           "explanation": "運用上の優秀性は6本の柱の1つです。"
         },
         {
-          "text": "持続可能性",
-          "explanation": "持続可能性は6本の柱の1つです。"
+          "text": "拡張性",
+          "explanation": "「拡張性」という名前の柱はありません。柱は、運用上の優秀性・セキュリティ・信頼性・パフォーマンス効率・コスト最適化・持続可能性の6つです。"
+        },
+        {
+          "text": "パフォーマンス効率",
+          "explanation": "パフォーマンス効率は6本の柱の1つです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "Well-Architected フレームワークの柱は、運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性の6つです。",
       "references": [
@@ -214,12 +214,12 @@
       "question": "ある企業は、障害が起きても自動で回復し、需要に合わせてリソースを増減できるシステムにしたい。Well-Architected フレームワークのどの柱に最も関係するか。",
       "choices": [
         {
-          "text": "持続可能性",
-          "explanation": "環境への影響を減らすことに関する柱です。"
-        },
-        {
           "text": "コスト最適化",
           "explanation": "不要な費用を避けることに関する柱です。"
+        },
+        {
+          "text": "持続可能性",
+          "explanation": "環境への影響を減らすことに関する柱です。"
         },
         {
           "text": "運用上の優秀性",
@@ -251,24 +251,24 @@
       "question": "AWS クラウド導入フレームワーク（AWS CAF）で、クラウドへの移行に伴う組織の変化や、社員のスキルの育成を扱う観点（パースペクティブ）はどれか。",
       "choices": [
         {
-          "text": "オペレーション",
-          "explanation": "クラウドサービスの運用を扱う観点です。"
-        },
-        {
-          "text": "セキュリティ",
-          "explanation": "データやワークロードの保護を扱う観点です。"
+          "text": "プラットフォーム",
+          "explanation": "クラウドの基盤（アーキテクチャや環境の構築）を扱う観点です。"
         },
         {
           "text": "人材",
           "explanation": "人材のパースペクティブは、組織の変化や文化、スキルの育成など、人と組織の側面を扱います。"
         },
         {
-          "text": "プラットフォーム",
-          "explanation": "クラウドの基盤（アーキテクチャや環境の構築）を扱う観点です。"
+          "text": "セキュリティ",
+          "explanation": "データやワークロードの保護を扱う観点です。"
+        },
+        {
+          "text": "オペレーション",
+          "explanation": "クラウドサービスの運用を扱う観点です。"
         }
       ],
       "answers": [
-        2
+        1
       ],
       "explanation": "AWS CAF には、ビジネス・人材・ガバナンス・プラットフォーム・セキュリティ・オペレーションの6つのパースペクティブがあります。人と組織の変化は人材のパースペクティブが扱います。",
       "references": [
@@ -284,10 +284,6 @@
       "question": "ある企業は、オンプレミスの仮想マシンで動くアプリケーションを、コードを変えずにできるだけ早く AWS に移したい。この移行戦略はどれか。",
       "choices": [
         {
-          "text": "リファクタリング",
-          "explanation": "クラウドの機能を生かすために、アーキテクチャやコードを作り直す戦略です。時間がかかります。"
-        },
-        {
           "text": "リホスト",
           "explanation": "アプリケーションに手を加えず、そのままクラウドに移す戦略です（リフト＆シフト）。"
         },
@@ -296,12 +292,16 @@
           "explanation": "別の製品（SaaS など）に乗り換える戦略です。"
         },
         {
+          "text": "リファクタリング",
+          "explanation": "クラウドの機能を生かすために、アーキテクチャやコードを作り直す戦略です。時間がかかります。"
+        },
+        {
           "text": "リタイア",
           "explanation": "不要になったアプリケーションを廃止する戦略です。"
         }
       ],
       "answers": [
-        1
+        0
       ],
       "explanation": "コードを変えずにそのまま移すのはリホスト（リフト＆シフト）です。早く移行でき、移行後に最適化を進めることもできます。",
       "references": [
@@ -318,20 +318,20 @@
       "question": "ある企業は、オンプレミスで自分たちで管理しているデータベースを AWS に移す際、アプリケーションのコードは変えずに、パッチ適用やバックアップの手間を減らしたい。この移行戦略はどれか。",
       "choices": [
         {
-          "text": "リテイン",
-          "explanation": "移行せずにオンプレミスに残す戦略です。"
-        },
-        {
           "text": "リホスト",
           "explanation": "何も変えずにそのまま移すので、データベースの管理の手間は減りません。"
+        },
+        {
+          "text": "リファクタリング",
+          "explanation": "アーキテクチャやコードを作り直す戦略で、今回の「コードは変えない」に合いません。"
         },
         {
           "text": "リプラットフォーム",
           "explanation": "コアのアーキテクチャは変えずに、マネージドサービス（例：Amazon RDS）への移行など一部を最適化する戦略です。"
         },
         {
-          "text": "リファクタリング",
-          "explanation": "アーキテクチャやコードを作り直す戦略で、今回の「コードは変えない」に合いません。"
+          "text": "リテイン",
+          "explanation": "移行せずにオンプレミスに残す戦略です。"
         }
       ],
       "answers": [
@@ -356,8 +356,8 @@
       "question": "ある企業は、古い一枚岩のアプリケーションを、需要の急増に耐えられるよう、マイクロサービスとサーバーレスで作り直したい。この移行戦略はどれか。",
       "choices": [
         {
-          "text": "リファクタリング（リアーキテクト）",
-          "explanation": "クラウドネイティブの機能を生かすため、アプリケーションの設計を作り直す戦略です。"
+          "text": "リプラットフォーム",
+          "explanation": "一部をマネージドサービスに置き換える程度で、設計の作り直しまではしません。"
         },
         {
           "text": "リロケート",
@@ -368,12 +368,12 @@
           "explanation": "そのまま移すだけなので、設計は変わりません。"
         },
         {
-          "text": "リプラットフォーム",
-          "explanation": "一部をマネージドサービスに置き換える程度で、設計の作り直しまではしません。"
+          "text": "リファクタリング（リアーキテクト）",
+          "explanation": "クラウドネイティブの機能を生かすため、アプリケーションの設計を作り直す戦略です。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "拡張性や俊敏性を上げるために、マイクロサービスやサーバーレスなどへ設計を作り直すのはリファクタリング（リアーキテクト）です。",
       "references": [
@@ -390,24 +390,24 @@
       "question": "ある企業は、オンプレミスの Oracle データベースを Amazon Aurora PostgreSQL に移行したい。スキーマの変換と、データの移行に使うサービスの組み合わせとして正しいものはどれか。",
       "choices": [
         {
-          "text": "スキーマの変換に AWS Database Migration Service、データの移行に AWS Glue",
-          "explanation": "エンジンが違う場合のスキーマの変換は SCT の役割です。"
-        },
-        {
-          "text": "スキーマの変換もデータの移行も Amazon Athena で行う",
-          "explanation": "Athena は S3 のデータに SQL を実行する分析サービスです。"
-        },
-        {
           "text": "スキーマの変換に AWS Application Discovery Service、データの移行に AWS Backup",
           "explanation": "Application Discovery Service はオンプレミスの情報を集めるサービス、Backup はバックアップのサービスです。"
         },
         {
           "text": "スキーマの変換に AWS Schema Conversion Tool、データの移行に AWS Database Migration Service",
           "explanation": "SCT が別のエンジン向けにスキーマとコードを変換し、DMS がデータを移行します。"
+        },
+        {
+          "text": "スキーマの変換に AWS Database Migration Service、データの移行に AWS Glue",
+          "explanation": "エンジンが違う場合のスキーマの変換は SCT の役割です。"
+        },
+        {
+          "text": "スキーマの変換もデータの移行も Amazon Athena で行う",
+          "explanation": "Athena は S3 のデータに SQL を実行する分析サービスです。"
         }
       ],
       "answers": [
-        3
+        1
       ],
       "explanation": "データベースのエンジンが変わる移行（異種移行）では、SCT でスキーマを変換し、DMS でデータを移行します。",
       "references": [
@@ -431,12 +431,12 @@
           "explanation": "1台のままでは10倍の需要に合わせて伸び縮みできず、障害にも弱くなります。"
         },
         {
-          "text": "ピーク時に必要な台数を、1年間の予約で常に動かしておく",
-          "explanation": "普段使わない台数にも払い続けることになり、無駄が残ります。"
-        },
-        {
           "text": "普段の台数のまま運用し、セールのときは遅くても我慢してもらう",
           "explanation": "売上の機会を失います。クラウドなら必要なときだけ増やせます。"
+        },
+        {
+          "text": "ピーク時に必要な台数を、1年間の予約で常に動かしておく",
+          "explanation": "普段使わない台数にも払い続けることになり、無駄が残ります。"
         },
         {
           "text": "Amazon EC2 Auto Scaling で、需要に合わせてインスタンスの台数を自動で増減する",
@@ -460,6 +460,10 @@
       "question": "オンプレミスから AWS に移ったとき、コストの考え方として正しいものはどれか。",
       "choices": [
         {
+          "text": "サーバーを買う設備投資が増え、運用費が減る",
+          "explanation": "逆です。クラウドではサーバーを買う必要がありません。"
+        },
+        {
           "text": "サーバーの購入などの設備投資が減り、使った分だけ払う運用費の割合が増える",
           "explanation": "クラウドでは先行投資（設備投資）の代わりに、使った分だけの従量課金（運用費）になります。"
         },
@@ -468,16 +472,12 @@
           "explanation": "データセンターの電源や空調は AWS が運用し、その費用は料金に含まれています。"
         },
         {
-          "text": "サーバーを買う設備投資が増え、運用費が減る",
-          "explanation": "逆です。クラウドではサーバーを買う必要がありません。"
-        },
-        {
           "text": "ソフトウェアのライセンスは、AWS に持ち込むことは一切できない",
           "explanation": "製品によっては、手持ちのライセンスを持ち込んで使えます（BYOL）。"
         }
       ],
       "answers": [
-        0
+        1
       ],
       "explanation": "クラウドでは、データセンターやサーバーへの先行投資（設備投資）が不要になり、使った分だけの支払い（運用費）に変わります。",
       "references": [
@@ -497,6 +497,10 @@
       "question": "ある企業は、新しいアイデアを試すための環境を、数週間待たずにすぐ用意したい。うまくいかなければすぐ捨てたい。クラウドのどのメリットが最も関係するか。",
       "choices": [
         {
+          "text": "数分でグローバルに展開できる",
+          "explanation": "海外への展開の話です。"
+        },
+        {
           "text": "データセンターの運用費が不要になる",
           "explanation": "運用負担の話で、試行錯誤の速さが主眼ではありません。"
         },
@@ -505,16 +509,12 @@
           "explanation": "リソースを数分で用意し、不要になればすぐ削除できるので、試行錯誤のコストと時間が下がります。"
         },
         {
-          "text": "数分でグローバルに展開できる",
-          "explanation": "海外への展開の話です。"
-        },
-        {
           "text": "規模の経済の恩恵を受けられる",
           "explanation": "単価の話で、試行錯誤の速さとは直接関係しません。"
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "クラウドでは新しいリソースをすぐに用意できるので、実験にかかる費用と時間が大きく下がり、組織の俊敏性が上がります。",
       "references": [
@@ -530,24 +530,24 @@
       "question": "ある企業は、オンプレミスの Windows の業務アプリケーションを使い続けたいが、ハードウェアの保守期限が近い。アプリケーションはそのまま、ハードウェアの調達と保守だけをやめたい。最も適切な方法はどれか。",
       "choices": [
         {
-          "text": "AWS Lambda の関数に書き直す",
-          "explanation": "書き直し（リファクタリング）が必要で、そのまま使いたい要件に合いません。"
-        },
-        {
-          "text": "アプリケーションを廃止し、業務を止める",
-          "explanation": "使い続けたいという要件に合いません。"
-        },
-        {
           "text": "Amazon EC2 で Windows のインスタンスを動かし、アプリケーションをそのまま移す",
           "explanation": "ハードウェアの調達と保守を AWS に任せたまま、アプリケーションはそのまま使えます（リホスト）。"
         },
         {
           "text": "オンプレミスに新しいサーバーを買い直す",
           "explanation": "ハードウェアの調達と保守をやめたい要件に合いません。"
+        },
+        {
+          "text": "アプリケーションを廃止し、業務を止める",
+          "explanation": "使い続けたいという要件に合いません。"
+        },
+        {
+          "text": "AWS Lambda の関数に書き直す",
+          "explanation": "書き直し（リファクタリング）が必要で、そのまま使いたい要件に合いません。"
         }
       ],
       "answers": [
-        2
+        0
       ],
       "explanation": "EC2 なら物理サーバーの調達・設置・保守は AWS が行います。アプリケーションに手を加えずに移すのはリホストです。",
       "references": [
@@ -567,24 +567,24 @@
       "question": "Amazon EC2 インスタンスで Web サーバーを動かしている。責任共有モデルで、利用者の責任になるものはどれか。",
       "choices": [
         {
-          "text": "データセンターへの入退室の管理",
-          "explanation": "データセンターの物理的なセキュリティは AWS の責任です。"
-        },
-        {
-          "text": "仮想化レイヤー（ハイパーバイザー）の管理",
-          "explanation": "ハイパーバイザーなど、ホストの仮想化レイヤーは AWS の責任です。"
-        },
-        {
           "text": "インスタンスが動く物理サーバーのハードウェアの保守",
           "explanation": "物理的なハードウェアは AWS の責任です。"
         },
         {
           "text": "インスタンスのゲスト OS へのセキュリティパッチの適用",
           "explanation": "EC2 では、ゲスト OS の更新とパッチ適用は利用者の責任です。"
+        },
+        {
+          "text": "仮想化レイヤー（ハイパーバイザー）の管理",
+          "explanation": "ハイパーバイザーなど、ホストの仮想化レイヤーは AWS の責任です。"
+        },
+        {
+          "text": "データセンターへの入退室の管理",
+          "explanation": "データセンターの物理的なセキュリティは AWS の責任です。"
         }
       ],
       "answers": [
-        3
+        1
       ],
       "explanation": "AWS は「クラウドのセキュリティ」（ハードウェア・ソフトウェア・ネットワーク・施設）に責任を持ち、利用者は「クラウドにおけるセキュリティ」に責任を持ちます。EC2 のようなサービスでは、ゲスト OS のパッチ適用も利用者の責任です。",
       "references": [
@@ -601,24 +601,24 @@
       "question": "Amazon RDS for MySQL を使っている。責任共有モデルで、利用者の責任になるものはどれか。",
       "choices": [
         {
-          "text": "データベースが動くホストの OS へのパッチ適用",
-          "explanation": "マネージドサービスでは、基盤の OS の管理は AWS の責任です。"
-        },
-        {
-          "text": "データベースのユーザーアカウントとアクセス許可の管理",
-          "explanation": "データベースに誰がどの権限でアクセスできるかは、利用者が管理します。"
+          "text": "データベースエンジンへのパッチ適用の仕組みの提供",
+          "explanation": "RDS では、データベースのソフトウェアへのパッチ適用を AWS が行います（適用のタイミングは利用者が選べます）。"
         },
         {
           "text": "ストレージの物理的な廃棄",
           "explanation": "物理的な機器の廃棄は AWS の責任です。"
         },
         {
-          "text": "データベースエンジンへのパッチ適用の仕組みの提供",
-          "explanation": "RDS では、データベースのソフトウェアへのパッチ適用を AWS が行います（適用のタイミングは利用者が選べます）。"
+          "text": "データベースのユーザーアカウントとアクセス許可の管理",
+          "explanation": "データベースに誰がどの権限でアクセスできるかは、利用者が管理します。"
+        },
+        {
+          "text": "データベースが動くホストの OS へのパッチ適用",
+          "explanation": "マネージドサービスでは、基盤の OS の管理は AWS の責任です。"
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "マネージドサービスでは AWS が担う範囲が広がり、OS やデータベースのソフトウェアのパッチ適用も AWS が行います。それでも、データとアクセス許可の管理は利用者の責任です。",
       "references": [
@@ -647,16 +647,16 @@
           "explanation": "関数の実行ロールに何を許可するかは利用者が決めます。"
         },
         {
-          "text": "関数が動く基盤の OS とランタイムへのパッチ適用",
-          "explanation": "Lambda では、基盤のインフラ・OS・ランタイムの管理を AWS が行います。"
-        },
-        {
           "text": "関数が扱うデータの分類と保護",
           "explanation": "データの扱いは利用者の責任です。"
+        },
+        {
+          "text": "関数が動く基盤の OS とランタイムへのパッチ適用",
+          "explanation": "Lambda では、基盤のインフラ・OS・ランタイムの管理を AWS が行います。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "Lambda はサーバーレスなので、利用者は OS やランタイムを管理しません。利用者の責任は、コード、アクセス許可、データの扱いに絞られます。",
       "references": [
@@ -681,16 +681,16 @@
           "explanation": "アカウントの解約はルートユーザーの認証情報が必要な作業です。"
         },
         {
+          "text": "S3 バケットの作成",
+          "explanation": "適切なアクセス許可を持つ IAM のユーザーやロールで行えます。"
+        },
+        {
           "text": "EC2 インスタンスの起動",
           "explanation": "適切なアクセス許可を持つ IAM のユーザーやロールで行えます。"
         },
         {
           "text": "IAM ユーザーの作成",
           "explanation": "IAM の管理者権限を持つユーザーやロールでも行えます。"
-        },
-        {
-          "text": "S3 バケットの作成",
-          "explanation": "適切なアクセス許可を持つ IAM のユーザーやロールで行えます。"
         }
       ],
       "answers": [
@@ -748,24 +748,24 @@
       "question": "ある企業は、開発者に IAM のアクセス許可を与える。セキュリティのベストプラクティスに沿った方針はどれか。",
       "choices": [
         {
-          "text": "作業に必要な最小限のアクセス許可だけを与える",
-          "explanation": "最小権限の原則です。必要な操作だけを許可し、誤操作や悪用の影響を小さくします。"
+          "text": "アクセス許可は一度決めたら見直さない",
+          "explanation": "使われていない権限は定期的に見直して取り除くことが推奨されます。"
         },
         {
-          "text": "あとで困らないよう、最初から管理者のアクセス許可を与える",
-          "explanation": "必要以上の権限は、誤操作や認証情報の漏えいのときの被害を大きくします。"
+          "text": "作業に必要な最小限のアクセス許可だけを与える",
+          "explanation": "最小権限の原則です。必要な操作だけを許可し、誤操作や悪用の影響を小さくします。"
         },
         {
           "text": "開発者全員で1つの IAM ユーザーを共有する",
           "explanation": "誰が操作したかを追えなくなります。"
         },
         {
-          "text": "アクセス許可は一度決めたら見直さない",
-          "explanation": "使われていない権限は定期的に見直して取り除くことが推奨されます。"
+          "text": "あとで困らないよう、最初から管理者のアクセス許可を与える",
+          "explanation": "必要以上の権限は、誤操作や認証情報の漏えいのときの被害を大きくします。"
         }
       ],
       "answers": [
-        0
+        1
       ],
       "explanation": "IAM では、作業に必要なアクセス許可だけを与える「最小権限」が基本です。使われていない権限は定期的に見直して削ります。",
       "references": [
@@ -781,6 +781,10 @@
       "question": "EC2 インスタンス上のアプリケーションから Amazon S3 にアクセスさせたい。最も安全な方法はどれか。",
       "choices": [
         {
+          "text": "S3 へのアクセスを許可した IAM ロールをインスタンスに割り当てる",
+          "explanation": "ロールを使うと、一時的な認証情報が自動で提供・更新され、アクセスキーを置く必要がありません。"
+        },
+        {
           "text": "IAM ユーザーのアクセスキーを、アプリケーションの設定ファイルに書く",
           "explanation": "長期の認証情報をサーバーに置くと、漏えいのリスクがあります。"
         },
@@ -791,14 +795,10 @@
         {
           "text": "S3 バケットを公開して、認証なしでアクセスさせる",
           "explanation": "誰でもアクセスできてしまいます。"
-        },
-        {
-          "text": "S3 へのアクセスを許可した IAM ロールをインスタンスに割り当てる",
-          "explanation": "ロールを使うと、一時的な認証情報が自動で提供・更新され、アクセスキーを置く必要がありません。"
         }
       ],
       "answers": [
-        3
+        0
       ],
       "explanation": "EC2 上のアプリケーションには IAM ロールを使います。インスタンスに一時的な認証情報が自動で提供され、定期的に更新されます。",
       "references": [
@@ -818,12 +818,12 @@
           "explanation": "脆弱性を見つけるサービスです。"
         },
         {
-          "text": "AWS IAM アイデンティティセンター",
-          "explanation": "複数の AWS アカウントやアプリケーションへのアクセスを一元管理し、シングルサインオンを提供します。"
-        },
-        {
           "text": "AWS Artifact",
           "explanation": "コンプライアンスのレポートを入手するサービスです。"
+        },
+        {
+          "text": "AWS IAM アイデンティティセンター",
+          "explanation": "複数の AWS アカウントやアプリケーションへのアクセスを一元管理し、シングルサインオンを提供します。"
         },
         {
           "text": "Amazon Cognito",
@@ -831,7 +831,7 @@
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "IAM アイデンティティセンターは、組織の社員などの AWS アカウントやアプリケーションへのアクセスを一元管理するサービスです。",
       "references": [
@@ -847,24 +847,24 @@
       "question": "監査に対応するため、AWS の SOC レポートや ISO 認証などのコンプライアンスのレポートを入手したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Config",
-          "explanation": "自分の AWS リソースの設定を記録・評価するサービスで、AWS 自身の認証レポートは入手できません。"
+          "text": "AWS CloudTrail",
+          "explanation": "API の操作の記録を残すサービスです。"
         },
         {
           "text": "AWS Security Hub",
           "explanation": "セキュリティの検出結果を集約するサービスです。"
         },
         {
-          "text": "AWS Artifact",
-          "explanation": "AWS のセキュリティとコンプライアンスのレポートを、必要なときにダウンロードできるサービスです。"
+          "text": "AWS Config",
+          "explanation": "自分の AWS リソースの設定を記録・評価するサービスで、AWS 自身の認証レポートは入手できません。"
         },
         {
-          "text": "AWS CloudTrail",
-          "explanation": "API の操作の記録を残すサービスです。"
+          "text": "AWS Artifact",
+          "explanation": "AWS のセキュリティとコンプライアンスのレポートを、必要なときにダウンロードできるサービスです。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "AWS Artifact では、AWS の SOC レポートや ISO 認証などのコンプライアンスのレポートや、AWS との契約（例：BAA）を入手できます。",
       "references": [
@@ -884,24 +884,24 @@
       "question": "ある企業の Web サイトを、一般的な DDoS 攻撃から守りたい。追加の料金をかけずに、自動で適用される保護はどれか。",
       "choices": [
         {
-          "text": "AWS Shield Standard",
-          "explanation": "すべての AWS の利用者に、追加料金なしで自動的に適用され、一般的なネットワーク層・トランスポート層の DDoS 攻撃から守ります。"
-        },
-        {
-          "text": "Amazon Macie",
-          "explanation": "機密データを見つけるサービスです。"
-        },
-        {
           "text": "Amazon GuardDuty",
           "explanation": "脅威を検出するサービスで、DDoS の緩和は行いません。"
         },
         {
           "text": "AWS Shield Advanced",
           "explanation": "より高度な DDoS 保護や専門チームの支援が受けられる有料のサービスです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データを見つけるサービスです。"
+        },
+        {
+          "text": "AWS Shield Standard",
+          "explanation": "すべての AWS の利用者に、追加料金なしで自動的に適用され、一般的なネットワーク層・トランスポート層の DDoS 攻撃から守ります。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "AWS Shield Standard は追加料金なしですべての利用者に自動で適用されます。より高度な保護が必要なら Shield Advanced を契約します。",
       "references": [
@@ -921,12 +921,12 @@
           "explanation": "ソフトウェアの脆弱性を見つけるサービスで、攻撃をブロックしません。"
         },
         {
-          "text": "ネットワーク ACL",
-          "explanation": "IP アドレスとポートで通信を制御するもので、リクエストの中身は検査しません。"
-        },
-        {
           "text": "AWS WAF",
           "explanation": "Web リクエストをルールで検査し、SQL インジェクションやクロスサイトスクリプティングなどの攻撃を防ぐ Web アプリケーションファイアウォールです。"
+        },
+        {
+          "text": "ネットワーク ACL",
+          "explanation": "IP アドレスとポートで通信を制御するもので、リクエストの中身は検査しません。"
         },
         {
           "text": "AWS Shield Standard",
@@ -934,7 +934,7 @@
         }
       ],
       "answers": [
-        2
+        1
       ],
       "explanation": "AWS WAF は、CloudFront・ALB・API Gateway などへの HTTP(S) リクエストを監視し、ルールに合うものをブロックできます。",
       "references": [
@@ -958,24 +958,24 @@
       "question": "AWS アカウント内で、不審な API の呼び出しや、マルウェアに感染した可能性のあるインスタンスの通信などを、継続的に検出したい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Macie",
-          "explanation": "S3 の機密データを見つけるサービスです。"
+          "text": "Amazon GuardDuty",
+          "explanation": "CloudTrail・VPC フローログ・DNS ログなどを分析し、脅威を継続的に検出します。"
         },
         {
           "text": "AWS Artifact",
           "explanation": "コンプライアンスのレポートを入手するサービスです。"
         },
         {
-          "text": "Amazon Inspector",
-          "explanation": "ソフトウェアの脆弱性やネットワークの露出を見つけるサービスで、不審な活動の検出ではありません。"
+          "text": "Amazon Macie",
+          "explanation": "S3 の機密データを見つけるサービスです。"
         },
         {
-          "text": "Amazon GuardDuty",
-          "explanation": "CloudTrail・VPC フローログ・DNS ログなどを分析し、脅威を継続的に検出します。"
+          "text": "Amazon Inspector",
+          "explanation": "ソフトウェアの脆弱性やネットワークの露出を見つけるサービスで、不審な活動の検出ではありません。"
         }
       ],
       "answers": [
-        3
+        0
       ],
       "explanation": "GuardDuty は、ログなどを機械学習や脅威インテリジェンスで分析し、不審な活動や悪意のある活動を継続的に検出する脅威検出サービスです。",
       "references": [
@@ -992,24 +992,24 @@
       "question": "EC2 インスタンスやコンテナイメージに、既知の脆弱性（CVE）を含むソフトウェアがないかを自動で継続的に調べたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Macie",
-          "explanation": "S3 の機密データを見つけるサービスです。"
-        },
-        {
-          "text": "Amazon Inspector",
-          "explanation": "EC2 インスタンス・コンテナイメージ・Lambda 関数のソフトウェアの脆弱性や、意図しないネットワークの露出を継続的にスキャンします。"
+          "text": "Amazon GuardDuty",
+          "explanation": "不審な活動を検出するサービスで、ソフトウェアの脆弱性のスキャンが主目的ではありません。"
         },
         {
           "text": "AWS Shield",
           "explanation": "DDoS 攻撃から守るサービスです。"
         },
         {
-          "text": "Amazon GuardDuty",
-          "explanation": "不審な活動を検出するサービスで、ソフトウェアの脆弱性のスキャンが主目的ではありません。"
+          "text": "Amazon Inspector",
+          "explanation": "EC2 インスタンス・コンテナイメージ・Lambda 関数のソフトウェアの脆弱性や、意図しないネットワークの露出を継続的にスキャンします。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "S3 の機密データを見つけるサービスです。"
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "Amazon Inspector は、ワークロードのソフトウェアの脆弱性と、意図しないネットワークの露出を自動で継続的に調べる脆弱性管理サービスです。",
       "references": [
@@ -1026,24 +1026,24 @@
       "question": "S3 バケットに保存された大量のファイルの中に、クレジットカード番号などの個人情報が含まれていないかを自動で見つけたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "AWS WAF",
-          "explanation": "Web リクエストをルールで検査するサービスです。"
-        },
-        {
           "text": "Amazon Inspector",
           "explanation": "ソフトウェアの脆弱性を見つけるサービスで、ファイルの中の個人情報は探しません。"
         },
         {
-          "text": "Amazon Macie",
-          "explanation": "機械学習とパターンマッチングで、S3 の中の個人情報などの機密データを見つけます。"
-        },
-        {
           "text": "Amazon GuardDuty",
           "explanation": "不審な活動を検出するサービスです。"
+        },
+        {
+          "text": "AWS WAF",
+          "explanation": "Web リクエストをルールで検査するサービスです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機械学習とパターンマッチングで、S3 の中の個人情報などの機密データを見つけます。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "Amazon Macie は、S3 の機密データを検出・保護するためのデータセキュリティサービスです。",
       "references": [
@@ -1060,24 +1060,24 @@
       "question": "保存するデータを暗号化するための鍵を作成・管理し、どの IAM プリンシパルが鍵を使えるかを制御したい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Macie",
-          "explanation": "機密データを見つけるサービスです。"
+          "text": "AWS Certificate Manager",
+          "explanation": "SSL/TLS 証明書を管理するサービスです。"
         },
         {
           "text": "AWS Secrets Manager",
           "explanation": "パスワードや API キーなどのシークレットを保管するサービスです。"
         },
         {
-          "text": "AWS Certificate Manager",
-          "explanation": "SSL/TLS 証明書を管理するサービスです。"
-        },
-        {
           "text": "AWS Key Management Service（AWS KMS）",
           "explanation": "暗号化の鍵を作成・管理し、鍵の使用をポリシーで制御できます。多くの AWS サービスと統合されています。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データを見つけるサービスです。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "AWS KMS は、データを守るための暗号化の鍵を作成・管理するサービスです。S3 や EBS などのサービスと統合されています。",
       "references": [
@@ -1101,12 +1101,12 @@
           "explanation": "暗号化の鍵を管理するサービスで、パスワードそのものの保管とローテーションを行うサービスではありません。"
         },
         {
-          "text": "AWS Certificate Manager",
-          "explanation": "SSL/TLS 証明書を管理するサービスです。"
-        },
-        {
           "text": "Amazon S3 のテキストファイル",
           "explanation": "ファイルに保存するだけでは、自動のローテーションはできず、漏えいのリスクもあります。"
+        },
+        {
+          "text": "AWS Certificate Manager",
+          "explanation": "SSL/TLS 証明書を管理するサービスです。"
         }
       ],
       "answers": [
@@ -1126,16 +1126,16 @@
       "question": "本番環境の EC2 インスタンスが誰によって終了されたのかを、あとから調べたい。どのサービスの記録を見るか。",
       "choices": [
         {
-          "text": "Amazon CloudWatch のメトリクス",
-          "explanation": "CPU 使用率などの数値を記録するもので、誰が操作したかはわかりません。"
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を見つけるサービスです。"
         },
         {
           "text": "AWS CloudTrail",
           "explanation": "AWS アカウントでの API の呼び出し（誰が・いつ・何をしたか）を記録します。"
         },
         {
-          "text": "Amazon Inspector",
-          "explanation": "脆弱性を見つけるサービスです。"
+          "text": "Amazon CloudWatch のメトリクス",
+          "explanation": "CPU 使用率などの数値を記録するもので、誰が操作したかはわかりません。"
         },
         {
           "text": "AWS Trusted Advisor",
@@ -1163,16 +1163,16 @@
           "explanation": "セキュリティグループは許可した通信の戻りを自動で許可します。ネットワーク ACL は戻りの通信も明示的に許可が必要です。"
         },
         {
+          "text": "どちらも AWS が設定するので、利用者は設定できない",
+          "explanation": "どちらも利用者が設定します。"
+        },
+        {
           "text": "セキュリティグループでは拒否のルールを書けるが、ネットワーク ACL では許可のルールしか書けない",
           "explanation": "逆です。セキュリティグループは許可のルールだけで、ネットワーク ACL は許可と拒否の両方を書けます。"
         },
         {
           "text": "セキュリティグループはサブネット単位、ネットワーク ACL はインスタンス単位で働く",
           "explanation": "逆です。"
-        },
-        {
-          "text": "どちらも AWS が設定するので、利用者は設定できない",
-          "explanation": "どちらも利用者が設定します。"
         }
       ],
       "answers": [
@@ -1200,20 +1200,20 @@
           "explanation": "Inspector は脆弱性を見つけるサービスです。"
         },
         {
-          "text": "サービスコントロールポリシー（SCP）で、ほかのリージョンでの操作を拒否する",
-          "explanation": "SCP は、組織のアカウントで使えるアクセス許可の上限を一元的に決められます。"
+          "text": "各ユーザーに、リージョンを守るよう社内ルールで通知する",
+          "explanation": "技術的に止められないので、守られる保証がありません。"
         },
         {
           "text": "AWS Artifact で、リージョンの制限を設定する",
           "explanation": "Artifact はコンプライアンスのレポートを入手するサービスです。"
         },
         {
-          "text": "各ユーザーに、リージョンを守るよう社内ルールで通知する",
-          "explanation": "技術的に止められないので、守られる保証がありません。"
+          "text": "サービスコントロールポリシー（SCP）で、ほかのリージョンでの操作を拒否する",
+          "explanation": "SCP は、組織のアカウントで使えるアクセス許可の上限を一元的に決められます。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "SCP は、組織内のアカウントで使えるアクセス許可の上限を決めるポリシーです。アカウントの管理者も含め、SCP で拒否された操作はできません。",
       "references": [
@@ -1229,24 +1229,24 @@
       "question": "ある企業は、オンプレミスのデータセンターと AWS の間で、大量のデータを安定した帯域で転送したい。インターネットを経由しない専用の接続が必要である。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Route 53",
-          "explanation": "DNS のサービスです。"
-        },
-        {
           "text": "AWS Site-to-Site VPN",
           "explanation": "インターネットを経由する暗号化された接続で、専用線ではありません。"
         },
         {
-          "text": "Amazon CloudFront",
-          "explanation": "コンテンツを利用者に配信するサービスです。"
-        },
-        {
           "text": "AWS Direct Connect",
           "explanation": "オンプレミスと AWS を、インターネットを経由しない専用のネットワーク接続でつなぎます。帯域が安定します。"
+        },
+        {
+          "text": "Amazon Route 53",
+          "explanation": "DNS のサービスです。"
+        },
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "コンテンツを利用者に配信するサービスです。"
         }
       ],
       "answers": [
-        3
+        1
       ],
       "explanation": "Direct Connect は、オンプレミスと AWS を標準のイーサネットの光ファイバーケーブルでつなぐ専用の接続です。インターネットを経由しないので、帯域や遅延が安定します。",
       "references": [
@@ -1263,20 +1263,20 @@
       "question": "ある企業は、支店のネットワークと AWS の VPC を、今週中に暗号化して安全につなぎたい。専用線を引く時間も予算もない。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "AWS Global Accelerator",
-          "explanation": "利用者からアプリケーションへの通信を AWS のネットワークで速くするサービスで、拠点間の接続ではありません。"
+          "text": "Amazon API Gateway",
+          "explanation": "API を作成・公開するサービスです。"
         },
         {
-          "text": "AWS Direct Connect",
-          "explanation": "専用線の手配が必要で、使い始めるまでに時間がかかります。"
+          "text": "AWS Global Accelerator",
+          "explanation": "利用者からアプリケーションへの通信を AWS のネットワークで速くするサービスで、拠点間の接続ではありません。"
         },
         {
           "text": "AWS Site-to-Site VPN",
           "explanation": "インターネットを経由して、オンプレミスと VPC を暗号化された IPsec の接続でつなぎます。すぐに使い始められます。"
         },
         {
-          "text": "Amazon API Gateway",
-          "explanation": "API を作成・公開するサービスです。"
+          "text": "AWS Direct Connect",
+          "explanation": "専用線の手配が必要で、使い始めるまでに時間がかかります。"
         }
       ],
       "answers": [
@@ -1297,8 +1297,8 @@
       "question": "世界中の利用者に、Web サイトの画像や動画を低い遅延で届けたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "AWS Direct Connect",
-          "explanation": "オンプレミスと AWS をつなぐ専用線のサービスです。"
+          "text": "AWS Site-to-Site VPN",
+          "explanation": "拠点と VPC をつなぐ VPN のサービスです。"
         },
         {
           "text": "Amazon EBS",
@@ -1309,8 +1309,8 @@
           "explanation": "世界中のエッジロケーションにコンテンツをキャッシュし、利用者の近くから配信します。"
         },
         {
-          "text": "AWS Site-to-Site VPN",
-          "explanation": "拠点と VPC をつなぐ VPN のサービスです。"
+          "text": "AWS Direct Connect",
+          "explanation": "オンプレミスと AWS をつなぐ専用線のサービスです。"
         }
       ],
       "answers": [
@@ -1330,20 +1330,20 @@
       "question": "S3 に画像がアップロードされるたびに、サムネイルを作る処理を動かしたい。サーバーの管理はしたくない。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon EC2",
-          "explanation": "サーバー（インスタンス）の管理が必要です。"
+          "text": "AWS Outposts",
+          "explanation": "オンプレミスに AWS のインフラを置くサービスです。"
         },
         {
           "text": "AWS Lambda",
           "explanation": "サーバーを管理せずにコードを実行でき、S3 へのアップロードなどのイベントをきっかけに処理を動かせます。"
         },
         {
-          "text": "AWS Outposts",
-          "explanation": "オンプレミスに AWS のインフラを置くサービスです。"
-        },
-        {
           "text": "Amazon Lightsail",
           "explanation": "仮想サーバーを簡単に使うサービスで、サーバーの管理は必要です。"
+        },
+        {
+          "text": "Amazon EC2",
+          "explanation": "サーバー（インスタンス）の管理が必要です。"
         }
       ],
       "answers": [
@@ -1367,16 +1367,16 @@
           "explanation": "Fargate はサーバーレスのコンテナの実行環境で、サーバーの用意や管理をせずにコンテナを動かせます。"
         },
         {
+          "text": "AWS Batch でスクリプトを手動で実行する",
+          "explanation": "Batch はバッチ処理を管理するサービスです。今回の要件に最も合うのは Fargate です。"
+        },
+        {
           "text": "Amazon EBS にコンテナイメージを置く",
           "explanation": "EBS はブロックストレージで、コンテナを実行するサービスではありません。"
         },
         {
           "text": "Amazon ECS で EC2 インスタンスを使う",
           "explanation": "コンテナを動かす EC2 インスタンスの管理が必要です。"
-        },
-        {
-          "text": "AWS Batch でスクリプトを手動で実行する",
-          "explanation": "Batch はバッチ処理を管理するサービスです。今回の要件に最も合うのは Fargate です。"
         }
       ],
       "answers": [
@@ -1396,16 +1396,16 @@
       "question": "開発チームは、Web アプリケーションのコードをアップロードするだけで、サーバーの用意・ロードバランサー・Auto Scaling の設定を AWS に任せたい。インフラの細かい管理はしたくない。最も適切なサービスはどれか。",
       "choices": [
         {
+          "text": "Amazon EC2",
+          "explanation": "インスタンスやロードバランサーなどを自分で組み立てて管理する必要があります。"
+        },
+        {
           "text": "Amazon Redshift",
           "explanation": "データウェアハウスのサービスです。"
         },
         {
           "text": "AWS CloudHSM",
           "explanation": "専用の HSM のサービスです。"
-        },
-        {
-          "text": "Amazon EC2",
-          "explanation": "インスタンスやロードバランサーなどを自分で組み立てて管理する必要があります。"
         },
         {
           "text": "AWS Elastic Beanstalk",
@@ -1433,12 +1433,12 @@
           "explanation": "Kubernetes のマネージドサービスで、ブログ用には大げさです。"
         },
         {
-          "text": "AWS Batch",
-          "explanation": "バッチ処理を管理するサービスです。"
-        },
-        {
           "text": "AWS Outposts",
           "explanation": "オンプレミスに AWS のインフラを置くサービスです。"
+        },
+        {
+          "text": "AWS Batch",
+          "explanation": "バッチ処理を管理するサービスです。"
         },
         {
           "text": "Amazon Lightsail",
@@ -1462,20 +1462,20 @@
       "question": "ある工場は、生産ラインの制御のため、とても低い遅延でデータを処理する必要がある。データは工場の外に出せない。AWS のサービスや API をオンプレミスで使いたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon CloudFront",
-          "explanation": "コンテンツを配信するサービスです。"
+          "text": "Amazon Lightsail",
+          "explanation": "AWS のリージョンで動く仮想サーバーのサービスです。"
         },
         {
           "text": "AWS Outposts",
           "explanation": "AWS のインフラ・サービス・API を、利用者のデータセンターやオンプレミスの施設で使えるようにします。"
         },
         {
-          "text": "Amazon Lightsail",
-          "explanation": "AWS のリージョンで動く仮想サーバーのサービスです。"
-        },
-        {
           "text": "AWS Direct Connect",
           "explanation": "オンプレミスと AWS をつなぐ回線で、処理はリージョンで行われます。"
+        },
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "コンテンツを配信するサービスです。"
         }
       ],
       "answers": [
@@ -1529,20 +1529,20 @@
       "question": "複数の Linux の EC2 インスタンスから、同じファイルを同時に読み書きしたい。容量は自動で増減してほしい。最も適切なストレージはどれか。",
       "choices": [
         {
-          "text": "Amazon EBS",
-          "explanation": "基本的に1つのインスタンスにアタッチして使うブロックストレージです。"
+          "text": "Amazon S3 Glacier Flexible Retrieval",
+          "explanation": "アーカイブ向けで、取り出しに時間がかかります。"
         },
         {
-          "text": "インスタンスストア",
-          "explanation": "インスタンスに付属する一時的なストレージで、共有や永続的な保存には向きません。"
+          "text": "Amazon EBS",
+          "explanation": "基本的に1つのインスタンスにアタッチして使うブロックストレージです。"
         },
         {
           "text": "Amazon EFS",
           "explanation": "複数のインスタンスから同時にマウントでき、容量はファイルの追加・削除に合わせて自動で増減します。"
         },
         {
-          "text": "Amazon S3 Glacier Flexible Retrieval",
-          "explanation": "アーカイブ向けで、取り出しに時間がかかります。"
+          "text": "インスタンスストア",
+          "explanation": "インスタンスに付属する一時的なストレージで、共有や永続的な保存には向きません。"
         }
       ],
       "answers": [
@@ -1563,20 +1563,20 @@
       "question": "会社の紹介用の静的な Web サイト（HTML・画像だけ）を、サーバーを管理せずに安く公開したい。最も適切な方法はどれか。",
       "choices": [
         {
-          "text": "EC2 インスタンスに Web サーバーを入れて公開する",
-          "explanation": "サーバーの管理が必要で、静的なサイトには大げさです。"
+          "text": "Amazon EBS のボリュームを公開する",
+          "explanation": "EBS はインスタンスにアタッチするストレージで、Web サイトとして公開はできません。"
         },
         {
           "text": "Amazon S3 の静的ウェブサイトホスティングを使う",
           "explanation": "S3 は静的なコンテンツを直接配信でき、サーバーの管理は要りません。"
         },
         {
-          "text": "Amazon EBS のボリュームを公開する",
-          "explanation": "EBS はインスタンスにアタッチするストレージで、Web サイトとして公開はできません。"
-        },
-        {
           "text": "Amazon RDS にページを保存する",
           "explanation": "RDS はデータベースです。"
+        },
+        {
+          "text": "EC2 インスタンスに Web サーバーを入れて公開する",
+          "explanation": "サーバーの管理が必要で、静的なサイトには大げさです。"
         }
       ],
       "answers": [
@@ -1630,16 +1630,16 @@
       "question": "オンプレミスのファイルサーバーの容量が足りなくなってきた。オンプレミスのアプリケーションからは今までどおりファイル共有として使いつつ、データは Amazon S3 に保存したい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "AWS Storage Gateway（S3 File Gateway）",
-          "explanation": "オンプレミスから NFS や SMB のファイル共有として使え、データは S3 にオブジェクトとして保存されます。"
+          "text": "AWS Backup",
+          "explanation": "バックアップを一元管理するサービスで、ファイル共有の容量を増やすものではありません。"
         },
         {
           "text": "Amazon ElastiCache",
           "explanation": "インメモリのキャッシュです。"
         },
         {
-          "text": "AWS Backup",
-          "explanation": "バックアップを一元管理するサービスで、ファイル共有の容量を増やすものではありません。"
+          "text": "AWS Storage Gateway（S3 File Gateway）",
+          "explanation": "オンプレミスから NFS や SMB のファイル共有として使え、データは S3 にオブジェクトとして保存されます。"
         },
         {
           "text": "Amazon EBS",
@@ -1647,7 +1647,7 @@
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "Storage Gateway は、オンプレミスと AWS のストレージをつなぐハイブリッドのストレージサービスです。S3 File Gateway では、ファイル共有を通して S3 にデータを保存します。",
       "references": [
@@ -1663,24 +1663,24 @@
       "question": "受注管理システムで、注文と在庫の表を結合して集計する。トランザクションで整合性を保つ必要がある、リレーショナルデータベースを使いたい。データベースの運用はできるだけ AWS に任せたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Neptune",
-          "explanation": "グラフデータベースです。"
-        },
-        {
-          "text": "Amazon Redshift",
-          "explanation": "大量のデータを分析するためのデータウェアハウスで、日々の受注処理向けではありません。"
-        },
-        {
           "text": "Amazon RDS",
           "explanation": "マネージドなリレーショナルデータベースです。SQL の結合やトランザクションが使え、パッチ適用やバックアップは AWS が行います。"
         },
         {
           "text": "Amazon DynamoDB",
           "explanation": "キーバリュー型の NoSQL データベースで、表の結合（JOIN）はできません。"
+        },
+        {
+          "text": "Amazon Redshift",
+          "explanation": "大量のデータを分析するためのデータウェアハウスで、日々の受注処理向けではありません。"
+        },
+        {
+          "text": "Amazon Neptune",
+          "explanation": "グラフデータベースです。"
         }
       ],
       "answers": [
-        2
+        0
       ],
       "explanation": "表を結合し、トランザクションで整合性を保つ用途にはリレーショナルデータベースが向いています。RDS なら運用の多くを AWS に任せられます。",
       "references": [
@@ -1697,8 +1697,8 @@
       "question": "モバイルゲームのプレイヤーのデータを、キーで1件ずつ読み書きする。アクセスが急増しても、一桁ミリ秒の応答を保ちたい。サーバーの管理はしたくない。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon DynamoDB",
-          "explanation": "サーバーレスの NoSQL データベースで、どの規模でも一桁ミリ秒の性能を出せます。"
+          "text": "Amazon RDS",
+          "explanation": "リレーショナルデータベースで、インスタンスのサイズの管理が必要です。"
         },
         {
           "text": "Amazon S3 Glacier Deep Archive",
@@ -1709,12 +1709,12 @@
           "explanation": "分析用のデータウェアハウスです。"
         },
         {
-          "text": "Amazon RDS",
-          "explanation": "リレーショナルデータベースで、インスタンスのサイズの管理が必要です。"
+          "text": "Amazon DynamoDB",
+          "explanation": "サーバーレスの NoSQL データベースで、どの規模でも一桁ミリ秒の性能を出せます。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "DynamoDB は、サーバーレスでフルマネージドの NoSQL データベースです。キーによる読み書きを、どの規模でも一桁ミリ秒で処理できます。",
       "references": [
@@ -1731,20 +1731,20 @@
       "question": "過去数年分の売上データ（数テラバイト）を集めて、経営の分析のための複雑な集計クエリを実行したい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon DynamoDB",
-          "explanation": "キーでの読み書きが中心の NoSQL データベースで、複雑な集計には向きません。"
+          "text": "Amazon ElastiCache",
+          "explanation": "インメモリのキャッシュです。"
         },
         {
           "text": "Amazon Redshift",
           "explanation": "大量のデータを分析するための、ペタバイト規模まで扱えるデータウェアハウスです。"
         },
         {
-          "text": "Amazon ElastiCache",
-          "explanation": "インメモリのキャッシュです。"
-        },
-        {
           "text": "Amazon RDS",
           "explanation": "日々のトランザクション処理向けで、数テラバイトの分析の集計には Redshift が向いています。"
+        },
+        {
+          "text": "Amazon DynamoDB",
+          "explanation": "キーでの読み書きが中心の NoSQL データベースで、複雑な集計には向きません。"
         }
       ],
       "answers": [
@@ -1765,16 +1765,16 @@
       "question": "データベースに同じクエリが何度も送られ、応答が遅くなっている。よく使う結果をメモリに保存して、応答を速くしたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon S3 Glacier Deep Archive",
-          "explanation": "長期保存向けで、取り出しに時間がかかります。"
+          "text": "Amazon ElastiCache",
+          "explanation": "インメモリのキャッシュで、よく使うデータをメモリから高速に返し、データベースの負荷を減らします。"
         },
         {
           "text": "Amazon EBS",
           "explanation": "ブロックストレージで、キャッシュの仕組みではありません。"
         },
         {
-          "text": "Amazon ElastiCache",
-          "explanation": "インメモリのキャッシュで、よく使うデータをメモリから高速に返し、データベースの負荷を減らします。"
+          "text": "Amazon S3 Glacier Deep Archive",
+          "explanation": "長期保存向けで、取り出しに時間がかかります。"
         },
         {
           "text": "AWS Backup",
@@ -1782,7 +1782,7 @@
         }
       ],
       "answers": [
-        2
+        0
       ],
       "explanation": "ElastiCache は、Valkey・Memcached・Redis OSS と互換性のあるインメモリのキャッシュです。データベースの前に置くと、応答が速くなります。",
       "references": [
@@ -1798,24 +1798,24 @@
       "question": "VPC の中で、インターネットから直接アクセスされたくないデータベースサーバーを置く場所として、最も適切なものはどれか。",
       "choices": [
         {
-          "text": "インターネットゲートウェイへのルートがあるパブリックサブネット",
-          "explanation": "インターネットから到達できる場所なので、データベースには向きません。"
+          "text": "エッジロケーション",
+          "explanation": "CloudFront などの配信の拠点で、データベースは置けません。"
         },
         {
           "text": "VPC の外",
           "explanation": "VPC の外に置くと、ネットワークで隔離できません。"
         },
         {
-          "text": "エッジロケーション",
-          "explanation": "CloudFront などの配信の拠点で、データベースは置けません。"
-        },
-        {
           "text": "インターネットゲートウェイへのルートがないプライベートサブネット",
           "explanation": "インターネットへのルートがないサブネットに置けば、インターネットから直接アクセスされません。"
+        },
+        {
+          "text": "インターネットゲートウェイへのルートがあるパブリックサブネット",
+          "explanation": "インターネットから到達できる場所なので、データベースには向きません。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "サブネットは、インターネットゲートウェイへのルートがあればパブリック、なければプライベートと呼ばれます。データベースはプライベートサブネットに置くのが基本です。",
       "references": [
@@ -1835,24 +1835,24 @@
       "question": "自社のドメイン名（example.com）を登録し、Web サーバーの IP アドレスに名前解決させたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon CloudFront",
-          "explanation": "コンテンツを配信するサービスで、ドメインの登録はできません。"
-        },
-        {
-          "text": "Amazon API Gateway",
-          "explanation": "API を作成・公開するサービスです。"
-        },
-        {
           "text": "AWS Direct Connect",
           "explanation": "専用線のサービスです。"
         },
         {
           "text": "Amazon Route 53",
           "explanation": "ドメインの登録、DNS のルーティング、ヘルスチェックを行う DNS のサービスです。"
+        },
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "コンテンツを配信するサービスで、ドメインの登録はできません。"
+        },
+        {
+          "text": "Amazon API Gateway",
+          "explanation": "API を作成・公開するサービスです。"
         }
       ],
       "answers": [
-        3
+        1
       ],
       "explanation": "Route 53 は、ドメインの登録・DNS の名前解決・ヘルスチェックができる、可用性と拡張性の高い DNS のサービスです。",
       "references": [
@@ -1868,24 +1868,24 @@
       "question": "S3 に保存したログファイルに、サーバーを用意せずに標準の SQL で直接クエリを実行したい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon RDS",
-          "explanation": "データを先にデータベースに読み込む必要があります。"
-        },
-        {
-          "text": "Amazon Neptune",
-          "explanation": "グラフデータベースです。"
-        },
-        {
           "text": "Amazon Athena",
           "explanation": "S3 のデータに、標準の SQL で直接クエリを実行できるサーバーレスの分析サービスです。"
         },
         {
+          "text": "Amazon RDS",
+          "explanation": "データを先にデータベースに読み込む必要があります。"
+        },
+        {
           "text": "Amazon ElastiCache",
           "explanation": "インメモリのキャッシュです。"
+        },
+        {
+          "text": "Amazon Neptune",
+          "explanation": "グラフデータベースです。"
         }
       ],
       "answers": [
-        2
+        0
       ],
       "explanation": "Athena はサーバーレスなので、インフラの管理は要らず、実行したクエリの分だけ料金がかかります。",
       "references": [
@@ -1901,24 +1901,24 @@
       "question": "コールセンターの通話の録音を文字に起こし、その文章から顧客の感情（ポジティブ・ネガティブ）を分析したい。サービスの組み合わせとして正しいものはどれか。",
       "choices": [
         {
-          "text": "文字起こしに Amazon Transcribe、感情の分析に Amazon Comprehend",
-          "explanation": "Transcribe は音声を文字にし、Comprehend は文章から感情などを読み取ります。"
-        },
-        {
           "text": "文字起こしに Amazon Rekognition、感情の分析に Amazon Lex",
           "explanation": "Rekognition は画像・動画の分析、Lex は会話型のインターフェースのサービスです。"
         },
         {
-          "text": "文字起こしに Amazon Textract、感情の分析に Amazon Polly",
-          "explanation": "Textract は文書から文字を取り出すサービス、Polly は音声合成のサービスです。"
-        },
-        {
           "text": "文字起こしに Amazon Polly、感情の分析に Amazon Translate",
           "explanation": "Polly は文章を音声にするサービス、Translate は翻訳のサービスです。"
+        },
+        {
+          "text": "文字起こしに Amazon Transcribe、感情の分析に Amazon Comprehend",
+          "explanation": "Transcribe は音声を文字にし、Comprehend は文章から感情などを読み取ります。"
+        },
+        {
+          "text": "文字起こしに Amazon Textract、感情の分析に Amazon Polly",
+          "explanation": "Textract は文書から文字を取り出すサービス、Polly は音声合成のサービスです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "Transcribe は音声をテキストに変換し、Comprehend は自然言語処理でテキストから感情やキーフレーズなどを抽出します。",
       "references": [
@@ -1938,24 +1938,24 @@
       "question": "注文を受け付ける Web サーバーと、時間のかかる請求処理を切り離したい。注文の量が急に増えても、請求処理が自分のペースで処理できるようにしたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Route 53",
-          "explanation": "DNS のサービスです。"
-        },
-        {
-          "text": "Amazon SQS",
-          "explanation": "メッセージをキューにためておき、受け取る側が自分のペースで処理できます。システムの部品を疎結合にできます。"
+          "text": "Amazon Polly",
+          "explanation": "音声合成のサービスです。"
         },
         {
           "text": "Amazon EBS",
           "explanation": "ブロックストレージです。"
         },
         {
-          "text": "Amazon Polly",
-          "explanation": "音声合成のサービスです。"
+          "text": "Amazon Route 53",
+          "explanation": "DNS のサービスです。"
+        },
+        {
+          "text": "Amazon SQS",
+          "explanation": "メッセージをキューにためておき、受け取る側が自分のペースで処理できます。システムの部品を疎結合にできます。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "SQS はフルマネージドのメッセージキューです。送る側と受け取る側を切り離す（疎結合にする）ことで、それぞれが独立してスケールできます。",
       "references": [
@@ -1971,24 +1971,24 @@
       "question": "毎晩の画像の一括変換処理は、途中で中断されても、あとから再実行すれば問題ない。処理の費用をできるだけ下げたい。最も適切な EC2 の購入オプションはどれか。",
       "choices": [
         {
-          "text": "Dedicated Hosts",
-          "explanation": "物理サーバーを専有するオプションで、費用は高くなります。"
-        },
-        {
-          "text": "スポットインスタンス",
-          "explanation": "使われていない EC2 の容量を、オンデマンドより大幅に安く使えます。中断されることがあるので、中断に耐えられる処理に向いています。"
+          "text": "オンデマンドインスタンス",
+          "explanation": "中断はされませんが、スポットより高くなります。"
         },
         {
           "text": "リザーブドインスタンス（3年）",
           "explanation": "長期間ずっと動かすワークロード向けで、毎晩だけ動く処理には向きません。"
         },
         {
-          "text": "オンデマンドインスタンス",
-          "explanation": "中断はされませんが、スポットより高くなります。"
+          "text": "Dedicated Hosts",
+          "explanation": "物理サーバーを専有するオプションで、費用は高くなります。"
+        },
+        {
+          "text": "スポットインスタンス",
+          "explanation": "使われていない EC2 の容量を、オンデマンドより大幅に安く使えます。中断されることがあるので、中断に耐えられる処理に向いています。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "スポットインスタンスは、使われていない EC2 の容量を大幅な割引で使えるオプションです。AWS が容量を必要とすると中断されるため、中断しても困らない処理に使います。",
       "references": [
@@ -2005,24 +2005,24 @@
       "question": "社内システムの EC2 インスタンスは、今後3年間、24時間365日ずっと同じくらいの量で動き続ける見込みである。費用を下げる方法として最も適切なものはどれか。",
       "choices": [
         {
-          "text": "オンデマンドインスタンスのまま使う",
-          "explanation": "約束がない分、長く使い続けると割高になります。"
+          "text": "1年または3年の利用量を約束する Savings Plans を購入する",
+          "explanation": "一定の利用量（1時間あたりの金額）を1年か3年約束することで、オンデマンドより安くなります。"
         },
         {
           "text": "使わない時間に止めるよう、手動で毎日操作する",
           "explanation": "24時間365日動かす要件と合いません。"
         },
         {
-          "text": "1年または3年の利用量を約束する Savings Plans を購入する",
-          "explanation": "一定の利用量（1時間あたりの金額）を1年か3年約束することで、オンデマンドより安くなります。"
-        },
-        {
           "text": "スポットインスタンスで動かす",
           "explanation": "中断されることがあるので、ずっと動かす社内システムには向きません。"
+        },
+        {
+          "text": "オンデマンドインスタンスのまま使う",
+          "explanation": "約束がない分、長く使い続けると割高になります。"
         }
       ],
       "answers": [
-        2
+        0
       ],
       "explanation": "長期間、安定して使うことがわかっているなら、Savings Plans（またはリザーブドインスタンス）で利用量を約束すると、オンデマンドより大きく割引されます。",
       "references": [
@@ -2043,6 +2043,10 @@
       "question": "新しいサービスの検証のため、2週間だけ EC2 インスタンスを使う。いつ止めるかは結果次第で、途中で中断されては困る。最も適切な購入オプションはどれか。",
       "choices": [
         {
+          "text": "3年の Savings Plans",
+          "explanation": "長期の約束が必要です。"
+        },
+        {
           "text": "オンデマンドインスタンス",
           "explanation": "長期の約束なしに、使った分だけ支払えます。中断もされません。"
         },
@@ -2051,16 +2055,12 @@
           "explanation": "3年の約束が必要で、2週間だけの利用には向きません。"
         },
         {
-          "text": "3年の Savings Plans",
-          "explanation": "長期の約束が必要です。"
-        },
-        {
           "text": "スポットインスタンス",
           "explanation": "中断されることがあるので、中断されては困る要件に合いません。"
         }
       ],
       "answers": [
-        0
+        1
       ],
       "explanation": "短期間・使う期間が読めない・中断されては困る、という場合はオンデマンドが向いています。前払いや長期の約束は要りません。",
       "references": [
@@ -2077,24 +2077,24 @@
       "question": "ある企業は、毎月の AWS の利用料が予算の80%を超えそうになったら、担当者にメールで知らせたい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "AWS Cost Explorer",
-          "explanation": "費用の推移を可視化・分析するサービスで、予算のしきい値でのアラートは Budgets の役割です。"
-        },
-        {
-          "text": "AWS Trusted Advisor",
-          "explanation": "ベストプラクティスとの差を確認するサービスです。"
-        },
-        {
           "text": "AWS Artifact",
           "explanation": "コンプライアンスのレポートを入手するサービスです。"
         },
         {
+          "text": "AWS Cost Explorer",
+          "explanation": "費用の推移を可視化・分析するサービスで、予算のしきい値でのアラートは Budgets の役割です。"
+        },
+        {
           "text": "AWS Budgets",
           "explanation": "予算を設定し、実際の費用や予測が設定したしきい値を超えたときに通知できます。"
+        },
+        {
+          "text": "AWS Trusted Advisor",
+          "explanation": "ベストプラクティスとの差を確認するサービスです。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "AWS Budgets では、費用や使用量の予算を決め、実績や予測がしきい値を超えたときにアラートを送れます。",
       "references": [
@@ -2147,12 +2147,12 @@
           "explanation": "Budgets は予算のアラートのサービスで、請求をまとめる機能ではありません。"
         },
         {
-          "text": "部署ごとに別のクレジットカードで支払う",
-          "explanation": "請求はまとまらず、利用量の合算もされません。"
-        },
-        {
           "text": "すべての部署で1つのアカウントを共有する",
           "explanation": "請求はまとまりますが、権限や費用の分離ができず、管理が難しくなります。"
+        },
+        {
+          "text": "部署ごとに別のクレジットカードで支払う",
+          "explanation": "請求はまとまらず、利用量の合算もされません。"
         },
         {
           "text": "AWS Organizations の一括請求（コンソリデーティッドビリング）を使う",
@@ -2176,24 +2176,24 @@
       "question": "AWS のすべての利用者に、追加の料金なしで含まれているサポート（ベーシックサポート）に含まれるものはどれか。",
       "choices": [
         {
-          "text": "Trusted Advisor のすべてのチェック",
-          "explanation": "すべてのチェックは有料のプランで提供されます。"
-        },
-        {
           "text": "AWS Trusted Advisor の主要なチェックと、AWS Health Dashboard",
           "explanation": "ベーシックサポートには、カスタマーサービス、ドキュメント、re:Post、Trusted Advisor の主要なチェック、Health Dashboard が含まれます。"
+        },
+        {
+          "text": "本番システムの停止に対する1時間以内の応答",
+          "explanation": "有料のプランで提供される応答時間の目標です。"
         },
         {
           "text": "指定のテクニカルアカウントマネージャー（TAM）",
           "explanation": "TAM は上位の有料プランで提供されます。"
         },
         {
-          "text": "本番システムの停止に対する1時間以内の応答",
-          "explanation": "有料のプランで提供される応答時間の目標です。"
+          "text": "Trusted Advisor のすべてのチェック",
+          "explanation": "すべてのチェックは有料のプランで提供されます。"
         }
       ],
       "answers": [
-        1
+        0
       ],
       "explanation": "ベーシックサポートは全利用者に含まれ、24時間のカスタマーサービス、ドキュメントや re:Post、Trusted Advisor の主要なチェック、AWS Health Dashboard を使えます。",
       "references": [
@@ -2213,24 +2213,24 @@
       "question": "ある企業は本番のワークロードを AWS で動かしている。本番システムが止まったとき、24時間いつでも電話やチャットで技術サポートに問い合わせ、1時間以内の応答を受けたい。費用を抑えつつ要件を満たすプランはどれか。",
       "choices": [
         {
-          "text": "Business Support+",
-          "explanation": "本番のワークロード向けの最低限の推奨プランで、24時間の電話・チャット・メールの技術サポートと、本番システムの停止に1時間未満の応答目標があります。"
+          "text": "Unified Operations",
+          "explanation": "要件は満たしますが、ミッションクリティカルなワークロード向けの最上位のプランで、費用を抑える要件に合いません。"
         },
         {
-          "text": "AWS Marketplace",
-          "explanation": "ソフトウェアのカタログで、サポートプランではありません。"
+          "text": "Business Support+",
+          "explanation": "本番のワークロード向けの最低限の推奨プランで、24時間の電話・チャット・メールの技術サポートと、本番システムの停止に1時間未満の応答目標があります。"
         },
         {
           "text": "ベーシックサポート",
           "explanation": "技術的な問い合わせのケースは含まれません。"
         },
         {
-          "text": "Unified Operations",
-          "explanation": "要件は満たしますが、ミッションクリティカルなワークロード向けの最上位のプランで、費用を抑える要件に合いません。"
+          "text": "AWS Marketplace",
+          "explanation": "ソフトウェアのカタログで、サポートプランではありません。"
         }
       ],
       "answers": [
-        0
+        1
       ],
       "explanation": "本番システムの停止に1時間未満の応答が必要なら、Business Support+ 以上のプランを選びます（従来の Business サポートの後継のプランで、Business サポートは2027年1月1日に終了予定です）。指定のテクニカルアカウントマネージャーが必要なら Enterprise Support 以上です。",
       "references": [
@@ -2281,8 +2281,8 @@
       "question": "「固定費を変動費に変える」に当たる説明はどれか。",
       "choices": [
         {
-          "text": "新しいリソースをすぐに用意でき、試行錯誤が速くなる",
-          "explanation": "これは「速度と俊敏性」の説明です。"
+          "text": "数分で世界中のリージョンにデプロイできる",
+          "explanation": "これは「数分でグローバルに展開」の説明です。"
         },
         {
           "text": "多くの利用者の規模を生かし、従量課金の単価が下がる",
@@ -2293,8 +2293,8 @@
           "explanation": "先行投資（固定費）の代わりに、使った分だけの支払い（変動費）になります。"
         },
         {
-          "text": "数分で世界中のリージョンにデプロイできる",
-          "explanation": "これは「数分でグローバルに展開」の説明です。"
+          "text": "新しいリソースをすぐに用意でき、試行錯誤が速くなる",
+          "explanation": "これは「速度と俊敏性」の説明です。"
         }
       ],
       "answers": [
@@ -2401,12 +2401,12 @@
       "question": "リージョンを選ぶときの判断材料として、適切でないものはどれか。",
       "choices": [
         {
-          "text": "利用者との距離（遅延）",
-          "explanation": "利用者に近いリージョンほど遅延が小さくなります。"
-        },
-        {
           "text": "データの保管場所に関する法令やコンプライアンス",
           "explanation": "データを国内に置く必要があるなど、法令や規制は重要な判断材料です。"
+        },
+        {
+          "text": "利用者との距離（遅延）",
+          "explanation": "利用者に近いリージョンほど遅延が小さくなります。"
         },
         {
           "text": "使いたいサービスが提供されているか、料金はいくらか",
@@ -2501,10 +2501,6 @@
       "question": "複数の AZ にある EC2 インスタンスに、受け取った通信を振り分けるサービスはどれか。",
       "choices": [
         {
-          "text": "Elastic Load Balancing",
-          "explanation": "受け取った通信を、複数の AZ のターゲットに自動で振り分けます。"
-        },
-        {
           "text": "Amazon Route 53",
           "explanation": "DNS のサービスです。名前解決で振り分けることはできますが、ここで問われている通信の振り分け役ではありません。"
         },
@@ -2515,10 +2511,14 @@
         {
           "text": "AWS Config",
           "explanation": "リソースの設定を記録・評価するサービスです。"
+        },
+        {
+          "text": "Elastic Load Balancing",
+          "explanation": "受け取った通信を、複数の AZ のターゲットに自動で振り分けます。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "Elastic Load Balancing は、複数の AZ にあるターゲットに通信を振り分け、正常なターゲットにだけ送ります。",
       "references": [
@@ -2605,12 +2605,12 @@
           "explanation": "障害から回復し、意図した機能を果たし続けることに関する柱です。"
         },
         {
-          "text": "持続可能性",
-          "explanation": "エネルギー消費などの環境への影響を最小限にする柱です。"
-        },
-        {
           "text": "セキュリティ",
           "explanation": "情報やシステムを守ることに関する柱です。"
+        },
+        {
+          "text": "持続可能性",
+          "explanation": "エネルギー消費などの環境への影響を最小限にする柱です。"
         },
         {
           "text": "運用上の優秀性",
@@ -2618,7 +2618,7 @@
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "持続可能性の柱は、ワークロードが環境に与える影響を減らすことに焦点を当てています。",
       "references": [
@@ -2669,24 +2669,24 @@
       "question": "「使っていないリソースを止めて、無駄な支出をなくす」に最も関係する柱はどれか。",
       "choices": [
         {
-          "text": "コスト最適化",
-          "explanation": "不要な費用を避け、ビジネスの価値を最大化することを扱う柱です。"
-        },
-        {
-          "text": "セキュリティ",
-          "explanation": "情報やシステムを守ることを扱う柱です。"
+          "text": "パフォーマンス効率",
+          "explanation": "リソースを効率よく使って性能要件を満たすことを扱う柱です。"
         },
         {
           "text": "信頼性",
           "explanation": "障害からの回復などを扱う柱です。"
         },
         {
-          "text": "パフォーマンス効率",
-          "explanation": "リソースを効率よく使って性能要件を満たすことを扱う柱です。"
+          "text": "コスト最適化",
+          "explanation": "不要な費用を避け、ビジネスの価値を最大化することを扱う柱です。"
+        },
+        {
+          "text": "セキュリティ",
+          "explanation": "情報やシステムを守ることを扱う柱です。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "無駄な支出をなくすことはコスト最適化の柱のテーマです。",
       "references": [
@@ -2737,20 +2737,20 @@
           "explanation": "運用を扱う観点です。"
         },
         {
-          "text": "ビジネス",
-          "explanation": "クラウドへの投資がデジタルトランスフォーメーションとビジネスの成果を加速させることに焦点を当てます。"
-        },
-        {
           "text": "プラットフォーム",
           "explanation": "技術的な基盤の構築を扱う観点です。"
         },
         {
           "text": "人材",
           "explanation": "人と組織の変化を扱う観点です。"
+        },
+        {
+          "text": "ビジネス",
+          "explanation": "クラウドへの投資がデジタルトランスフォーメーションとビジネスの成果を加速させることに焦点を当てます。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "ビジネスのパースペクティブは、クラウドへの投資をビジネスの成果に結びつける観点です。",
       "references": [
@@ -2773,20 +2773,20 @@
           "explanation": "簡単に仮想サーバーを始めるサービスで、移行の道具ではありません。"
         },
         {
-          "text": "AWS Glue",
-          "explanation": "データの抽出・変換・ロード（ETL）のサービスです。"
-        },
-        {
           "text": "AWS Application Migration Service",
           "explanation": "サーバーを AWS に複製し、そのまま移行するためのサービスです（現在の名称は AWS Transform MGN）。"
         },
         {
           "text": "AWS Schema Conversion Tool",
           "explanation": "データベースのスキーマを別のエンジン向けに変換するツールです。"
+        },
+        {
+          "text": "AWS Glue",
+          "explanation": "データの抽出・変換・ロード（ETL）のサービスです。"
         }
       ],
       "answers": [
-        2
+        1
       ],
       "explanation": "AWS Application Migration Service は、サーバーを AWS に複製してそのまま移行（リホスト）するためのサービスです。",
       "references": [
@@ -2873,16 +2873,16 @@
           "explanation": "アプリケーション側の処理は利用者の仕事です。"
         },
         {
-          "text": "テーブルの設計とインデックスの作成",
-          "explanation": "データベースの中身の設計は利用者の仕事です。"
-        },
-        {
           "text": "データベースのソフトウェアへのパッチ適用や自動バックアップ",
           "explanation": "RDS では、パッチ適用やバックアップなどの管理作業を AWS が行います。"
+        },
+        {
+          "text": "テーブルの設計とインデックスの作成",
+          "explanation": "データベースの中身の設計は利用者の仕事です。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "RDS はマネージドサービスなので、ハードウェアの用意、パッチ適用、バックアップなどの管理作業を AWS が担います。",
       "references": [
@@ -2929,24 +2929,24 @@
       "question": "使われていないことがわかったアプリケーションを、移行せずに廃止する戦略はどれか。",
       "choices": [
         {
-          "text": "リタイア",
-          "explanation": "不要なアプリケーションを廃止する戦略です。"
+          "text": "リロケート",
+          "explanation": "仮想環境をそのまま移す戦略です。"
         },
         {
           "text": "リテイン",
           "explanation": "今はオンプレミスに残しておく戦略です。廃止はしません。"
         },
         {
-          "text": "リロケート",
-          "explanation": "仮想環境をそのまま移す戦略です。"
-        },
-        {
           "text": "リパーチェス",
           "explanation": "別の製品に乗り換える戦略です。"
+        },
+        {
+          "text": "リタイア",
+          "explanation": "不要なアプリケーションを廃止する戦略です。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "7つの移行戦略：リホスト、リプラットフォーム、リファクタリング、リパーチェス、リタイア、リテイン、リロケート。",
       "references": [
@@ -2997,24 +2997,24 @@
       "question": "オンプレミスのサーバーの構成や使用状況、依存関係の情報を集め、移行の計画に役立てるサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Inspector",
-          "explanation": "脆弱性を見つけるサービスです。"
+          "text": "AWS Database Migration Service",
+          "explanation": "データベースのデータを移行するサービスです。"
         },
         {
-          "text": "AWS Application Discovery Service",
-          "explanation": "オンプレミスのサーバーの構成・使用状況・依存関係の情報を集めます。"
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を見つけるサービスです。"
         },
         {
           "text": "AWS Config",
           "explanation": "AWS 上のリソースの設定を記録するサービスです。"
         },
         {
-          "text": "AWS Database Migration Service",
-          "explanation": "データベースのデータを移行するサービスです。"
+          "text": "AWS Application Discovery Service",
+          "explanation": "オンプレミスのサーバーの構成・使用状況・依存関係の情報を集めます。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "Application Discovery Service は、移行の計画のためにオンプレミスの情報を集めます。",
       "references": [
@@ -3121,12 +3121,12 @@
       "question": "オンプレミスでは必要だったが、AWS では利用者が直接負担しなくてよくなるものはどれか。",
       "choices": [
         {
-          "text": "AWS のサービスの利用料",
-          "explanation": "AWS の利用料は当然かかります。"
-        },
-        {
           "text": "アプリケーションの開発費",
           "explanation": "アプリケーションを作るのは利用者です。"
+        },
+        {
+          "text": "AWS のサービスの利用料",
+          "explanation": "AWS の利用料は当然かかります。"
         },
         {
           "text": "データセンターの建物・電源・空調の費用",
@@ -3189,12 +3189,12 @@
       "question": "同じ環境を、テンプレートからいつでも同じ構成で作り直せるようにするサービスはどれか。",
       "choices": [
         {
-          "text": "AWS Trusted Advisor",
-          "explanation": "ベストプラクティスに沿っているかを確認するサービスです。"
-        },
-        {
           "text": "AWS Artifact",
           "explanation": "コンプライアンスのレポートを入手するサービスです。"
+        },
+        {
+          "text": "AWS Trusted Advisor",
+          "explanation": "ベストプラクティスに沿っているかを確認するサービスです。"
         },
         {
           "text": "Amazon CloudWatch",
@@ -3253,6 +3253,10 @@
       "question": "EC2 のインスタンスタイプのうち、メモリを多く使うデータベースやキャッシュ向けのものはどれか。",
       "choices": [
         {
+          "text": "ストレージ最適化",
+          "explanation": "ローカルのストレージへの大量の読み書きが必要なワークロード向けです。"
+        },
+        {
           "text": "コンピューティング最適化",
           "explanation": "CPU の性能が重要なワークロード向けです。"
         },
@@ -3261,16 +3265,12 @@
           "explanation": "大量のデータをメモリで処理するワークロード向けです。"
         },
         {
-          "text": "ストレージ最適化",
-          "explanation": "ローカルのストレージへの大量の読み書きが必要なワークロード向けです。"
-        },
-        {
           "text": "高速コンピューティング",
           "explanation": "GPU などのアクセラレーターを使うワークロード向けです。"
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "EC2 には、汎用・コンピューティング最適化・メモリ最適化・ストレージ最適化・高速コンピューティングなどの種類があります。",
       "references": [
@@ -3441,11 +3441,11 @@
       "question": "どのサービスを使っても、利用者の責任であり続けるものはどれか。",
       "choices": [
         {
-          "text": "ネットワーク機器の物理的な設置",
+          "text": "ハイパーバイザーの管理",
           "explanation": "常に AWS の責任です。"
         },
         {
-          "text": "ハイパーバイザーの管理",
+          "text": "物理サーバーの保守",
           "explanation": "常に AWS の責任です。"
         },
         {
@@ -3453,7 +3453,7 @@
           "explanation": "データと、誰に何を許可するかは常に利用者の責任です。"
         },
         {
-          "text": "物理サーバーの保守",
+          "text": "ネットワーク機器の物理的な設置",
           "explanation": "常に AWS の責任です。"
         }
       ],
@@ -3681,10 +3681,6 @@
       "question": "IAM ロールの説明として正しいものはどれか。",
       "choices": [
         {
-          "text": "必要なときに引き受けて使う、一時的な認証情報を持つ ID",
-          "explanation": "ロールには長期の認証情報がなく、引き受けたときに一時的な認証情報が発行されます。"
-        },
-        {
           "text": "アカウントを作ったときの、すべての権限を持つ ID",
           "explanation": "これはルートユーザーの説明です。"
         },
@@ -3695,10 +3691,14 @@
         {
           "text": "特定の1人に紐づく、長期のパスワードを持つ ID",
           "explanation": "これは IAM ユーザーの説明です。"
+        },
+        {
+          "text": "必要なときに引き受けて使う、一時的な認証情報を持つ ID",
+          "explanation": "ロールには長期の認証情報がなく、引き受けたときに一時的な認証情報が発行されます。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "IAM ロールは、引き受けたときにだけ一時的な認証情報が発行される ID です。",
       "references": [
@@ -3717,24 +3717,24 @@
       "question": "自社のモバイルアプリの利用者に、サインアップとサインインの機能を提供したい。最も適切なサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Cognito",
-          "explanation": "Web やモバイルのアプリケーションに、利用者の認証と認可の機能を提供します。"
-        },
-        {
-          "text": "AWS Secrets Manager",
-          "explanation": "パスワードなどのシークレットを保管するサービスです。"
-        },
-        {
           "text": "AWS Directory Service",
           "explanation": "マネージドな Microsoft Active Directory などを提供するサービスです。"
         },
         {
           "text": "AWS IAM アイデンティティセンター",
           "explanation": "社員などが AWS アカウントや業務アプリにアクセスするためのサービスです。"
+        },
+        {
+          "text": "Amazon Cognito",
+          "explanation": "Web やモバイルのアプリケーションに、利用者の認証と認可の機能を提供します。"
+        },
+        {
+          "text": "AWS Secrets Manager",
+          "explanation": "パスワードなどのシークレットを保管するサービスです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "アプリの利用者（顧客）の認証には Cognito、社員の AWS アカウントへのアクセスには IAM アイデンティティセンターを使います。",
       "references": [
@@ -3873,20 +3873,20 @@
           "explanation": "CloudFront は OS の管理をしません。"
         },
         {
+          "text": "CloudFront が通信をすべて暗号化しないから",
+          "explanation": "暗号化の有無は DDoS の吸収とは関係ありません。"
+        },
+        {
           "text": "世界中のエッジロケーションで通信を受けるので、攻撃が分散される",
           "explanation": "エッジで受け止めることで、オリジンへの負荷を減らせます。"
         },
         {
           "text": "CloudFront を使うとオリジンが不要になるから",
           "explanation": "オリジンは必要です。"
-        },
-        {
-          "text": "CloudFront が通信をすべて暗号化しないから",
-          "explanation": "暗号化の有無は DDoS の吸収とは関係ありません。"
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "CloudFront は世界中のエッジロケーションから配信するので、大量の通信を分散して受け止めやすくなります。",
       "references": [
@@ -3945,12 +3945,12 @@
           "explanation": "予算を管理するサービスです。"
         },
         {
-          "text": "Amazon Detective",
-          "explanation": "セキュリティの問題を調査するサービスです。"
-        },
-        {
           "text": "AWS Artifact",
           "explanation": "コンプライアンスのレポートを入手するサービスです。"
+        },
+        {
+          "text": "Amazon Detective",
+          "explanation": "セキュリティの問題を調査するサービスです。"
         },
         {
           "text": "AWS Firewall Manager",
@@ -4005,20 +4005,20 @@
       "question": "GuardDuty の検出結果について、関係するリソースや活動を可視化して、根本原因を調査したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Config",
-          "explanation": "設定の記録と評価を行うサービスです。"
-        },
-        {
           "text": "AWS Trusted Advisor",
           "explanation": "ベストプラクティスとの差を確認するサービスです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データを見つけるサービスです。"
         },
         {
           "text": "Amazon Detective",
           "explanation": "ログをもとにリソースの関係を可視化し、セキュリティの問題の根本原因の調査を助けます。"
         },
         {
-          "text": "Amazon Macie",
-          "explanation": "機密データを見つけるサービスです。"
+          "text": "AWS Config",
+          "explanation": "設定の記録と評価を行うサービスです。"
         }
       ],
       "answers": [
@@ -4069,24 +4069,24 @@
       "question": "GuardDuty や Inspector など複数のサービスの検出結果を1か所に集め、セキュリティの状況をまとめて確認したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Artifact",
-          "explanation": "コンプライアンスのレポートを入手するサービスです。"
-        },
-        {
-          "text": "AWS Security Hub",
-          "explanation": "複数のセキュリティサービスの検出結果を集約し、ベストプラクティスとの差も確認できます。"
+          "text": "Amazon Detective",
+          "explanation": "個別の問題を深く調査するサービスです。"
         },
         {
           "text": "Amazon CloudWatch",
           "explanation": "メトリクスやログの監視のサービスです。"
         },
         {
-          "text": "Amazon Detective",
-          "explanation": "個別の問題を深く調査するサービスです。"
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートを入手するサービスです。"
+        },
+        {
+          "text": "AWS Security Hub",
+          "explanation": "複数のセキュリティサービスの検出結果を集約し、ベストプラクティスとの差も確認できます。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "Security Hub は、AWS のセキュリティの状況を一元的に確認し、検出結果を集約するサービスです。",
       "references": [
@@ -4133,16 +4133,16 @@
       "question": "「インスタンスで動くソフトウェアに既知の脆弱性がないか」を調べるサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon Macie",
-          "explanation": "S3 の機密データを見つけます。"
-        },
-        {
           "text": "Amazon GuardDuty",
           "explanation": "不審な活動を検出します。"
         },
         {
           "text": "AWS Artifact",
           "explanation": "コンプライアンスのレポートを入手します。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "S3 の機密データを見つけます。"
         },
         {
           "text": "Amazon Inspector",
@@ -4201,16 +4201,16 @@
           "explanation": "コンプライアンスのレポートを入手するサービスです。"
         },
         {
-          "text": "Amazon Inspector",
-          "explanation": "脆弱性を見つけるサービスです。"
+          "text": "AWS Secrets Manager",
+          "explanation": "シークレットを保管するサービスです。"
         },
         {
           "text": "AWS CloudHSM",
           "explanation": "AWS クラウド上で、自社専用の HSM を使えるサービスです。"
         },
         {
-          "text": "AWS Secrets Manager",
-          "explanation": "シークレットを保管するサービスです。"
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を見つけるサービスです。"
         }
       ],
       "answers": [
@@ -4261,24 +4261,24 @@
       "question": "Web サイトの HTTPS で使う SSL/TLS 証明書を、発行・更新の手間なく管理したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Certificate Manager",
-          "explanation": "SSL/TLS 証明書の発行・管理・更新を行います。"
-        },
-        {
-          "text": "AWS KMS",
-          "explanation": "暗号化の鍵を管理するサービスです。"
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートを入手するサービスです。"
         },
         {
           "text": "AWS Secrets Manager",
           "explanation": "シークレットを保管するサービスです。"
         },
         {
-          "text": "AWS Artifact",
-          "explanation": "コンプライアンスのレポートを入手するサービスです。"
+          "text": "AWS Certificate Manager",
+          "explanation": "SSL/TLS 証明書の発行・管理・更新を行います。"
+        },
+        {
+          "text": "AWS KMS",
+          "explanation": "暗号化の鍵を管理するサービスです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "ACM は、AWS のサービスで使う SSL/TLS 証明書を管理し、更新も自動で行います。",
       "references": [
@@ -4325,10 +4325,6 @@
       "question": "セキュリティグループの設定が、いつどのように変わったかの履歴を確認し、ルールに沿っているかを評価したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Config",
-          "explanation": "リソースの設定と変更の履歴を記録し、ルールに沿っているかを評価します。"
-        },
-        {
           "text": "AWS Shield",
           "explanation": "DDoS 攻撃から守るサービスです。"
         },
@@ -4339,10 +4335,14 @@
         {
           "text": "Amazon Macie",
           "explanation": "機密データを見つけるサービスです。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "リソースの設定と変更の履歴を記録し、ルールに沿っているかを評価します。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "Config はリソースの設定を記録・評価します。「誰が操作したか」は CloudTrail、「設定がどう変わったか」は Config で確認します。",
       "references": [
@@ -4457,12 +4457,12 @@
           "explanation": "予算を管理するサービスです。"
         },
         {
-          "text": "AWS Control Tower",
-          "explanation": "ベストプラクティスに沿ったマルチアカウント環境を作り、ガードレールで管理します。"
-        },
-        {
           "text": "Amazon Lightsail",
           "explanation": "簡単に仮想サーバーを始めるサービスです。"
+        },
+        {
+          "text": "AWS Control Tower",
+          "explanation": "ベストプラクティスに沿ったマルチアカウント環境を作り、ガードレールで管理します。"
         },
         {
           "text": "AWS Artifact",
@@ -4470,7 +4470,7 @@
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "Control Tower は、Organizations などを組み合わせて、管理されたマルチアカウント環境をすばやく作ります。",
       "references": [
@@ -4573,16 +4573,16 @@
       "question": "多数の VPC とオンプレミスのネットワークを、中央のハブを通してまとめて接続したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Lightsail",
-          "explanation": "簡単に仮想サーバーを始めるサービスです。"
-        },
-        {
           "text": "AWS Artifact",
           "explanation": "コンプライアンスのレポートを入手するサービスです。"
         },
         {
           "text": "Amazon CloudFront",
           "explanation": "コンテンツを配信するサービスです。"
+        },
+        {
+          "text": "Amazon Lightsail",
+          "explanation": "簡単に仮想サーバーを始めるサービスです。"
         },
         {
           "text": "AWS Transit Gateway",
@@ -4637,20 +4637,20 @@
       "question": "ゲームの UDP の通信など、キャッシュできない通信を、AWS のグローバルネットワークを使って速く安定させたい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon ElastiCache",
-          "explanation": "インメモリのキャッシュのサービスです。"
+          "text": "Amazon S3",
+          "explanation": "オブジェクトストレージです。"
         },
         {
-          "text": "Amazon CloudFront",
-          "explanation": "HTTP のコンテンツのキャッシュと配信が中心のサービスです。"
+          "text": "Amazon ElastiCache",
+          "explanation": "インメモリのキャッシュのサービスです。"
         },
         {
           "text": "AWS Global Accelerator",
           "explanation": "固定の IP アドレスを入口に、利用者の通信を AWS のグローバルネットワークで運び、性能と可用性を上げます。"
         },
         {
-          "text": "Amazon S3",
-          "explanation": "オブジェクトストレージです。"
+          "text": "Amazon CloudFront",
+          "explanation": "HTTP のコンテンツのキャッシュと配信が中心のサービスです。"
         }
       ],
       "answers": [
@@ -4729,24 +4729,24 @@
       "question": "コンテナイメージを保管・管理するレジストリのサービスはどれか。",
       "choices": [
         {
-          "text": "Amazon ECR",
-          "explanation": "フルマネージドのコンテナイメージのレジストリです。"
-        },
-        {
-          "text": "AWS Glue",
-          "explanation": "データの ETL のサービスです。"
-        },
-        {
           "text": "Amazon Connect",
           "explanation": "コンタクトセンターのサービスです。"
         },
         {
           "text": "Amazon EFS",
           "explanation": "ファイルストレージです。"
+        },
+        {
+          "text": "AWS Glue",
+          "explanation": "データの ETL のサービスです。"
+        },
+        {
+          "text": "Amazon ECR",
+          "explanation": "フルマネージドのコンテナイメージのレジストリです。"
         }
       ],
       "answers": [
-        0
+        3
       ],
       "explanation": "ECR はコンテナイメージを保管・管理するレジストリです。ECS や EKS からイメージを取り出して使います。",
       "references": [
@@ -4765,24 +4765,24 @@
       "question": "Kubernetes でコンテナを動かしたい。Kubernetes のコントロールプレーンの管理は AWS に任せたい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Elastic Beanstalk",
-          "explanation": "アプリケーションをデプロイするサービスで、Kubernetes のマネージドサービスではありません。"
+          "text": "Amazon ECS",
+          "explanation": "AWS 独自のコンテナオーケストレーションのサービスで、Kubernetes ではありません。"
         },
         {
-          "text": "Amazon EKS",
-          "explanation": "マネージドな Kubernetes のサービスです。コントロールプレーンは AWS が管理します。"
+          "text": "AWS Elastic Beanstalk",
+          "explanation": "アプリケーションをデプロイするサービスで、Kubernetes のマネージドサービスではありません。"
         },
         {
           "text": "Amazon Lightsail",
           "explanation": "仮想サーバーを簡単に使うサービスです。"
         },
         {
-          "text": "Amazon ECS",
-          "explanation": "AWS 独自のコンテナオーケストレーションのサービスで、Kubernetes ではありません。"
+          "text": "Amazon EKS",
+          "explanation": "マネージドな Kubernetes のサービスです。コントロールプレーンは AWS が管理します。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "EKS は Kubernetes をマネージドで提供し、コントロールプレーンの可用性やスケーラビリティを AWS が担います。",
       "references": [
@@ -4885,10 +4885,6 @@
       "question": "大量の計算ジョブを、必要な計算リソースを自動で用意しながら実行したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Lightsail",
-          "explanation": "仮想サーバーを簡単に使うサービスです。"
-        },
-        {
           "text": "Amazon Route 53",
           "explanation": "DNS のサービスです。"
         },
@@ -4899,10 +4895,14 @@
         {
           "text": "AWS Batch",
           "explanation": "バッチの計算ジョブを、必要なリソースを自動で用意しながら実行します。"
+        },
+        {
+          "text": "Amazon Lightsail",
+          "explanation": "仮想サーバーを簡単に使うサービスです。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "AWS Batch は、バッチの計算ジョブのための計算リソースを自動で用意・管理します。",
       "references": [
@@ -4949,20 +4949,20 @@
       "question": "AWS Outposts が向いているワークロードはどれか。",
       "choices": [
         {
-          "text": "世界中の利用者への静的なファイルの配信",
-          "explanation": "CloudFront が向いています。"
+          "text": "使った分だけの課金で、イベントに応じてコードを動かす処理",
+          "explanation": "Lambda が向いています。"
         },
         {
-          "text": "月額の料金でブログを始めたい個人",
-          "explanation": "Lightsail が向いています。"
+          "text": "世界中の利用者への静的なファイルの配信",
+          "explanation": "CloudFront が向いています。"
         },
         {
           "text": "オンプレミスのシステムとの間で、とても低い遅延が必要なワークロード",
           "explanation": "低い遅延やローカルでのデータ処理が必要な場合に向いています。"
         },
         {
-          "text": "使った分だけの課金で、イベントに応じてコードを動かす処理",
-          "explanation": "Lambda が向いています。"
+          "text": "月額の料金でブログを始めたい個人",
+          "explanation": "Lightsail が向いています。"
         }
       ],
       "answers": [
@@ -5013,16 +5013,16 @@
       "question": "ブロックストレージ・ファイルストレージ・オブジェクトストレージの組み合わせとして正しいものはどれか。",
       "choices": [
         {
+          "text": "S3・EBS・EFS",
+          "explanation": "順番が違います。S3 はオブジェクトストレージです。"
+        },
+        {
           "text": "EFS・S3・EBS",
           "explanation": "順番が違います。EFS はファイルストレージです。"
         },
         {
           "text": "EBS・S3・EFS",
           "explanation": "順番が違います。S3 はオブジェクト、EFS はファイルのストレージです。"
-        },
-        {
-          "text": "S3・EBS・EFS",
-          "explanation": "順番が違います。S3 はオブジェクトストレージです。"
         },
         {
           "text": "EBS・EFS・S3",
@@ -5085,24 +5085,24 @@
       "question": "Windows のアプリケーションから、SMB でアクセスする共有のファイルストレージが必要である。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon FSx for Windows File Server",
-          "explanation": "Windows のネイティブなファイルシステムを、SMB で使えるフルマネージドのファイルストレージです。"
-        },
-        {
           "text": "Amazon ElastiCache",
           "explanation": "インメモリのキャッシュです。"
         },
         {
-          "text": "Amazon S3",
-          "explanation": "オブジェクトストレージです。"
-        },
-        {
           "text": "Amazon EBS",
           "explanation": "ブロックストレージで、共有のファイルサーバーではありません。"
+        },
+        {
+          "text": "Amazon FSx for Windows File Server",
+          "explanation": "Windows のネイティブなファイルシステムを、SMB で使えるフルマネージドのファイルストレージです。"
+        },
+        {
+          "text": "Amazon S3",
+          "explanation": "オブジェクトストレージです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "Windows のファイル共有には FSx for Windows File Server を使います。",
       "references": [
@@ -5149,24 +5149,24 @@
       "question": "Web やモバイルのフロントエンドを、ホスティングやバックエンドとあわせて手早く作って公開したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Neptune",
-          "explanation": "グラフデータベースです。"
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を見つけるサービスです。"
         },
         {
           "text": "AWS Direct Connect",
           "explanation": "専用線のサービスです。"
         },
         {
-          "text": "AWS Amplify",
-          "explanation": "フルスタックの Web・モバイルアプリの開発とホスティングを支援します。"
+          "text": "Amazon Neptune",
+          "explanation": "グラフデータベースです。"
         },
         {
-          "text": "Amazon Inspector",
-          "explanation": "脆弱性を見つけるサービスです。"
+          "text": "AWS Amplify",
+          "explanation": "フルスタックの Web・モバイルアプリの開発とホスティングを支援します。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "Amplify は、Web・モバイルアプリのフロントエンドの開発とホスティングを支援するサービスです。",
       "references": [
@@ -5185,6 +5185,10 @@
       "question": "アクセスの頻度が予測できないデータを、自動で最適なアクセス層に移してコストを下げたい。どのストレージクラスを使うか。",
       "choices": [
         {
+          "text": "S3 Glacier Deep Archive",
+          "explanation": "長期保存向けで、取り出しに時間がかかります。"
+        },
+        {
           "text": "S3 One Zone-IA",
           "explanation": "1つの AZ にだけ保存する、アクセスの少ないデータ向けのクラスです。"
         },
@@ -5195,14 +5199,10 @@
         {
           "text": "S3 Standard",
           "explanation": "頻繁にアクセスするデータ向けで、自動で移す機能はありません。"
-        },
-        {
-          "text": "S3 Glacier Deep Archive",
-          "explanation": "長期保存向けで、取り出しに時間がかかります。"
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "アクセスのパターンが不明・変化するなら Intelligent-Tiering が向いています。",
       "references": [
@@ -5277,24 +5277,24 @@
       "question": "EC2・EBS・RDS・DynamoDB などのバックアップを、ポリシーで一元的に自動化したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Macie",
-          "explanation": "機密データを見つけるサービスです。"
+          "text": "AWS Storage Gateway",
+          "explanation": "オンプレミスと AWS のストレージをつなぐサービスです。"
         },
         {
           "text": "AWS Glue",
           "explanation": "データの ETL のサービスです。"
         },
         {
-          "text": "AWS Backup",
-          "explanation": "複数の AWS サービスのバックアップを一元的に管理・自動化します。"
+          "text": "Amazon Macie",
+          "explanation": "機密データを見つけるサービスです。"
         },
         {
-          "text": "AWS Storage Gateway",
-          "explanation": "オンプレミスと AWS のストレージをつなぐサービスです。"
+          "text": "AWS Backup",
+          "explanation": "複数の AWS サービスのバックアップを一元的に管理・自動化します。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "AWS Backup は、AWS のサービスのバックアップを一元化・自動化します。",
       "references": [
@@ -5313,24 +5313,24 @@
       "question": "RDS で、別の AZ に待機用のコピーを置き、障害時に自動で切り替えて可用性を上げる機能はどれか。",
       "choices": [
         {
-          "text": "スナップショットのコピー",
-          "explanation": "バックアップの機能で、自動の切り替えは行いません。"
-        },
-        {
-          "text": "マルチ AZ 配置",
-          "explanation": "別の AZ に待機用のインスタンスを置き、障害時に自動でフェイルオーバーします。"
-        },
-        {
           "text": "リードレプリカ",
           "explanation": "読み取りの負荷を分散するための機能です。"
         },
         {
+          "text": "スナップショットのコピー",
+          "explanation": "バックアップの機能で、自動の切り替えは行いません。"
+        },
+        {
           "text": "パラメータグループ",
           "explanation": "データベースの設定をまとめるものです。"
+        },
+        {
+          "text": "マルチ AZ 配置",
+          "explanation": "別の AZ に待機用のインスタンスを置き、障害時に自動でフェイルオーバーします。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "マルチ AZ 配置は可用性のため、リードレプリカは読み取りの性能のために使います。",
       "references": [
@@ -5405,24 +5405,24 @@
       "question": "SNS の「友達の友達」のような、つながりの多いデータを効率よく扱いたい。どのデータベースを使うか。",
       "choices": [
         {
-          "text": "Amazon Neptune",
-          "explanation": "つながりの多いデータを扱うグラフデータベースです。"
-        },
-        {
-          "text": "Amazon ElastiCache",
-          "explanation": "インメモリのキャッシュです。"
+          "text": "Amazon DynamoDB",
+          "explanation": "キーバリュー型のデータベースです。"
         },
         {
           "text": "Amazon Redshift",
           "explanation": "データウェアハウスです。"
         },
         {
-          "text": "Amazon DynamoDB",
-          "explanation": "キーバリュー型のデータベースです。"
+          "text": "Amazon Neptune",
+          "explanation": "つながりの多いデータを扱うグラフデータベースです。"
+        },
+        {
+          "text": "Amazon ElastiCache",
+          "explanation": "インメモリのキャッシュです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "データのつながりを中心に扱うならグラフデータベースの Neptune が向いています。",
       "references": [
@@ -5473,12 +5473,12 @@
           "explanation": "分析用のデータウェアハウスです。"
         },
         {
-          "text": "Amazon Neptune",
-          "explanation": "グラフデータベースです。"
-        },
-        {
           "text": "Amazon S3 Glacier Deep Archive",
           "explanation": "長期保存向けのストレージです。"
+        },
+        {
+          "text": "Amazon Neptune",
+          "explanation": "グラフデータベースです。"
         },
         {
           "text": "Amazon DynamoDB",
@@ -5649,24 +5649,24 @@
       "question": "Lambda 関数を、HTTP の API として外部に公開したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Direct Connect",
-          "explanation": "専用線のサービスです。"
-        },
-        {
           "text": "Amazon EFS",
           "explanation": "ファイルストレージです。"
         },
         {
-          "text": "Amazon Route 53",
-          "explanation": "DNS のサービスです。"
+          "text": "AWS Direct Connect",
+          "explanation": "専用線のサービスです。"
         },
         {
           "text": "Amazon API Gateway",
           "explanation": "REST や WebSocket の API を作成・公開・管理するサービスです。"
+        },
+        {
+          "text": "Amazon Route 53",
+          "explanation": "DNS のサービスです。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "API Gateway は、どんな規模でも API を作成・公開・管理できるサービスです。",
       "references": [
@@ -5685,24 +5685,24 @@
       "question": "分析の結果を、グラフやダッシュボードで社内に共有したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Athena",
-          "explanation": "SQL でクエリを実行するサービスで、ダッシュボードの作成が主目的ではありません。"
-        },
-        {
           "text": "Amazon Kinesis",
           "explanation": "ストリーミングデータを扱うサービスです。"
         },
         {
-          "text": "Amazon Quick Sight",
-          "explanation": "データを可視化し、ダッシュボードで共有できる BI のサービスです。"
-        },
-        {
           "text": "AWS Glue",
           "explanation": "データの ETL のサービスです。"
+        },
+        {
+          "text": "Amazon Athena",
+          "explanation": "SQL でクエリを実行するサービスで、ダッシュボードの作成が主目的ではありません。"
+        },
+        {
+          "text": "Amazon Quick Sight",
+          "explanation": "データを可視化し、ダッシュボードで共有できる BI のサービスです。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "Quick Sight は、データを可視化してダッシュボードを作り、共有できるサービスです。",
       "references": [
@@ -5725,20 +5725,20 @@
           "explanation": "ETL のサービスです。リアルタイムのデータを集める役割は Kinesis が担います。"
         },
         {
+          "text": "Amazon S3 Glacier Deep Archive",
+          "explanation": "長期保存向けのストレージです。"
+        },
+        {
           "text": "Amazon Kinesis Data Streams",
           "explanation": "リアルタイムのデータストリームを集めて処理するサービスです。"
         },
         {
           "text": "Amazon Redshift",
           "explanation": "データウェアハウスです。"
-        },
-        {
-          "text": "Amazon S3 Glacier Deep Archive",
-          "explanation": "長期保存向けのストレージです。"
         }
       ],
       "answers": [
-        1
+        2
       ],
       "explanation": "Kinesis Data Streams は、大量のデータをリアルタイムで集めて処理するためのサービスです。",
       "references": [
@@ -5757,24 +5757,24 @@
       "question": "ニュース記事の文章を、自然な音声で読み上げたい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Polly",
-          "explanation": "テキストを自然な音声に変換します。"
+          "text": "Amazon Transcribe",
+          "explanation": "音声をテキストに変換する、逆向きのサービスです。"
         },
         {
           "text": "Amazon Comprehend",
           "explanation": "テキストを分析するサービスです。"
         },
         {
-          "text": "Amazon Rekognition",
-          "explanation": "画像・動画を分析するサービスです。"
+          "text": "Amazon Polly",
+          "explanation": "テキストを自然な音声に変換します。"
         },
         {
-          "text": "Amazon Transcribe",
-          "explanation": "音声をテキストに変換する、逆向きのサービスです。"
+          "text": "Amazon Rekognition",
+          "explanation": "画像・動画を分析するサービスです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "テキスト → 音声は Polly、音声 → テキストは Transcribe です。",
       "references": [
@@ -5793,24 +5793,24 @@
       "question": "Web サイトの文章を、英語から日本語に機械翻訳したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Textract",
-          "explanation": "文書から文字を取り出すサービスです。"
-        },
-        {
-          "text": "Amazon Translate",
-          "explanation": "ニューラル機械翻訳のサービスです。"
-        },
-        {
           "text": "Amazon Lex",
           "explanation": "会話型のボットを作るサービスです。"
         },
         {
+          "text": "Amazon Textract",
+          "explanation": "文書から文字を取り出すサービスです。"
+        },
+        {
           "text": "Amazon Comprehend",
           "explanation": "テキストを分析するサービスで、翻訳はしません。"
+        },
+        {
+          "text": "Amazon Translate",
+          "explanation": "ニューラル機械翻訳のサービスです。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "Translate は、テキストを別の言語に翻訳するサービスです。",
       "references": [
@@ -5829,24 +5829,24 @@
       "question": "1つのメッセージを、メール・SMS・複数のシステムに同時に配信（プッシュ）したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "Amazon Athena",
-          "explanation": "SQL でクエリを実行する分析サービスです。"
-        },
-        {
           "text": "Amazon SQS",
           "explanation": "キューにためて、受け取る側が取りに来る（プル）サービスです。"
         },
         {
-          "text": "Amazon SNS",
-          "explanation": "パブリッシュ・サブスクライブ型で、1つのメッセージを複数の購読者にプッシュします。"
-        },
-        {
           "text": "AWS Step Functions",
           "explanation": "ワークフローを組み立てるサービスです。"
+        },
+        {
+          "text": "Amazon Athena",
+          "explanation": "SQL でクエリを実行する分析サービスです。"
+        },
+        {
+          "text": "Amazon SNS",
+          "explanation": "パブリッシュ・サブスクライブ型で、1つのメッセージを複数の購読者にプッシュします。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "SNS は1対多のプッシュ型の通知、SQS はためておいて取りに来るキューです。",
       "references": [
@@ -5865,24 +5865,24 @@
       "question": "複数の Lambda 関数を、順番・分岐・リトライを含むワークフローとして組み立てたい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Step Functions",
-          "explanation": "複数のサービスを組み合わせたワークフローを、視覚的に作って実行します。"
-        },
-        {
-          "text": "Amazon SNS",
-          "explanation": "通知を配信するサービスです。"
+          "text": "Amazon EventBridge",
+          "explanation": "イベントをルールで振り分けるサービスで、手順の流れの管理は Step Functions が向いています。"
         },
         {
           "text": "Amazon Connect",
           "explanation": "コンタクトセンターのサービスです。"
         },
         {
-          "text": "Amazon EventBridge",
-          "explanation": "イベントをルールで振り分けるサービスで、手順の流れの管理は Step Functions が向いています。"
+          "text": "AWS Step Functions",
+          "explanation": "複数のサービスを組み合わせたワークフローを、視覚的に作って実行します。"
+        },
+        {
+          "text": "Amazon SNS",
+          "explanation": "通知を配信するサービスです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "Step Functions は、AWS のサービスを組み合わせたワークフローを作るサービスです。",
       "references": [
@@ -5989,16 +5989,16 @@
       "question": "EC2 の購入オプションのうち、物理サーバーを丸ごと専有し、ソケット単位のライセンスなどに対応しやすいものはどれか。",
       "choices": [
         {
-          "text": "オンデマンドインスタンス",
-          "explanation": "使った分だけ秒単位などで払うオプションです。"
+          "text": "スポットインスタンス",
+          "explanation": "使われていない容量を安く使うオプションです。"
         },
         {
           "text": "Savings Plans",
           "explanation": "利用量を約束して割引を受ける料金モデルです。"
         },
         {
-          "text": "スポットインスタンス",
-          "explanation": "使われていない容量を安く使うオプションです。"
+          "text": "オンデマンドインスタンス",
+          "explanation": "使った分だけ秒単位などで払うオプションです。"
         },
         {
           "text": "Dedicated Hosts",
@@ -6109,24 +6109,24 @@
       "question": "サードパーティのソフトウェアを探して購入し、AWS の請求とまとめて支払いたい。どこを使うか。",
       "choices": [
         {
-          "text": "AWS Marketplace",
-          "explanation": "サードパーティのソフトウェアやサービスを探して購入・導入できるカタログです。"
-        },
-        {
-          "text": "AWS Health Dashboard",
-          "explanation": "AWS のサービスの状態を確認するサービスです。"
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートを入手するサービスです。"
         },
         {
           "text": "AWS Budgets",
           "explanation": "予算を管理するサービスです。"
         },
         {
-          "text": "AWS Artifact",
-          "explanation": "コンプライアンスのレポートを入手するサービスです。"
+          "text": "AWS Marketplace",
+          "explanation": "サードパーティのソフトウェアやサービスを探して購入・導入できるカタログです。"
+        },
+        {
+          "text": "AWS Health Dashboard",
+          "explanation": "AWS のサービスの状態を確認するサービスです。"
         }
       ],
       "answers": [
-        0
+        2
       ],
       "explanation": "AWS Marketplace は、AWS で動くサードパーティのソフトウェアを探して購入できるデジタルカタログです。",
       "references": [
@@ -6145,24 +6145,24 @@
       "question": "請求の明細を、最も詳しい粒度で S3 に出力し、独自に分析したい。どのサービスを使うか。",
       "choices": [
         {
-          "text": "AWS Budgets",
-          "explanation": "予算を管理するサービスです。"
+          "text": "AWS Health Dashboard",
+          "explanation": "AWS のサービスの状態を確認するサービスです。"
         },
         {
           "text": "AWS Trusted Advisor",
           "explanation": "ベストプラクティスとの差を確認するサービスです。"
         },
         {
-          "text": "AWS Health Dashboard",
-          "explanation": "AWS のサービスの状態を確認するサービスです。"
-        },
-        {
           "text": "AWS Cost and Usage Reports",
           "explanation": "最も詳しい費用と使用量のデータを S3 に出力します。"
+        },
+        {
+          "text": "AWS Budgets",
+          "explanation": "予算を管理するサービスです。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "Cost and Usage Reports（CUR）は、最も包括的な費用と使用量のデータを提供します。",
       "references": [
@@ -6185,20 +6185,20 @@
           "explanation": "通信を制御するもので、費用の分類には使いません。"
         },
         {
+          "text": "IAM ポリシー",
+          "explanation": "アクセス許可を決めるもので、費用の分類には使いません。"
+        },
+        {
           "text": "アベイラビリティーゾーン",
           "explanation": "インフラの場所で、部署の区別には使えません。"
         },
         {
           "text": "コスト配分タグ",
           "explanation": "リソースにタグを付け、コスト配分タグとして有効にすると、タグごとに費用を分けて確認できます。"
-        },
-        {
-          "text": "IAM ポリシー",
-          "explanation": "アクセス許可を決めるもので、費用の分類には使いません。"
         }
       ],
       "answers": [
-        2
+        3
       ],
       "explanation": "コスト配分タグを使うと、部署やプロジェクトごとに費用を集計できます。",
       "references": [
@@ -6305,20 +6305,20 @@
           "explanation": "機密データを見つけるサービスです。"
         },
         {
-          "text": "AWS Health Dashboard",
-          "explanation": "AWS のサービスの状態や、自分のアカウントに影響するイベントを確認できます。"
-        },
-        {
           "text": "AWS Marketplace",
           "explanation": "ソフトウェアのカタログです。"
         },
         {
           "text": "AWS Budgets",
           "explanation": "予算を管理するサービスです。"
+        },
+        {
+          "text": "AWS Health Dashboard",
+          "explanation": "AWS のサービスの状態や、自分のアカウントに影響するイベントを確認できます。"
         }
       ],
       "answers": [
-        1
+        3
       ],
       "explanation": "AWS Health は、自分のアカウントに影響する AWS のイベントを知らせます。",
       "references": [
@@ -6369,24 +6369,24 @@
       "question": "サポートプランを選ぶときに、最も重要な判断材料はどれか。",
       "choices": [
         {
-          "text": "アカウントの作成日",
-          "explanation": "作成日はプランの選択に関係ありません。"
+          "text": "EC2 インスタンスの OS の種類",
+          "explanation": "OS の種類はプランの選択に関係ありません。"
         },
         {
           "text": "使っているリージョンの数",
           "explanation": "リージョンの数でプランは決まりません。"
         },
         {
-          "text": "EC2 インスタンスの OS の種類",
-          "explanation": "OS の種類はプランの選択に関係ありません。"
-        },
-        {
           "text": "ワークロードの重要度と、必要な応答時間や専門家の支援",
           "explanation": "ワークロードの重要度に応じて、必要な応答時間や支援の内容でプランを選びます。"
+        },
+        {
+          "text": "アカウントの作成日",
+          "explanation": "作成日はプランの選択に関係ありません。"
         }
       ],
       "answers": [
-        3
+        2
       ],
       "explanation": "サポートプランは、ワークロードの重要度と、必要な応答時間・専門家の支援の内容で選びます。",
       "references": [
