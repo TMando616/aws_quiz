@@ -144,6 +144,9 @@ class _MockScreenState extends State<MockScreen> {
     );
     await _save(result);
     if (!mounted) return;
+    // 時間切れのとき、確認のダイアログや一覧のシートが開いていたら先に閉じる
+    // （閉じないと、結果画面がダイアログと入れ替わり、止まった模試の画面が下に残る）
+    Navigator.of(context).popUntil((route) => route is! PopupRoute);
 
     void openResult() {
       if (!mounted) return;
@@ -258,10 +261,11 @@ class _MockScreenState extends State<MockScreen> {
                     SizedBox(width: t.space1),
                     Text(
                       _formatRemaining(),
-                      style: t.caption.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: lowTime ? t.danger : t.textPrimary,
+                      style: t.numeric(
+                        t.body.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: lowTime ? t.danger : t.textPrimary,
+                        ),
                       ),
                     ),
                   ],

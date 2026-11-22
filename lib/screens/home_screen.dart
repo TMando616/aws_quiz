@@ -113,6 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final _certRepo = CertificationRepository();
   final _goalSetting = DailyGoalSetting();
   Map<String, DateTime> _certified = {};
+
+  /// 取得済みの印を付け外しした回数。読み込み中に印を変えたら、読み込んだ古い値で上書きしないために使う
+  int _certVersion = 0;
   bool _privacyOptionsRequired = false;
 
   @override
@@ -279,14 +282,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
-    _certified = await _certRepo.load();
+    final versionAtStart = _certVersion;
+    var certified = await _certRepo.load();
     // 開発用：`--dart-define=DEBUG_CERTIFIED=clf,saa` で取得済みの見た目を確かめる（保存はしない）
     if (kDebugMode && _debugCertified.isNotEmpty) {
-      _certified = {
-        ..._certified,
+      certified = {
+        ...certified,
         for (final id in _debugCertified.split(',')) id: DateTime.now(),
       };
     }
+    if (versionAtStart == _certVersion) _certified = certified;
     var activity = DailyActivity.empty;
     try {
       activity = await study?.dailyActivity() ?? DailyActivity.empty;
@@ -320,7 +325,13 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('続きから解く問題を用意できませんでした: $e');
     }
 
-    final goal = await _goalSetting.load();
+    // 保存した目標が読めなくても、ホームは出す（初期値の目標を使う）
+    int? goal;
+    try {
+      goal = await _goalSetting.load();
+    } catch (e) {
+      debugPrint('1日の目標を読み込めませんでした: $e');
+    }
     return _HomeData(
       summaries,
       _certified,
@@ -331,6 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _toggleCertified(Exam exam) async {
+    _certVersion++;
     final next = !_certified.containsKey(exam.id);
     final updated = await _certRepo.set(exam.id, next);
     if (mounted) setState(() => _certified = updated);
@@ -345,6 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
         exam: target.exam,
         questions: target.questions,
         title: '一問一答',
+        backLabel: 'ホームに戻る',
       ),
     ),
   );

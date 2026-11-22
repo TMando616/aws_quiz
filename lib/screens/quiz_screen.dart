@@ -21,6 +21,7 @@ class QuizScreen extends StatefulWidget {
     required this.questions,
     required this.title,
     this.debugAutoAnswer = false,
+    this.backLabel = '試験トップに戻る',
   });
 
   final Exam exam;
@@ -30,6 +31,9 @@ class QuizScreen extends StatefulWidget {
 
   /// AppBarに出す出題範囲の名前（例: 全分野）
   final String title;
+
+  /// 結果画面の「戻る」ボタンの文言。開いた画面に合わせる（ホームから開いたら「ホームに戻る」）
+  final String backLabel;
 
   /// 開発用：開いたら1問目の最初の選択肢を自動で選ぶ。一問一答はそのまま回答まで進む
   /// （`DEBUG_ROUTE=drill-answered`・`quiz-selected`）
@@ -695,7 +699,7 @@ class _QuizScreenState extends State<QuizScreen> {
           SizedBox(height: t.space2),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('試験トップに戻る'),
+            child: Text(widget.backLabel),
           ),
         ],
       ),

@@ -336,7 +336,8 @@ class _DomainPickerState extends State<_DomainPicker> {
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final total = widget.data.questions
+    // 解くのは本番形式の問題だけなので、一問一答は数えない
+    final total = widget.data.examFormat
         .where((q) => _picked.contains(q.domainId))
         .length;
 

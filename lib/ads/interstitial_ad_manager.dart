@@ -11,15 +11,24 @@ import 'ad_consent.dart';
 class InterstitialAdManager {
   InterstitialAd? _ad;
 
+  /// 画面を閉じたあとか。閉じたあとに読み込みが終わった広告は、保持せずにすぐ破棄する
+  bool _disposed = false;
+
   Future<void> load() async {
-    if (!AdConfig.enabled) return;
+    if (!AdConfig.enabled || _disposed) return;
     // 同意の確認が終わるまで待つ。広告を出せない場合は何もしない
     if (!await AdConsent.ready) return;
     InterstitialAd.load(
       adUnitId: AdConfig.interstitialUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) => _ad = ad,
+        onAdLoaded: (ad) {
+          if (_disposed) {
+            ad.dispose();
+            return;
+          }
+          _ad = ad;
+        },
         onAdFailedToLoad: (error) {
           debugPrint('全画面広告の読み込みに失敗: $error');
           _ad = null;
@@ -54,6 +63,7 @@ class InterstitialAdManager {
   }
 
   void dispose() {
+    _disposed = true;
     _ad?.dispose();
     _ad = null;
   }
