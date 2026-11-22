@@ -86,4 +86,47 @@ void main() {
     expect(results.first.byDomain['d1']!.correct, 2);
     expect(await repo.mockResults('saa'), isEmpty);
   });
+
+  group('今日の回答数と連続日数', () {
+    final now = DateTime(2026, 11, 22, 9);
+    Future<void> answerOn(DateTime at) => repo.recordAnswer(
+      examId: 'sap',
+      questionId: 'q1',
+      correct: true,
+      mode: StudyMode.drill,
+      at: at,
+    );
+
+    test('まだ解いていなければ0', () async {
+      final a = await repo.dailyActivity(now: now);
+      expect(a.todayCount, 0);
+      expect(a.streakDays, 0);
+    });
+
+    test('今日の回答数を数え、昨日・一昨日と続いていれば3日連続', () async {
+      await answerOn(DateTime(2026, 11, 20, 8));
+      await answerOn(DateTime(2026, 11, 21, 23, 59));
+      await answerOn(DateTime(2026, 11, 22, 7));
+      await answerOn(DateTime(2026, 11, 22, 8));
+      final a = await repo.dailyActivity(now: now);
+      expect(a.todayCount, 2);
+      expect(a.streakDays, 3);
+    });
+
+    test('今日まだ解いていなくても、昨日まで続いていれば途切れない', () async {
+      await answerOn(DateTime(2026, 11, 20, 8));
+      await answerOn(DateTime(2026, 11, 21, 8));
+      final a = await repo.dailyActivity(now: now);
+      expect(a.todayCount, 0);
+      expect(a.streakDays, 2);
+    });
+
+    test('1日空いたら、そこで途切れる', () async {
+      await answerOn(DateTime(2026, 11, 19, 8));
+      await answerOn(DateTime(2026, 11, 21, 8));
+      await answerOn(DateTime(2026, 11, 22, 8));
+      final a = await repo.dailyActivity(now: now);
+      expect(a.streakDays, 2);
+    });
+  });
 }

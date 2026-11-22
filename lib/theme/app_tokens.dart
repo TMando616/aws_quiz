@@ -81,6 +81,14 @@ class AppTokens extends ThemeExtension<AppTokens> {
   /// カードをめくるときに横にずらす量（画面の幅に対する割合）
   double get cardFlipShift => 0.12;
 
+  /// 全冠ボードで取得済みの印を付けたとき、判子を押すように縮んで止まる時間と、動き始めの大きさ
+  Duration get stamp => const Duration(milliseconds: 240);
+  double get stampScale => 1.15;
+
+  // ---------- 学習の目標 ----------
+  /// 1日の目標の問題数（通勤の片道 3〜5 分で一問一答を解き切れる数）
+  int get dailyGoal => 10;
+
   // ---------- 文字 ----------
   static const _tabular = [FontFeature.tabularFigures()];
 

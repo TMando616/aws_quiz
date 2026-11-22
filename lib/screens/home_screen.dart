@@ -10,6 +10,7 @@ import '../data/study_repository.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../theme/app_tokens.dart';
+import '../widgets/certification_board.dart';
 import '../widgets/design_parts.dart';
 import '../widgets/explanation_view.dart';
 import '../widgets/related_questions_buttons.dart';
@@ -19,7 +20,7 @@ import 'mock_result_screen.dart';
 import 'mock_screen.dart';
 import 'quiz_screen.dart';
 
-/// ホーム。全冠への進捗と、全試験をレベル別に並べる
+/// ホーム。全冠ボード（全試験と取得済みの印）、今日の学習、解ける試験の順に並べる
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -52,9 +53,12 @@ class _ExamSummary {
 }
 
 class _HomeData {
-  const _HomeData(this.summaries, this.certified);
+  const _HomeData(this.summaries, this.certified, this.activity);
 
   final List<_ExamSummary> summaries;
+
+  /// 今日の回答数と連続日数
+  final DailyActivity activity;
 
   /// 取得済みの試験ID → 印をつけた日
   final Map<String, DateTime> certified;
@@ -83,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
   /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`drill` で一問一答まで進む（`drill-answered` はさらに1問目に自動で回答する。`quiz-selected` は出題画面で1問目の A を選んだ状態にする）
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
+  static const _debugCertified = String.fromEnvironment('DEBUG_CERTIFIED');
 
   Future<void> _openDebugRoute(_HomeData data) async {
     if (_debugRoute == 'drill' || _debugRoute == 'drill-answered') {
@@ -228,7 +233,20 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
     _certified = await _certRepo.load();
-    return _HomeData(summaries, _certified);
+    // 開発用：`--dart-define=DEBUG_CERTIFIED=clf,saa` で取得済みの見た目を確かめる（保存はしない）
+    if (kDebugMode && _debugCertified.isNotEmpty) {
+      _certified = {
+        ..._certified,
+        for (final id in _debugCertified.split(',')) id: DateTime.now(),
+      };
+    }
+    var activity = DailyActivity.empty;
+    try {
+      activity = await study?.dailyActivity() ?? DailyActivity.empty;
+    } catch (e) {
+      debugPrint('今日の学習を集計できませんでした: $e');
+    }
+    return _HomeData(summaries, _certified, activity);
   }
 
   Future<void> _toggleCertified(Exam exam) async {
@@ -282,9 +300,6 @@ class _HomeScreenState extends State<HomeScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           final summaries = snapshot.data!.summaries;
-          final certifiedCount = summaries
-              .where((s) => _certified.containsKey(s.exam.id))
-              .length;
           final t = context.tokens;
           return ListView(
             padding: EdgeInsets.fromLTRB(
@@ -294,32 +309,18 @@ class _HomeScreenState extends State<HomeScreen> {
               t.space7,
             ),
             children: [
-              _ProgressCard(certified: certifiedCount, total: summaries.length),
-              // 一番大事なのは「問題を解く」ことなので、問題のある試験を先に出す
+              // 全冠を目指すアプリなので、全試験と取得済みの印を一番上に置く
+              CertificationBoard(
+                exams: [for (final s in summaries) s.exam],
+                certified: _certified.keys.toSet(),
+                onToggle: _toggleCertified,
+              ),
+              SizedBox(height: t.space6),
+              _TodayActivity(snapshot.data!.activity),
+              // 問題を解く入口。問題を収録している試験だけ並べる（ほかの試験はボードに出ている）
               const _LevelHeader('解ける試験'),
               for (final s in summaries.where((s) => s.ready))
-                _ExamCard(
-                  summary: s,
-                  certified: _certified.containsKey(s.exam.id),
-                  onTap: () => _openExam(s.exam),
-                  onToggleCertified: () => _toggleCertified(s.exam),
-                ),
-              // 準備中の試験はレベル別に並べる（全冠の一覧として、取得済みの印は付けられる）
-              for (final level in ExamLevel.values)
-                if (summaries.any(
-                  (s) => !s.ready && s.exam.level == level,
-                )) ...[
-                  _LevelHeader('準備中・${level.label}'),
-                  for (final s in summaries.where(
-                    (s) => !s.ready && s.exam.level == level,
-                  ))
-                    _ExamCard(
-                      summary: s,
-                      certified: _certified.containsKey(s.exam.id),
-                      onTap: null,
-                      onToggleCertified: () => _toggleCertified(s.exam),
-                    ),
-                ],
+                _ExamCard(summary: s, onTap: () => _openExam(s.exam)),
               SizedBox(height: t.space6),
               Text(AppInfo.trademarkNotice, style: t.caption),
             ],
@@ -330,38 +331,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// 全冠への進捗
-class _ProgressCard extends StatelessWidget {
-  const _ProgressCard({required this.certified, required this.total});
+/// 今日の学習。回答数と連続日数、1日の目標に対する進み具合
+class _TodayActivity extends StatelessWidget {
+  const _TodayActivity(this.activity);
 
-  final int certified;
-  final int total;
+  final DailyActivity activity;
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final done = total > 0 && certified >= total;
+    final goal = t.dailyGoal;
+    final count = activity.todayCount;
+    final numberStyle = t.numeric(t.title);
+    final unitStyle = t.body.copyWith(fontWeight: FontWeight.w700);
     // カードにせず、背景の上に数字とバーを直接置く（カードは問題のカードだけ）
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(done ? '全冠達成' : '全冠への進捗', style: t.label),
-        SizedBox(height: t.space1),
-        Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(text: '$certified', style: t.display),
-              TextSpan(
-                text: ' / $total 試験を取得',
-                style: t.numeric(t.body.copyWith(fontWeight: FontWeight.w700)),
+        SectionLabel('今日の学習', trailing: '目標 $goal問'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Expanded(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: '$count', style: numberStyle),
+                    TextSpan(text: ' 問', style: unitStyle),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: '${activity.streakDays}', style: numberStyle),
+                  TextSpan(text: ' 日連続', style: unitStyle),
+                ],
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: t.space3),
-        ThinBar(value: total == 0 ? 0 : certified / total),
         SizedBox(height: t.space2),
-        Text('取得した試験は、右の印をタップして記録できます', style: t.caption),
+        ThinBar(value: count / goal),
+        SizedBox(height: t.space2),
+        Text(
+          count >= goal ? '今日の目標に到達' : '目標まで あと ${goal - count}問',
+          style: t.numeric(t.caption),
+        ),
       ],
     );
   }
@@ -383,19 +401,10 @@ class _LevelHeader extends StatelessWidget {
 }
 
 class _ExamCard extends StatelessWidget {
-  const _ExamCard({
-    required this.summary,
-    required this.certified,
-    required this.onTap,
-    required this.onToggleCertified,
-  });
+  const _ExamCard({required this.summary, required this.onTap});
 
   final _ExamSummary summary;
-  final bool certified;
-
-  /// null なら準備中でタップできない
-  final VoidCallback? onTap;
-  final VoidCallback onToggleCertified;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -459,14 +468,8 @@ class _ExamCard extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-              onPressed: onToggleCertified,
-              tooltip: certified ? '取得済みの印を外す' : '取得済みにする',
-              icon: Icon(
-                certified ? Icons.verified : Icons.check_circle_outline,
-                color: certified ? t.ink : t.hairline,
-              ),
-            ),
+            SizedBox(width: t.space2),
+            Icon(Icons.chevron_right, color: t.textSecondary),
           ],
         ),
       ),

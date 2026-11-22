@@ -16,20 +16,20 @@ void main() {
     await tester.pumpWidget(const MyApp());
     // アセットの読み込みは実際の非同期処理なので、runAsyncで少しずつ待つ。
     // 問題データが増えると読み込みに時間がかかるため、固定の時間ではなく表示されるまで待つ
-    for (var i = 0; i < 50 && find.text('全冠への進捗').evaluate().isEmpty; i++) {
+    for (var i = 0; i < 50 && find.text('解ける試験').evaluate().isEmpty; i++) {
       await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
       await tester.pump();
     }
-    // 全冠への進捗（まだ1つも取得していない）
-    expect(find.text('全冠への進捗'), findsOneWidget);
-    expect(find.textContaining('取得'), findsWidgets);
-    // 問題のある試験を先に出す（下のほうは画面外なので描画されない）
+    // 全冠ボード（まだ1つも取得していない）。全試験がレベル別に並ぶ
+    expect(find.text('0 / 12 取得'), findsOneWidget);
+    expect(find.text('Foundational'), findsOneWidget);
+    expect(find.text('CLF'), findsOneWidget);
+    // 今日の学習
+    expect(find.text('今日の学習'), findsOneWidget);
+    // 問題のある試験は、ボードと「解ける試験」の両方に出る
     expect(find.text('解ける試験'), findsOneWidget);
-    expect(find.text('SAA'), findsOneWidget);
-    expect(find.text('SAP'), findsOneWidget);
-    // 問題ファイルが無い試験は「準備中」としてレベル別に並ぶ
-    expect(find.text('準備中・Foundational'), findsOneWidget);
+    expect(find.text('SAA'), findsNWidgets(2));
   });
 }

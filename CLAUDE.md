@@ -18,6 +18,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 #   --dart-define=THEME=dark|light     テーマを固定する
 #   --dart-define=DEBUG_ROUTE=exam|quiz|quiz-selected|drill|drill-answered|explanation|explanation-end|mock|mock-result|about
 #                                      起動後、その画面まで自動で進む（デバッグビルドのみ）
+#   --dart-define=DEBUG_CERTIFIED=clf,saa  その試験を取得済みとして表示する（保存はしない。デバッグビルドのみ）
 ```
 
 ## 守ること
@@ -49,7 +50,7 @@ flutter run -d E429B161-CAA4-424E-9197-0732F1CE1036
 - 同じサイズのカード（アイコン＋見出し＋説明文）を等間隔に並べるだけのレイアウト
 - 全要素が同じ余白・同じ角丸・同じ高さ（重要度の差がない）
 - 意味のないグラスモーフィズム、飾りだけのグラデーションの背景
-- あちこちに散らばったアニメーション（動かすのは DESIGN.md の2か所だけ）
+- あちこちに散らばったアニメーション（動かすのは DESIGN.md の3か所だけ）
 - 「山田太郎」「Lorem ipsum」などの仮のデータ。問題文は実際の長さで確かめる
 - 「最高の体験を」「シームレスに」のような中身のない UI コピー
 - ベージュの背景＋明朝体＋アースカラーを既定にすること

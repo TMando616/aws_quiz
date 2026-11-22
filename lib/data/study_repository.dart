@@ -25,6 +25,20 @@ class Accuracy {
   static const empty = Accuracy(answered: 0, correct: 0);
 }
 
+/// 日ごとの学習の様子（ホームの「今日の学習」に使う）
+class DailyActivity {
+  const DailyActivity({required this.todayCount, required this.streakDays});
+
+  /// 今日回答した数（同じ問題を解き直した分も数える）
+  final int todayCount;
+
+  /// 何日続けて解いているか。今日まだ解いていなくても、昨日まで続いていれば途切れていない扱いにする
+  /// （朝の時点で「0日」に戻ると、続ける気がなくなるため）
+  final int streakDays;
+
+  static const empty = DailyActivity(todayCount: 0, streakDays: 0);
+}
+
 /// 模試1回分の結果
 class MockResult {
   const MockResult({
@@ -181,6 +195,36 @@ class StudyRepository {
       correct += a.correct;
     }
     return Accuracy(answered: answered, correct: correct);
+  }
+
+  /// 今日の回答数と、連続して解いた日数
+  Future<DailyActivity> dailyActivity({DateTime? now}) async {
+    // 日付は端末のタイムゾーンで区切る（SQLite の localtime と Dart の DateTime は同じ設定を使う）
+    final rows = await _db.rawQuery('''
+      SELECT date(answered_at / 1000, 'unixepoch', 'localtime') AS day,
+             COUNT(*) AS count
+      FROM answers GROUP BY day
+    ''');
+    final counts = {
+      for (final r in rows) r['day'] as String: r['count'] as int,
+    };
+
+    final today = now ?? DateTime.now();
+    String keyOf(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-'
+        '${d.month.toString().padLeft(2, '0')}-'
+        '${d.day.toString().padLeft(2, '0')}';
+    DateTime dayBefore(DateTime d) => DateTime(d.year, d.month, d.day - 1);
+
+    final todayCount = counts[keyOf(today)] ?? 0;
+    // 今日解いていれば今日から、まだなら昨日からさかのぼって数える
+    var day = todayCount > 0 ? today : dayBefore(today);
+    var streak = 0;
+    while (counts.containsKey(keyOf(day))) {
+      streak++;
+      day = dayBefore(day);
+    }
+    return DailyActivity(todayCount: todayCount, streakDays: streak);
   }
 
   /// 模試の結果を保存する
