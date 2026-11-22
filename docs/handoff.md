@@ -9,7 +9,8 @@
 - 2026-11-22：ホームに「続きから解く」（ホームの主ボタン。最後に解いた試験の一問一答を、未回答 → 不正解 → 正解の順に出す。`lib/logic/continue_order.dart`）と、1日の目標の変更（「目標 10問 ⌄」をタップ。5・10・20・30・50問。`lib/settings/daily_goal.dart`）を追加。判子の動き（240ms・1.15倍）は本人確認済み
 - 本人が挙げた残りの課題：全体の味気なさ（ほかに案として出した「模試の結果を盛り上げる（数え上げ・合格ラインの目安・前回比）」「正解・不正解で端末が震える」は今回は見送り）、タイトルがダサい（→ 同日、アプリ名を CertStack に決定）
 - 2026-11-22：**CLF・DVA・SOA の問題を追加**（各 本番形式65問＋一問一答130問、分野の比重どおり）。本人の希望（DVA と SOA は本人が受けたい試験）。正解のサービスは各試験ガイドの範囲内のサービスから選び、根拠リンクは全件の実在と、解説の決め手の語句が根拠ページにあることを機械的に照合した（作成と照合のスクリプトは `tool/qgen/`、使い方は `tool/qgen/README.md`）。○×の正誤の比率も偏らないように調整
-- 問題：CLF・SAA・DVA・SOA 各 本番形式65問＋一問一答130問、SAP 本番形式75問＋一問一答161問（どれも本番と同じ問題数・比重）。品質チェック エラー0・警告0（5ファイル・1016問）
+- 2026-11-22：**AIF・DEA・MLA・SCS・DOP・AIP の問題を追加**（本人の希望「自分がユーザーとして使いたいので、ほかの試験も」。ANS は2026-12-31で終了するので作らないと本人が決定）。作り方と照合は CLF・DVA・SOA と同じ
+- 問題：ANS 以外の11試験すべて。CLF・AIF・SAA・DVA・SOA・DEA・MLA・SCS は 本番形式65問＋一問一答130問、DOP・AIP は 本番形式75問＋一問一答150問、SAP は 本番形式75問＋一問一答161問（どれも本番と同じ問題数・比重）。品質チェック エラー0・警告0（11ファイル・2246問）
 - デザイン：`DESIGN.md`（「通勤電車で開く単語帳」）に全画面を移行済み。ライト・ダークでスクリーンショット確認済み
 - `flutter analyze` 指摘なし、`flutter test` 49件通過、iOS シミュレーターでビルド・起動を確認
 - 本人がまだ触って確認していない（下の「未確認のこと」）。最初の作業は本人の確認結果を受けての修正になる見込み
@@ -284,7 +285,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 4. ~~GitHub にリポジトリを作って push~~（2026-11-21 済み）。次はプライバシーポリシーを GitHub Pages で公開する
 5. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アイコン、上の「リリース前にやること（広告まわり）」。アプリ名は「CertStack」（`CFBundleDisplayName`・`android:label`・`lib/config/app_info.dart` の `appName` の3か所に反映済み）
 6. Androidの環境構築とGoogle Playへの公開
-7. ほかの試験の問題を追加（2026-11-22 に CLF・DVA・SOA を追加済み。残りは AIF・DEA・MLA・DOP・AIP・SCS）
+7. ~~ほかの試験の問題を追加~~（2026-11-22 に ANS 以外の全試験を追加済み）。次は本人が解いてみての問題の修正、試験の版の改定への追随（MLA-C02 など）
 
 ### 後で追加したい機能
 
@@ -326,6 +327,14 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
 - **Well-Architected フレームワーク**：英語版の構成が変わり、6本の柱の一覧ページは日本語版にだけ残っている。CLF の柱の問題は日本語版のページを根拠にした
 - **AWS Application Migration Service**：ドキュメント上の名前は AWS Transform MGN（日本語版のページは無い）
 - **X-Ray**：「サービスマップ」は「トレースマップ」という名前になっている
+
+### AIF・DEA・MLA・SCS・DOP・AIP の問題を作るときに見つかった、AWS 側の最近の変更（2026-11-22）
+- **SageMaker Model Monitor**：新規の利用者の受け付けを終了（既存の利用者は継続利用可）。MLA と AIF の解説に追記した
+- **SageMaker Data Wrangler**：SageMaker Canvas に統合
+- **Amazon Augmented AI（A2I）**：新規の利用者の受け付けを終了。AIP では人の承認に Step Functions のタスクトークンを正解にした
+- **Amazon Bedrock エージェント**：「Agents classic」になり、新規の申し込みは終了。コードで作るエージェントは Strands Agents と Bedrock AgentCore が案内されている。AIP ではエージェントの実行環境の正解を AgentCore Runtime にした
+- **Bedrock の推論のサービス階層**：Reserved・Priority・Standard・Flex の4つ
+- **インシデント対応のホワイトペーパー**：AWS Security Incident Response のユーザーガイドに移った。Automated Forensic Orchestrator のページと Shield の費用の保護のページは見つからなかったので、根拠にしていない
 
 ### 試験情報で未確認・期限があるもの（2026-11-21時点）
 - **AIP-C01**：180分・75問（採点対象65問＋採点対象外10問）を公式ページで確認済み
