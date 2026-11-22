@@ -111,12 +111,8 @@ class ChoiceTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(t.radiusControl),
-        // 枠線は外側に描く。選択・正誤で太さが変わっても選択肢の大きさと位置が動かないようにするため
-        border: Border.all(
-          color: border,
-          width: borderWidth,
-          strokeAlign: BorderSide.strokeAlignOutside,
-        ),
+        // 枠線は内側に描く（外側だとスワイプ表示で表示範囲からはみ出して切れる）
+        border: Border.all(color: border, width: borderWidth),
       ),
       child: Material(
         type: MaterialType.transparency,
@@ -124,9 +120,10 @@ class ChoiceTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(t.radiusControl),
           onTap: onTap,
           child: Padding(
+            // 枠線が太くなった分だけ内側の余白を減らし、選択・正誤で選択肢の大きさと文字の位置が動かないようにする
             padding: EdgeInsets.symmetric(
-              horizontal: t.space4,
-              vertical: t.space3,
+              horizontal: t.space4 + t.borderControlSelected - borderWidth,
+              vertical: t.space3 + t.borderControlSelected - borderWidth,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
