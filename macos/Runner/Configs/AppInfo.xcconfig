@@ -8,7 +8,7 @@
 PRODUCT_NAME = aws_quiz
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.awsQuiz
+PRODUCT_BUNDLE_IDENTIFIER = com.tmando616.certstack
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.tmando616. All rights reserved.

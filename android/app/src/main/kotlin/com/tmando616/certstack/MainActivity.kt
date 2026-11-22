@@ -1,4 +1,4 @@
-package com.example.aws_quiz
+package com.tmando616.certstack
 
 import io.flutter.embedding.android.FlutterActivity
 
