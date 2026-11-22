@@ -1,0 +1,6091 @@
+{
+  "examId": "dea",
+  "examCode": "DEA-C01",
+  "questions": [
+    {
+      "id": "dea-001",
+      "domain": "d1",
+      "question": "Web サイトのクリックのログを、ほぼリアルタイムで S3 に集め、Athena で分析しやすい Parquet 形式で保存したい。取り込みのためのコードやサーバーは管理したくない。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Kinesis Data Streams だけを使う",
+          "explanation": "データを受け取って保持するサービスで、S3 への配信には別にコンシューマーが必要です。"
+        },
+        {
+          "text": "Amazon Data Firehose で S3 に配信し、レコードの形式の変換で Parquet にする",
+          "explanation": "Firehose はストリーミングデータを S3 などに自動で届け、JSON を Parquet や ORC に変換する機能もあります。"
+        },
+        {
+          "text": "EC2 で独自の収集サーバーを動かす",
+          "explanation": "サーバーの管理が必要です。"
+        },
+        {
+          "text": "Amazon SQS に送り、毎日手で S3 に移す",
+          "explanation": "リアルタイムに近い配信になりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Firehose は、ストリーミングデータを S3・Redshift・OpenSearch などに配信するフルマネージドのサービスです。受け取った JSON を Parquet や ORC に変換してから保存できます。",
+      "references": [
+        {
+          "title": "Amazon Data Firehose とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/what-is-this-service.html"
+        },
+        {
+          "title": "Firehose でのデータの形式の変換",
+          "url": "https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/record-format-conversion.html"
+        }
+      ],
+      "group": "dea-stream-service"
+    },
+    {
+      "id": "dea-002",
+      "domain": "d1",
+      "question": "IoT 機器のデータを受け取り、不正検知のアプリケーションと、ダッシュボードのアプリケーションの2つが、同じデータをそれぞれミリ秒単位の遅延で読み取りたい。障害時にはデータを読み直せるよう、一定期間データを保持したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "データを保持期間の間保存し、複数のアプリケーションが同じデータを低い遅延で読み取れます。読み直しもできます。"
+        },
+        {
+          "text": "Amazon Data Firehose",
+          "explanation": "宛先への配信のサービスで、複数のアプリケーションが独自に読み取る用途には向きません。"
+        },
+        {
+          "text": "Amazon SQS の標準キュー",
+          "explanation": "1つのメッセージは1つの受信者にしか処理されず、読み直しもできません。"
+        },
+        {
+          "text": "Amazon S3 に1件ずつ保存する",
+          "explanation": "ミリ秒単位のストリーミングの読み取りには向きません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Kinesis Data Streams は、リアルタイムのデータストリームを取り込み、保持期間の間保存します。複数のコンシューマーが同じデータを読み取れ、障害時には読み直せます。",
+      "references": [
+        {
+          "title": "Amazon Kinesis Data Streams とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/introduction.html"
+        },
+        {
+          "title": "Kinesis Data Streams のデータの保持期間の変更",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/kinesis-extended-retention.html"
+        }
+      ],
+      "group": "dea-stream-service"
+    },
+    {
+      "id": "dea-003",
+      "domain": "d1",
+      "question": "オンプレミスで Apache Kafka を使ったストリーミングのパイプラインを動かしている。アプリケーションのコードと Kafka のツールをそのまま使いながら、Kafka のクラスターの運用を AWS に任せたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "データの準備のツールです。"
+        },
+        {
+          "text": "Amazon Data Firehose",
+          "explanation": "Kafka と互換性のあるサービスではありません。"
+        },
+        {
+          "text": "Amazon MSK",
+          "explanation": "Apache Kafka を使うアプリケーションを作って動かすためのフルマネージドのサービスで、既存の Kafka のコードやツールを使えます。"
+        },
+        {
+          "text": "Amazon SQS",
+          "explanation": "Kafka と互換性のあるサービスではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Amazon MSK は、Apache Kafka のクラスターの作成・運用を AWS が管理するサービスです。既存の Kafka のアプリケーションやツールをそのまま使えます。",
+      "references": [
+        {
+          "title": "Amazon MSK とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/msk/latest/developerguide/what-is-msk.html"
+        }
+      ],
+      "group": "dea-stream-service"
+    },
+    {
+      "id": "dea-004",
+      "domain": "d1",
+      "question": "Kinesis Data Streams のデータを Lambda 関数で処理している。一部のレコードが原因で関数がエラーになると、同じバッチが何度も再試行され、シャードの処理が止まってしまう。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "ストリームの保持期間を短くする",
+          "explanation": "データが失われるおそれがあります。"
+        },
+        {
+          "text": "Lambda 関数のメモリを減らす",
+          "explanation": "エラーの原因の解決になりません。"
+        },
+        {
+          "text": "シャードの数を減らす",
+          "explanation": "エラーのレコードの問題は解決しません。"
+        },
+        {
+          "text": "イベントソースマッピングで、エラーのときにバッチを分割する設定や、再試行の回数の上限、失敗したレコードの送信先を設定する",
+          "explanation": "問題のあるレコードを切り分けて、失敗したものを送信先に送れば、シャードの処理を先に進められます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Kinesis のイベントソースマッピングでは、エラーのときのバッチの分割、最大の再試行の回数、レコードの最大の経過時間、失敗時の送信先などを設定して、問題のあるレコードで処理が止まるのを防げます。",
+      "references": [
+        {
+          "title": "Lambda で Amazon Kinesis を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-kinesis.html"
+        },
+        {
+          "title": "Lambda の Kinesis のイベントソースの失敗の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/kinesis-on-failure-destination.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-005",
+      "domain": "d1",
+      "question": "オンプレミスの Oracle データベースのデータを S3 のデータレイクに移し、移行の後も、データベースの変更（挿入・更新・削除）を継続的に S3 に反映したい。最も適切なサービスと設定はどれか。",
+      "choices": [
+        {
+          "text": "毎日、データベースのダンプを手で S3 にコピーする",
+          "explanation": "継続的な反映になりません。"
+        },
+        {
+          "text": "AWS DMS で、全ロードと継続的なレプリケーション（CDC）のタスクを作り、S3 をターゲットにする",
+          "explanation": "DMS は全ロードのあと、変更データキャプチャ（CDC）で、ソースの変更を継続的にターゲットに反映できます。"
+        },
+        {
+          "text": "Amazon AppFlow を使う",
+          "explanation": "SaaS のアプリケーションとのデータの連携のサービスです。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を使う",
+          "explanation": "S3 への転送を速くする機能で、データベースの変更の反映はできません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS DMS の CDC のタスクは、ソースのデータベースの変更を取り込み、ターゲットに継続的に反映します。S3 もターゲットにできます。",
+      "references": [
+        {
+          "title": "AWS DMS の継続的なレプリケーション（CDC）のタスク",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/CHAP_Task.CDC.html"
+        },
+        {
+          "title": "AWS Database Migration Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/Welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-006",
+      "domain": "d1",
+      "question": "営業部門が使っている Salesforce のデータを、毎日 S3 に取り込んで分析したい。連携のためのコードは書きたくない。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS DMS",
+          "explanation": "データベースの移行のサービスです。"
+        },
+        {
+          "text": "AWS Transfer Family",
+          "explanation": "SFTP などのファイル転送のサービスです。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "ストリーミングデータのサービスです。"
+        },
+        {
+          "text": "Amazon AppFlow",
+          "explanation": "Salesforce などの SaaS のアプリケーションと AWS のサービスの間で、コードを書かずにデータを転送できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Amazon AppFlow は、SaaS のアプリケーション（Salesforce・SAP など）と AWS のサービスの間でデータを安全に転送するフルマネージドの統合サービスです。スケジュールやイベントで実行できます。",
+      "references": [
+        {
+          "title": "Amazon AppFlow とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/appflow/latest/userguide/what-is-appflow.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-007",
+      "domain": "d1",
+      "question": "取引先の会社が、今まで使っている SFTP のクライアントのまま、売上のファイルを送ってくる。受け取ったファイルを S3 に保存したい。SFTP のサーバーは自分で運用したくない。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Transfer Family",
+          "explanation": "SFTP・FTPS・FTP などで、S3 や EFS にファイルを転送できるフルマネージドのサービスです。"
+        },
+        {
+          "text": "Amazon MSK",
+          "explanation": "Kafka のマネージドサービスです。"
+        },
+        {
+          "text": "Amazon AppFlow",
+          "explanation": "SaaS のアプリケーションとの連携のサービスです。"
+        },
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "データの準備のツールです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Transfer Family は、SFTP などのプロトコルで、S3 や EFS にファイルを直接転送できるようにします。既存のクライアントや業務の流れを変えずに使えます。",
+      "references": [
+        {
+          "title": "AWS Transfer Family とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/transfer/latest/userguide/what-is-aws-transfer-family.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-008",
+      "domain": "d1",
+      "question": "S3 のバケットに CSV ファイルが置かれたら、すぐに変換の処理を始めたい。定期的にバケットを確認するのではなく、ファイルの到着をきっかけに処理を動かしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "1分ごとにバケットの一覧を取得して、新しいファイルを探す",
+          "explanation": "無駄な処理が増え、処理も遅れます。"
+        },
+        {
+          "text": "担当者がファイルの到着を確認して、手で処理を始める",
+          "explanation": "自動化になりません。"
+        },
+        {
+          "text": "S3 のイベント通知（または EventBridge）で、オブジェクトの作成をきっかけに処理（Lambda や Step Functions など）を起動する",
+          "explanation": "イベント駆動にすると、ファイルが届いたときだけ処理が動きます。"
+        },
+        {
+          "text": "ライフサイクルの設定で処理を起動する",
+          "explanation": "ライフサイクルは、移行と削除の仕組みです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 のイベント通知で、オブジェクトの作成などのイベントを Lambda・SQS・SNS・EventBridge に送れます。EventBridge を使うと、ルールで多くのターゲットに振り分けられます。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-009",
+      "domain": "d1",
+      "question": "毎日実行する AWS Glue の ETL ジョブが、S3 の全ファイルを毎回最初から処理していて、時間と費用がかさんでいる。前回の実行以降に追加されたファイルだけを処理したい。最も適切な機能はどれか。",
+      "choices": [
+        {
+          "text": "Athena のワークグループ",
+          "explanation": "クエリの管理の機能です。"
+        },
+        {
+          "text": "Glue のジョブのブックマーク",
+          "explanation": "ジョブのブックマークは、前回の実行で処理したデータの状態を記録し、次の実行で古いデータを再処理しないようにします。"
+        },
+        {
+          "text": "Glue のクローラー",
+          "explanation": "データのスキーマを調べてデータカタログに登録する機能です。"
+        },
+        {
+          "text": "S3 のバージョニング",
+          "explanation": "オブジェクトの版を保持する機能で、処理済みの追跡はしません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Glue のジョブのブックマークは、ETL ジョブの実行の状態を保持して、処理済みのデータを再処理しないようにします。増分の処理に使います。",
+      "references": [
+        {
+          "title": "ジョブのブックマークを使用した処理済みデータの追跡",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitor-continuations.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-010",
+      "domain": "d1",
+      "question": "S3 のデータレイクに CSV ファイルで保存しているデータを Athena で分析しているが、クエリが遅く、スキャンするデータの量の料金も高い。最も効果的な改善はどれか。",
+      "choices": [
+        {
+          "text": "Glue の ETL ジョブでデータを Parquet などの列指向の形式に変換し、圧縮・パーティション分割して保存する",
+          "explanation": "列指向の形式は必要な列だけを読み、圧縮とパーティションで読み取る量がさらに減るので、速く安くなります。"
+        },
+        {
+          "text": "S3 のストレージクラスを Glacier Deep Archive にする",
+          "explanation": "Athena から直接クエリできなくなります。"
+        },
+        {
+          "text": "CSV のファイルを1つの巨大なファイルにまとめる",
+          "explanation": "並列に処理しにくくなり、遅くなることがあります。"
+        },
+        {
+          "text": "クエリで SELECT * を使う",
+          "explanation": "必要のない列まで読むので、遅く高くなります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Athena のコストと性能は、スキャンするデータの量に左右されます。Parquet や ORC などの列指向の形式、圧縮、パーティション分割で、読み取る量を減らせます。",
+      "references": [
+        {
+          "title": "Athena のパフォーマンスの最適化",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/performance-tuning.html"
+        },
+        {
+          "title": "AWS Glue での Parquet 形式の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/aws-glue-programming-etl-format-parquet-home.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-011",
+      "domain": "d1",
+      "question": "S3 のデータを毎日数 GB 程度変換する ETL を作りたい。Spark のクラスターを管理せずに、使った分だけ支払い、データカタログと連携したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon EMR のクラスターを常に動かす",
+          "explanation": "クラスターの管理が必要で、常に動かすと費用もかかります。"
+        },
+        {
+          "text": "Amazon EC2 に Spark を自分で入れる",
+          "explanation": "インフラの管理が必要です。"
+        },
+        {
+          "text": "AWS Glue",
+          "explanation": "サーバーレスのデータ統合のサービスで、Spark などの ETL ジョブをクラスターの管理なしで実行できます。データカタログとも連携します。"
+        },
+        {
+          "text": "Amazon Quick Sight",
+          "explanation": "データの可視化のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS Glue はサーバーレスのデータ統合のサービスです。ETL ジョブを、インフラを管理せずに実行でき、Glue Data Catalog とも統合されています。",
+      "references": [
+        {
+          "title": "AWS Glue とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/what-is-glue.html"
+        }
+      ],
+      "group": "dea-transform-service"
+    },
+    {
+      "id": "dea-012",
+      "domain": "d1",
+      "question": "数百 TB のデータに対して、独自のライブラリや Spark・Hive・Presto などの複数のフレームワークを組み合わせた大規模な処理を行いたい。クラスターの構成を細かく制御し、費用を下げるために一部のノードにスポットインスタンスを使いたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "視覚的なデータの準備のツールです。"
+        },
+        {
+          "text": "Amazon Athena だけ",
+          "explanation": "SQL のクエリには向いていますが、独自のライブラリや複数のフレームワークを組み合わせた処理には EMR が向いています。"
+        },
+        {
+          "text": "AWS Lambda",
+          "explanation": "実行時間やメモリに上限があり、数百 TB の大規模な分散処理には向きません。"
+        },
+        {
+          "text": "Amazon EMR",
+          "explanation": "Spark・Hive・Presto などのビッグデータのフレームワークを動かすクラスターを、構成を制御しながら使えます。スポットインスタンスも組み合わせられます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Amazon EMR は、Apache Spark・Hive・Presto などで大量のデータを処理するマネージドのクラスターのプラットフォームです。中断に強いタスクノードにはスポットインスタンスを使うと費用を下げられます。",
+      "references": [
+        {
+          "title": "Amazon EMR とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-what-is-emr.html"
+        },
+        {
+          "title": "EMR のインスタンスの購入オプション（スポットインスタンス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-plan-instances-guidelines.html"
+        }
+      ],
+      "group": "dea-transform-service"
+    },
+    {
+      "id": "dea-013",
+      "domain": "d1",
+      "question": "S3 に1日に数百件届く数 MB の JSON ファイルを、届くたびに項目を整形して別のバケットに保存したい。処理は1件あたり数秒で終わる。最も費用と手間の少ない方法はどれか。",
+      "choices": [
+        {
+          "text": "常時動く EMR のクラスターで処理する",
+          "explanation": "小さな処理には大げさで、費用もかかります。"
+        },
+        {
+          "text": "毎回 Redshift に読み込んでから変換する",
+          "explanation": "小さなファイルの整形には大げさです。"
+        },
+        {
+          "text": "EC2 インスタンスを24時間動かして待ち受ける",
+          "explanation": "サーバーの管理と常時の費用がかかります。"
+        },
+        {
+          "text": "S3 のイベントで Lambda 関数を起動して、ファイルごとに変換する",
+          "explanation": "小さく短い処理なら、Lambda でファイルごとにイベント駆動で処理するのが簡単で安上がりです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "小さなファイルの軽い変換は、Lambda をイベントで起動するのが向いています。大規模な処理には Glue や EMR を使います。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        },
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ],
+      "group": "dea-transform-service"
+    },
+    {
+      "id": "dea-014",
+      "domain": "d1",
+      "question": "Glue のジョブ2つと Lambda 関数を、決まった順番で実行し、失敗したら再試行し、それでも失敗したら通知するパイプラインを、サーバーレスで作りたい。手順の流れを図で確認したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Step Functions",
+          "explanation": "複数の AWS のサービスを組み合わせたワークフローを作り、再試行やエラー処理を定義できます。流れを図で確認できます。"
+        },
+        {
+          "text": "Amazon SQS",
+          "explanation": "メッセージキューで、手順の流れの管理はできません。"
+        },
+        {
+          "text": "Amazon Quick Sight",
+          "explanation": "データの可視化のサービスです。"
+        },
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "データの準備のツールです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Step Functions は、Lambda・Glue・EMR などを組み合わせたワークフローを、ステートマシンとして作るサーバーレスのサービスです。Retry と Catch で、再試行とエラー処理を定義できます。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        },
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ],
+      "group": "dea-orchestration"
+    },
+    {
+      "id": "dea-015",
+      "domain": "d1",
+      "question": "データエンジニアのチームは、Apache Airflow の DAG（Python で書いたワークフロー）を使い慣れている。既存の DAG をそのまま使い、Airflow の環境の運用は AWS に任せたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon EventBridge のルールだけ",
+          "explanation": "イベントの振り分けで、Airflow の DAG は動かせません。"
+        },
+        {
+          "text": "Amazon MWAA（Amazon Managed Workflows for Apache Airflow）",
+          "explanation": "Apache Airflow のマネージドサービスで、既存の DAG を使ってパイプラインを動かせます。"
+        },
+        {
+          "text": "AWS Glue のクローラー",
+          "explanation": "スキーマを調べてカタログに登録する機能です。"
+        },
+        {
+          "text": "AWS Step Functions",
+          "explanation": "ワークフローのサービスですが、Airflow の DAG はそのまま使えません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon MWAA は、Apache Airflow の環境をマネージドで提供し、Airflow のワークフロー（DAG）でデータパイプラインを動かせます。",
+      "references": [
+        {
+          "title": "Amazon MWAA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/mwaa/latest/userguide/what-is-mwaa.html"
+        }
+      ],
+      "group": "dea-orchestration"
+    },
+    {
+      "id": "dea-016",
+      "domain": "d1",
+      "question": "Glue のクローラーと複数の Glue の ETL ジョブだけからなるパイプラインを、Glue の中で依存関係を定義して実行したい。ほかのサービスは使わない。最も簡単な方法はどれか。",
+      "choices": [
+        {
+          "text": "EC2 の cron でスクリプトを順に実行する",
+          "explanation": "サーバーの管理が必要です。"
+        },
+        {
+          "text": "Amazon MWAA の環境を新しく作る",
+          "explanation": "可能ですが、Glue だけのパイプラインには大げさです。"
+        },
+        {
+          "text": "AWS Glue のワークフローで、トリガーを使ってクローラーとジョブをつなぐ",
+          "explanation": "Glue のワークフローで、複数のクローラーとジョブとトリガーからなる ETL の流れを作れます。"
+        },
+        {
+          "text": "Amazon SQS でジョブをつなぐ",
+          "explanation": "ジョブの依存関係の管理の仕組みではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Glue のワークフローは、複数のクローラー・ジョブ・トリガーを組み合わせた ETL の処理を作成・可視化します。",
+      "references": [
+        {
+          "title": "AWS Glue のワークフロー",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/workflows_overview.html"
+        }
+      ],
+      "group": "dea-orchestration"
+    },
+    {
+      "id": "dea-017",
+      "domain": "d1",
+      "question": "データパイプラインを毎日午前2時（日本時間）に自動で起動したい。サーバーを用意せず、失敗したときの再試行も設定したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のライフサイクルで起動する",
+          "explanation": "ライフサイクルは、移行と削除の仕組みです。"
+        },
+        {
+          "text": "EC2 インスタンスの cron で起動する",
+          "explanation": "サーバーの管理が必要です。"
+        },
+        {
+          "text": "担当者が毎晩手で起動する",
+          "explanation": "自動化になりません。"
+        },
+        {
+          "text": "EventBridge Scheduler のスケジュールで、Step Functions のステートマシンを起動する",
+          "explanation": "EventBridge Scheduler は、cron などのスケジュールでターゲットを呼び出すサーバーレスのスケジューラーで、再試行も設定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EventBridge Scheduler を使うと、サーバーなしで、決まった時刻や間隔でターゲットを起動できます。再試行の上限なども設定できます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge Scheduler",
+          "url": "https://docs.aws.amazon.com/ja_jp/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-018",
+      "domain": "d1",
+      "question": "Kinesis から読み取ったデータを DynamoDB のテーブルに書き込む処理で、急増時に ProvisionedThroughputExceededException（スロットリング）が発生している。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "待たずにすぐ何度も再試行する",
+          "explanation": "負荷がさらに高まり、スロットリングが悪化します。"
+        },
+        {
+          "text": "SDK の指数バックオフ付きの再試行を使い、必要ならキャパシティを増やす（またはオンデマンドモードにする）",
+          "explanation": "一時的なスロットリングは再試行で吸収し、恒常的に足りないならキャパシティを見直します。"
+        },
+        {
+          "text": "エラーを無視して次のデータに進む",
+          "explanation": "データが失われます。"
+        },
+        {
+          "text": "テーブルを削除して作り直す",
+          "explanation": "データが失われ、問題も解決しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "スロットリングには、指数バックオフ付きの再試行で対処し、キャパシティの不足やホットパーティションがあれば見直します。",
+      "references": [
+        {
+          "title": "DynamoDB のスロットリングのトラブルシューティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/TroubleshootingThrottling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-019",
+      "domain": "d1",
+      "question": "AWS Glue の ETL ジョブから、VPC のプライベートサブネットにある Amazon RDS for MySQL のデータを読み取りたい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "Glue の JDBC の接続を作り、VPC・サブネット・セキュリティグループを指定して、RDS のセキュリティグループで接続を許可する",
+          "explanation": "Glue の接続で VPC の情報を指定すると、ジョブが VPC 内のデータストアに JDBC で接続できます。"
+        },
+        {
+          "text": "S3 のゲートウェイエンドポイントだけを作る",
+          "explanation": "S3 への接続の設定で、RDS への接続にはなりません。"
+        },
+        {
+          "text": "Glue のジョブのブックマークを有効にする",
+          "explanation": "処理済みデータの追跡の機能で、接続の設定ではありません。"
+        },
+        {
+          "text": "RDS をインターネットに公開する",
+          "explanation": "安全ではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Glue は JDBC の接続で、RDS などのデータストアに接続できます。VPC 内のデータストアには、接続に VPC・サブネット・セキュリティグループを設定します。",
+      "references": [
+        {
+          "title": "AWS Glue の JDBC 接続",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/aws-glue-programming-etl-connect-jdbc-home.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-020",
+      "domain": "d1",
+      "question": "Lambda 関数で、数 GB の機械学習のモデルのファイルや一時的な大きなファイルを扱いたい。複数の関数の実行の間でファイルを共有したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ファイルを環境変数に入れる",
+          "explanation": "環境変数には大きなデータを入れられません。"
+        },
+        {
+          "text": "ファイルを CloudWatch Logs に保存する",
+          "explanation": "ファイルの保存先ではありません。"
+        },
+        {
+          "text": "Amazon EFS のファイルシステムを Lambda 関数にマウントする",
+          "explanation": "EFS をマウントすると、関数から大きなファイルを読み書きでき、複数の実行環境で共有できます。"
+        },
+        {
+          "text": "ファイルを関数のコードに埋め込む",
+          "explanation": "デプロイパッケージのサイズに上限があり、共有もできません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lambda 関数に EFS をマウントすると、大きなファイルや共有のデータを扱えます。関数は VPC に接続する必要があります。",
+      "references": [
+        {
+          "title": "Lambda 関数のファイルシステムのアクセスの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-filesystem.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-021",
+      "domain": "d1",
+      "question": "Lambda 関数・Step Functions のステートマシン・DynamoDB のテーブルからなるサーバーレスのデータパイプラインを、テンプレートで定義して、開発・本番の環境に繰り返しデプロイしたい。サーバーレスのリソースを短く書ける方法として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "AWS Glue DataBrew で作る",
+          "explanation": "データの準備のツールです。"
+        },
+        {
+          "text": "AWS SAM のテンプレートで定義し、sam deploy でデプロイする",
+          "explanation": "SAM はサーバーレスのアプリケーションを短く定義でき、CloudFormation を通してデプロイします。"
+        },
+        {
+          "text": "Amazon Quick Sight で作る",
+          "explanation": "可視化のサービスです。"
+        },
+        {
+          "text": "コンソールで毎回手で作る",
+          "explanation": "繰り返しのデプロイで差が出やすく、手間もかかります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS SAM は、サーバーレスのアプリケーションを定義・テスト・デプロイするためのツールです。テンプレートは CloudFormation に展開されるので、同じ構成を繰り返しデプロイできます（IaC）。",
+      "references": [
+        {
+          "title": "AWS SAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/what-is-sam.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-022",
+      "domain": "d1",
+      "question": "データエンジニアリングのコードの品質を保ちたい。ETL のスクリプトの開発の進め方として、ソフトウェアエンジニアリングのベストプラクティスに沿ったものはどれか。",
+      "choices": [
+        {
+          "text": "スクリプトを各自の PC にだけ保存する",
+          "explanation": "共有も復元もできなくなります。"
+        },
+        {
+          "text": "テストは書かず、本番で動かして確認する",
+          "explanation": "不具合が本番のデータに影響します。"
+        },
+        {
+          "text": "本番の環境で直接スクリプトを書き換える",
+          "explanation": "変更の履歴が残らず、障害の原因になります。"
+        },
+        {
+          "text": "スクリプトを Git でバージョン管理し、テストを書き、CI/CD のパイプラインで自動でテストとデプロイを行う",
+          "explanation": "バージョン管理・テスト・CI/CD・ログ記録・監視は、データエンジニアリングでも基本のベストプラクティスです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "データのパイプラインも、バージョン管理・自動テスト・CI/CD・ログ記録・監視を取り入れることで、品質と再現性を保てます。",
+      "references": [
+        {
+          "title": "AWS SAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/what-is-sam.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-023",
+      "domain": "d2",
+      "question": "S3 にある数百 GB の CSV ファイルを、Amazon Redshift のテーブルにできるだけ速く読み込みたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "INSERT 文を1行ずつ実行する",
+          "explanation": "大量のデータでは非常に遅くなります。"
+        },
+        {
+          "text": "Athena で CSV を開いて、結果を手でコピーする",
+          "explanation": "効率的な読み込みの方法ではありません。"
+        },
+        {
+          "text": "COPY コマンドで、S3 のファイルを並列に読み込む（ファイルを複数に分けておく）",
+          "explanation": "COPY は Redshift の並列の処理を生かして、S3 などから効率よくデータを読み込みます。"
+        },
+        {
+          "text": "UNLOAD コマンドを使う",
+          "explanation": "UNLOAD は Redshift から S3 にデータを書き出すコマンドです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "COPY コマンドは、S3・DynamoDB・EMR などからデータを並列に読み込みます。大量のデータを読み込む推奨の方法です。",
+      "references": [
+        {
+          "title": "COPY",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/r_COPY.html"
+        },
+        {
+          "title": "Amazon S3 からのデータのロード",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/t_Loading-data-from-S3.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-024",
+      "domain": "d2",
+      "question": "Redshift のデータウェアハウスにある最新のデータと、S3 のデータレイクにある過去10年分のデータ（めったに使わない）を、1つの SQL で結合して分析したい。過去のデータを Redshift に読み込むのは避けたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Redshift Spectrum で、S3 のデータを外部テーブルとしてクエリする",
+          "explanation": "Spectrum を使うと、S3 のデータを Redshift に読み込まずに、Redshift のテーブルと一緒にクエリできます。"
+        },
+        {
+          "text": "Redshift のデータを毎回すべて S3 に UNLOAD する",
+          "explanation": "非効率です。"
+        },
+        {
+          "text": "過去のデータを削除する",
+          "explanation": "分析できなくなります。"
+        },
+        {
+          "text": "過去10年分のデータをすべて COPY で読み込む",
+          "explanation": "読み込みを避けたいという要件に合わず、ストレージの費用も増えます。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift Spectrum は、S3 のファイルのデータを、Redshift のテーブルに読み込まずにクエリし、Redshift のデータと結合できる機能です。",
+      "references": [
+        {
+          "title": "Amazon Redshift Spectrum を使用した外部データのクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c-using-spectrum.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-025",
+      "domain": "d2",
+      "question": "業務システムの Amazon RDS for PostgreSQL にある最新の在庫のデータを、Redshift の売上のデータと結合して分析したい。ETL でデータを移すと、数時間の遅れが出てしまう。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎日夜間に RDS のデータを S3 に書き出してから読み込む",
+          "explanation": "数時間の遅れが残ります。"
+        },
+        {
+          "text": "RDS のデータを手でコピーする",
+          "explanation": "手作業で遅れが出ます。"
+        },
+        {
+          "text": "Redshift のフェデレーテッドクエリで、RDS のデータを直接クエリする",
+          "explanation": "フェデレーテッドクエリを使うと、RDS や Aurora の PostgreSQL・MySQL のデータを、移さずに Redshift からクエリできます。"
+        },
+        {
+          "text": "Redshift Spectrum で RDS をクエリする",
+          "explanation": "Spectrum は S3 のデータをクエリする機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Redshift のフェデレーテッドクエリは、運用中のデータベース（RDS・Aurora の PostgreSQL や MySQL）のデータを、ETL なしで Redshift から直接クエリする機能です。",
+      "references": [
+        {
+          "title": "Amazon Redshift のフェデレーテッドクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/federated-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-026",
+      "domain": "d2",
+      "question": "BI のダッシュボードが、毎回同じ複雑な集計のクエリ（大きなテーブルの結合と集計）を Redshift に実行していて、表示が遅い。結果をあらかじめ計算して保存し、ダッシュボードを速くしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "UNLOAD で毎回 S3 に書き出す",
+          "explanation": "表示が速くなるわけではありません。"
+        },
+        {
+          "text": "マテリアライズドビューを作り、集計の結果を保存して更新する",
+          "explanation": "マテリアライズドビューは、クエリの結果をあらかじめ計算して保存するので、同じ集計を速く返せます。"
+        },
+        {
+          "text": "ダッシュボードの更新の間隔を短くする",
+          "explanation": "クエリの回数が増え、負荷が上がります。"
+        },
+        {
+          "text": "テーブルの列をすべて VARCHAR にする",
+          "explanation": "性能はかえって悪くなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift のマテリアライズドビューは、事前に計算したクエリの結果を保存します。複雑なクエリの結果をすばやく返せ、自動で更新することもできます。",
+      "references": [
+        {
+          "title": "Amazon Redshift のマテリアライズドビュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/materialized-view-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-027",
+      "domain": "d2",
+      "question": "Redshift で、大きな売上のファクトテーブルと大きな顧客のテーブルを、顧客 ID でよく結合している。結合のときのノード間のデータの移動を減らしたい。最も適切な分散スタイルはどれか。",
+      "choices": [
+        {
+          "text": "両方のテーブルを EVEN 分散にする",
+          "explanation": "結合の列とは関係なく分散するので、結合のときにデータの移動が発生します。"
+        },
+        {
+          "text": "大きな2つのテーブルを ALL 分散にする",
+          "explanation": "ALL はすべてのノードにコピーを置くので、大きなテーブルではストレージと読み込みの負担が大きくなります。"
+        },
+        {
+          "text": "分散スタイルは結合の性能に関係ない",
+          "explanation": "分散スタイルは結合の性能に大きく影響します。"
+        },
+        {
+          "text": "両方のテーブルを、顧客 ID を分散キーにした KEY 分散にする",
+          "explanation": "結合の列で同じように分散すると、同じ顧客 ID の行が同じノードに置かれ、結合のときのデータの移動が減ります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "分散スタイルは、テーブルの行をノードにどう置くかを決めます。よく結合する大きなテーブルは結合の列で KEY 分散に、小さなディメンションのテーブルは ALL 分散にすることが多いです。",
+      "references": [
+        {
+          "title": "データの分散スタイル",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c_choosing_dist_sort.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-028",
+      "domain": "d2",
+      "question": "S3 に新しい種類のデータのファイルが置かれた。Athena でクエリするために、列の名前や型（スキーマ）とパーティションを自動で調べて、データカタログにテーブルとして登録したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Glue のクローラーでデータを調べ、Glue Data Catalog にテーブルを作る",
+          "explanation": "クローラーはデータストアを調べてスキーマを推測し、データカタログにテーブルを作成・更新します。"
+        },
+        {
+          "text": "テーブルの定義を毎回手で書く",
+          "explanation": "手間がかかり、誤りも起きやすくなります。"
+        },
+        {
+          "text": "S3 のライフサイクルを設定する",
+          "explanation": "ライフサイクルは移行と削除の仕組みです。"
+        },
+        {
+          "text": "Amazon Macie で調べる",
+          "explanation": "機密データを見つけるサービスで、カタログへの登録はしません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Glue のクローラーは、データストアに接続してスキーマを判定し、Glue Data Catalog にメタデータのテーブルを作成します。Athena・Redshift Spectrum・EMR などから使えます。",
+      "references": [
+        {
+          "title": "AWS Glue のクローラーの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/add-crawler.html"
+        },
+        {
+          "title": "AWS Glue Data Catalog",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/catalog-and-crawler.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-029",
+      "domain": "d2",
+      "question": "Athena で、日付でパーティション分割された S3 のテーブルをクエリしている。毎日新しい日付のフォルダが追加されるが、クローラーの実行やパーティションの追加の手間なく、新しいパーティションをすぐにクエリしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のバージョニングを有効にする",
+          "explanation": "パーティションの管理とは関係ありません。"
+        },
+        {
+          "text": "Athena のパーティション射影を設定し、パーティションの値の範囲とパターンを定義する",
+          "explanation": "パーティション射影では、パーティションの情報をカタログに登録せずに、設定から計算するので、新しいパーティションの管理が不要になります。"
+        },
+        {
+          "text": "パーティション分割をやめる",
+          "explanation": "クエリで読むデータの量が増え、遅く高くなります。"
+        },
+        {
+          "text": "毎日、全テーブルを削除して作り直す",
+          "explanation": "手間がかかり、クエリできない時間も生じます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "パーティション射影は、パーティションの値と場所を、テーブルの設定から計算する機能です。パーティションの数が多い場合のクエリの高速化や、パーティションの管理の自動化に役立ちます。",
+      "references": [
+        {
+          "title": "Athena のパーティション射影",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/partition-projection.html"
+        },
+        {
+          "title": "MSCK REPAIR TABLE",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/msck-repair-table.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-030",
+      "domain": "d2",
+      "question": "データレイクの Parquet ファイルに対して、行の更新・削除や、過去の時点のデータの参照（タイムトラベル）をしたい。同時に複数の書き込みがあっても、テーブルの整合性を保ちたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のライフサイクルを使う",
+          "explanation": "移行と削除の仕組みで、行の更新はできません。"
+        },
+        {
+          "text": "Glue のクローラーを毎分実行する",
+          "explanation": "メタデータの更新で、行の更新の仕組みではありません。"
+        },
+        {
+          "text": "CSV ファイルを毎回すべて書き直す",
+          "explanation": "非効率で、同時の書き込みの整合性も保てません。"
+        },
+        {
+          "text": "Apache Iceberg のテーブル形式を使う（Athena の Iceberg テーブルや Amazon S3 Tables など）",
+          "explanation": "Iceberg はオープンなテーブル形式で、ACID のトランザクション・行の更新と削除・タイムトラベルに対応しています。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Apache Iceberg は、大規模な分析のためのオープンなテーブル形式です。ACID のトランザクション、スキーマの進化、行レベルの更新と削除、タイムトラベルなどの機能があります。Amazon S3 Tables は、Iceberg のテーブルのための S3 のストレージです。",
+      "references": [
+        {
+          "title": "Athena での Apache Iceberg テーブルのクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/querying-iceberg.html"
+        },
+        {
+          "title": "Amazon S3 Tables",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/s3-tables.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-031",
+      "domain": "d2",
+      "question": "分析用の S3 のデータは、作成から30日間はよく使われ、その後1年間はたまに使われ、1年を過ぎたら法令上の保存期限が切れて不要になる。保存の費用を最小にし、期限が来たら自動で削除したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "最初から S3 Glacier Deep Archive に置く",
+          "explanation": "よく使う最初の30日間に、取り出しの時間と費用がかかります。"
+        },
+        {
+          "text": "ずっと S3 Standard に置いておき、手で削除する",
+          "explanation": "費用がかかり、削除の漏れも起きます。"
+        },
+        {
+          "text": "S3 ライフサイクルで、30日後に低頻度アクセスのクラスに移し、1年後に削除する（有効期限のアクション）",
+          "explanation": "ライフサイクルの移行のアクションで安いクラスに移し、有効期限のアクションで自動で削除できます。"
+        },
+        {
+          "text": "バケットのバージョニングを有効にするだけ",
+          "explanation": "古い版も残り、費用が増えます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 ライフサイクルの設定には、オブジェクトを別のストレージクラスに移す移行のアクションと、オブジェクトを削除する有効期限のアクションがあります。",
+      "references": [
+        {
+          "title": "Amazon S3 のオブジェクトのライフサイクルの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-032",
+      "domain": "d2",
+      "question": "Apache Cassandra で動いている時系列のデータのアプリケーションを AWS に移したい。CQL（Cassandra クエリ言語）とアプリケーションのコードはそのまま使い、サーバーの管理はしたくない。最も適切なデータストアはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Keyspaces（Apache Cassandra 向け）",
+          "explanation": "Cassandra と互換性のあるサーバーレスのマネージドのデータベースで、既存の CQL のコードを使えます。"
+        },
+        {
+          "text": "Amazon MemoryDB",
+          "explanation": "Redis 互換のインメモリのデータベースです。"
+        },
+        {
+          "text": "Amazon Redshift",
+          "explanation": "データウェアハウスです。"
+        },
+        {
+          "text": "Amazon Neptune",
+          "explanation": "グラフデータベースです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Keyspaces は、Apache Cassandra と互換性のある、スケーラブルでサーバーレスのマネージドのデータベースです。",
+      "references": [
+        {
+          "title": "Amazon Keyspaces とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/keyspaces/latest/devguide/what-is-keyspaces.html"
+        }
+      ],
+      "group": "dea-store"
+    },
+    {
+      "id": "dea-033",
+      "domain": "d2",
+      "question": "ゲームのランキングのデータに、マイクロ秒単位の読み取りの応答が必要である。キャッシュではなく、データを失わない耐久性のある主要なデータベースとして使いたい。Redis と互換性のある API を使いたい。最も適切なデータストアはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Keyspaces",
+          "explanation": "Cassandra 互換のデータベースです。"
+        },
+        {
+          "text": "Amazon MemoryDB",
+          "explanation": "Redis と互換性があり、インメモリで超高速に処理しつつ、複数の AZ にまたがるトランザクションログで耐久性も持つデータベースです。"
+        },
+        {
+          "text": "Amazon Neptune",
+          "explanation": "グラフデータベースです。"
+        },
+        {
+          "text": "Amazon S3 Glacier",
+          "explanation": "アーカイブのストレージです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon MemoryDB は、Redis 互換の耐久性のあるインメモリのデータベースです。超高速の性能が必要で、主要なデータベースとして使う用途に向いています。",
+      "references": [
+        {
+          "title": "Amazon MemoryDB とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/memorydb/latest/devguide/what-is-memorydb.html"
+        }
+      ],
+      "group": "dea-store"
+    },
+    {
+      "id": "dea-034",
+      "domain": "d2",
+      "question": "不正検知のため、口座・端末・IP アドレスの間のつながりをたどり、「同じ端末を使った複数の口座」などの関係をすばやく見つけたい。最も適切なデータストアはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Neptune",
+          "explanation": "つながりの多いデータを扱うグラフデータベースで、関係をたどるクエリに向いています。"
+        },
+        {
+          "text": "Amazon MemoryDB",
+          "explanation": "インメモリのキー・バリュー型のデータベースです。"
+        },
+        {
+          "text": "Amazon Redshift",
+          "explanation": "集計の分析には向いていますが、関係をたどるクエリにはグラフデータベースが向いています。"
+        },
+        {
+          "text": "Amazon Keyspaces",
+          "explanation": "Cassandra 互換のデータベースで、関係をたどるクエリには向きません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Neptune はグラフデータベースで、多くの関係を持つデータ（ソーシャルネットワーク・不正検知・レコメンデーションなど）を扱うのに向いています。",
+      "references": [
+        {
+          "title": "Amazon Neptune とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/neptune/latest/userguide/intro.html"
+        }
+      ],
+      "group": "dea-store"
+    },
+    {
+      "id": "dea-035",
+      "domain": "d2",
+      "question": "RAG のために、数百万件の文書の埋め込みを保存し、近いベクトルを高速に検索したい。検索の精度と速さのバランスがよい、グラフに基づく近似最近傍のインデックスの方式はどれか。",
+      "choices": [
+        {
+          "text": "全文検索の転置インデックスだけ",
+          "explanation": "キーワードの検索の方式で、ベクトルの近さの検索ではありません。"
+        },
+        {
+          "text": "ハッシュのパーティション",
+          "explanation": "データの分散の方式です。"
+        },
+        {
+          "text": "HNSW（Hierarchical Navigable Small World）",
+          "explanation": "階層的なグラフで近いベクトルをたどる近似最近傍の方式で、検索が速く精度も高いことで広く使われています。"
+        },
+        {
+          "text": "B ツリーのインデックス",
+          "explanation": "値の範囲や一致の検索の方式で、ベクトルの近さの検索には向きません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ベクトルのインデックスの方式には、グラフに基づく HNSW や、クラスタに分けて探す IVF などがあります。OpenSearch Service や Aurora PostgreSQL（pgvector）で使えます。",
+      "references": [
+        {
+          "title": "Amazon OpenSearch Service のベクトル検索",
+          "url": "https://docs.aws.amazon.com/ja_jp/opensearch-service/latest/developerguide/vector-search.html"
+        },
+        {
+          "title": "Aurora PostgreSQL をベクトルデータベースとして使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.VectorDB.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-036",
+      "domain": "d2",
+      "question": "分析の利用は平日の日中に集中し、夜間と週末はほとんど使われない。Redshift のクラスターのサイズの管理をせず、使った分だけ支払いたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "データを Excel で管理する",
+          "explanation": "分析の規模に合いません。"
+        },
+        {
+          "text": "Redshift のデータを毎晩削除して作り直す",
+          "explanation": "データの管理が煩雑になります。"
+        },
+        {
+          "text": "最大の負荷に合わせたプロビジョンドのクラスターを常に動かす",
+          "explanation": "使わない時間にも費用がかかります。"
+        },
+        {
+          "text": "Amazon Redshift Serverless を使う",
+          "explanation": "クラスターを用意・管理せずに使え、ワークロードに合わせて容量が自動で調整され、使った分だけ支払います。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Redshift Serverless は、データウェアハウスの容量を自動で用意・調整し、使った分だけ課金されます。負荷が変動するワークロードに向いています。",
+      "references": [
+        {
+          "title": "Amazon Redshift Serverless とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/mgmt/serverless-whatis.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-037",
+      "domain": "d2",
+      "question": "分析のチームが、Redshift のテーブルを更新している間に、別のチームが同じテーブルへの書き込みを始めて、処理が待たされたり失敗したりしている。Redshift の同時の書き込みについて、最も適切な理解はどれか。",
+      "choices": [
+        {
+          "text": "ロックはデータの読み取りの速さにだけ関係する",
+          "explanation": "書き込みの衝突にも関係します。"
+        },
+        {
+          "text": "Redshift は書き込みの際にテーブルをロックするので、同時の書き込みが衝突すると待ちや直列化のエラーが起きる。書き込みの時間帯を分けるなどの設計が必要である",
+          "explanation": "Redshift はトランザクションの分離を保つために、同時の書き込みを制御します。"
+        },
+        {
+          "text": "ロックを避けるには、テーブルをすべて削除すればよい",
+          "explanation": "適切な対処ではありません。"
+        },
+        {
+          "text": "Redshift では、何本の同時の書き込みでも衝突は起きない",
+          "explanation": "衝突による待ちやエラーが起きることがあります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift では、同時の書き込みのトランザクションの分離を保つために、テーブルのロックが使われます。長いトランザクションや同時の書き込みは、待ちや直列化のエラーの原因になります。",
+      "references": [
+        {
+          "title": "Amazon Redshift の同時書き込みとロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c_Concurrent_writes.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-038",
+      "domain": "d2",
+      "question": "DynamoDB で、注文のテーブルのスキーマを設計する。「顧客ごとに、注文の日付の新しい順に注文を取得する」という主なアクセスパターンに合わせたい。最も適切なキーの設計はどれか。",
+      "choices": [
+        {
+          "text": "キーは設計せず、毎回 Scan する",
+          "explanation": "テーブル全体を読むので、遅く費用もかかります。"
+        },
+        {
+          "text": "すべての項目を同じパーティションキーにする",
+          "explanation": "アクセスが1つのパーティションに集中します。"
+        },
+        {
+          "text": "パーティションキーを顧客 ID、ソートキーを注文の日付にする",
+          "explanation": "同じ顧客の注文が日付の順に並ぶので、1回の Query で効率よく取得できます。"
+        },
+        {
+          "text": "パーティションキーを注文の日付だけにする",
+          "explanation": "同じ日の注文が1つのパーティションに集中し、顧客ごとの取得にも向きません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "DynamoDB のスキーマは、アクセスパターンから設計します。値の種類が多く、アクセスが分散するパーティションキーと、並べ替えや範囲の条件に使うソートキーを選びます。",
+      "references": [
+        {
+          "title": "パーティションキーの設計",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-039",
+      "domain": "d2",
+      "question": "S3 のデータレイクで、各チームにはそれぞれ担当のプレフィックスにだけアクセスさせたい。1つのバケットポリシーが大きく複雑になりすぎて管理が難しい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットを公開にする",
+          "explanation": "すべての人がアクセスできてしまいます。"
+        },
+        {
+          "text": "チームごとにバケットポリシーの文をさらに増やす",
+          "explanation": "ポリシーがますます複雑になり、上限にも近づきます。"
+        },
+        {
+          "text": "全チームに同じ IAM ユーザーを使わせる",
+          "explanation": "誰が何をしたか追えず、権限も分けられません。"
+        },
+        {
+          "text": "S3 アクセスポイントをチームごとに作り、アクセスポイントのポリシーで権限を管理する",
+          "explanation": "アクセスポイントごとに専用のポリシーとエンドポイントを持てるので、共有のデータセットへのアクセスの管理を分けられます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "S3 アクセスポイントは、それぞれ独自のポリシーとネットワークの設定を持つ、バケットへの名前付きのエンドポイントです。共有のデータセットへの大規模なアクセスの管理を簡単にします。",
+      "references": [
+        {
+          "title": "Amazon S3 アクセスポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-points.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-040",
+      "domain": "d3",
+      "question": "分析者が Athena で、上限なく大量のデータをスキャンするクエリを実行してしまい、費用が想定を超えた。チームごとにクエリの結果の保存場所を分け、1回のクエリでスキャンできるデータの量に上限を設けたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Athena のワークグループをチームごとに作り、クエリあたりのデータの使用量の制限を設定する",
+          "explanation": "ワークグループで、クエリの結果の場所や、クエリあたり・ワークグループあたりのデータの使用量の上限を設定できます。"
+        },
+        {
+          "text": "S3 のバケットを削除する",
+          "explanation": "データが失われます。"
+        },
+        {
+          "text": "全員に同じ IAM ユーザーを使わせる",
+          "explanation": "費用の管理や上限の設定にはなりません。"
+        },
+        {
+          "text": "Athena の利用を禁止する",
+          "explanation": "分析ができなくなります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Athena のワークグループを使うと、利用者やチームごとにクエリを分け、データの使用量の上限や、クエリの結果の保存場所、メトリクスの公開などを管理できます。",
+      "references": [
+        {
+          "title": "Athena のワークグループの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/workgroups-manage-queries-control-costs.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-041",
+      "domain": "d3",
+      "question": "データサイエンティストが、S3 のデータを対話的に探索し、Python と Spark のコードで変換を試したい。Spark のクラスターを用意・管理したくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Amazon SNS で通知する",
+          "explanation": "通知のサービスです。"
+        },
+        {
+          "text": "EMR のクラスターを毎回手で作る",
+          "explanation": "クラスターの管理が必要です。"
+        },
+        {
+          "text": "Athena の Apache Spark（ノートブック）を使う",
+          "explanation": "Athena のノートブックで、Spark のアプリケーションを、インフラを管理せずに対話的に実行できます。"
+        },
+        {
+          "text": "Excel でデータを開く",
+          "explanation": "大量のデータの探索には向きません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Athena の Apache Spark を使うと、Spark のリソースを用意せずに、ノートブックで対話的にデータの分析や探索ができます。",
+      "references": [
+        {
+          "title": "Athena の Apache Spark",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/notebooks-spark.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-042",
+      "domain": "d3",
+      "question": "経営陣のために、Redshift と S3 のデータから売上の推移のダッシュボードを作り、社内で共有したい。サーバーを管理せず、利用者が自分でグラフを絞り込めるようにしたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Quick Sight",
+          "explanation": "BI のサービスで、ダッシュボードを作って共有でき、利用者が対話的に絞り込めます。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "ストリーミングデータのサービスです。"
+        },
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "データの準備のツールで、経営陣向けのダッシュボードの共有には Quick Sight が向いています。"
+        },
+        {
+          "text": "AWS DMS",
+          "explanation": "データベースの移行のサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Quick Sight は、データを可視化し、対話的なダッシュボードを作って共有できるクラウドの BI のサービスです。",
+      "references": [
+        {
+          "title": "Amazon Quick Sight とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/quicksight/latest/user/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-043",
+      "domain": "d3",
+      "question": "分析の担当者が、コードを書かずに、データの欠損値の補完・列の分割・形式の統一などのクレンジングを、画面で試しながら行いたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Transfer Family",
+          "explanation": "ファイル転送のサービスです。"
+        },
+        {
+          "text": "Amazon MSK",
+          "explanation": "Kafka のマネージドサービスです。"
+        },
+        {
+          "text": "Amazon EMR",
+          "explanation": "コードでビッグデータを処理するサービスです。"
+        },
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "視覚的なデータの準備のツールで、多くの組み込みの変換を使って、コードを書かずにデータをクレンジング・正規化できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Glue DataBrew は、データアナリストやデータサイエンティストが、コードを書かずにデータをクレンジング・正規化できる視覚的なデータの準備のツールです。",
+      "references": [
+        {
+          "title": "AWS Glue DataBrew とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-044",
+      "domain": "d3",
+      "question": "ETL のパイプラインで、取り込んだデータの品質を自動で確かめたい。「顧客 ID が空でない」「金額が0以上」などのルールを定義し、満たさない場合はパイプラインを止めたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "データの品質は確認せずに、すべて取り込む",
+          "explanation": "誤ったデータが分析に混ざります。"
+        },
+        {
+          "text": "AWS Glue Data Quality でルールを定義し、ETL のジョブの中で評価する",
+          "explanation": "Glue Data Quality で、データの品質のルールを定義して評価し、結果に応じて処理を分けられます。"
+        },
+        {
+          "text": "Amazon Macie で確認する",
+          "explanation": "機密データの検出のサービスで、業務のルールの品質の確認ではありません。"
+        },
+        {
+          "text": "S3 のバージョニングを有効にする",
+          "explanation": "品質の確認にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Glue Data Quality は、データの品質のルールを定義・評価し、データの品質の問題を検出するのを助けます。ETL のジョブの中で評価できます。",
+      "references": [
+        {
+          "title": "AWS Glue Data Quality",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/glue-data-quality.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-045",
+      "domain": "d3",
+      "question": "Glue の ETL ジョブが夜中に失敗しても、翌朝まで誰も気づかない。ジョブが失敗したら、すぐに担当者にメールで知らせたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎朝、担当者がジョブの履歴を確認する",
+          "explanation": "すぐには気づけません。"
+        },
+        {
+          "text": "ジョブのブックマークを無効にする",
+          "explanation": "通知の仕組みではありません。"
+        },
+        {
+          "text": "Glue のジョブの状態の変化（FAILED）のイベントに一致する EventBridge のルールを作り、SNS のトピックで通知する",
+          "explanation": "Glue はジョブの状態の変化を EventBridge に送るので、失敗のイベントで SNS に通知できます。"
+        },
+        {
+          "text": "ジョブのワーカーの数を増やす",
+          "explanation": "失敗の通知にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Glue のジョブの状態の変化は EventBridge のイベントになり、ルールで SNS などに通知できます。Glue は CloudWatch にジョブのメトリクスも送ります。",
+      "references": [
+        {
+          "title": "AWS Glue のジョブのモニタリング（CloudWatch のメトリクス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html"
+        },
+        {
+          "title": "Amazon SNS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-046",
+      "domain": "d3",
+      "question": "データレイクのテーブルが誰かに削除された。いつ・誰が・どの API で削除したかを調べたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Glue のジョブのブックマークを見る",
+          "explanation": "処理済みのデータの追跡の機能です。"
+        },
+        {
+          "text": "AWS CloudTrail のイベントを確認する",
+          "explanation": "CloudTrail は、AWS のアカウントでの API の呼び出しを、呼び出した ID や時刻とともに記録します。"
+        },
+        {
+          "text": "Amazon Quick Sight のダッシュボードを見る",
+          "explanation": "可視化のサービスで、操作の記録はありません。"
+        },
+        {
+          "text": "S3 のストレージクラスを確認する",
+          "explanation": "操作の記録ではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudTrail は、ユーザー・ロール・AWS のサービスが行った操作を記録し、監査やトラブルの調査に使えます。",
+      "references": [
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-047",
+      "domain": "d3",
+      "question": "Glue の Spark のジョブが、一部のタスクだけ極端に時間がかかり、メモリ不足で失敗することがある。調べると、特定の顧客 ID のデータが非常に多く、そのキーに処理が偏っていた（データスキュー）。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "偏ったキーに乱数の値を加えて分散させる（ソルティング）などで、データを均等に再分割する",
+          "explanation": "偏ったキーのデータを複数の部分に分けると、処理が多くのタスクに分散します。"
+        },
+        {
+          "text": "ジョブのタイムアウトを短くする",
+          "explanation": "失敗が増えるだけです。"
+        },
+        {
+          "text": "ジョブのブックマークを無効にする",
+          "explanation": "偏りの解決になりません。"
+        },
+        {
+          "text": "データの量を減らすために、偏ったキーのデータを削除する",
+          "explanation": "必要なデータが失われます。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "データスキューは、一部のキーにデータが集中して、特定のタスクに処理が偏る状態です。ソルティングや再分割でデータを均等にしたり、ワーカーを見直したりして対処します。",
+      "references": [
+        {
+          "title": "AWS Glue のジョブのモニタリング（CloudWatch のメトリクス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-048",
+      "domain": "d3",
+      "question": "Step Functions で、Glue のジョブを呼び出すステートが、一時的なエラーで失敗することがある。2秒・4秒・8秒と間隔を空けて最大3回再試行し、それでも失敗したら通知のステートに進めたい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "ステートのタイムアウトを0にする",
+          "explanation": "すぐに失敗します。"
+        },
+        {
+          "text": "ステートマシンを毎回手でやり直す",
+          "explanation": "自動化になりません。"
+        },
+        {
+          "text": "Glue のジョブのブックマークを使う",
+          "explanation": "再試行の設定ではありません。"
+        },
+        {
+          "text": "ステートに Retry（IntervalSeconds と BackoffRate と MaxAttempts）と Catch を定義する",
+          "explanation": "Retry で間隔を倍にしながら再試行し、Catch で失敗したときに通知のステートへ移れます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Step Functions の Retry では、最初の間隔・倍率（BackoffRate）・最大の回数を指定して、指数バックオフで再試行できます。Catch で、失敗時に別のステートに移れます。",
+      "references": [
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-049",
+      "domain": "d3",
+      "question": "Lambda 関数から Redshift にクエリを実行したい。データベースのドライバーの組み込みや、接続の管理（接続プール）はしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Redshift のクラスターを公開する",
+          "explanation": "安全ではありません。"
+        },
+        {
+          "text": "Lambda の中で毎回 JDBC の接続を開いて閉じる",
+          "explanation": "ドライバーの組み込みと接続の管理が必要です。"
+        },
+        {
+          "text": "Amazon Redshift Data API を使って、HTTPS の API でクエリを実行する",
+          "explanation": "Data API を使うと、ドライバーや永続的な接続の管理なしに、API でクエリを実行して結果を取得できます。"
+        },
+        {
+          "text": "Redshift のデータを毎回 S3 にすべて書き出してから読む",
+          "explanation": "非効率です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Redshift Data API は、ドライバーや接続の管理なしで、Redshift にクエリを実行できる API です。Lambda などのサーバーレスのアプリケーションから使いやすくなっています。",
+      "references": [
+        {
+          "title": "Amazon Redshift Data API の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/mgmt/data-api.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-050",
+      "domain": "d3",
+      "question": "Spark の大規模なバッチ処理を、たまにしか実行しない。実行のたびにクラスターを作って終わったら止める手間をなくし、処理の量に合わせて自動でリソースを増減させたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎回 EC2 に Spark を入れる",
+          "explanation": "インフラの管理が必要です。"
+        },
+        {
+          "text": "Lambda 関数で処理する",
+          "explanation": "実行時間とメモリの上限があり、大規模な Spark の処理には向きません。"
+        },
+        {
+          "text": "最大の規模の EMR のクラスターを常に動かしておく",
+          "explanation": "使わない時間にも費用がかかります。"
+        },
+        {
+          "text": "Amazon EMR Serverless でジョブを実行する",
+          "explanation": "クラスターの管理なしに、ジョブに必要なリソースが自動で用意・解放されます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EMR Serverless は、ビッグデータのフレームワークのジョブを、クラスターの設定・管理・スケーリングなしで実行できます。プロビジョンドのクラスターは細かい制御ができる反面、管理が必要です。",
+      "references": [
+        {
+          "title": "Amazon EMR Serverless とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/EMR-Serverless-UserGuide/emr-serverless.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-051",
+      "domain": "d3",
+      "question": "朝の時間帯に多くの分析者が同時に Redshift にクエリを送り、クエリの待ちが長くなっている。待ちを減らすために、一時的に処理能力を自動で追加したい。最も適切な機能はどれか。",
+      "choices": [
+        {
+          "text": "S3 のライフサイクル",
+          "explanation": "移行と削除の仕組みです。"
+        },
+        {
+          "text": "同時実行スケーリング",
+          "explanation": "クエリが集中したときに、追加のクラスターの容量を自動で加え、多くの同時のクエリを処理します。"
+        },
+        {
+          "text": "データ共有",
+          "explanation": "ほかのクラスターとデータを共有する機能です。"
+        },
+        {
+          "text": "UNLOAD",
+          "explanation": "データを S3 に書き出すコマンドです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift の同時実行スケーリングは、同時のクエリが増えたときに容量を自動で追加し、一貫した性能を保ちます。",
+      "references": [
+        {
+          "title": "Amazon Redshift の同時実行スケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/concurrency-scaling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-052",
+      "domain": "d3",
+      "question": "ETL のパイプラインが失敗したことを、担当者のスマートフォンと、チケット管理のシステム（HTTP の API）に同時に知らせたい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon SNS のトピックに通知し、メール・SMS・HTTP のエンドポイントで購読する",
+          "explanation": "SNS は1つのメッセージを複数の購読者（メール・SMS・HTTP など）に配信できます。"
+        },
+        {
+          "text": "Amazon S3 にログを保存するだけ",
+          "explanation": "通知にはなりません。"
+        },
+        {
+          "text": "AWS Glue のクローラーを実行する",
+          "explanation": "通知の仕組みではありません。"
+        },
+        {
+          "text": "Amazon SQS のキューに入れる",
+          "explanation": "受け取る側が取りに行く仕組みで、複数の宛先へのプッシュの通知には SNS が向いています。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SNS は、パブリッシュ・サブスクライブ型のメッセージングのサービスで、メール・SMS・HTTP(S)・Lambda・SQS などの購読者に通知を配信します。",
+      "references": [
+        {
+          "title": "Amazon SNS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-053",
+      "domain": "d3",
+      "question": "データを集計するクエリで、「日ごとの売上の合計」と「直近7日間の移動平均」を出したい。この処理の説明として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "集約と移動平均は同じ処理である",
+          "explanation": "目的と計算の方法が違います。"
+        },
+        {
+          "text": "日ごとの合計は GROUP BY による集約、移動平均はウィンドウ関数（AVG ... OVER）で、前後の行の範囲を指定して計算する",
+          "explanation": "集約は行をまとめ、ウィンドウ関数は各行を残したまま、範囲の行で計算します。"
+        },
+        {
+          "text": "SQL では集計はできない",
+          "explanation": "SQL の基本的な機能です。"
+        },
+        {
+          "text": "移動平均は GROUP BY だけで計算できる",
+          "explanation": "移動平均は行の範囲（ウィンドウ）で計算するので、ウィンドウ関数を使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "集約（GROUP BY）はグループごとに値をまとめ、ウィンドウ関数は各行に対して、指定した範囲の行を使って計算します。移動平均やランキングなどに使います。",
+      "references": [
+        {
+          "title": "Amazon Athena とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-054",
+      "domain": "d4",
+      "question": "データレイクの顧客のテーブルで、マーケティングのチームには氏名やメールアドレスの列を見せず、ほかの列だけをクエリさせたい。Athena と Redshift Spectrum の両方で同じ権限を一元的に管理したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "列ごとに別の S3 バケットにデータを分ける",
+          "explanation": "管理が複雑になります。"
+        },
+        {
+          "text": "S3 のバケットポリシーで列を制限する",
+          "explanation": "S3 のポリシーはオブジェクトの単位で、テーブルの列の単位の制御はできません。"
+        },
+        {
+          "text": "マーケティングのチームに管理者の権限を与える",
+          "explanation": "すべての列が見えてしまいます。"
+        },
+        {
+          "text": "AWS Lake Formation で、テーブルの列の単位のアクセス許可を与える",
+          "explanation": "Lake Formation で、データベース・テーブル・列の単位の権限を一元的に管理でき、Athena や Redshift Spectrum などで共通に使われます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Lake Formation は、データレイクのデータに対するきめ細かいアクセス許可（列・行・セルの単位）を一元的に管理します。統合されたサービス（Athena・Redshift Spectrum・EMR など）で同じ権限が使われます。",
+      "references": [
+        {
+          "title": "AWS Lake Formation とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/what-is-lake-formation.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-055",
+      "domain": "d4",
+      "question": "データレイクのテーブルが数千あり、テーブルごとに権限を付けるのが大変になっている。「機密度：高」「部署：営業」などの属性で、まとめて権限を管理したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "すべての人に全テーブルの権限を与える",
+          "explanation": "最小権限に反します。"
+        },
+        {
+          "text": "テーブルごとに IAM ポリシーを1つずつ書く",
+          "explanation": "数千のテーブルでは管理が大変です。"
+        },
+        {
+          "text": "Lake Formation のタグベースのアクセス制御（LF-TBAC）で、LF タグをリソースに付けて、タグに対して権限を与える",
+          "explanation": "タグに権限を与えると、そのタグの付いた多くのリソースにまとめて権限が適用されます。"
+        },
+        {
+          "text": "テーブルを1つにまとめる",
+          "explanation": "データの設計として適切ではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lake Formation のタグベースのアクセス制御では、LF タグをデータベース・テーブル・列に付け、タグの条件で権限を与えます。リソースが多い場合に、権限の管理を簡単にします。",
+      "references": [
+        {
+          "title": "Lake Formation のタグベースのアクセス制御",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/tag-based-access-control.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-056",
+      "domain": "d4",
+      "question": "Glue の ETL ジョブが Redshift に接続するためのパスワードを、ジョブのスクリプトに直接書いている。安全に保管し、定期的に自動で変更したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Secrets Manager にパスワードを保存し、自動ローテーションを設定して、ジョブから参照する",
+          "explanation": "Secrets Manager はシークレットを暗号化して保管し、自動でローテーションできます。"
+        },
+        {
+          "text": "パスワードを S3 の公開バケットに置く",
+          "explanation": "誰でも読めてしまいます。"
+        },
+        {
+          "text": "パスワードを変えない",
+          "explanation": "漏えいのリスクが続きます。"
+        },
+        {
+          "text": "パスワードを Base64 でエンコードしてスクリプトに書く",
+          "explanation": "Base64 は暗号化ではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管・ローテーションします。Glue の接続や、アプリケーションから API で取得できます。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-057",
+      "domain": "d4",
+      "question": "アカウント A の S3 バケットのデータは、アカウント A の KMS のカスタマーマネージドキーで暗号化されている。アカウント B の分析のロールに、このデータを読ませたい。必要な設定の組み合わせはどれか。",
+      "choices": [
+        {
+          "text": "データの暗号化を解除して公開する",
+          "explanation": "安全ではありません。"
+        },
+        {
+          "text": "バケットポリシーでアカウント B のロールの読み取りを許可し、KMS のキーポリシーでもアカウント B に復号を許可し、アカウント B の IAM ポリシーでも両方を許可する",
+          "explanation": "暗号化されたデータの読み取りには、S3 の権限と、KMS のキーの使用（復号）の権限の両方が、両方のアカウントで必要です。"
+        },
+        {
+          "text": "バケットポリシーだけを変更する",
+          "explanation": "KMS のキーの使用の許可がないと、復号できません。"
+        },
+        {
+          "text": "KMS のキーの素材をアカウント B にコピーする",
+          "explanation": "KMS のキーの素材は取り出せません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "別のアカウントに KMS のキーを使わせるには、キーポリシーで相手のアカウントを許可し、相手のアカウントの IAM ポリシーでもそのキーの使用を許可します。",
+      "references": [
+        {
+          "title": "他のアカウントのユーザーに KMS キーの使用を許可する",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-policy-modifying-external-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-058",
+      "domain": "d4",
+      "question": "データレイクの S3 のバケットに、どこに個人情報（氏名・電話番号・クレジットカード番号など）が含まれているかがわからない。自動で見つけて、ガバナンスの対象を把握したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Macie",
+          "explanation": "S3 のデータの中から、個人情報などの機密データを自動で見つけます。"
+        },
+        {
+          "text": "Amazon Athena",
+          "explanation": "クエリのサービスで、個人情報の自動の検出はしません。"
+        },
+        {
+          "text": "AWS Glue のジョブのブックマーク",
+          "explanation": "処理済みのデータの追跡の機能です。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "ストリーミングデータのサービスです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Macie は、機械学習とパターンマッチングで、S3 の機密データを検出し、データのセキュリティのリスクを把握するのを助けます。",
+      "references": [
+        {
+          "title": "Amazon Macie とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/macie/latest/user/what-is-macie.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-059",
+      "domain": "d4",
+      "question": "分析用のデータを作るときに、クレジットカード番号を一部だけ残して伏せ字にし、氏名はハッシュ化して匿名化したい。コードを書かずに変換したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のストレージクラスを変える",
+          "explanation": "マスキングにはなりません。"
+        },
+        {
+          "text": "Athena のワークグループを作る",
+          "explanation": "マスキングの機能ではありません。"
+        },
+        {
+          "text": "AWS Glue DataBrew の個人情報の変換（マスキング・ハッシュ化など）を使う",
+          "explanation": "DataBrew には、個人情報を伏せ字にしたり、ハッシュ化・暗号化したりする変換があります。"
+        },
+        {
+          "text": "データをそのまま分析者に渡す",
+          "explanation": "コンプライアンスに反するおそれがあります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "DataBrew では、個人を特定できる情報（PII）を、マスキング・ハッシュ化・暗号化・置き換えなどの変換で保護できます。",
+      "references": [
+        {
+          "title": "DataBrew での個人を特定できる情報 (PII) の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/personal-information-protection.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-060",
+      "domain": "d4",
+      "question": "本社の Redshift のクラスターにある売上のデータを、子会社の別のアカウントの Redshift から、コピーせずに最新の状態で読み取らせたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "子会社に本社のクラスターの管理者の権限を与える",
+          "explanation": "最小権限に反します。"
+        },
+        {
+          "text": "毎日 UNLOAD して、子会社に S3 のファイルを送る",
+          "explanation": "コピーになり、最新の状態にもなりません。"
+        },
+        {
+          "text": "データを手で入力し直す",
+          "explanation": "現実的ではありません。"
+        },
+        {
+          "text": "Redshift のデータ共有で、データ共有を作って子会社のアカウントに共有する",
+          "explanation": "データ共有を使うと、データをコピーせずに、ほかのクラスターやアカウントからライブのデータを読み取れます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Redshift のデータ共有は、データをコピーや移動せずに、Redshift のクラスターやアカウントの間で、ライブのデータを安全に共有できる機能です。",
+      "references": [
+        {
+          "title": "Amazon Redshift のデータ共有",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/datashare-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-061",
+      "domain": "d4",
+      "question": "監査のため、データのパイプラインに関わるすべての AWS のアカウントの API の操作の記録を、1か所に集めて長期間保存し、SQL で検索したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ログを保存しない",
+          "explanation": "監査に対応できません。"
+        },
+        {
+          "text": "AWS CloudTrail Lake で、組織のイベントを集めて保存し、SQL でクエリする",
+          "explanation": "CloudTrail Lake は、イベントを集めて保存し、SQL で検索できるマネージドのデータレイクです。"
+        },
+        {
+          "text": "Amazon Quick Sight にログを手で入力する",
+          "explanation": "現実的ではありません。"
+        },
+        {
+          "text": "各アカウントで担当者がコンソールのイベント履歴を見る",
+          "explanation": "一元的な検索や長期の保存になりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudTrail Lake は、CloudTrail のイベントなどを集めて不変の形で保存し、SQL でクエリできる機能です。組織の複数のアカウントのイベントも集められます。",
+      "references": [
+        {
+          "title": "AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-062",
+      "domain": "d4",
+      "question": "データレイクの S3 バケットのバケットポリシーが、誰かによって変更されていた。いつどのように設定が変わったかの履歴を確認し、ルールに沿っているかを評価したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS Config",
+          "explanation": "リソースの設定と、その変化の履歴を記録し、ルールに沿っているかを評価します。"
+        },
+        {
+          "text": "Amazon Quick Sight",
+          "explanation": "可視化のサービスです。"
+        },
+        {
+          "text": "Amazon MSK",
+          "explanation": "Kafka のマネージドサービスです。"
+        },
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "データの準備のツールです。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Config は、AWS のリソースの設定を記録・評価し、設定の変化を追跡します。誰が操作したかは CloudTrail で確認します。",
+      "references": [
+        {
+          "title": "AWS Config とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/WhatIsConfig.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-063",
+      "domain": "d4",
+      "question": "規制により、顧客のデータを許可されていないリージョンにバックアップしたりレプリケーションしたりしてはいけない。組織のすべてのアカウントで、許可したリージョン以外での操作を確実に防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のライフサイクルを設定する",
+          "explanation": "リージョンの制限にはなりません。"
+        },
+        {
+          "text": "各アカウントの担当者に注意を促す",
+          "explanation": "技術的に防げません。"
+        },
+        {
+          "text": "SCP で、許可したリージョン以外への操作を拒否する",
+          "explanation": "SCP は組織のアカウントで使える権限の上限を決めるので、アカウントの管理者でも許可されていないリージョンを使えなくなります。"
+        },
+        {
+          "text": "毎月、許可されていないリージョンのデータを探して削除する",
+          "explanation": "作られてしまってからの対処です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "SCP を使うと、組織のすべてのアカウントで、許可したリージョン以外への操作を拒否できます。データの所在地（データ主権）の要件に対応する方法の1つです。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-064",
+      "domain": "d4",
+      "question": "VPC の中のプライベートなサブネットの EC2 から、インターネットを経由せずに Amazon Kinesis Data Streams にデータを送りたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のゲートウェイエンドポイントを作る",
+          "explanation": "S3 にしか使えません。"
+        },
+        {
+          "text": "Kinesis のストリームを公開する",
+          "explanation": "そのような設定はなく、安全でもありません。"
+        },
+        {
+          "text": "インスタンスにパブリック IP アドレスを付ける",
+          "explanation": "インターネットを経由します。"
+        },
+        {
+          "text": "Kinesis Data Streams のインターフェイス VPC エンドポイント（AWS PrivateLink）を作る",
+          "explanation": "PrivateLink のエンドポイントで、VPC から AWS のサービスにプライベートに接続できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "AWS PrivateLink を使うと、VPC から AWS のサービスに、インターネットに出ずにプライベートに接続できます。エンドポイントポリシーでアクセスを絞ることもできます。",
+      "references": [
+        {
+          "title": "AWS PrivateLink とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/what-is-privatelink.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-065",
+      "domain": "d4",
+      "question": "分析のチームの IAM ロールに、特定の S3 のプレフィックスと特定の Glue のデータベースだけにアクセスさせたい。AWS のマネージドポリシーでは権限が広すぎる。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ルートユーザーの認証情報を共有する",
+          "explanation": "使ってはいけない方法です。"
+        },
+        {
+          "text": "すべての S3 のバケットへのフルアクセスを与える",
+          "explanation": "最小権限に反します。"
+        },
+        {
+          "text": "AdministratorAccess のポリシーをアタッチする",
+          "explanation": "権限が広すぎます。"
+        },
+        {
+          "text": "必要な操作とリソースだけを指定したカスタマーマネージドポリシーを作って、ロールにアタッチする",
+          "explanation": "最小権限の原則に沿って、必要な操作とリソースだけを許可します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "マネージドポリシーで要件を満たせない場合は、必要な操作・リソース・条件だけを指定したカスタムのポリシーを作り、最小権限にします。",
+      "references": [
+        {
+          "title": "ABAC（属性ベースのアクセス制御）とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        },
+        {
+          "title": "AWS Lake Formation とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/what-is-lake-formation.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d001",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-001",
+      "point": "Firehose のバッファ",
+      "question": "Firehose は、受け取ったデータを1件ずつ、まとめずにすぐ宛先に書き込む。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Firehose は、バッファのサイズと間隔の設定に従って、データをまとめて配信します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Firehose は、ストリーミングデータを S3・Redshift・OpenSearch などに配信するフルマネージドのサービスです。受け取った JSON を Parquet や ORC に変換してから保存できます。",
+      "references": [
+        {
+          "title": "Amazon Data Firehose とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/what-is-this-service.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d002",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-001",
+      "point": "形式の変換の入力",
+      "question": "Firehose のレコードの形式の変換では、CSV のデータを直接 Parquet に変換できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。形式の変換の入力は JSON です。CSV などは、先に Lambda で JSON に変換してから変換します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Firehose は、ストリーミングデータを S3・Redshift・OpenSearch などに配信するフルマネージドのサービスです。受け取った JSON を Parquet や ORC に変換してから保存できます。",
+      "references": [
+        {
+          "title": "Amazon Data Firehose とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/what-is-this-service.html"
+        },
+        {
+          "title": "Firehose でのデータの形式の変換",
+          "url": "https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/record-format-conversion.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d003",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-002",
+      "point": "保持期間",
+      "question": "Kinesis Data Streams のデータは、コンシューマーが読み取った時点でストリームから削除される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。データは保持期間の間ストリームに残るので、複数のコンシューマーが読み取ったり、読み直したりできます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Kinesis Data Streams は、リアルタイムのデータストリームを取り込み、保持期間の間保存します。複数のコンシューマーが同じデータを読み取れ、障害時には読み直せます。",
+      "references": [
+        {
+          "title": "Amazon Kinesis Data Streams とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/introduction.html"
+        },
+        {
+          "title": "Kinesis Data Streams のデータの保持期間の変更",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/kinesis-extended-retention.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d004",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-002",
+      "point": "多くのコンシューマー",
+      "question": "Kinesis Data Streams で、多くのコンシューマーがそれぞれ専用のスループットで、低い遅延でデータを受け取りたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "バッファリング",
+          "explanation": "Firehose の配信の機能です。"
+        },
+        {
+          "text": "ライフサイクルの設定",
+          "explanation": "S3 の機能です。"
+        },
+        {
+          "text": "ロングポーリング",
+          "explanation": "SQS の機能です。"
+        },
+        {
+          "text": "拡張ファンアウト",
+          "explanation": "コンシューマーごとに、シャードあたり専用の読み取りのスループットを提供します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "拡張ファンアウトを使うと、コンシューマーが増えても、それぞれが専用のスループットで読み取れます。",
+      "references": [
+        {
+          "title": "拡張ファンアウトを使用したコンシューマーの開発",
+          "url": "https://docs.aws.amazon.com/ja_jp/streams/latest/dev/enhanced-consumers.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d005",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-003",
+      "point": "Kafka のコードの変更",
+      "question": "Amazon MSK に移行するには、Kafka のアプリケーションのコードを MSK 専用の API に書き換える必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。MSK はオープンソースの Kafka の API と互換性があるので、既存のコードを使えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon MSK は、Apache Kafka のクラスターの作成・運用を AWS が管理するサービスです。既存の Kafka のアプリケーションやツールをそのまま使えます。",
+      "references": [
+        {
+          "title": "Amazon MSK とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/msk/latest/developerguide/what-is-msk.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d006",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-003",
+      "point": "ストリームの集計",
+      "question": "ストリーミングデータに対して、時間の枠ごとの集計などのリアルタイムの処理を、Apache Flink で行いたい。サーバーは管理したくない。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "AWS DataSync",
+          "explanation": "データの転送のサービスです。"
+        },
+        {
+          "text": "Amazon MemoryDB",
+          "explanation": "インメモリのデータベースです。"
+        },
+        {
+          "text": "Amazon Managed Service for Apache Flink",
+          "explanation": "Apache Flink のアプリケーションを、サーバーを管理せずに動かせます。"
+        },
+        {
+          "text": "Amazon Athena",
+          "explanation": "S3 のデータへの SQL のクエリのサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Managed Service for Apache Flink で、ストリーミングデータをリアルタイムに処理・分析できます。",
+      "references": [
+        {
+          "title": "Amazon Managed Service for Apache Flink とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/managed-flink/latest/java/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d007",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-004",
+      "point": "処理の順番",
+      "question": "Lambda は Kinesis の同じシャードのレコードを、順番に処理する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。同じシャードのレコードは順番に処理されるので、エラーのバッチがあると後ろのレコードの処理が止まります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Kinesis のイベントソースマッピングでは、エラーのときのバッチの分割、最大の再試行の回数、レコードの最大の経過時間、失敗時の送信先などを設定して、問題のあるレコードで処理が止まるのを防げます。",
+      "references": [
+        {
+          "title": "Lambda で Amazon Kinesis を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-kinesis.html"
+        },
+        {
+          "title": "Lambda の Kinesis のイベントソースの失敗の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/kinesis-on-failure-destination.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d008",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-004",
+      "point": "並列化の係数",
+      "question": "Kinesis のイベントソースマッピングでは、1つのシャードを同時に処理する関数の数を増やすことはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。並列化の係数で、1つのシャードを同時に処理するバッチの数を増やせます（パーティションキーごとの順番は保たれます）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Kinesis のイベントソースマッピングでは、エラーのときのバッチの分割、最大の再試行の回数、レコードの最大の経過時間、失敗時の送信先などを設定して、問題のあるレコードで処理が止まるのを防げます。",
+      "references": [
+        {
+          "title": "Lambda で Amazon Kinesis を使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-kinesis.html"
+        },
+        {
+          "title": "Lambda の Kinesis のイベントソースの失敗の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/kinesis-on-failure-destination.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d009",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-005",
+      "point": "全ロードと CDC",
+      "question": "AWS DMS では、既存のデータの全ロードと、その後の変更の継続的なレプリケーションを、1つのタスクで行うことはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。「全ロードと継続的なレプリケーション」のタスクで、両方を1つのタスクで行えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS DMS の CDC のタスクは、ソースのデータベースの変更を取り込み、ターゲットに継続的に反映します。S3 もターゲットにできます。",
+      "references": [
+        {
+          "title": "AWS DMS の継続的なレプリケーション（CDC）のタスク",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/CHAP_Task.CDC.html"
+        },
+        {
+          "title": "AWS Database Migration Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/Welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d010",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-005",
+      "point": "DMS の管理の範囲",
+      "question": "AWS DMS を使うと、移行に必要なハードウェアとソフトウェアの用意・管理・監視は、利用者がすべて自分で行う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。DMS は、移行に必要なハードウェアとソフトウェアのデプロイ・管理・監視を行うマネージドサービスです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS DMS の CDC のタスクは、ソースのデータベースの変更を取り込み、ターゲットに継続的に反映します。S3 もターゲットにできます。",
+      "references": [
+        {
+          "title": "AWS Database Migration Service とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/dms/latest/userguide/Welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d011",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-006",
+      "point": "フローの実行",
+      "question": "Amazon AppFlow のフローは、手動でしか実行できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。フローは、オンデマンド・スケジュール・イベントで実行できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon AppFlow は、SaaS のアプリケーション（Salesforce・SAP など）と AWS のサービスの間でデータを安全に転送するフルマネージドの統合サービスです。スケジュールやイベントで実行できます。",
+      "references": [
+        {
+          "title": "Amazon AppFlow とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/appflow/latest/userguide/what-is-appflow.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d012",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-006",
+      "point": "AppFlow とコード",
+      "question": "Amazon AppFlow で SaaS のデータを取り込むには、連携のためのコードを自分で書く必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AppFlow は、コードを書かずにデータの転送を設定できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon AppFlow は、SaaS のアプリケーション（Salesforce・SAP など）と AWS のサービスの間でデータを安全に転送するフルマネージドの統合サービスです。スケジュールやイベントで実行できます。",
+      "references": [
+        {
+          "title": "Amazon AppFlow とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/appflow/latest/userguide/what-is-appflow.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d013",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-007",
+      "point": "保存先",
+      "question": "AWS Transfer Family で受け取ったファイルは、Amazon S3 か Amazon EFS に保存できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Transfer Family は、S3 と EFS への転送に対応しています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Transfer Family は、SFTP などのプロトコルで、S3 や EFS にファイルを直接転送できるようにします。既存のクライアントや業務の流れを変えずに使えます。",
+      "references": [
+        {
+          "title": "AWS Transfer Family とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/transfer/latest/userguide/what-is-aws-transfer-family.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d014",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-007",
+      "point": "オンラインの大量転送",
+      "question": "オンプレミスの NFS のファイルサーバーの数十 TB のデータを、ネットワーク経由で効率よく S3 に移したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Amazon AppFlow",
+          "explanation": "SaaS との連携のサービスです。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "ストリーミングデータのサービスです。"
+        },
+        {
+          "text": "AWS Transfer Family",
+          "explanation": "取引先などとの SFTP のファイル転送のサービスです。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "オンプレミスと AWS のストレージの間で、データの移動を自動化・高速化します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "大量のファイルの移行や定期的な同期には DataSync を使います。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d015",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-008",
+      "point": "通知の送り先",
+      "question": "S3 のイベント通知は、Lambda 関数には送れない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。S3 のイベント通知の送り先には、Lambda・SQS・SNS・EventBridge があります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "S3 のイベント通知で、オブジェクトの作成などのイベントを Lambda・SQS・SNS・EventBridge に送れます。EventBridge を使うと、ルールで多くのターゲットに振り分けられます。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d016",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-008",
+      "point": "時間ベースのスケジュール",
+      "question": "毎日決まった時刻に処理を動かしたい場合には、イベント通知ではなく、EventBridge Scheduler などのスケジュールを使う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。時刻で動かすならスケジューラー、ファイルの到着で動かすならイベントを使います。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "S3 のイベント通知で、オブジェクトの作成などのイベントを Lambda・SQS・SNS・EventBridge に送れます。EventBridge を使うと、ルールで多くのターゲットに振り分けられます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge Scheduler",
+          "url": "https://docs.aws.amazon.com/ja_jp/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d017",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-009",
+      "point": "ブックマークの効果",
+      "question": "Glue のジョブのブックマークを有効にすると、毎回すべてのデータを最初から処理し直すようになる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ブックマークは処理済みのデータを記録し、新しいデータだけを処理するための機能です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Glue のジョブのブックマークは、ETL ジョブの実行の状態を保持して、処理済みのデータを再処理しないようにします。増分の処理に使います。",
+      "references": [
+        {
+          "title": "ジョブのブックマークを使用した処理済みデータの追跡",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitor-continuations.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d018",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-009",
+      "point": "再処理",
+      "question": "Glue のジョブのブックマークは一度有効にすると、データを最初から処理し直すことはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ブックマークをリセット（または一時停止）して、データを再処理できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Glue のジョブのブックマークは、ETL ジョブの実行の状態を保持して、処理済みのデータを再処理しないようにします。増分の処理に使います。",
+      "references": [
+        {
+          "title": "ジョブのブックマークを使用した処理済みデータの追跡",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitor-continuations.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d019",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-010",
+      "point": "列指向の利点",
+      "question": "Parquet のような列指向の形式では、クエリで使わない列も必ずすべて読み取る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。列指向の形式は列ごとにデータを保存するので、クエリで使う列だけを読めます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Athena のコストと性能は、スキャンするデータの量に左右されます。Parquet や ORC などの列指向の形式、圧縮、パーティション分割で、読み取る量を減らせます。",
+      "references": [
+        {
+          "title": "Athena のパフォーマンスの最適化",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/performance-tuning.html"
+        },
+        {
+          "title": "AWS Glue での Parquet 形式の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/aws-glue-programming-etl-format-parquet-home.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d020",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-010",
+      "point": "Athena の料金",
+      "question": "Athena のクエリの料金は、スキャンしたデータの量に関係なく一定である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Athena の料金は、クエリでスキャンしたデータの量に基づきます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Athena のコストと性能は、スキャンするデータの量に左右されます。Parquet や ORC などの列指向の形式、圧縮、パーティション分割で、読み取る量を減らせます。",
+      "references": [
+        {
+          "title": "Amazon Athena とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d021",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-011",
+      "point": "Glue の料金",
+      "question": "AWS Glue の ETL ジョブは、ジョブの実行に使った分の処理能力（DPU）に応じて料金がかかる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Glue のジョブは、使ったデータ処理ユニット（DPU）の時間に応じて課金されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Glue はサーバーレスのデータ統合のサービスです。ETL ジョブを、インフラを管理せずに実行でき、Glue Data Catalog とも統合されています。",
+      "references": [
+        {
+          "title": "AWS Glue とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/what-is-glue.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d022",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-011",
+      "point": "Glue とインフラ",
+      "question": "AWS Glue の ETL ジョブを実行するには、利用者が事前に Spark のクラスターを作っておく必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Glue はサーバーレスで、クラスターの準備や管理は不要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Glue はサーバーレスのデータ統合のサービスです。ETL ジョブを、インフラを管理せずに実行でき、Glue Data Catalog とも統合されています。",
+      "references": [
+        {
+          "title": "AWS Glue とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/what-is-glue.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d023",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-012",
+      "point": "スポットとノードの種類",
+      "question": "EMR では、HDFS のデータを持つコアノードより、データを持たないタスクノードにスポットインスタンスを使うほうが、中断の影響が小さい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。タスクノードは HDFS のデータを持たないので、中断されてもデータを失いにくくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon EMR は、Apache Spark・Hive・Presto などで大量のデータを処理するマネージドのクラスターのプラットフォームです。中断に強いタスクノードにはスポットインスタンスを使うと費用を下げられます。",
+      "references": [
+        {
+          "title": "Amazon EMR とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-what-is-emr.html"
+        },
+        {
+          "title": "EMR のインスタンスの購入オプション（スポットインスタンス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-plan-instances-guidelines.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d024",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-012",
+      "point": "クラスターを管理しない EMR",
+      "question": "EMR で Spark のジョブを動かしたいが、クラスターのサイズの調整や管理はしたくない。どれを使うか。",
+      "choices": [
+        {
+          "text": "Amazon MemoryDB",
+          "explanation": "インメモリのデータベースです。"
+        },
+        {
+          "text": "AWS Transfer Family",
+          "explanation": "ファイル転送のサービスです。"
+        },
+        {
+          "text": "Amazon EMR Serverless",
+          "explanation": "クラスターを管理せずに、Spark や Hive のジョブを実行できます。"
+        },
+        {
+          "text": "EMR on EC2 の固定サイズのクラスター",
+          "explanation": "クラスターの管理が必要です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "EMR Serverless は、クラスターの管理なしでビッグデータのフレームワークを使えます。",
+      "references": [
+        {
+          "title": "Amazon EMR Serverless とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/EMR-Serverless-UserGuide/emr-serverless.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d025",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-013",
+      "point": "Lambda の向き不向き",
+      "question": "Lambda は、数時間かかる数百 TB の分散処理に最も向いている。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Lambda には実行時間やメモリの上限があり、大規模な分散処理には EMR や Glue が向いています。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "小さなファイルの軽い変換は、Lambda をイベントで起動するのが向いています。大規模な処理には Glue や EMR を使います。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        },
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d026",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-013",
+      "point": "同時実行数",
+      "question": "Lambda で大量のファイルを並行して処理するときは、アカウントの同時実行数の上限を考える必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。同時実行数はリージョンごとにアカウントで共有されるので、上限を考えて設計します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "小さなファイルの軽い変換は、Lambda をイベントで起動するのが向いています。大規模な処理には Glue や EMR を使います。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        },
+        {
+          "title": "Lambda の同時実行数",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d027",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-014",
+      "point": "Retry と Catch",
+      "question": "Step Functions では、ステートでエラーが起きたときの再試行（Retry）と、失敗したときの代わりの処理（Catch）を定義できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Retry で再試行の回数や間隔を、Catch で失敗時に移るステートを定義します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Step Functions は、Lambda・Glue・EMR などを組み合わせたワークフローを、ステートマシンとして作るサーバーレスのサービスです。Retry と Catch で、再試行とエラー処理を定義できます。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        },
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d028",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-014",
+      "point": "Glue の完了を待つ",
+      "question": "Step Functions から Glue のジョブを起動した場合、ジョブの完了を待ってから次の手順に進むことはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Step Functions のサービス統合では、ジョブの完了を待つ（.sync）パターンで、完了してから次に進めます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Step Functions は、Lambda・Glue・EMR などを組み合わせたワークフローを、ステートマシンとして作るサーバーレスのサービスです。Retry と Catch で、再試行とエラー処理を定義できます。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        },
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d029",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-015",
+      "point": "DAG の置き場所",
+      "question": "Amazon MWAA では、DAG のファイルを各ワーカーのサーバーに手でコピーする。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。MWAA は、指定した S3 のバケットから DAG などを読み込みます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon MWAA は、Apache Airflow の環境をマネージドで提供し、Airflow のワークフロー（DAG）でデータパイプラインを動かせます。",
+      "references": [
+        {
+          "title": "Amazon MWAA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/mwaa/latest/userguide/what-is-mwaa.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d030",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-015",
+      "point": "Airflow の運用",
+      "question": "Amazon MWAA を使っても、Airflow のスケジューラーやワーカーのサーバーは利用者が管理する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。MWAA では、Airflow の基盤の運用を AWS が行います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon MWAA は、Apache Airflow の環境をマネージドで提供し、Airflow のワークフロー（DAG）でデータパイプラインを動かせます。",
+      "references": [
+        {
+          "title": "Amazon MWAA とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/mwaa/latest/userguide/what-is-mwaa.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d031",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-016",
+      "point": "トリガーの種類",
+      "question": "Glue のトリガーは、決まった時刻のスケジュールでしか起動できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。トリガーは、スケジュール・条件（前の処理の完了など）・オンデマンド・イベントで起動できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Glue のワークフローは、複数のクローラー・ジョブ・トリガーを組み合わせた ETL の処理を作成・可視化します。",
+      "references": [
+        {
+          "title": "AWS Glue のワークフロー",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/workflows_overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d032",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-016",
+      "point": "オーケストレーションの選び方",
+      "question": "Glue・EMR・Lambda・外部の API の呼び出しを組み合わせ、サーバーレスで再試行や分岐を含むワークフローを作りたい。最も向いているのはどれか。",
+      "choices": [
+        {
+          "text": "Amazon SQS",
+          "explanation": "キューのサービスです。"
+        },
+        {
+          "text": "Glue のワークフロー",
+          "explanation": "Glue のクローラーとジョブの流れを作る機能で、ほかのサービスとの組み合わせには Step Functions が向いています。"
+        },
+        {
+          "text": "AWS Step Functions",
+          "explanation": "多くの AWS のサービスと統合され、分岐・再試行・並列などを定義できます。"
+        },
+        {
+          "text": "Amazon Quick Sight",
+          "explanation": "可視化のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Glue だけなら Glue のワークフロー、複数のサービスなら Step Functions、Airflow の DAG を使うなら MWAA が向いています。",
+      "references": [
+        {
+          "title": "AWS Step Functions とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d033",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-017",
+      "point": "一度きりのスケジュール",
+      "question": "EventBridge Scheduler では、繰り返しのスケジュールしか作れない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。繰り返しのスケジュールのほか、一度きりの呼び出しも設定できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EventBridge Scheduler を使うと、サーバーなしで、決まった時刻や間隔でターゲットを起動できます。再試行の上限なども設定できます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge Scheduler",
+          "url": "https://docs.aws.amazon.com/ja_jp/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d034",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-017",
+      "point": "Glue のスケジュール",
+      "question": "Glue のジョブやクローラーは、Glue のトリガーで時間ベースのスケジュールを設定することもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Glue のトリガーで、cron の形式のスケジュールを設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "EventBridge Scheduler を使うと、サーバーなしで、決まった時刻や間隔でターゲットを起動できます。再試行の上限なども設定できます。",
+      "references": [
+        {
+          "title": "AWS Glue のワークフロー",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/workflows_overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d035",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-018",
+      "point": "ホットパーティション",
+      "question": "特定のパーティションキーに書き込みが集中すると、テーブル全体のキャパシティに余裕があってもスロットリングが起きることがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。アクセスの偏ったパーティションキーは、ホットパーティションの原因になります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "スロットリングには、指数バックオフ付きの再試行で対処し、キャパシティの不足やホットパーティションがあれば見直します。",
+      "references": [
+        {
+          "title": "パーティションキーの設計",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d036",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-018",
+      "point": "レートの制限",
+      "question": "レート制限のある API からデータを取り込むときは、呼び出しのペースを調整（スロットリング）して、制限を超えないようにする。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。呼び出しのレートを抑え、エラー時には間隔を空けて再試行します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "スロットリングには、指数バックオフ付きの再試行で対処し、キャパシティの不足やホットパーティションがあれば見直します。",
+      "references": [
+        {
+          "title": "DynamoDB のスロットリングのトラブルシューティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/TroubleshootingThrottling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d037",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-019",
+      "point": "接続の情報の保管",
+      "question": "Glue の接続で使うデータベースの認証情報は、AWS Secrets Manager に保管して参照できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Glue の接続は、Secrets Manager のシークレットを参照できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Glue は JDBC の接続で、RDS などのデータストアに接続できます。VPC 内のデータストアには、接続に VPC・サブネット・セキュリティグループを設定します。",
+      "references": [
+        {
+          "title": "AWS Glue の JDBC 接続",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/aws-glue-programming-etl-connect-jdbc-home.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d038",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-019",
+      "point": "ODBC と JDBC",
+      "question": "JDBC と ODBC は、アプリケーションからデータベースに接続するための標準的なインターフェースである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。どちらも、アプリケーションとデータベースをつなぐ標準的な接続の方式です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Glue は JDBC の接続で、RDS などのデータストアに接続できます。VPC 内のデータストアには、接続に VPC・サブネット・セキュリティグループを設定します。",
+      "references": [
+        {
+          "title": "AWS Glue の JDBC 接続",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/aws-glue-programming-etl-connect-jdbc-home.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d039",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-020",
+      "point": "VPC の設定",
+      "question": "Lambda 関数に EFS をマウントするには、関数を EFS と同じ VPC に接続する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。EFS はネットワークのマウントなので、関数を VPC に接続し、実行ロールにも VPC に接続する権限が必要です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lambda 関数に EFS をマウントすると、大きなファイルや共有のデータを扱えます。関数は VPC に接続する必要があります。",
+      "references": [
+        {
+          "title": "Lambda での Amazon EFS のアクセスの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-filesystem-efs.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d040",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-020",
+      "point": "一時ストレージの共有",
+      "question": "Lambda の /tmp のストレージは、すべての関数の実行環境で共有される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。/tmp は実行環境ごとの一時的なストレージで、共有されません。共有にはEFS などを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Lambda 関数に EFS をマウントすると、大きなファイルや共有のデータを扱えます。関数は VPC に接続する必要があります。",
+      "references": [
+        {
+          "title": "Lambda 関数のファイルシステムのアクセスの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-filesystem.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d041",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-021",
+      "point": "IaC の利点",
+      "question": "インフラをコード（テンプレート）で管理すると、同じ構成の環境を繰り返し正確に作れ、変更の履歴もバージョン管理できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。IaC は、再現性とレビュー・バージョン管理のしやすさが利点です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS SAM は、サーバーレスのアプリケーションを定義・テスト・デプロイするためのツールです。テンプレートは CloudFormation に展開されるので、同じ構成を繰り返しデプロイできます（IaC）。",
+      "references": [
+        {
+          "title": "AWS SAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/what-is-sam.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d042",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-021",
+      "point": "失敗の通知",
+      "question": "パイプラインの処理が失敗したときに、担当者にメールで通知したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Amazon S3 Glacier",
+          "explanation": "アーカイブのストレージです。"
+        },
+        {
+          "text": "AWS Glue のクローラー",
+          "explanation": "カタログに登録する機能です。"
+        },
+        {
+          "text": "Amazon Athena",
+          "explanation": "クエリのサービスです。"
+        },
+        {
+          "text": "Amazon SNS",
+          "explanation": "メールなどの購読者に通知を送れます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "SNS で、失敗などのアラートを通知できます。",
+      "references": [
+        {
+          "title": "Amazon SNS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d043",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-022",
+      "point": "分散コンピューティング",
+      "question": "分散コンピューティングとは、大きな処理を複数のコンピューターに分けて並行して行うことである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Spark などは、データを分けて複数のノードで並行して処理します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "データのパイプラインも、バージョン管理・自動テスト・CI/CD・ログ記録・監視を取り入れることで、品質と再現性を保てます。",
+      "references": [
+        {
+          "title": "AWS SAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/what-is-sam.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d044",
+      "type": "drill",
+      "domain": "d1",
+      "source": "dea-022",
+      "point": "再現性",
+      "question": "データの取り込みのパイプラインは、同じ入力から同じ結果が得られる（再現できる）ように作る必要はない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。再現性があると、障害時の再処理や、結果の検証がしやすくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "データのパイプラインも、バージョン管理・自動テスト・CI/CD・ログ記録・監視を取り入れることで、品質と再現性を保てます。",
+      "references": [
+        {
+          "title": "AWS SAM とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/what-is-sam.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d045",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-023",
+      "point": "S3 への書き出し",
+      "question": "Redshift のクエリの結果を、Parquet 形式で S3 に書き出したい。どのコマンドを使うか。",
+      "choices": [
+        {
+          "text": "COPY",
+          "explanation": "S3 などからデータを読み込むコマンドです。"
+        },
+        {
+          "text": "GRANT",
+          "explanation": "権限を与えるコマンドです。"
+        },
+        {
+          "text": "VACUUM",
+          "explanation": "削除された行の領域を回収し、並べ替えるコマンドです。"
+        },
+        {
+          "text": "UNLOAD",
+          "explanation": "クエリの結果を S3 に書き出すコマンドで、Parquet の形式も選べます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "COPY は読み込み、UNLOAD は書き出しです。",
+      "references": [
+        {
+          "title": "UNLOAD",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/r_UNLOAD.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d046",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-023",
+      "point": "1行ずつの挿入",
+      "question": "大量のデータを Redshift に読み込むには、1行ずつの INSERT 文を使うのが最も速い。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。大量のデータの読み込みには、並列に読み込める COPY コマンドを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "COPY コマンドは、S3・DynamoDB・EMR などからデータを並列に読み込みます。大量のデータを読み込む推奨の方法です。",
+      "references": [
+        {
+          "title": "COPY",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/r_COPY.html"
+        },
+        {
+          "title": "Amazon S3 からのデータのロード",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/t_Loading-data-from-S3.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d047",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-024",
+      "point": "外部テーブルの定義",
+      "question": "Redshift Spectrum の外部テーブルのスキーマは、AWS Glue Data Catalog などで管理できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Spectrum の外部スキーマは、Glue Data Catalog・Athena・Hive メタストアなどの外部のデータカタログを参照します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift Spectrum は、S3 のファイルのデータを、Redshift のテーブルに読み込まずにクエリし、Redshift のデータと結合できる機能です。",
+      "references": [
+        {
+          "title": "Redshift Spectrum の外部スキーマ",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c-spectrum-external-schemas.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d048",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-024",
+      "point": "Spectrum とデータの移動",
+      "question": "Redshift Spectrum を使うと、S3 のデータは自動で Redshift のローカルのストレージにコピーされる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Spectrum は S3 のデータをそのままクエリし、Redshift に読み込みません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift Spectrum は、S3 のファイルのデータを、Redshift のテーブルに読み込まずにクエリし、Redshift のデータと結合できる機能です。",
+      "references": [
+        {
+          "title": "Amazon Redshift Spectrum を使用した外部データのクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c-using-spectrum.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d049",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-025",
+      "point": "フェデレーテッドクエリの対象",
+      "question": "Redshift のフェデレーテッドクエリでは、Aurora PostgreSQL や RDS for MySQL などのデータベースをクエリできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。フェデレーテッドクエリは、RDS・Aurora の PostgreSQL と MySQL に対応しています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift のフェデレーテッドクエリは、運用中のデータベース（RDS・Aurora の PostgreSQL や MySQL）のデータを、ETL なしで Redshift から直接クエリする機能です。",
+      "references": [
+        {
+          "title": "Amazon Redshift のフェデレーテッドクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/federated-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d050",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-025",
+      "point": "S3 のデータ",
+      "question": "Redshift から、S3 のデータレイクのファイルを読み込まずにクエリしたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "データ共有",
+          "explanation": "Redshift どうしでデータを共有する機能です。"
+        },
+        {
+          "text": "フェデレーテッドクエリ",
+          "explanation": "運用中のデータベースをクエリする機能です。"
+        },
+        {
+          "text": "Redshift Spectrum",
+          "explanation": "S3 のデータを外部テーブルとしてクエリします。"
+        },
+        {
+          "text": "COPY",
+          "explanation": "S3 からデータを読み込むコマンドです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 は Spectrum、運用中のデータベースはフェデレーテッドクエリでクエリします。",
+      "references": [
+        {
+          "title": "Amazon Redshift Spectrum を使用した外部データのクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c-using-spectrum.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d051",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-026",
+      "point": "クエリの自動の書き換え",
+      "question": "Redshift は、クエリにマテリアライズドビューが明示されていなくても、マテリアライズドビューを使うようにクエリを自動で書き換えることがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。自動のクエリの書き換えで、クエリを変えられない場合でもマテリアライズドビューの効果を得られます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift のマテリアライズドビューは、事前に計算したクエリの結果を保存します。複雑なクエリの結果をすばやく返せ、自動で更新することもできます。",
+      "references": [
+        {
+          "title": "Amazon Redshift のマテリアライズドビュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/materialized-view-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d052",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-026",
+      "point": "ビューとの違い",
+      "question": "Redshift のマテリアライズドビューは、通常のビューと同じく、参照のたびに元のクエリを最初から実行する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。マテリアライズドビューは結果を保存しておくので、参照のたびに元のクエリを最初から実行しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift のマテリアライズドビューは、事前に計算したクエリの結果を保存します。複雑なクエリの結果をすばやく返せ、自動で更新することもできます。",
+      "references": [
+        {
+          "title": "Amazon Redshift のマテリアライズドビュー",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/materialized-view-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d053",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-027",
+      "point": "小さなテーブル",
+      "question": "よく結合される小さなディメンションのテーブルは、ALL 分散にしてすべてのノードにコピーを置くと、結合のときのデータの移動を減らせる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ALL 分散は、小さく更新の少ないテーブルに向いています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "分散スタイルは、テーブルの行をノードにどう置くかを決めます。よく結合する大きなテーブルは結合の列で KEY 分散に、小さなディメンションのテーブルは ALL 分散にすることが多いです。",
+      "references": [
+        {
+          "title": "データの分散スタイル",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c_choosing_dist_sort.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d054",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-027",
+      "point": "範囲の絞り込み",
+      "question": "日付の範囲で絞り込むクエリが多いテーブルで、読み取るブロックを減らしたい。どれを設定するか。",
+      "choices": [
+        {
+          "text": "日付の列を分散キーにする",
+          "explanation": "分散キーはノードへの配置を決めるもので、範囲の絞り込みの効率はソートキーで上げます。"
+        },
+        {
+          "text": "すべての列を圧縮しない",
+          "explanation": "読み取る量が増えます。"
+        },
+        {
+          "text": "ALL 分散にする",
+          "explanation": "範囲の絞り込みの効率は上がりません。"
+        },
+        {
+          "text": "日付の列をソートキーにする",
+          "explanation": "ソートキーで並べておくと、範囲の絞り込みで読み取らなくてよいブロックを飛ばせます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ソートキーは、範囲の絞り込みや結合の効率を上げます。",
+      "references": [
+        {
+          "title": "ソートキー",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/t_Sorting_data.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d055",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-028",
+      "point": "カタログの役割",
+      "question": "Glue Data Catalog には、データそのものではなく、テーブルの定義や場所などのメタデータが保存される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Data Catalog はメタデータのリポジトリで、データは S3 などに置かれたままです。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Glue のクローラーは、データストアに接続してスキーマを判定し、Glue Data Catalog にメタデータのテーブルを作成します。Athena・Redshift Spectrum・EMR などから使えます。",
+      "references": [
+        {
+          "title": "AWS Glue Data Catalog",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/catalog-and-crawler.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d056",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-028",
+      "point": "Hive メタストアとの関係",
+      "question": "Glue Data Catalog は、Apache Hive メタストアと互換性がなく、EMR からは使えない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Glue Data Catalog は Hive メタストアと互換性があり、EMR などからも使えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Glue のクローラーは、データストアに接続してスキーマを判定し、Glue Data Catalog にメタデータのテーブルを作成します。Athena・Redshift Spectrum・EMR などから使えます。",
+      "references": [
+        {
+          "title": "AWS Glue のクローラーの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/add-crawler.html"
+        },
+        {
+          "title": "AWS Glue Data Catalog",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/catalog-and-crawler.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d057",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-029",
+      "point": "既存のパーティションの登録",
+      "question": "Hive 形式（例：dt=2026-11-22/）のフォルダで追加された新しいパーティションを、Athena のテーブルにまとめて登録したい。どのコマンドを使うか。",
+      "choices": [
+        {
+          "text": "UNLOAD",
+          "explanation": "クエリの結果を書き出すコマンドです。"
+        },
+        {
+          "text": "VACUUM",
+          "explanation": "Iceberg などのテーブルの整理のコマンドです。"
+        },
+        {
+          "text": "MSCK REPAIR TABLE",
+          "explanation": "Hive 形式のパーティションを調べて、カタログに追加します。"
+        },
+        {
+          "text": "DROP TABLE",
+          "explanation": "テーブルを削除するコマンドです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "MSCK REPAIR TABLE で、Hive 形式のパーティションをまとめて登録できます。パーティションが多い場合は、パーティション射影も検討します。",
+      "references": [
+        {
+          "title": "MSCK REPAIR TABLE",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/msck-repair-table.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d058",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-029",
+      "point": "パーティションの効果",
+      "question": "パーティションで絞り込むクエリでは、Athena は関係のないパーティションのデータを読まずに済む。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。パーティションで絞り込むと、スキャンするデータの量が減り、速く安くなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "パーティション射影は、パーティションの値と場所を、テーブルの設定から計算する機能です。パーティションの数が多い場合のクエリの高速化や、パーティションの管理の自動化に役立ちます。",
+      "references": [
+        {
+          "title": "Athena のパーティション射影",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/partition-projection.html"
+        },
+        {
+          "title": "MSCK REPAIR TABLE",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/msck-repair-table.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d059",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-030",
+      "point": "トランザクションと履歴",
+      "question": "Amazon S3 Tables（Iceberg）では、トランザクションでデータの一貫性を保ち、過去の版にロールバックすることもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。S3 Tables はトランザクションに対応し、データの変更の履歴をたどって、過去の版に戻せます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Apache Iceberg は、大規模な分析のためのオープンなテーブル形式です。ACID のトランザクション、スキーマの進化、行レベルの更新と削除、タイムトラベルなどの機能があります。Amazon S3 Tables は、Iceberg のテーブルのための S3 のストレージです。",
+      "references": [
+        {
+          "title": "Amazon S3 Tables",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/s3-tables.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d060",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-030",
+      "point": "S3 Tables の形式",
+      "question": "Amazon S3 Tables は、独自の形式のテーブルだけを扱い、Apache Iceberg には対応していない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。S3 Tables は、Apache Iceberg の形式のテーブルのためのストレージです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Apache Iceberg は、大規模な分析のためのオープンなテーブル形式です。ACID のトランザクション、スキーマの進化、行レベルの更新と削除、タイムトラベルなどの機能があります。Amazon S3 Tables は、Iceberg のテーブルのための S3 のストレージです。",
+      "references": [
+        {
+          "title": "Athena での Apache Iceberg テーブルのクエリ",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/querying-iceberg.html"
+        },
+        {
+          "title": "Amazon S3 Tables",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/s3-tables.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d061",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-031",
+      "point": "バージョニングとライフサイクル",
+      "question": "バージョニングを有効にしたバケットでは、ライフサイクルで、古い版（最新ではないバージョン）を一定期間後に削除できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ライフサイクルで、最新ではないバージョンの移行や削除も設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "S3 ライフサイクルの設定には、オブジェクトを別のストレージクラスに移す移行のアクションと、オブジェクトを削除する有効期限のアクションがあります。",
+      "references": [
+        {
+          "title": "S3 バケットでのバージョニングの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Versioning.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d062",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-031",
+      "point": "DynamoDB の古い項目",
+      "question": "DynamoDB のテーブルで、作成から90日たった項目を、削除の処理を書かずに自動で消したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "DynamoDB Streams",
+          "explanation": "変更のデータを記録する機能です。"
+        },
+        {
+          "text": "ポイントインタイムリカバリ",
+          "explanation": "バックアップの機能です。"
+        },
+        {
+          "text": "グローバルテーブル",
+          "explanation": "複数のリージョンへの複製の機能です。"
+        },
+        {
+          "text": "TTL（有効期限）",
+          "explanation": "項目の有効期限のタイムスタンプを過ぎると、DynamoDB が自動で削除します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DynamoDB の TTL で、期限切れの項目を自動で削除できます。",
+      "references": [
+        {
+          "title": "DynamoDB の有効期限 (TTL)",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/TTL.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d063",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-032",
+      "point": "Keyspaces のサーバー",
+      "question": "Amazon Keyspaces を使うには、Cassandra のノードのクラスターを利用者が用意して管理する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Keyspaces はサーバーレスで、サーバーの用意や管理は不要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon Keyspaces は、Apache Cassandra と互換性のある、スケーラブルでサーバーレスのマネージドのデータベースです。",
+      "references": [
+        {
+          "title": "Amazon Keyspaces とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/keyspaces/latest/devguide/what-is-keyspaces.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d064",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-032",
+      "point": "CQL",
+      "question": "Amazon Keyspaces では、既存の Cassandra のアプリケーションのコードや CQL のツールを使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Keyspaces は CQL の API と互換性があります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Keyspaces は、Apache Cassandra と互換性のある、スケーラブルでサーバーレスのマネージドのデータベースです。",
+      "references": [
+        {
+          "title": "Amazon Keyspaces とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/keyspaces/latest/devguide/what-is-keyspaces.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d065",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-033",
+      "point": "MemoryDB の耐久性",
+      "question": "Amazon MemoryDB はインメモリのデータベースなので、データの耐久性はなく、キャッシュとしてしか使えない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。MemoryDB は、複数の AZ のトランザクションログでデータを保持するので、主要なデータベースとして使えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon MemoryDB は、Redis 互換の耐久性のあるインメモリのデータベースです。超高速の性能が必要で、主要なデータベースとして使う用途に向いています。",
+      "references": [
+        {
+          "title": "Amazon MemoryDB とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/memorydb/latest/devguide/what-is-memorydb.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d066",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-033",
+      "point": "キャッシュとの違い",
+      "question": "データベースの前に置く一時的なキャッシュが目的なら、ElastiCache も選択肢になる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。キャッシュが目的なら ElastiCache、耐久性のある主要なデータベースなら MemoryDB が向いています。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon MemoryDB は、Redis 互換の耐久性のあるインメモリのデータベースです。超高速の性能が必要で、主要なデータベースとして使う用途に向いています。",
+      "references": [
+        {
+          "title": "Amazon MemoryDB とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/memorydb/latest/devguide/what-is-memorydb.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d067",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-034",
+      "point": "グラフのデータ構造",
+      "question": "グラフのデータ構造は、ノード（頂点）とそれらをつなぐエッジ（辺）で関係を表す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。グラフは、ノードとエッジで、データどうしの関係を表します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Neptune はグラフデータベースで、多くの関係を持つデータ（ソーシャルネットワーク・不正検知・レコメンデーションなど）を扱うのに向いています。",
+      "references": [
+        {
+          "title": "Amazon Neptune とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/neptune/latest/userguide/intro.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d068",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-034",
+      "point": "データストアの使い分け",
+      "question": "「キーで1件ずつ、どの規模でも一桁ミリ秒で読み書きしたい」用途に最も向いているのはどれか。",
+      "choices": [
+        {
+          "text": "Amazon S3 Glacier",
+          "explanation": "アーカイブのストレージです。"
+        },
+        {
+          "text": "Amazon Redshift",
+          "explanation": "データウェアハウスです。"
+        },
+        {
+          "text": "Amazon DynamoDB",
+          "explanation": "キー・バリュー型で、どの規模でも一桁ミリ秒の性能を出せます。"
+        },
+        {
+          "text": "Amazon Neptune",
+          "explanation": "グラフデータベースです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "アクセスパターンに合わせて、キー・バリュー（DynamoDB）・グラフ（Neptune）・分析（Redshift）などを選びます。",
+      "references": [
+        {
+          "title": "パーティションキーの設計",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d069",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-035",
+      "point": "IVF",
+      "question": "IVF は、ベクトルをクラスタに分け、近いクラスタの中だけを探すことで検索を速くするインデックスの方式である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。IVF（Inverted File）は、クラスタに分けて探す範囲を絞る方式です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ベクトルのインデックスの方式には、グラフに基づく HNSW や、クラスタに分けて探す IVF などがあります。OpenSearch Service や Aurora PostgreSQL（pgvector）で使えます。",
+      "references": [
+        {
+          "title": "Amazon OpenSearch Service のベクトル検索",
+          "url": "https://docs.aws.amazon.com/ja_jp/opensearch-service/latest/developerguide/vector-search.html"
+        },
+        {
+          "title": "Aurora PostgreSQL をベクトルデータベースとして使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.VectorDB.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d070",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-035",
+      "point": "近似の意味",
+      "question": "近似最近傍の検索は、必ずすべてのベクトルとの距離を計算するので、常に完全に正確な結果を返す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。近似最近傍の検索は、すべてと比べずに速く探す代わりに、厳密な最近傍を見落とすことがあります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ベクトルのインデックスの方式には、グラフに基づく HNSW や、クラスタに分けて探す IVF などがあります。OpenSearch Service や Aurora PostgreSQL（pgvector）で使えます。",
+      "references": [
+        {
+          "title": "Amazon OpenSearch Service のベクトル検索",
+          "url": "https://docs.aws.amazon.com/ja_jp/opensearch-service/latest/developerguide/vector-search.html"
+        },
+        {
+          "title": "Aurora PostgreSQL をベクトルデータベースとして使う",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.VectorDB.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d071",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-036",
+      "point": "サーバーレスとプロビジョンド",
+      "question": "プロビジョンドのサービスは容量を細かく制御でき、負荷が一定なら費用を見積もりやすい。サーバーレスは管理が少なく、負荷の変動に強い。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ワークロードの性質に合わせて、プロビジョンドとサーバーレスを選びます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift Serverless は、データウェアハウスの容量を自動で用意・調整し、使った分だけ課金されます。負荷が変動するワークロードに向いています。",
+      "references": [
+        {
+          "title": "Amazon Redshift Serverless とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/mgmt/serverless-whatis.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d072",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-036",
+      "point": "同時実行スケーリング",
+      "question": "Redshift の同時実行スケーリングは、クエリが集中したときに、一時的に処理能力を追加してクエリの待ちを減らす。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。同時実行スケーリングで、多くのクエリが同時に来たときにも性能を保てます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift Serverless は、データウェアハウスの容量を自動で用意・調整し、使った分だけ課金されます。負荷が変動するワークロードに向いています。",
+      "references": [
+        {
+          "title": "Amazon Redshift の同時実行スケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/concurrency-scaling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d073",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-037",
+      "point": "短いトランザクション",
+      "question": "同時の書き込みの衝突を減らすには、トランザクションを短くし、不要に長くロックを持たないことが有効である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。トランザクションを短くすると、ロックを持つ時間が減ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift では、同時の書き込みのトランザクションの分離を保つために、テーブルのロックが使われます。長いトランザクションや同時の書き込みは、待ちや直列化のエラーの原因になります。",
+      "references": [
+        {
+          "title": "Amazon Redshift の同時書き込みとロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c_Concurrent_writes.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d074",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-037",
+      "point": "データ共有のコピー",
+      "question": "Redshift のデータ共有を使うと、別のクラスターに共有するために、データを物理的にコピーする必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。データ共有では、データをコピーせずに、ほかのクラスターやアカウントから読み取れます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift では、同時の書き込みのトランザクションの分離を保つために、テーブルのロックが使われます。長いトランザクションや同時の書き込みは、待ちや直列化のエラーの原因になります。",
+      "references": [
+        {
+          "title": "Amazon Redshift のデータ共有",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/datashare-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d075",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-038",
+      "point": "アクセスパターンから設計",
+      "question": "DynamoDB のスキーマは、リレーショナルデータベースと同じく、まず正規化してから、アクセスパターンを考えるのが基本である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。DynamoDB では、アクセスパターンを先に決めて、それに合わせてキーやインデックスを設計します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DynamoDB のスキーマは、アクセスパターンから設計します。値の種類が多く、アクセスが分散するパーティションキーと、並べ替えや範囲の条件に使うソートキーを選びます。",
+      "references": [
+        {
+          "title": "パーティションキーの設計",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d076",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-038",
+      "point": "データの特性の変化",
+      "question": "データの量やアクセスのパターンが変わったときは、パーティションやインデックスの設計を見直す必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。データの特性の変化に合わせて、設計を見直します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "DynamoDB のスキーマは、アクセスパターンから設計します。値の種類が多く、アクセスが分散するパーティションキーと、並べ替えや範囲の条件に使うソートキーを選びます。",
+      "references": [
+        {
+          "title": "パーティションキーの設計",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d077",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-039",
+      "point": "VPC からだけのアクセス",
+      "question": "S3 アクセスポイントは、特定の VPC からのアクセスだけを受け付けるように設定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。アクセスポイントのネットワークの設定で、VPC からのアクセスに限定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "S3 アクセスポイントは、それぞれ独自のポリシーとネットワークの設定を持つ、バケットへの名前付きのエンドポイントです。共有のデータセットへの大規模なアクセスの管理を簡単にします。",
+      "references": [
+        {
+          "title": "Amazon S3 アクセスポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-points.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d078",
+      "type": "drill",
+      "domain": "d2",
+      "source": "dea-039",
+      "point": "細かいアクセス制御",
+      "question": "データレイクのテーブルの列や行の単位で、Athena や Redshift Spectrum からのアクセスを一元的に管理したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "S3 のライフサイクル",
+          "explanation": "移行と削除の仕組みです。"
+        },
+        {
+          "text": "Amazon MSK",
+          "explanation": "Kafka のマネージドサービスです。"
+        },
+        {
+          "text": "AWS Lake Formation",
+          "explanation": "データレイクのデータベース・テーブル・列・行の単位で、アクセス許可を一元的に管理できます。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "データの転送のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lake Formation で、データレイクの細かいアクセス許可を一元的に管理します。",
+      "references": [
+        {
+          "title": "AWS Lake Formation とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/what-is-lake-formation.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d079",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-040",
+      "point": "ワークグループとコスト",
+      "question": "Athena のワークグループでは、クエリあたりのスキャン量の上限を超えたクエリを取り消せる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。クエリあたりの制限を超えると、そのクエリはキャンセルされます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Athena のワークグループを使うと、利用者やチームごとにクエリを分け、データの使用量の上限や、クエリの結果の保存場所、メトリクスの公開などを管理できます。",
+      "references": [
+        {
+          "title": "Athena のワークグループの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/workgroups-manage-queries-control-costs.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d080",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-040",
+      "point": "クエリの結果をテーブルに",
+      "question": "Athena のクエリの結果を、Parquet 形式の新しいテーブルとして S3 に保存したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "SHOW TABLES",
+          "explanation": "テーブルの一覧を表示するコマンドです。"
+        },
+        {
+          "text": "DESCRIBE",
+          "explanation": "テーブルの定義を表示するコマンドです。"
+        },
+        {
+          "text": "MSCK REPAIR TABLE",
+          "explanation": "パーティションを登録するコマンドです。"
+        },
+        {
+          "text": "CREATE TABLE AS SELECT（CTAS）",
+          "explanation": "クエリの結果から新しいテーブルを作り、形式や圧縮、パーティションも指定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "CTAS で、クエリの結果を指定した形式の新しいテーブルにできます。",
+      "references": [
+        {
+          "title": "クエリの結果からテーブルを作成する (CTAS)",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/ctas.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d081",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-041",
+      "point": "ノートブックの言語",
+      "question": "Athena の Spark のノートブックでは、Python（PySpark）でコードを書ける。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Athena の Spark では、ノートブックで Python のコードを実行できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Athena の Apache Spark を使うと、Spark のリソースを用意せずに、ノートブックで対話的にデータの分析や探索ができます。",
+      "references": [
+        {
+          "title": "Athena の Apache Spark",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/notebooks-spark.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d082",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-041",
+      "point": "Spark とインフラ",
+      "question": "Athena の Apache Spark を使うには、利用者が Spark のクラスターのノードの数を事前に決めて起動しておく必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Athena の Spark は、インフラの用意を利用者が行わずに使えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Athena の Apache Spark を使うと、Spark のリソースを用意せずに、ノートブックで対話的にデータの分析や探索ができます。",
+      "references": [
+        {
+          "title": "Athena の Apache Spark",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/notebooks-spark.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d083",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-042",
+      "point": "データソース",
+      "question": "Amazon Quick Sight では、Redshift や Athena などの AWS のデータソースに接続してダッシュボードを作れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Quick Sight は、多くの AWS のサービスやデータベースにつながります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Amazon Quick Sight は、データを可視化し、対話的なダッシュボードを作って共有できるクラウドの BI のサービスです。",
+      "references": [
+        {
+          "title": "Amazon Quick Sight とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/quicksight/latest/user/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d084",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-042",
+      "point": "Quick Sight とサーバー",
+      "question": "Amazon Quick Sight を使うには、BI のサーバーを利用者が用意して管理する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Quick Sight はフルマネージドのサービスで、用意するインフラはありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Amazon Quick Sight は、データを可視化し、対話的なダッシュボードを作って共有できるクラウドの BI のサービスです。",
+      "references": [
+        {
+          "title": "Amazon Quick Sight とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/quicksight/latest/user/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d085",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-043",
+      "point": "レシピ",
+      "question": "DataBrew では、データに適用した変換の手順をレシピとして保存し、ジョブで繰り返し実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。レシピは変換の手順の集まりで、ジョブとして実行できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Glue DataBrew は、データアナリストやデータサイエンティストが、コードを書かずにデータをクレンジング・正規化できる視覚的なデータの準備のツールです。",
+      "references": [
+        {
+          "title": "AWS Glue DataBrew とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d086",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-043",
+      "point": "DataBrew とコード",
+      "question": "Glue DataBrew で変換を行うには、Spark のコードを書く必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。DataBrew は、コードを書かずに変換を行えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Glue DataBrew は、データアナリストやデータサイエンティストが、コードを書かずにデータをクレンジング・正規化できる視覚的なデータの準備のツールです。",
+      "references": [
+        {
+          "title": "AWS Glue DataBrew とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d087",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-044",
+      "point": "ルールの推奨",
+      "question": "AWS Glue Data Quality は、データを分析して、品質のルールの候補を推奨できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Glue Data Quality は、データの統計からルールを推奨できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Glue Data Quality は、データの品質のルールを定義・評価し、データの品質の問題を検出するのを助けます。ETL のジョブの中で評価できます。",
+      "references": [
+        {
+          "title": "AWS Glue Data Quality",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/glue-data-quality.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d088",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-044",
+      "point": "DataBrew での品質の確認",
+      "question": "DataBrew のデータのプロファイルで、データセットの品質を確かめるためのルールを定義したい。どれを使うか。",
+      "choices": [
+        {
+          "text": "Glue のクローラー",
+          "explanation": "カタログに登録する機能です。"
+        },
+        {
+          "text": "Athena のワークグループ",
+          "explanation": "クエリの管理の機能です。"
+        },
+        {
+          "text": "DataBrew のレシピ",
+          "explanation": "変換の手順です。"
+        },
+        {
+          "text": "DataBrew のデータ品質のルール",
+          "explanation": "データセットの品質を検証するルールを定義し、プロファイルのジョブで評価できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DataBrew でも、データ品質のルールでデータを検証できます。",
+      "references": [
+        {
+          "title": "DataBrew のデータ品質のルールによるデータの検証",
+          "url": "https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/profile.data-quality-rules.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d089",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-045",
+      "point": "ジョブのメトリクス",
+      "question": "Glue のジョブのメトリクス（処理したデータの量やメモリの使用など）は、CloudWatch で確認できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Glue はジョブのメトリクスを CloudWatch に送ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Glue のジョブの状態の変化は EventBridge のイベントになり、ルールで SNS などに通知できます。Glue は CloudWatch にジョブのメトリクスも送ります。",
+      "references": [
+        {
+          "title": "AWS Glue のジョブのモニタリング（CloudWatch のメトリクス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html"
+        },
+        {
+          "title": "Amazon SNS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d090",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-045",
+      "point": "ログの確認",
+      "question": "Glue のジョブのエラーの詳細は、ジョブが失敗すると消えるので、あとから確認できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ジョブのログは CloudWatch Logs に残るので、あとから原因を調べられます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Glue のジョブの状態の変化は EventBridge のイベントになり、ルールで SNS などに通知できます。Glue は CloudWatch にジョブのメトリクスも送ります。",
+      "references": [
+        {
+          "title": "AWS Glue のジョブのモニタリング（CloudWatch のメトリクス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html"
+        },
+        {
+          "title": "Amazon SNS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d091",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-046",
+      "point": "記録の一元的なクエリ",
+      "question": "組織の複数のアカウントの CloudTrail のイベントを1か所に集め、SQL で検索したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "Amazon MemoryDB",
+          "explanation": "インメモリのデータベースです。"
+        },
+        {
+          "text": "Amazon Kinesis Data Streams",
+          "explanation": "ストリーミングデータのサービスです。"
+        },
+        {
+          "text": "AWS CloudTrail Lake",
+          "explanation": "イベントを集めて保存し、SQL でクエリできます。"
+        },
+        {
+          "text": "AWS Glue DataBrew",
+          "explanation": "データの準備のツールです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "CloudTrail Lake で、組織のイベントを集めて SQL で検索できます。",
+      "references": [
+        {
+          "title": "AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d092",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-046",
+      "point": "ログの分析",
+      "question": "Lambda のアプリケーションのログは、CloudWatch Logs Insights でクエリして分析できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。CloudWatch Logs Insights で、ログを検索・集計できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudTrail は、ユーザー・ロール・AWS のサービスが行った操作を記録し、監査やトラブルの調査に使えます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d093",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-047",
+      "point": "ワーカーの見直し",
+      "question": "Glue のジョブでメモリが足りない場合は、より大きなワーカーの種類を選ぶことも対処の1つになる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ワーカーの種類を大きくすると、1つのワーカーで使えるメモリが増えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "データスキューは、一部のキーにデータが集中して、特定のタスクに処理が偏る状態です。ソルティングや再分割でデータを均等にしたり、ワーカーを見直したりして対処します。",
+      "references": [
+        {
+          "title": "AWS Glue のジョブのモニタリング（CloudWatch のメトリクス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d094",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-047",
+      "point": "サンプリング",
+      "question": "データのサンプリングでは、データの一部を取り出して全体の傾向を調べるので、全件を処理するより速く確認できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。サンプリングは、データの品質や傾向をすばやく確かめるのに使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "データスキューは、一部のキーにデータが集中して、特定のタスクに処理が偏る状態です。ソルティングや再分割でデータを均等にしたり、ワーカーを見直したりして対処します。",
+      "references": [
+        {
+          "title": "AWS Glue のジョブのモニタリング（CloudWatch のメトリクス）",
+          "url": "https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d095",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-048",
+      "point": "Catch の役割",
+      "question": "Step Functions の Catch は、エラーが起きたときに、処理を最初からやり直すための設定である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Catch は、エラーのときに移る代わりのステート（フォールバック）を指定する設定です。最初からのやり直しではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Step Functions の Retry では、最初の間隔・倍率（BackoffRate）・最大の回数を指定して、指数バックオフで再試行できます。Catch で、失敗時に別のステートに移れます。",
+      "references": [
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d096",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-048",
+      "point": "エラーの種類の指定",
+      "question": "Step Functions の Retry では、再試行するエラーの種類（ErrorEquals）を指定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ErrorEquals で、どのエラーを再試行するかを決めます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Step Functions の Retry では、最初の間隔・倍率（BackoffRate）・最大の回数を指定して、指数バックオフで再試行できます。Catch で、失敗時に別のステートに移れます。",
+      "references": [
+        {
+          "title": "Step Functions のエラー処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d097",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-049",
+      "point": "非同期の実行",
+      "question": "Redshift Data API のクエリは非同期で実行され、結果はあとから取得できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Data API はクエリを非同期に実行し、状態を確認して結果を取得します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift Data API は、ドライバーや接続の管理なしで、Redshift にクエリを実行できる API です。Lambda などのサーバーレスのアプリケーションから使いやすくなっています。",
+      "references": [
+        {
+          "title": "Amazon Redshift Data API の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/mgmt/data-api.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d098",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-049",
+      "point": "認証情報",
+      "question": "Redshift Data API では、データベースの認証情報として AWS Secrets Manager のシークレットや一時的な認証情報を使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Data API は、Secrets Manager や一時的な認証情報で認証できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift Data API は、ドライバーや接続の管理なしで、Redshift にクエリを実行できる API です。Lambda などのサーバーレスのアプリケーションから使いやすくなっています。",
+      "references": [
+        {
+          "title": "Amazon Redshift Data API の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/mgmt/data-api.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d099",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-050",
+      "point": "トレードオフ",
+      "question": "サーバーレスのサービスは管理の手間が少ない一方で、インスタンスの種類などの細かい制御はプロビジョンドのほうがしやすい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。管理の手間と制御の細かさは、トレードオフになります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "EMR Serverless は、ビッグデータのフレームワークのジョブを、クラスターの設定・管理・スケーリングなしで実行できます。プロビジョンドのクラスターは細かい制御ができる反面、管理が必要です。",
+      "references": [
+        {
+          "title": "Amazon EMR Serverless とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/EMR-Serverless-UserGuide/emr-serverless.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d100",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-050",
+      "point": "常に動かす費用",
+      "question": "プロビジョンドのクラスターは、処理をしていない時間には費用がかからない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。プロビジョンドのクラスターは、動いている間は処理の有無にかかわらず費用がかかります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EMR Serverless は、ビッグデータのフレームワークのジョブを、クラスターの設定・管理・スケーリングなしで実行できます。プロビジョンドのクラスターは細かい制御ができる反面、管理が必要です。",
+      "references": [
+        {
+          "title": "Amazon EMR Serverless とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/emr/latest/EMR-Serverless-UserGuide/emr-serverless.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d101",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-051",
+      "point": "性能の問題の切り分け",
+      "question": "クエリが遅いときは、CloudWatch のメトリクスやクエリの実行計画を見て、原因（待ち・リソース不足・データの偏りなど）を調べる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。原因を確かめてから対処を選びます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift の同時実行スケーリングは、同時のクエリが増えたときに容量を自動で追加し、一貫した性能を保ちます。",
+      "references": [
+        {
+          "title": "Amazon Redshift の同時実行スケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/concurrency-scaling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d102",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-051",
+      "point": "すべての遅さの原因",
+      "question": "Redshift のクエリが遅い原因は、常にノードの数が足りないことだけである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。分散スタイルやソートキーの設計、統計の古さ、同時実行の待ちなど、原因はさまざまです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift の同時実行スケーリングは、同時のクエリが増えたときに容量を自動で追加し、一貫した性能を保ちます。",
+      "references": [
+        {
+          "title": "Amazon Redshift の同時実行スケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/concurrency-scaling.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d103",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-052",
+      "point": "ファンアウト",
+      "question": "SNS のトピックを複数の SQS キューで購読すると、1つのメッセージを複数のシステムで並行して処理できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SNS から複数の SQS キューにファンアウトできます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SNS は、パブリッシュ・サブスクライブ型のメッセージングのサービスで、メール・SMS・HTTP(S)・Lambda・SQS などの購読者に通知を配信します。",
+      "references": [
+        {
+          "title": "Amazon SNS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d104",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-052",
+      "point": "SNS の配信の方式",
+      "question": "SNS の購読者は、自分からトピックにメッセージを取りに行く（ポーリングする）必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SNS は購読者にメッセージをプッシュします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SNS は、パブリッシュ・サブスクライブ型のメッセージングのサービスで、メール・SMS・HTTP(S)・Lambda・SQS などの購読者に通知を配信します。",
+      "references": [
+        {
+          "title": "Amazon SNS とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d105",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-053",
+      "point": "ピボット",
+      "question": "ピボットは、列の値を削除して、表の行数を減らす操作である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ピボットは、行の値を列に並べ替えて、クロス集計の形にする操作です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "集約（GROUP BY）はグループごとに値をまとめ、ウィンドウ関数は各行に対して、指定した範囲の行を使って計算します。移動平均やランキングなどに使います。",
+      "references": [
+        {
+          "title": "Amazon Athena とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d106",
+      "type": "drill",
+      "domain": "d3",
+      "source": "dea-053",
+      "point": "ビューとデータ",
+      "question": "Athena や Redshift のビュー（通常のビュー）は、クエリの結果のデータを物理的に保存している。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。通常のビューはクエリの定義を保存するだけで、結果のデータは保存しません。結果を保存するのはマテリアライズドビューです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "集約（GROUP BY）はグループごとに値をまとめ、ウィンドウ関数は各行に対して、指定した範囲の行を使って計算します。移動平均やランキングなどに使います。",
+      "references": [
+        {
+          "title": "Amazon Athena とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/athena/latest/ug/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d107",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-054",
+      "point": "行の単位の制御",
+      "question": "Lake Formation で、地域の担当者には自分の地域の行だけを見せたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "Athena の CTAS",
+          "explanation": "クエリの結果をテーブルにする機能です。"
+        },
+        {
+          "text": "Glue のジョブのブックマーク",
+          "explanation": "処理済みのデータの追跡の機能です。"
+        },
+        {
+          "text": "データフィルター（行レベルのセキュリティ）",
+          "explanation": "フィルターの条件で、見せる行（と列）を絞れます。"
+        },
+        {
+          "text": "S3 のライフサイクル",
+          "explanation": "移行と削除の仕組みです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Lake Formation のデータフィルターで、行・列・セルの単位のセキュリティを実現できます。",
+      "references": [
+        {
+          "title": "Lake Formation のデータフィルター（行レベル・セルレベルのセキュリティ）",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/data-filtering.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d108",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-054",
+      "point": "一元的な管理",
+      "question": "Lake Formation のアクセス許可は、Athena と Redshift Spectrum でそれぞれ別に設定し直す必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Lake Formation の権限は、統合されたサービスで共通に使われます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Lake Formation は、データレイクのデータに対するきめ細かいアクセス許可（列・行・セルの単位）を一元的に管理します。統合されたサービス（Athena・Redshift Spectrum・EMR など）で同じ権限が使われます。",
+      "references": [
+        {
+          "title": "AWS Lake Formation とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/what-is-lake-formation.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d109",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-055",
+      "point": "タグの継承",
+      "question": "Lake Formation で、データベースに付けた LF タグは、その中のテーブルにも引き継がれる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。LF タグは、データベースからテーブル、テーブルから列へと引き継がれます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Lake Formation のタグベースのアクセス制御では、LF タグをデータベース・テーブル・列に付け、タグの条件で権限を与えます。リソースが多い場合に、権限の管理を簡単にします。",
+      "references": [
+        {
+          "title": "Lake Formation のタグベースのアクセス制御",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/tag-based-access-control.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d110",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-055",
+      "point": "IAM の ABAC",
+      "question": "IAM のポリシーで、プリンシパルのタグとリソースのタグが一致するときだけアクセスを許可する方式はどれか。",
+      "choices": [
+        {
+          "text": "ネットワーク ACL",
+          "explanation": "サブネットの通信の制御です。"
+        },
+        {
+          "text": "ロールベースのアクセス制御だけ",
+          "explanation": "役割ごとに権限を決める方式で、タグの一致の条件ではありません。"
+        },
+        {
+          "text": "S3 のライフサイクル",
+          "explanation": "移行と削除の仕組みです。"
+        },
+        {
+          "text": "属性ベースのアクセス制御（ABAC）",
+          "explanation": "タグなどの属性に基づいてアクセスを許可する方式です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ABAC では、タグの属性で権限を決めるので、リソースが増えてもポリシーを書き直さずに済みます。",
+      "references": [
+        {
+          "title": "ABAC（属性ベースのアクセス制御）とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d111",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-056",
+      "point": "Parameter Store との違い",
+      "question": "機密ではない設定値は、Systems Manager Parameter Store に保管することもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Parameter Store は、設定値やシークレットを階層的に保管できます（自動ローテーションが必要なら Secrets Manager）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管・ローテーションします。Glue の接続や、アプリケーションから API で取得できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d112",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-056",
+      "point": "ローテーションと手作業",
+      "question": "Secrets Manager でローテーションを設定すると、パスワードの変更のたびに利用者がデータベースのパスワードも手で変更する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ローテーションでは、シークレットとデータベースの両方の認証情報が更新されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管・ローテーションします。Glue の接続や、アプリケーションから API で取得できます。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d113",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-057",
+      "point": "転送中の暗号化",
+      "question": "データの転送中の暗号化には、TLS（HTTPS）を使う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。TLS で、ネットワークを流れるデータを暗号化します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "別のアカウントに KMS のキーを使わせるには、キーポリシーで相手のアカウントを許可し、相手のアカウントの IAM ポリシーでもそのキーの使用を許可します。",
+      "references": [
+        {
+          "title": "他のアカウントのユーザーに KMS キーの使用を許可する",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-policy-modifying-external-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d114",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-057",
+      "point": "AWS マネージドキーの共有",
+      "question": "AWS マネージドキー（aws/s3 など）は、キーポリシーを編集して別のアカウントと共有できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AWS マネージドキーのキーポリシーは変更できないので、クロスアカウントの共有にはカスタマーマネージドキーを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "別のアカウントに KMS のキーを使わせるには、キーポリシーで相手のアカウントを許可し、相手のアカウントの IAM ポリシーでもそのキーの使用を許可します。",
+      "references": [
+        {
+          "title": "他のアカウントのユーザーに KMS キーの使用を許可する",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-policy-modifying-external-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d115",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-058",
+      "point": "PII の扱い",
+      "question": "個人情報が含まれるとわかったデータは、アクセス許可の制限やマスキングなどで保護する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。見つけたあとは、アクセスの制限・マスキング・削除などで保護します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Macie は、機械学習とパターンマッチングで、S3 の機密データを検出し、データのセキュリティのリスクを把握するのを助けます。",
+      "references": [
+        {
+          "title": "Amazon Macie とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/macie/latest/user/what-is-macie.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d116",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-058",
+      "point": "Macie の対象",
+      "question": "Amazon Macie が主に調べるのは、Amazon EBS のボリュームの中のデータである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Macie が主に調べるのは、Amazon S3 のデータです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Macie は、機械学習とパターンマッチングで、S3 の機密データを検出し、データのセキュリティのリスクを把握するのを助けます。",
+      "references": [
+        {
+          "title": "Amazon Macie とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/macie/latest/user/what-is-macie.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d117",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-059",
+      "point": "匿名化の目的",
+      "question": "データのマスキングや匿名化は、分析に必要な情報を残しつつ、個人を特定できる情報を保護するために行う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。目的に必要な範囲でデータを使えるようにしつつ、プライバシーを守ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "DataBrew では、個人を特定できる情報（PII）を、マスキング・ハッシュ化・暗号化・置き換えなどの変換で保護できます。",
+      "references": [
+        {
+          "title": "DataBrew での個人を特定できる情報 (PII) の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/personal-information-protection.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d118",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-059",
+      "point": "ハッシュ化と元の値",
+      "question": "ハッシュ化した値からは、いつでも簡単に元の値に戻せる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ハッシュは一方向の変換で、元の値に戻すことを想定していません（復元が必要なら暗号化を使います）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "DataBrew では、個人を特定できる情報（PII）を、マスキング・ハッシュ化・暗号化・置き換えなどの変換で保護できます。",
+      "references": [
+        {
+          "title": "DataBrew での個人を特定できる情報 (PII) の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/personal-information-protection.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d119",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-060",
+      "point": "データベースの権限",
+      "question": "Redshift では、GRANT で、データベースのユーザーやロールに、テーブルなどへの権限を与えられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。GRANT で、スキーマやテーブルへの権限を与えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Redshift のデータ共有は、データをコピーや移動せずに、Redshift のクラスターやアカウントの間で、ライブのデータを安全に共有できる機能です。",
+      "references": [
+        {
+          "title": "GRANT",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/r_GRANT.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d120",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-060",
+      "point": "共有のための複製",
+      "question": "Redshift のデータ共有で読み取る側のデータは、共有したときにコピーされた時点のもので、更新は反映されない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。データ共有ではコピーせずにライブのデータを読み取るので、最新の状態が見えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Redshift のデータ共有は、データをコピーや移動せずに、Redshift のクラスターやアカウントの間で、ライブのデータを安全に共有できる機能です。",
+      "references": [
+        {
+          "title": "Amazon Redshift のデータ共有",
+          "url": "https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/datashare-overview.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d121",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-061",
+      "point": "アプリケーションのログ",
+      "question": "アプリケーションのログは、CloudWatch Logs に保存して、保持期間を設定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。CloudWatch Logs で、アプリケーションのログを保存・管理できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudTrail Lake は、CloudTrail のイベントなどを集めて不変の形で保存し、SQL でクエリできる機能です。組織の複数のアカウントのイベントも集められます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d122",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-061",
+      "point": "大量のログの分析",
+      "question": "大量のログデータの分析には、Athena・OpenSearch Service・EMR などは使えず、手作業で確認するしかない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Athena・OpenSearch Service・EMR・CloudWatch Logs Insights などで、ログを分析できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudTrail Lake は、CloudTrail のイベントなどを集めて不変の形で保存し、SQL でクエリできる機能です。組織の複数のアカウントのイベントも集められます。",
+      "references": [
+        {
+          "title": "AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d123",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-062",
+      "point": "Config と CloudTrail",
+      "question": "「誰がその操作をしたか」は AWS Config で、「設定がどう変わったか」は AWS CloudTrail で確認する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。逆です。Config は設定の履歴、CloudTrail は API の操作（誰が何をしたか）の記録です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Config は、AWS のリソースの設定を記録・評価し、設定の変化を追跡します。誰が操作したかは CloudTrail で確認します。",
+      "references": [
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d124",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-062",
+      "point": "Config の評価",
+      "question": "AWS Config では、リソースの設定がルールに沿っているかを評価することはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Config のルールで、設定がルールに沿っているかを評価できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS Config は、AWS のリソースの設定を記録・評価し、設定の変化を追跡します。誰が操作したかは CloudTrail で確認します。",
+      "references": [
+        {
+          "title": "AWS Config とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/WhatIsConfig.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d125",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-063",
+      "point": "データ主権",
+      "question": "データ主権とは、データがその保存場所の国の法令に従うという考え方で、保存するリージョンの選択に影響する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。データの保存場所の法令に従う必要があるので、リージョンの選択とその制限が重要になります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SCP を使うと、組織のすべてのアカウントで、許可したリージョン以外への操作を拒否できます。データの所在地（データ主権）の要件に対応する方法の1つです。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d126",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-063",
+      "point": "SCP と権限の付与",
+      "question": "SCP でリージョンを許可しておけば、IAM ポリシーがなくても、そのリージョンのすべての操作ができる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP は権限を与えません。操作には IAM ポリシーなどでの許可も必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SCP を使うと、組織のすべてのアカウントで、許可したリージョン以外への操作を拒否できます。データの所在地（データ主権）の要件に対応する方法の1つです。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d127",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-064",
+      "point": "セキュリティグループ",
+      "question": "インターフェイス VPC エンドポイントには、セキュリティグループを関連付けて、アクセスできる通信を制限できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。インターフェイスエンドポイントのネットワークインターフェイスにセキュリティグループを付けられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS PrivateLink を使うと、VPC から AWS のサービスに、インターネットに出ずにプライベートに接続できます。エンドポイントポリシーでアクセスを絞ることもできます。",
+      "references": [
+        {
+          "title": "AWS PrivateLink とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/what-is-privatelink.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d128",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-064",
+      "point": "IP アドレスの許可リスト",
+      "question": "データソースへの接続を特定の IP アドレスだけに許可するのは、セキュリティの対策にならない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。接続元を許可リストで絞ることは、データソースを守る基本的な対策の1つです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS PrivateLink を使うと、VPC から AWS のサービスに、インターネットに出ずにプライベートに接続できます。エンドポイントポリシーでアクセスを絞ることもできます。",
+      "references": [
+        {
+          "title": "AWS PrivateLink とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/what-is-privatelink.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d129",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-065",
+      "point": "マネージドとアンマネージド",
+      "question": "マネージドサービスでは、基盤の OS のパッチの適用などの運用を、すべて利用者が担う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。マネージドサービスでは基盤の運用を AWS が担い、アンマネージド（自分で EC2 に入れるなど）では利用者が担います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "マネージドポリシーで要件を満たせない場合は、必要な操作・リソース・条件だけを指定したカスタムのポリシーを作り、最小権限にします。",
+      "references": [
+        {
+          "title": "ABAC（属性ベースのアクセス制御）とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        },
+        {
+          "title": "AWS Lake Formation とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/what-is-lake-formation.html"
+        }
+      ]
+    },
+    {
+      "id": "dea-d130",
+      "type": "drill",
+      "domain": "d4",
+      "source": "dea-065",
+      "point": "ロールの用途",
+      "question": "Lambda 関数や Glue のジョブに AWS のサービスへのアクセスを許可するには、IAM ユーザーのアクセスキーを使うのが推奨である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。サービスには IAM ロールを使い、一時的な認証情報でアクセスさせるのが推奨です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "マネージドポリシーで要件を満たせない場合は、必要な操作・リソース・条件だけを指定したカスタムのポリシーを作り、最小権限にします。",
+      "references": [
+        {
+          "title": "ABAC（属性ベースのアクセス制御）とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        },
+        {
+          "title": "AWS Lake Formation とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/what-is-lake-formation.html"
+        }
+      ]
+    }
+  ]
+}
