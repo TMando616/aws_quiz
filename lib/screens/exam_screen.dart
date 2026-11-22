@@ -3,11 +3,13 @@ import 'package:material_ui/material_ui.dart';
 import '../data/certification_repository.dart';
 import '../data/question_repository.dart';
 import '../data/study_repository.dart';
+import '../logic/continue_order.dart';
 import '../logic/mock_builder.dart';
 import '../models/exam.dart';
 import '../models/question.dart';
 import '../theme/app_tokens.dart';
 import '../widgets/design_parts.dart';
+import '../widgets/domain_radar_chart.dart';
 import 'mock_screen.dart';
 import 'quiz_screen.dart';
 
@@ -23,9 +25,15 @@ class ExamScreen extends StatefulWidget {
 
 /// 画面に出すデータをまとめたもの
 class _ExamData {
-  const _ExamData(this.questions, this.accuracy, this.lastMock);
+  const _ExamData(this.questions, this.accuracy, this.lastMock, this.latest);
 
   final List<Question> questions;
+
+  /// 問題ID → 最新の回答が正解だったか（間違えた問題の解き直しに使う）
+  final Map<String, bool> latest;
+
+  /// 最新の回答が不正解の問題（一問一答も本番形式も含む）
+  List<Question> get wrong => wrongOnly(questions, latest);
 
   /// 分野ID → 正答率
   final Map<String, Accuracy> accuracy;
@@ -69,16 +77,18 @@ class _ExamScreenState extends State<ExamScreen> {
     final questions = await QuestionRepository().load(widget.exam.id);
     var accuracy = <String, Accuracy>{};
     MockResult? lastMock;
+    var latest = <String, bool>{};
     try {
       final repo = await StudyRepository.instance();
       accuracy = await repo.accuracyByDomain(widget.exam.id, questions);
       final mocks = await repo.mockResults(widget.exam.id, limit: 1);
       lastMock = mocks.firstOrNull;
+      latest = await repo.latestResults(widget.exam.id);
     } catch (e) {
       // 記録が読めなくても、出題はできるようにする
       debugPrint('学習記録の読み込みに失敗: $e');
     }
-    return _ExamData(questions, accuracy, lastMock);
+    return _ExamData(questions, accuracy, lastMock, latest);
   }
 
   /// 出題画面へ。戻ってきたら正答率を読み直す
@@ -174,6 +184,7 @@ class _ExamScreenState extends State<ExamScreen> {
           final questions = data.examFormat;
           final drills = data.drills;
           final lastMock = data.lastMock;
+          final wrong = data.wrong;
 
           return ListView(
             padding: EdgeInsets.fromLTRB(
@@ -199,6 +210,11 @@ class _ExamScreenState extends State<ExamScreen> {
               ],
               const SectionLabel('ほかの解き方'),
               ListRow(
+                title: '間違えた問題だけ解き直す',
+                subtitle: wrong.isEmpty ? 'まだありません' : '${wrong.length}問',
+                onTap: wrong.isEmpty ? null : () => _start(wrong, '間違えた問題'),
+              ),
+              ListRow(
                 title: '本番形式で全分野から',
                 subtitle: '${questions.length}問',
                 onTap: questions.isEmpty
@@ -222,8 +238,24 @@ class _ExamScreenState extends State<ExamScreen> {
               ),
               SizedBox(height: t.space6),
               const SectionLabel('分野ごとの正答率', trailing: 'タップでその分野を解く'),
-              for (final domain in exam.domains)
+              // 1問でも解いていれば、苦手な分野がひと目でわかるレーダーチャートを出す
+              if (data.accuracy.isNotEmpty && exam.domains.length >= 3) ...[
+                SizedBox(height: t.space3),
+                Center(
+                  child: FractionallySizedBox(
+                    widthFactor: 0.8,
+                    child: DomainRadarChart(
+                      rates: [
+                        for (final d in exam.domains) data.accuracy[d.id]?.rate,
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: t.space3),
+              ],
+              for (final (i, domain) in exam.domains.indexed)
                 _DomainRow(
+                  number: i + 1,
                   domain: domain,
                   count: data.countOf(domain.id),
                   drillCount: data.drillCountOf(domain.id),
@@ -249,6 +281,7 @@ class _ExamScreenState extends State<ExamScreen> {
 /// 分野1つ分の行。分野名・正答率・バー・問題数を出す
 class _DomainRow extends StatelessWidget {
   const _DomainRow({
+    required this.number,
     required this.domain,
     required this.count,
     required this.drillCount,
@@ -256,6 +289,8 @@ class _DomainRow extends StatelessWidget {
     required this.onTap,
   });
 
+  /// 分野の番号（レーダーチャートの軸の番号と対応させる）
+  final int number;
   final Domain domain;
 
   /// 本番形式の問題数
@@ -287,7 +322,7 @@ class _DomainRow extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: Text(domain.name, style: t.body)),
+                Expanded(child: Text('$number. ${domain.name}', style: t.body)),
                 SizedBox(width: t.space3),
                 Text(
                   rate == null ? '未回答' : '${(rate * 100).round()}%',

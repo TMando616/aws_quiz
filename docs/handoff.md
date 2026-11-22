@@ -14,7 +14,7 @@
 - デザイン：`DESIGN.md`（「通勤電車で開く単語帳」）に全画面を移行済み。ライト・ダークでスクリーンショット確認済み
 - `flutter analyze` 指摘なし、`flutter test` 49件通過、iOS シミュレーターでビルド・起動を確認
 - 本人がまだ触って確認していない（下の「未確認のこと」）。最初の作業は本人の確認結果を受けての修正になる見込み
-- 次の実装：v1 に入れると決めた「苦手分野のレーダーチャート」と「間違えた問題だけ解き直す」
+- 2026-11-22：v1 に入れると決めた「苦手分野のレーダーチャート」と「間違えた問題だけ解き直す」を実装（試験トップ）。残りは公開の準備（アイコン・AdMob・プライバシーポリシーの公開・TestFlight）
 - 本人の判断待ち：なし（アプリ名 CertStack・バンドルID `com.tmando616.certstack`・問い合わせ用のメールアドレスは決定済み）。プライバシーポリシーの制定日はまだ空欄（開発者名は本名の Takashi Mandokoro。App Store の販売元の表示と揃える）
 - GitHub：2026-11-21 にリポジトリを作成して push 済み（`git@github.com:TMando616/aws_quiz.git`。HTTPS はトークンが無効なので SSH で push する）
 
@@ -281,7 +281,7 @@ lib/ads/interstitial_ad_manager.dart 全画面広告の先読みと表示
    - sap-031〜075 と saa-001〜065 は根拠ページで事実を確かめてから作成した。SAA の問題は、SAA-C03 の範囲内のサービスの一覧で確認した（Elastic Disaster Recovery は SAA の範囲に入っていないので使っていない）。Shield Advanced は根拠ページで確認できなかったため、問題にしていない。sap-031〜038（Glacier Deep Archive、スポット、Compute Optimizer、Budgets の予算アクション、DMS＋SCT、Transform MGN、S3 File Gateway、FIS）
    - 作成時、単一選択の正解の多くが B に偏ったため、選択肢を並べ替えて A〜D に散らした（品質チェックにも偏りの警告を追加）
    - 今後足すなら、まだ入れていない論点（Bedrock Guardrails、Lake Formation、EKS、Cloud WAN の詳細など）も、公式ドキュメントを確認しながら入れていく
-3. **v1 に入れる機能の実装**：苦手分野のレーダーチャート（分野ごとの正答率はすでにあるので描画を足す。依存パッケージなしで描く案）、間違えた問題だけ解き直す（学習記録の最新の正誤を使う）
+3. ~~**v1 に入れる機能の実装**~~（2026-11-22 済み）：試験トップに、苦手分野のレーダーチャート（`lib/widgets/domain_radar_chart.dart`。依存パッケージなしの CustomPaint。1問でも解くと出る）と、「間違えた問題だけ解き直す」（最新の回答が不正解の問題。あとで正解したら外れる。`wrongOnly`）を追加。本人の実機での確認はまだ
 4. ~~GitHub にリポジトリを作って push~~（2026-11-21 済み）。次はプライバシーポリシーを GitHub Pages で公開する
 5. **App Storeへの公開準備**：Apple Developer Program（年99ドル）、アイコン、上の「リリース前にやること（広告まわり）」。アプリ名は「CertStack」（`CFBundleDisplayName`・`android:label`・`lib/config/app_info.dart` の `appName` の3か所に反映済み）
 6. Androidの環境構築とGoogle Playへの公開

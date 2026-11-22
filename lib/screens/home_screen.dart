@@ -133,9 +133,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 開発用：起動後に自動で画面を進める（シミュレーターの画面確認用。デバッグビルドだけで効く）
-  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`drill` で一問一答まで進む（`drill-answered` はさらに1問目に自動で回答する。`quiz-selected` は出題画面で1問目の A を選んだ状態にする）
+  /// `--dart-define=DEBUG_ROUTE=exam` で試験トップ、`quiz` で出題画面、`explanation` で解説、`explanation-end` で解説の末尾、`mock` で模試、`mock-result` で模試の結果、`about` で「このアプリについて」、`exam-studied` で回答の記録を入れてから試験トップ（レーダーチャートの確認用）、`drill` で一問一答まで進む（`drill-answered` はさらに1問目に自動で回答する。`quiz-selected` は出題画面で1問目の A を選んだ状態にする）
   static const _debugRoute = String.fromEnvironment('DEBUG_ROUTE');
   static const _debugCertified = String.fromEnvironment('DEBUG_CERTIFIED');
+
+  /// 開発用（`DEBUG_ROUTE=exam-studied`）：分野ごとに正答率が違う回答の記録を入れる。
+  /// レーダーチャートと「間違えた問題だけ解き直す」の見た目の確認に使う。記録はシミュレーターに残る
+  Future<void> _seedDebugAnswers(Exam exam) async {
+    final repo = await StudyRepository.instance();
+    final questions = await QuestionRepository().load(exam.id);
+    for (final (i, domain) in exam.domains.indexed) {
+      final inDomain = questions.where((q) => q.domainId == domain.id).take(10);
+      // 分野1は9割、分野2は3割…と、分野ごとに正答率を変える
+      final correctCount = [9, 3, 7, 5, 8, 6][i % 6];
+      for (final (j, q) in inDomain.indexed) {
+        await repo.recordAnswer(
+          examId: exam.id,
+          questionId: q.id,
+          correct: j < correctCount,
+          mode: StudyMode.practice,
+        );
+      }
+    }
+  }
 
   Future<void> _openDebugRoute(_HomeData data) async {
     if (_debugRoute == 'drill' || _debugRoute == 'drill-answered') {
@@ -150,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
       navigator.push(MaterialPageRoute(builder: (_) => const AboutScreen()));
       return;
     }
+    if (_debugRoute == 'exam-studied') await _seedDebugAnswers(target.exam);
     navigator.push(
       MaterialPageRoute(builder: (_) => ExamScreen(exam: target.exam)),
     );

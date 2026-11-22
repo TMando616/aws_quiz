@@ -32,4 +32,14 @@ void main() {
   test('まだ1問も解いていなければ元の順番のまま', () {
     expect(ids(orderForContinue(questions, {})), ['a', 'b', 'c', 'd', 'e']);
   });
+
+  test('間違えた問題だけ：最新の回答が不正解の問題を、元の順番で返す', () {
+    final wrong = wrongOnly(questions, {'a': true, 'b': false, 'd': false});
+    expect(ids(wrong), ['b', 'd']);
+  });
+
+  test('間違えた問題だけ：不正解がなければ空', () {
+    expect(wrongOnly(questions, {'a': true}), isEmpty);
+    expect(wrongOnly(questions, {}), isEmpty);
+  });
 }

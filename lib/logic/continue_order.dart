@@ -23,3 +23,15 @@ List<Question> orderForContinue(
   }
   return [...unanswered, ...wrong, ...correct];
 }
+
+/// 「間違えた問題だけ解き直す」の対象：最新の回答が不正解の問題だけ
+///
+/// 一度間違えても、あとで正解していれば外す（もう解けるようになったので）。
+/// 順番は問題データの順を保つ
+List<Question> wrongOnly(
+  List<Question> questions,
+  Map<String, bool> latestResults,
+) => [
+  for (final q in questions)
+    if (latestResults[q.id] == false) q,
+];
