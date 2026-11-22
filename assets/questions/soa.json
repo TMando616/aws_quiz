@@ -1,0 +1,6207 @@
+{
+  "examId": "soa",
+  "examCode": "SOA-C03",
+  "questions": [
+    {
+      "id": "soa-001",
+      "domain": "d1",
+      "question": "EC2 インスタンスのメモリ使用率とディスクの空き容量を CloudWatch で監視し、しきい値を超えたらアラームを出したい。CloudWatch のメトリクスの一覧に、これらのメトリクスが見当たらない。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "メトリクスが収集されるようにはなりません。"
+        },
+        {
+          "text": "インスタンスに CloudWatch エージェントを入れ、メモリとディスクのメトリクスを収集する",
+          "explanation": "メモリやディスクの使用率は OS の中の情報なので、既定のメトリクスには含まれません。エージェントで収集します。"
+        },
+        {
+          "text": "詳細モニタリングを有効にする",
+          "explanation": "詳細モニタリングは既定のメトリクスを1分間隔にするだけで、メモリやディスクのメトリクスは増えません。"
+        },
+        {
+          "text": "CloudTrail を有効にする",
+          "explanation": "API の操作の記録で、OS のメトリクスは収集しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EC2 の既定のメトリクスはハイパーバイザーから見える CPU やネットワークなどです。メモリやディスクの使用率などの OS の中のメトリクスやログは、CloudWatch エージェントで収集します。",
+      "references": [
+        {
+          "title": "CloudWatch エージェントでメトリクスとログを収集する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+        },
+        {
+          "title": "CloudWatch エージェントが収集するメトリクス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/metrics-collected-by-CloudWatch-agent.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-002",
+      "domain": "d1",
+      "question": "Web サーバーの CPU 使用率のアラームが、一時的な高負荷で頻繁に鳴り、担当者が疲弊している。CPU 使用率が高く、かつ応答時間も悪化しているときだけ通知したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CPU 使用率のアラームのしきい値を100%にする",
+          "explanation": "本当に問題があるときにも鳴らなくなるおそれがあります。"
+        },
+        {
+          "text": "詳細モニタリングを無効にする",
+          "explanation": "通知の条件は変わりません。"
+        },
+        {
+          "text": "アラームの通知先を削除する",
+          "explanation": "問題が起きても誰も気づけなくなります。"
+        },
+        {
+          "text": "2つのアラームを AND の条件でまとめた複合アラームを作り、複合アラームだけが通知する",
+          "explanation": "複合アラームは、複数のアラームの状態を組み合わせた条件で ALARM になります。ノイズを減らせます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "複合アラームを使うと、複数のアラームの状態を AND・OR などで組み合わせ、本当に対応が必要なときだけ通知できます（アラームのノイズの削減）。",
+      "references": [
+        {
+          "title": "複合アラームの作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-003",
+      "domain": "d1",
+      "question": "基盤のハードウェアの障害で EC2 インスタンスのシステムのステータスチェックが失敗したら、同じインスタンス ID・プライベート IP アドレスのまま、自動で別のハードウェアに移したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "StatusCheckFailed_Instance のアラームで、インスタンスを終了する",
+          "explanation": "インスタンスのステータスチェックは OS 側の問題の検出で、終了すると元に戻りません。"
+        },
+        {
+          "text": "毎日インスタンスを手動で再起動する",
+          "explanation": "障害の発生に合わせた自動の対処になりません。"
+        },
+        {
+          "text": "StatusCheckFailed_System のメトリクスに CloudWatch のアラームを作り、EC2 の復旧（recover）アクションを設定する",
+          "explanation": "復旧のアクションは、インスタンスを別のハードウェアに移し、インスタンス ID やプライベート IP アドレスなどを保ちます。"
+        },
+        {
+          "text": "インスタンスのメモリのアラームを作る",
+          "explanation": "ハードウェアの障害の検出になりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "システムのステータスチェックの失敗は、AWS 側の基盤の問題を示します。CloudWatch のアラームで EC2 の復旧アクションを使うと、インスタンスを別のハードウェアで自動的に復旧できます。",
+      "references": [
+        {
+          "title": "インスタンスを停止・終了・再起動・復旧するアラームを作成する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/UsingAlarmActions.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-004",
+      "domain": "d1",
+      "question": "組織の10個のアカウントと3つのリージョンにある EC2 と RDS のメトリクスとアラームを、運用チームが1つの CloudWatch のダッシュボードでまとめて見たい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudWatch のクロスアカウント・クロスリージョンの機能を設定し、監視用のアカウントで1つのダッシュボードを作る",
+          "explanation": "クロスアカウントの機能を設定すると、1つのダッシュボードに複数のアカウントとリージョンのメトリクスやアラームを表示できます。"
+        },
+        {
+          "text": "アカウントとリージョンごとにダッシュボードを30個作り、順番に見る",
+          "explanation": "一覧性がなく、見落としが起きやすくなります。"
+        },
+        {
+          "text": "すべてのリソースを1つのアカウントに移す",
+          "explanation": "大きな作業で、ダッシュボードのためにすることではありません。"
+        },
+        {
+          "text": "全員に各アカウントのルートユーザーでサインインしてもらう",
+          "explanation": "ルートユーザーは日常の作業に使いません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudWatch のダッシュボードは、複数のアカウントとリージョンのメトリクスとアラームを1か所に表示できます。ダッシュボードは共有もできます。",
+      "references": [
+        {
+          "title": "クロスアカウント・クロスリージョンの CloudWatch コンソール",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html"
+        },
+        {
+          "title": "CloudWatch ダッシュボードの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-005",
+      "domain": "d1",
+      "question": "EC2 インスタンスの状態が stopped になったら Lambda 関数を呼び出す EventBridge のルールを作った。イベントはルールに一致しているのに、Lambda 関数が呼び出されない。最も可能性の高い原因はどれか。",
+      "choices": [
+        {
+          "text": "EC2 インスタンスのタグが多い",
+          "explanation": "ルールに一致している以上、原因ではありません。"
+        },
+        {
+          "text": "Lambda 関数のメモリが少ない",
+          "explanation": "呼び出されない原因にはなりません。"
+        },
+        {
+          "text": "CloudWatch のダッシュボードが無い",
+          "explanation": "イベントの配信には関係ありません。"
+        },
+        {
+          "text": "Lambda 関数のリソースベースのポリシーで、EventBridge からの呼び出しが許可されていない",
+          "explanation": "EventBridge がターゲットの Lambda 関数を呼び出すには、関数のリソースベースのポリシーで events.amazonaws.com からの呼び出しを許可する必要があります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EventBridge のルールが一致しているのにターゲットが呼び出されないときは、まずターゲットへのアクセス許可（Lambda 関数のリソースベースのポリシーなど）を確認します。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のトラブルシューティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-troubleshooting.html"
+        },
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-006",
+      "domain": "d1",
+      "question": "Web サーバーのプロセスが応答しなくなったときの対処（インスタンスの再起動と、担当者への通知）を、手順書に沿って毎回手作業で行っている。この手順を自動化し、EventBridge や CloudWatch のアラームから実行したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Trusted Advisor のチェックを有効にする",
+          "explanation": "ベストプラクティスとの差の確認で、手順の自動化ではありません。"
+        },
+        {
+          "text": "手順書を Wiki に置き、担当者がすぐ読めるようにする",
+          "explanation": "自動化にはなりません。"
+        },
+        {
+          "text": "Systems Manager Automation のランブックとして手順を定義し、イベントをきっかけに実行する",
+          "explanation": "Automation のランブックで、運用の手順を自動化できます。AWS が用意したランブックも使えます。"
+        },
+        {
+          "text": "担当者の人数を増やす",
+          "explanation": "自動化にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Systems Manager Automation は、EC2 インスタンスの再起動や AMI の作成などの運用の手順を、ランブックで自動化します。EventBridge などから実行できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Automation",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-automation.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-007",
+      "domain": "d1",
+      "question": "S3 バケットのサーバー側の暗号化が無効になっているなどの設定違反を AWS Config のルールで検出している。違反が見つかったら、人手を介さずに自動で設定を直したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Config のルールに自動修復を設定し、Systems Manager Automation のドキュメントで修正する",
+          "explanation": "Config は、非準拠のリソースを Systems Manager Automation のドキュメントで自動修復できます。"
+        },
+        {
+          "text": "Config のルールを削除する",
+          "explanation": "違反が見えなくなるだけです。"
+        },
+        {
+          "text": "毎週、担当者が Config のダッシュボードを見て手で直す",
+          "explanation": "自動ではなく、直すまでに時間がかかります。"
+        },
+        {
+          "text": "CloudTrail のログの保存期間を延ばす",
+          "explanation": "設定の修正にはなりません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Config のルールに修復のアクションを設定すると、非準拠と評価されたリソースを、Systems Manager Automation のドキュメントで自動（または手動）で修復できます。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠のリソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-008",
+      "domain": "d1",
+      "question": "データベース用の gp2 の EBS ボリュームで、IOPS を上げるためだけに容量を大きくしてきた。容量は今のままで、必要な IOPS とスループットを確保し、費用も下げたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスを停止して、ボリュームを作り直す",
+          "explanation": "gp3 への変更はエラスティックボリュームで、使いながら行えます。"
+        },
+        {
+          "text": "ボリュームを gp3 に変更し、必要な IOPS とスループットを容量とは別に設定する",
+          "explanation": "gp3 は容量と独立して IOPS とスループットを設定でき、同じ性能なら gp2 より安くなることが多いです。エラスティックボリュームで、使いながら変更できます。"
+        },
+        {
+          "text": "容量をさらに大きくする",
+          "explanation": "費用が上がり、要件に反します。"
+        },
+        {
+          "text": "ボリュームを sc1 に変更する",
+          "explanation": "sc1 はアクセスの少ないデータ向けの HDD で、データベースの IOPS には向きません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "gp2 の IOPS は容量に比例しますが、gp3 は容量とは別に IOPS とスループットを設定できます。エラスティックボリュームの機能で、ボリュームタイプやサイズを使いながら変更できます。",
+      "references": [
+        {
+          "title": "汎用 SSD (gp3) ボリューム",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/general-purpose.html"
+        },
+        {
+          "title": "Amazon EBS エラスティックボリューム",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-modify-volume.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-009",
+      "domain": "d1",
+      "question": "海外の拠点から、東京リージョンの S3 バケットに数 GB のファイルをアップロードすると時間がかかる。アップロードを速くしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "バケットのストレージクラスを S3 Standard-IA にする",
+          "explanation": "転送の速さは変わりません。"
+        },
+        {
+          "text": "ファイルを1バイトずつ送る",
+          "explanation": "遅くなります。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を有効にし、高速化用のエンドポイントでアップロードする",
+          "explanation": "Transfer Acceleration は、CloudFront のエッジロケーションを経由して、遠くからの転送を速くします。"
+        },
+        {
+          "text": "バケットのバージョニングを有効にする",
+          "explanation": "転送の速さは変わりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 Transfer Acceleration は、地理的に離れたクライアントと S3 バケットの間の転送を、エッジロケーションを使って高速化します。",
+      "references": [
+        {
+          "title": "Amazon S3 Transfer Acceleration",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/transfer-acceleration.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-010",
+      "domain": "d1",
+      "question": "複数の EC2 インスタンスで共有している Amazon EFS のファイルシステムに、ほとんど開かれない古いファイルが大量にある。アプリケーションを変えずに、ストレージの費用を下げたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "EFS のライフサイクル管理で、一定期間アクセスされないファイルを低頻度アクセス（IA）のストレージクラスに移す",
+          "explanation": "ライフサイクルのポリシーで、アクセスの少ないファイルを自動で安いストレージクラスに移せます。アプリケーションからは同じように見えます。"
+        },
+        {
+          "text": "EFS のスループットモードをプロビジョンドにする",
+          "explanation": "性能の設定で、ストレージの費用は下がりません。"
+        },
+        {
+          "text": "ファイルをすべて EBS に移す",
+          "explanation": "共有できなくなり、アプリケーションの変更も必要です。"
+        },
+        {
+          "text": "ファイルシステムを毎日作り直す",
+          "explanation": "データが失われます。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "EFS のライフサイクル管理では、指定した期間アクセスされなかったファイルを、低頻度アクセスやアーカイブのストレージクラスに自動で移せます。",
+      "references": [
+        {
+          "title": "Amazon EFS のライフサイクル管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/efs/latest/ug/lifecycle-management-efs.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-011",
+      "domain": "d1",
+      "question": "RDS for PostgreSQL の DB インスタンスの CPU 使用率が高い。どの SQL 文が負荷の原因になっているかを特定したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "リードレプリカを追加する",
+          "explanation": "原因の特定にはなりません。"
+        },
+        {
+          "text": "CloudWatch Database Insights（旧 Performance Insights）で、DB の負荷を SQL 文ごとに分析する",
+          "explanation": "DB の負荷を、待機イベント・SQL 文・ホスト・ユーザーで絞り込んで表示できるので、負荷の原因の SQL を特定しやすくなります。"
+        },
+        {
+          "text": "拡張モニタリングだけを有効にする",
+          "explanation": "OS のメトリクスはわかりますが、どの SQL が原因かはわかりません。"
+        },
+        {
+          "text": "DB インスタンスを再起動する",
+          "explanation": "一時的に下がっても、原因はわかりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "RDS の Performance Insights の機能は、CloudWatch Database Insights に引き継がれています。DB の負荷を、待機イベント・SQL 文・ホスト・ユーザーの観点で分析できます。",
+      "references": [
+        {
+          "title": "Amazon CloudWatch Database Insights による Amazon RDS の DB 負荷のモニタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PerfInsights.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-012",
+      "domain": "d1",
+      "question": "HPC のアプリケーションで、EC2 インスタンスどうしの通信を、できるだけ低い遅延と高いスループットにしたい。最も適切な配置はどれか。",
+      "choices": [
+        {
+          "text": "分散プレイスメントグループで、インスタンスを別々のハードウェアに分ける",
+          "explanation": "障害の影響を分けるための配置で、通信の性能を最大にするためのものではありません。"
+        },
+        {
+          "text": "インスタンスを複数のリージョンに分ける",
+          "explanation": "リージョン間の通信は遅延が大きくなります。"
+        },
+        {
+          "text": "インスタンスを複数の AZ に均等に分ける",
+          "explanation": "AZ 間の通信は、同じ AZ の中より遅延が大きくなります。"
+        },
+        {
+          "text": "クラスタープレイスメントグループに、インスタンスを1つの AZ の中でまとめて配置する",
+          "explanation": "クラスタープレイスメントグループは、インスタンスを近くに配置し、低い遅延と高いネットワークの性能を実現します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "プレイスメントグループには、クラスター（低い遅延・高いスループット）、パーティション（大規模な分散システム）、分散（少数の重要なインスタンスを別々のハードウェアに）があります。",
+      "references": [
+        {
+          "title": "プレイスメントグループ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-013",
+      "domain": "d1",
+      "question": "多くの EC2 インスタンスが、必要以上に大きなインスタンスタイプで動いている気がする。過去の使用状況のメトリクスをもとに、適切なインスタンスタイプの推奨を得たい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "AWS CloudTrail",
+          "explanation": "API の操作を記録するサービスです。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を見つけるサービスです。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "設定の記録と評価のサービスで、サイズの推奨は行いません。"
+        },
+        {
+          "text": "AWS Compute Optimizer",
+          "explanation": "使用状況のメトリクスを機械学習で分析し、EC2 インスタンスなどの最適なサイズの推奨を示します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Compute Optimizer は、EC2・EBS・Lambda などの使用状況を分析し、過剰や不足のないリソースの設定を推奨して、費用の削減と性能の改善を助けます。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-014",
+      "domain": "d1",
+      "question": "アプリケーションのログを CloudWatch Logs に送っている。障害の調査のため、直近3時間で特定のエラーコードを含むログを抽出し、5分ごとの件数を集計したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudWatch Logs Insights で、filter と stats のクエリを実行する",
+          "explanation": "Logs Insights は、ログをクエリで検索・集計でき、障害の調査に向いています。"
+        },
+        {
+          "text": "ロググループの保持期間を延ばす",
+          "explanation": "保存期間が延びるだけで、集計はできません。"
+        },
+        {
+          "text": "CloudTrail のイベント履歴を検索する",
+          "explanation": "API の操作の記録で、アプリケーションのログは含まれません。"
+        },
+        {
+          "text": "ログをすべて手元にダウンロードして検索する",
+          "explanation": "時間がかかり、効率的ではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudWatch Logs Insights は、ログのデータを対話的に検索・分析するサービスです。運用上の問題に素早く対応するために使えます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-015",
+      "domain": "d2",
+      "question": "Auto Scaling グループの EC2 インスタンスの平均 CPU 使用率を、負荷が変わっても常に50%前後に保ちたい。最も設定が簡単なスケーリングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "台数を固定する（最小・最大・希望の台数を同じにする）",
+          "explanation": "負荷が変わっても台数が変わりません。"
+        },
+        {
+          "text": "平均 CPU 使用率を50%にするターゲット追跡スケーリングポリシー",
+          "explanation": "目標の値を決めるだけで、Auto Scaling がアラームを作り、目標に近づくように台数を増減します。"
+        },
+        {
+          "text": "手動で台数を変える",
+          "explanation": "負荷の変化にすぐ追従できません。"
+        },
+        {
+          "text": "毎日9時に台数を増やすスケジュールに基づくスケーリング",
+          "explanation": "時刻で台数を変えるだけで、負荷の変化には追従しません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ターゲット追跡スケーリングでは、メトリクスと目標の値を選ぶだけで、Auto Scaling がメトリクスを目標の値の近くに保つように容量を調整します。",
+      "references": [
+        {
+          "title": "ターゲット追跡スケーリングポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+        }
+      ],
+      "group": "soa-scaling"
+    },
+    {
+      "id": "soa-016",
+      "domain": "d2",
+      "question": "社内システムは、毎朝9時の始業と同時にアクセスが急増することがわかっている。インスタンスの起動に数分かかるので、急増の前に台数を増やしておきたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ヘルスチェックの猶予期間を延ばす",
+          "explanation": "台数を前もって増やすことにはなりません。"
+        },
+        {
+          "text": "最大の台数を減らす",
+          "explanation": "急増に対応できなくなります。"
+        },
+        {
+          "text": "スケジュールに基づくスケーリングで、毎朝8時45分に台数を増やす",
+          "explanation": "負荷の増える時刻がわかっているなら、その前に台数を増やしておけます。"
+        },
+        {
+          "text": "ターゲット追跡スケーリングだけを使う",
+          "explanation": "負荷が上がってから台数を増やすので、起動までの数分間は台数が足りません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "スケジュールに基づくスケーリングでは、予測できる負荷の変化に合わせて、日時を決めて容量を変えられます。",
+      "references": [
+        {
+          "title": "スケジュールに基づくスケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+        }
+      ],
+      "group": "soa-scaling"
+    },
+    {
+      "id": "soa-017",
+      "domain": "d2",
+      "question": "アプリケーションの初期化に10分かかるため、Auto Scaling でスケールアウトしても、新しいインスタンスが通信を受けられるまでに時間がかかる。スケールアウトの遅れを短くしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ウォームプールを設定し、初期化済みのインスタンスを停止状態などで待機させておく",
+          "explanation": "ウォームプールのインスタンスは初期化が終わっているので、スケールアウトのときにすぐ使えます。"
+        },
+        {
+          "text": "最小の台数を0にする",
+          "explanation": "スケールアウトがさらに遅くなります。"
+        },
+        {
+          "text": "インスタンスのヘルスチェックを無効にする",
+          "explanation": "異常なインスタンスに通信が送られるだけで、初期化は速くなりません。"
+        },
+        {
+          "text": "スケジュールに基づくスケーリングを使う",
+          "explanation": "時刻が決まっていない負荷の増加には使えません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ウォームプールは、Auto Scaling グループの横に、初期化済みのインスタンスを待機させておく仕組みです。起動に時間がかかるアプリケーションのスケールアウトの遅れを減らせます。",
+      "references": [
+        {
+          "title": "ウォームプール",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html"
+        }
+      ],
+      "group": "soa-scaling"
+    },
+    {
+      "id": "soa-018",
+      "domain": "d2",
+      "question": "新しいモバイルゲームの DynamoDB のテーブルは、アクセスの量がまったく予測できず、ときどき急増する。キャパシティの計画をせずに、急増にも対応したい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "プロビジョンドモードで、最大の量に合わせて常に確保する",
+          "explanation": "普段は使わないキャパシティにも払うことになります。"
+        },
+        {
+          "text": "テーブルを毎日作り直す",
+          "explanation": "データが失われます。"
+        },
+        {
+          "text": "プロビジョンドモードで、平均の量に合わせた固定のキャパシティにする",
+          "explanation": "急増したときにスロットリングされます。"
+        },
+        {
+          "text": "オンデマンドのキャパシティモードを使う",
+          "explanation": "オンデマンドモードは、リクエストの量に合わせて自動で対応し、使った分だけ支払います。キャパシティの計画は要りません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "オンデマンドのキャパシティモードは、予測できないトラフィックや新しいアプリケーションに向いています。プロビジョンドモードは、予測できるトラフィックで、自動スケーリングと組み合わせて使います。",
+      "references": [
+        {
+          "title": "DynamoDB の読み取り/書き込みキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-019",
+      "domain": "d2",
+      "question": "社内の分析用のデータベースは、平日の日中だけ負荷が高く、夜間と週末はほとんど使われない。データベースのキャパシティを負荷に合わせて自動で細かく増減させたい。MySQL との互換性が必要である。最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "Amazon RDS for MySQL の最大のインスタンスクラスで常に動かす",
+          "explanation": "使わない時間にも大きな費用がかかります。"
+        },
+        {
+          "text": "Amazon Aurora Serverless v2",
+          "explanation": "負荷に合わせて、データベースのキャパシティを自動で細かく増減します。"
+        },
+        {
+          "text": "Amazon DynamoDB に移行する",
+          "explanation": "MySQL との互換性がなく、アプリケーションの大きな変更が必要です。"
+        },
+        {
+          "text": "Amazon ElastiCache に移行する",
+          "explanation": "キャッシュのサービスで、データベースの置き換えにはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Aurora Serverless v2 は、アプリケーションの需要に応じて、データベースのキャパシティを自動で細かく調整します。負荷の変化が大きいワークロードに向いています。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-020",
+      "domain": "d2",
+      "question": "ALB の背後の Auto Scaling グループで、アプリケーションが応答しなくなったインスタンスが、ALB のヘルスチェックでは異常なのに、Auto Scaling に置き換えられずに残っている。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "最大の台数を増やす",
+          "explanation": "異常なインスタンスは残ったままです。"
+        },
+        {
+          "text": "ALB のヘルスチェックを無効にする",
+          "explanation": "異常なインスタンスにも通信が送られます。"
+        },
+        {
+          "text": "Auto Scaling グループのヘルスチェックに、Elastic Load Balancing のヘルスチェックを追加する",
+          "explanation": "ELB のヘルスチェックを使うと、ロードバランサーで異常と判定されたインスタンスも、Auto Scaling が置き換えます。"
+        },
+        {
+          "text": "インスタンスタイプを変える",
+          "explanation": "置き換えられない原因の解決になりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Auto Scaling の既定のヘルスチェックは EC2 のステータスチェックだけです。ELB のヘルスチェックを有効にすると、アプリケーションの異常でもインスタンスを置き換えられます。",
+      "references": [
+        {
+          "title": "Auto Scaling グループのインスタンスのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html"
+        },
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-021",
+      "domain": "d2",
+      "question": "Web サイトの本番の ALB が応答しなくなったら、DNS で自動的に S3 の静的な「メンテナンス中」のページに切り替えたい。最も適切な Route 53 の設定はどれか。",
+      "choices": [
+        {
+          "text": "レイテンシーベースのルーティングを使う",
+          "explanation": "遅延の小さいリージョンに振り分ける方式で、障害時の切り替えが目的ではありません。"
+        },
+        {
+          "text": "シンプルルーティングで ALB だけを登録する",
+          "explanation": "ヘルスチェックによる切り替えができません。"
+        },
+        {
+          "text": "加重ルーティングで、ALB と S3 に50%ずつ振り分ける",
+          "explanation": "正常なときも半分の利用者がメンテナンスのページに送られます。"
+        },
+        {
+          "text": "フェイルオーバールーティングで、ALB をプライマリ（ヘルスチェック付き）、S3 のサイトをセカンダリにする",
+          "explanation": "プライマリのヘルスチェックが失敗すると、Route 53 がセカンダリに応答を切り替えます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "フェイルオーバールーティングは、アクティブ・パッシブの構成で使います。プライマリのリソースが異常になると、セカンダリのリソースに通信を向けます。",
+      "references": [
+        {
+          "title": "フェイルオーバールーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-failover.html"
+        },
+        {
+          "title": "Route 53 のヘルスチェックの種類",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/health-checks-types.html"
+        }
+      ],
+      "group": "soa-r53-routing"
+    },
+    {
+      "id": "soa-022",
+      "domain": "d2",
+      "question": "本番の RDS for MySQL の DB インスタンスを、AZ の障害に備えて高可用性にしたい。障害時は、アプリケーションの接続先のエンドポイントを変えずに自動で切り替えたい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "同じ AZ にリードレプリカを作る",
+          "explanation": "AZ の障害でまとめて止まり、自動のフェイルオーバーもしません。"
+        },
+        {
+          "text": "マルチ AZ 配置にする",
+          "explanation": "別の AZ に同期でスタンバイを置き、障害時は自動でフェイルオーバーします。DNS 名は変わりません。"
+        },
+        {
+          "text": "毎日スナップショットを取る",
+          "explanation": "復元に時間がかかり、自動の切り替えにはなりません。"
+        },
+        {
+          "text": "インスタンスクラスを大きくする",
+          "explanation": "可用性は上がりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "RDS のマルチ AZ 配置では、別の AZ のスタンバイに同期でデータを複製し、障害時に自動でフェイルオーバーします。エンドポイントの DNS 名はそのまま使えます。",
+      "references": [
+        {
+          "title": "マルチ AZ 配置",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+        },
+        {
+          "title": "Amazon RDS のマルチ AZ の DB インスタンス配置",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-023",
+      "domain": "d2",
+      "question": "EC2 の EBS ボリューム・RDS・DynamoDB のバックアップを、毎日取って35日間保持し、災害に備えて別のリージョンにもコピーしたい。サービスごとの設定をばらばらに管理したくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Backup のバックアッププランで、スケジュール・保持期間・別のリージョンへのコピーを定義し、リソースを割り当てる",
+          "explanation": "複数のサービスのバックアップを、1つのプランで一元的に管理できます。"
+        },
+        {
+          "text": "CloudTrail のログを別のリージョンにコピーする",
+          "explanation": "データのバックアップにはなりません。"
+        },
+        {
+          "text": "毎日、担当者が手でスナップショットを取る",
+          "explanation": "手作業で漏れが起きやすくなります。"
+        },
+        {
+          "text": "各サービスのコンソールで、それぞれバックアップを設定する",
+          "explanation": "設定がばらばらになり、管理が煩雑です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS Backup のバックアッププランでは、バックアップの頻度・保持期間・コピー先などのルールを定義し、タグなどでリソースを割り当てられます。",
+      "references": [
+        {
+          "title": "AWS Backup のバックアッププラン",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/about-backup-plans.html"
+        },
+        {
+          "title": "AWS Backup のクロスリージョンのコピー",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/cross-region-backup.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-024",
+      "domain": "d2",
+      "question": "担当者が誤って、本番の RDS のテーブルのデータを午後2時10分に削除してしまった。自動バックアップは有効になっている。データを、削除の直前の状態に戻したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "リードレプリカを昇格させる",
+          "explanation": "レプリカにも削除が反映されています。"
+        },
+        {
+          "text": "最後の日次のスナップショットから復元する",
+          "explanation": "スナップショットの時点に戻るので、それ以降のデータが失われます。"
+        },
+        {
+          "text": "ポイントインタイムリカバリで、午後2時9分の時点の新しい DB インスタンスを復元する",
+          "explanation": "自動バックアップがあれば、保持期間の中の指定した時点の状態を、新しい DB インスタンスとして復元できます。"
+        },
+        {
+          "text": "マルチ AZ のスタンバイに切り替える",
+          "explanation": "スタンバイにも削除が同期で複製されているので、戻りません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "RDS のポイントインタイムリカバリでは、バックアップの保持期間の中の任意の時点（通常は直近5分前まで）の状態を、新しい DB インスタンスとして復元できます。",
+      "references": [
+        {
+          "title": "DB インスタンスを特定の時点に復元する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PIT.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-025",
+      "domain": "d2",
+      "question": "S3 バケットのファイルが、誤って上書きされたり削除されたりすることがある。前の版のファイルにいつでも戻せるようにしたい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "バケットを別のリージョンに作り直す",
+          "explanation": "前の版の保存にはなりません。"
+        },
+        {
+          "text": "バケットのバージョニングを有効にする",
+          "explanation": "同じキーのオブジェクトの複数の版を保持し、上書きや削除の前の版に戻せます。"
+        },
+        {
+          "text": "ライフサイクルで30日後にオブジェクトを削除する",
+          "explanation": "前の版の保存にはなりません。"
+        },
+        {
+          "text": "Transfer Acceleration を有効にする",
+          "explanation": "転送を速くする機能です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "S3 のバージョニングを有効にすると、オブジェクトを上書きしても前の版が残り、削除しても削除マーカーが付くだけで、前の版に戻せます。",
+      "references": [
+        {
+          "title": "S3 バケットでのバージョニングの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Versioning.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-026",
+      "domain": "d2",
+      "question": "基幹システムの DR の要件は、RTO が数十分、RPO が数分である。費用は抑えたいが、常に本番と同じ規模の環境を動かすほどの予算はない。DR のリージョンでは、データは常に複製し、アプリケーションのサーバーは止めておき、災害時に起動して規模を広げる。この方式はどれか。",
+      "choices": [
+        {
+          "text": "パイロットライト",
+          "explanation": "データは常に複製し、アプリケーションのサーバーなどは停止しておき、災害時に起動・拡張する方式です。"
+        },
+        {
+          "text": "バックアップと復元",
+          "explanation": "バックアップから環境を作り直すので、RTO は時間単位になります。"
+        },
+        {
+          "text": "ウォームスタンバイ",
+          "explanation": "縮小した規模の環境を常に動かしておく方式です。サーバーを止めておく今回の説明には合いません。"
+        },
+        {
+          "text": "マルチサイトアクティブ/アクティブ",
+          "explanation": "複数のリージョンで常に本番の通信を処理する方式で、費用が最も高くなります。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "DR の方式は、費用と RTO・RPO の小ささの順に、バックアップと復元 → パイロットライト → ウォームスタンバイ → マルチサイトアクティブ/アクティブとなります。",
+      "references": [
+        {
+          "title": "クラウドでのディザスタリカバリのオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+        }
+      ],
+      "group": "soa-dr-strategy"
+    },
+    {
+      "id": "soa-027",
+      "domain": "d2",
+      "question": "決済システムの DR の要件は、RTO が数分である。DR のリージョンでは、本番より小さい規模で、すぐに通信を処理できる完全な環境を常に動かしておき、災害時には規模を広げて切り替えたい。この方式はどれか。",
+      "choices": [
+        {
+          "text": "コールドスタンバイ（手順書だけを用意）",
+          "explanation": "環境がないので、数分では復旧できません。"
+        },
+        {
+          "text": "バックアップと復元",
+          "explanation": "環境を作り直すので、RTO は時間単位になります。"
+        },
+        {
+          "text": "ウォームスタンバイ",
+          "explanation": "縮小した規模の、完全に機能する環境を常に動かしておき、災害時に拡張します。"
+        },
+        {
+          "text": "パイロットライト",
+          "explanation": "アプリケーションのサーバーは止めておくので、起動の分だけ RTO が長くなります。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ウォームスタンバイでは、DR のリージョンで縮小した規模の本番の環境を常に動かしておくので、拡張するだけで素早く切り替えられます。",
+      "references": [
+        {
+          "title": "クラウドでのディザスタリカバリのオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+        }
+      ],
+      "group": "soa-dr-strategy"
+    },
+    {
+      "id": "soa-028",
+      "domain": "d2",
+      "question": "商品の詳細のページが表示されるたびに、RDS に同じクエリが大量に送られ、データベースの負荷が高い。商品の情報はあまり変わらない。データベースの負荷を下げ、応答を速くしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "マルチ AZ 配置にする",
+          "explanation": "可用性のための機能で、読み取りの負荷は減りません。"
+        },
+        {
+          "text": "DB インスタンスのストレージを増やす",
+          "explanation": "読み取りの負荷は減りません。"
+        },
+        {
+          "text": "バックアップの保持期間を延ばす",
+          "explanation": "負荷とは関係ありません。"
+        },
+        {
+          "text": "ElastiCache をデータベースの前に置き、遅延読み込みでよく読まれるデータをキャッシュする",
+          "explanation": "よく読まれるデータをキャッシュから返すので、データベースへの読み取りが減り、応答も速くなります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "読み取りの多いデータは、ElastiCache でキャッシュするとデータベースの負荷を下げられます。遅延読み込みでは、キャッシュにないときだけデータベースから読み、キャッシュに入れます。",
+      "references": [
+        {
+          "title": "ElastiCache のキャッシュ戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-029",
+      "domain": "d3",
+      "question": "最新のセキュリティパッチと社内の監視エージェントを入れた AMI（ゴールデンイメージ）を、毎月自動で作り、テストしてから各リージョンに配布したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "担当者が毎月インスタンスを起動し、手で設定して AMI を作る",
+          "explanation": "手作業で漏れや差が生じやすく、テストも抜けがちです。"
+        },
+        {
+          "text": "EC2 Image Builder のパイプラインで、イメージの作成・テスト・配布を自動化する",
+          "explanation": "Image Builder は、イメージの作成・保守・検証・配布を自動化するマネージドサービスです。"
+        },
+        {
+          "text": "Trusted Advisor のチェックを有効にする",
+          "explanation": "ベストプラクティスとの差の確認で、イメージは作りません。"
+        },
+        {
+          "text": "AWS Backup で EC2 インスタンスのバックアップを取る",
+          "explanation": "バックアップで、ゴールデンイメージの作成とテストの自動化にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EC2 Image Builder は、仮想マシンやコンテナのイメージの作成・保守・検証・共有・配布を自動化します。スケジュールに沿ってパイプラインを実行できます。",
+      "references": [
+        {
+          "title": "EC2 Image Builder とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/imagebuilder/latest/userguide/what-is-image-builder.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-030",
+      "domain": "d3",
+      "question": "AWS Organizations の50個のアカウントと3つのリージョンに、同じ CloudTrail の設定と IAM ロールを配りたい。新しいアカウントが組織に加わったときも、自動で配りたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "1つのアカウントのリソースを、ほかのアカウントから参照させる",
+          "explanation": "CloudTrail やロールは、アカウントごとに必要です。"
+        },
+        {
+          "text": "AWS Config の集約を設定する",
+          "explanation": "設定の情報を集める機能で、リソースを配るものではありません。"
+        },
+        {
+          "text": "CloudFormation StackSets で、組織の OU を対象に、自動デプロイを有効にしてスタックを配る",
+          "explanation": "StackSets は、1回の操作で複数のアカウントとリージョンにスタックを作成・更新・削除できます。自動デプロイで新しいアカウントにも配れます。"
+        },
+        {
+          "text": "アカウントごとに CloudFormation のスタックを手で作る",
+          "explanation": "50×3の作業になり、新しいアカウントへの漏れも起きます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "CloudFormation StackSets は、1つのテンプレートから、複数のアカウントとリージョンにスタックを配ります。Organizations と組み合わせると、OU に加わったアカウントに自動でデプロイできます。",
+      "references": [
+        {
+          "title": "CloudFormation StackSets の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-031",
+      "domain": "d3",
+      "question": "ネットワークのチームが管理する共有の VPC のサブネットを、同じ組織のほかのアカウントのチームにも使わせ、それぞれのアカウントで EC2 インスタンスを起動させたい。VPC を各アカウントに作りたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "AWS Resource Access Manager（AWS RAM）でサブネットをほかのアカウントと共有する",
+          "explanation": "RAM を使うと、サブネットや Transit Gateway などのリソースを、ほかのアカウントや組織と共有できます。"
+        },
+        {
+          "text": "各アカウントに同じ CIDR の VPC を作る",
+          "explanation": "VPC を各アカウントに作りたくないという要件に合わず、CIDR の重複も問題になります。"
+        },
+        {
+          "text": "ネットワークのチームの IAM ユーザーを、各チームで共有する",
+          "explanation": "認証情報の共有は避けるべきで、アカウントも分かれません。"
+        },
+        {
+          "text": "VPC ピアリングで全アカウントの VPC をつなぐ",
+          "explanation": "各アカウントに VPC が必要で、要件に合いません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "AWS RAM は、AWS のリソースをアカウント間や組織内で安全に共有するサービスです。VPC のサブネットを共有すると、参加するアカウントは共有されたサブネットにリソースを作れます。",
+      "references": [
+        {
+          "title": "AWS Resource Access Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/what-is.html"
+        },
+        {
+          "title": "共有できる AWS のリソース",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/shareable.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-032",
+      "domain": "d3",
+      "question": "CloudFormation で作った本番の RDS の DB インスタンスが、スタックを誤って削除したときに一緒に消えないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "DB インスタンスのメモリを増やす",
+          "explanation": "削除の防止にはなりません。"
+        },
+        {
+          "text": "スタックの出力にエンドポイントを書く",
+          "explanation": "削除の防止にはなりません。"
+        },
+        {
+          "text": "テンプレートを JSON から YAML に変える",
+          "explanation": "形式を変えても、削除の動作は変わりません。"
+        },
+        {
+          "text": "テンプレートの DB インスタンスのリソースに DeletionPolicy を指定する（Retain か Snapshot）",
+          "explanation": "DeletionPolicy で、スタックの削除時にリソースを残す（Retain）か、スナップショットを取る（Snapshot）かを指定できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DeletionPolicy 属性を使うと、スタックからリソースが削除されるときに、リソースを保持したり、（対応しているリソースでは）スナップショットを取ったりできます。",
+      "references": [
+        {
+          "title": "DeletionPolicy 属性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-033",
+      "domain": "d3",
+      "question": "CloudFormation で EC2 インスタンスを作り、ユーザーデータでアプリケーションを入れている。インスタンスの作成は完了になるのに、アプリケーションのインストールが失敗していることに気づけない。インストールが成功するまで、スタックを完了にしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスに CreationPolicy を設定し、インストールの成功後に cfn-signal で成功のシグナルを送る",
+          "explanation": "指定した数の成功のシグナルを受け取るまで、CloudFormation はリソースの作成を完了にしません。タイムアウトまでに届かなければ失敗になります。"
+        },
+        {
+          "text": "スタックの出力を増やす",
+          "explanation": "完了の条件にはなりません。"
+        },
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "成功の確認にはなりません。"
+        },
+        {
+          "text": "DeletionPolicy を Retain にする",
+          "explanation": "削除時の動作を決める属性で、作成の完了の条件ではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CreationPolicy 属性を使うと、指定した数の成功のシグナルを受け取るか、タイムアウトするまで、リソースの作成を完了にしません。インスタンスの中から cfn-signal でシグナルを送ります。",
+      "references": [
+        {
+          "title": "CreationPolicy 属性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/TemplateReference/aws-attribute-creationpolicy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-034",
+      "domain": "d3",
+      "question": "Auto Scaling グループがスケールアウトしようとして、「サブネットに空きの IP アドレスがない」というエラーでインスタンスを起動できなくなった。サブネットは /28 で作られている。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "Auto Scaling グループの最大の台数を増やす",
+          "explanation": "IP アドレスが足りないままでは起動できません。"
+        },
+        {
+          "text": "セキュリティグループのルールを増やす",
+          "explanation": "IP アドレスの不足とは関係ありません。"
+        },
+        {
+          "text": "より大きな CIDR のサブネットを追加し、Auto Scaling グループのサブネットに加える",
+          "explanation": "サブネットの IP アドレスが足りないので、空きのあるサブネットを増やします。"
+        },
+        {
+          "text": "インスタンスタイプを大きくする",
+          "explanation": "IP アドレスの不足は解消しません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "サブネットの各 CIDR ブロックでは、最初の4つと最後の1つの IP アドレスを AWS が予約していて、インスタンスに割り当てられません。/28 のサブネットで使えるのは11個だけなので、規模に合わせてサブネットを設計します。",
+      "references": [
+        {
+          "title": "VPC とサブネットの CIDR ブロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/subnet-sizing.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-035",
+      "domain": "d3",
+      "question": "インフラのチームは、TypeScript でインフラを定義し、ループや条件分岐、テストなどのプログラミング言語の機能を使いたい。デプロイは CloudFormation の仕組みで行いたい。最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "Amazon EventBridge",
+          "explanation": "イベントを振り分けるサービスです。"
+        },
+        {
+          "text": "AWS Backup",
+          "explanation": "バックアップのサービスです。"
+        },
+        {
+          "text": "AWS Systems Manager Run Command",
+          "explanation": "インスタンスでコマンドを実行するサービスです。"
+        },
+        {
+          "text": "AWS CDK",
+          "explanation": "プログラミング言語でインフラを定義し、CloudFormation のテンプレートに合成（synth）してデプロイします。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "AWS CDK は、TypeScript・Python などのプログラミング言語でクラウドのインフラを定義するフレームワークです。CloudFormation を通してデプロイします。",
+      "references": [
+        {
+          "title": "AWS CDK とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cdk/v2/guide/home.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-036",
+      "domain": "d3",
+      "question": "数百台の EC2 インスタンスの OS に、毎月決まった時間帯に、承認済みのセキュリティパッチを自動で適用し、その結果をまとめて確認したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "各インスタンスに SSH で入り、手でパッチを当てる",
+          "explanation": "数百台では現実的ではなく、漏れも起きます。"
+        },
+        {
+          "text": "Systems Manager Patch Manager のパッチベースラインと、メンテナンスウィンドウでパッチの適用を自動化する",
+          "explanation": "Patch Manager でどのパッチを適用するかを決め、メンテナンスウィンドウで決まった時間帯に実行できます。コンプライアンスの状況も確認できます。"
+        },
+        {
+          "text": "Amazon Inspector でパッチを適用する",
+          "explanation": "Inspector は脆弱性を見つけるサービスで、パッチは適用しません。"
+        },
+        {
+          "text": "毎月インスタンスを作り直す",
+          "explanation": "可能な場合もありますが、決まった時間帯にパッチを適用し結果をまとめる仕組みとしては Patch Manager が適切です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Patch Manager は、マネージドノードへのパッチ適用を自動化します。パッチベースラインで承認するパッチを決め、メンテナンスウィンドウで適用の時間帯を指定します。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/patch-manager.html"
+        },
+        {
+          "title": "AWS Systems Manager のメンテナンスウィンドウ",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/maintenance-windows.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-037",
+      "domain": "d3",
+      "question": "100台のインスタンスで、ログのローテーションのスクリプトを今すぐ一斉に実行したい。各インスタンスに SSH で入る運用はやめたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "踏み台のサーバーから、スクリプトで100台に順番に SSH で入る",
+          "explanation": "SSH の鍵とポートの管理が必要で、やめたい運用のままです。"
+        },
+        {
+          "text": "Systems Manager Run Command で、タグで対象のインスタンスを選んでコマンドを実行する",
+          "explanation": "Run Command は、多数のマネージドノードで、SSH を使わずにコマンドを安全に実行できます。"
+        },
+        {
+          "text": "EC2 のユーザーデータにスクリプトを書く",
+          "explanation": "ユーザーデータは主に起動時に実行されるもので、動いているインスタンスで今すぐ実行する方法ではありません。"
+        },
+        {
+          "text": "Image Builder でイメージを作り直す",
+          "explanation": "今すぐの実行にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Run Command を使うと、SSH や踏み台なしで、多数のマネージドノードの設定の変更やスクリプトの実行を安全に行えます。同時実行数やエラーのしきい値も制御できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Run Command",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/run-command.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-038",
+      "domain": "d3",
+      "question": "すべての EC2 インスタンスに CloudWatch エージェントが入って動いている状態を、常に保ちたい。新しく起動したインスタンスにも自動で入れ、誰かが止めたら元に戻したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "Systems Manager State Manager の関連付けで、望ましい状態を定義して定期的に適用する",
+          "explanation": "State Manager は、マネージドノードを定義した状態に保ち、スケジュールに沿って繰り返し適用します。"
+        },
+        {
+          "text": "CloudTrail のログを確認する",
+          "explanation": "状態を保つ仕組みではありません。"
+        },
+        {
+          "text": "Trusted Advisor で確認する",
+          "explanation": "状態を保つ仕組みではありません。"
+        },
+        {
+          "text": "Run Command で一度だけインストールする",
+          "explanation": "一度だけの実行で、新しいインスタンスや止められた場合には対応しません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "State Manager は、マネージドノードなどを、定義した状態に保つための設定管理の機能です。関連付けのスケジュールに沿って、繰り返し状態を適用します。",
+      "references": [
+        {
+          "title": "AWS Systems Manager State Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-state.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-039",
+      "domain": "d3",
+      "question": "S3 バケットに CSV ファイルが置かれるたびに、Lambda 関数でデータを変換し、別のバケットに保存する処理を、サーバーなしで自動化したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "EC2 インスタンスで常にバケットを監視する",
+          "explanation": "サーバーの管理が必要です。"
+        },
+        {
+          "text": "S3 のライフサイクルで変換する",
+          "explanation": "ライフサイクルは、オブジェクトの移行と削除の仕組みで、変換はしません。"
+        },
+        {
+          "text": "Lambda 関数を1分ごとに実行して、新しいファイルを探す",
+          "explanation": "無駄な実行が増え、処理も遅れます。"
+        },
+        {
+          "text": "S3 のイベント通知で、オブジェクトの作成のイベントをきっかけに Lambda 関数を呼び出す",
+          "explanation": "S3 は、オブジェクトの作成などのイベントで、Lambda 関数などに通知できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "S3 のイベント通知を使うと、オブジェクトの作成・削除などのイベントをきっかけに、Lambda 関数・SQS・SNS・EventBridge にイベントを送れます。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-040",
+      "domain": "d3",
+      "question": "開発環境の EC2 インスタンスを、平日の夜20時に自動で停止し、朝8時に自動で起動して費用を下げたい。サーバーを用意せずに、時刻でタスクを実行したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスをスポットインスタンスに変える",
+          "explanation": "決まった時刻の停止と起動にはなりません。"
+        },
+        {
+          "text": "Auto Scaling のヘルスチェックを無効にする",
+          "explanation": "停止と起動の自動化にはなりません。"
+        },
+        {
+          "text": "EventBridge Scheduler のスケジュールで、EC2 の停止と起動の API を決まった時刻に呼び出す",
+          "explanation": "EventBridge Scheduler は、cron などのスケジュールで AWS のサービスの API を直接呼び出せるサーバーレスのスケジューラーです。"
+        },
+        {
+          "text": "担当者が毎晩コンソールで停止する",
+          "explanation": "忘れる可能性があり、自動化になりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "EventBridge Scheduler を使うと、サーバーを用意せずに、決まった時刻や間隔で AWS のサービスの API やターゲットを呼び出せます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge Scheduler",
+          "url": "https://docs.aws.amazon.com/ja_jp/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-041",
+      "domain": "d3",
+      "question": "本番の CloudFormation のスタックのテンプレートを更新する。データベースのリソースが置き換え（作り直し）にならないかを、実行の前に確認したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "変更セットを作成し、各リソースが変更・置き換え・削除されるかを確認してから実行する",
+          "explanation": "変更セットで、更新がどのリソースにどう影響するか（置き換えの有無を含む）を事前に確認できます。"
+        },
+        {
+          "text": "スタックを削除して作り直す",
+          "explanation": "データが失われるおそれがあります。"
+        },
+        {
+          "text": "テンプレートをそのまま更新し、問題があればロールバックする",
+          "explanation": "置き換えでデータが失われると、ロールバックでは戻らないことがあります。"
+        },
+        {
+          "text": "ドリフトの検出を実行する",
+          "explanation": "テンプレートと実際の設定の差を調べる機能で、更新の影響の確認ではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "変更セットを使うと、スタックの更新が実行中のリソースにどう影響するか（重要なリソースの削除や置き換えが起きるか）を、実行の前に確認できます。",
+      "references": [
+        {
+          "title": "CloudFormation の変更セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-042",
+      "domain": "d3",
+      "question": "タグ「CostCenter」を付けずに起動された EC2 インスタンスを、起動の直後に自動で検知して停止したい。サーバーを用意せずに、イベントをきっかけに処理したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎月、担当者がインスタンスの一覧を見て停止する",
+          "explanation": "起動の直後には対応できません。"
+        },
+        {
+          "text": "Trusted Advisor のチェックで停止する",
+          "explanation": "Trusted Advisor は推奨事項を示すもので、インスタンスの停止はしません。"
+        },
+        {
+          "text": "Image Builder のパイプラインで停止する",
+          "explanation": "イメージを作るサービスです。"
+        },
+        {
+          "text": "EC2 のインスタンスの状態の変化（running）のイベントに一致する EventBridge のルールで Lambda 関数を呼び出し、タグを確認して停止する",
+          "explanation": "EventBridge のルールで AWS のイベントをきっかけに処理を動かす、イベント駆動の自動化です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EventBridge のルールは、イベントのパターンに一致したイベントをターゲット（Lambda 関数など）に送ります。AWS のサービスのイベントをきっかけにした運用の自動化に使えます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-043",
+      "domain": "d4",
+      "question": "社内のセキュリティの規程で、IAM ユーザーのパスワードは14文字以上で、記号と数字を含み、90日ごとに変更させることになった。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "IAM ユーザーごとに、パスワードの要件を書いたメールを送る",
+          "explanation": "技術的に強制できません。"
+        },
+        {
+          "text": "アカウントのパスワードポリシーで、最小の長さ・必要な文字の種類・有効期間を設定する",
+          "explanation": "アカウントのパスワードポリシーで、IAM ユーザーのパスワードの要件をまとめて設定できます。"
+        },
+        {
+          "text": "SCP でパスワードの長さを指定する",
+          "explanation": "SCP はアクセス許可の上限を決めるもので、パスワードの要件は設定できません。"
+        },
+        {
+          "text": "ルートユーザーのパスワードだけを長くする",
+          "explanation": "IAM ユーザーのパスワードの要件にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "IAM のアカウントのパスワードポリシーで、IAM ユーザーのパスワードの最小の長さ、必要な文字の種類、有効期間、再利用の防止などを設定できます。",
+      "references": [
+        {
+          "title": "IAM ユーザーのアカウントパスワードポリシーの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-044",
+      "domain": "d4",
+      "question": "組織の外のアカウントからアクセスできるように共有されてしまっている S3 バケットや IAM ロールが無いかを、継続的に洗い出したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon CloudWatch のダッシュボード",
+          "explanation": "メトリクスを表示する画面です。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "ソフトウェアの脆弱性を見つけるサービスです。"
+        },
+        {
+          "text": "IAM Access Analyzer の外部アクセスの分析",
+          "explanation": "リソースのポリシーを分析し、組織やアカウントの外と共有されているリソースを見つけます。"
+        },
+        {
+          "text": "AWS Compute Optimizer",
+          "explanation": "リソースのサイズの推奨のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "IAM Access Analyzer は、リソースベースのポリシーを分析し、外部のエンティティと共有されているリソースを特定します。使われていないアクセス許可の分析や、ポリシーの検証もできます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-045",
+      "domain": "d4",
+      "question": "組織のすべてのメンバーアカウントで、誰も（各アカウントの管理者も）CloudTrail の証跡を停止・削除できないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudTrail のログを S3 Glacier に移す",
+          "explanation": "証跡の停止は防げません。"
+        },
+        {
+          "text": "各アカウントの IAM ポリシーで許可を外す",
+          "explanation": "アカウントの管理者が自分で許可を戻せてしまいます。"
+        },
+        {
+          "text": "SCP で cloudtrail:StopLogging と cloudtrail:DeleteTrail を拒否し、組織のルートか OU にアタッチする",
+          "explanation": "SCP はメンバーアカウントのすべての IAM ユーザーとロールに効く、アクセス許可の上限です。"
+        },
+        {
+          "text": "各アカウントの IAM ユーザーに、CloudTrail を止めないよう通知する",
+          "explanation": "技術的に止められません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "SCP で拒否した操作は、メンバーアカウントの管理者を含め、そのアカウントのどの IAM プリンシパルも実行できません。組織全体のガードレールとして使います。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-046",
+      "domain": "d4",
+      "question": "業界のセキュリティ基準に沿った多数の AWS Config のルールと修復のアクションを、まとめて1つの単位として組織のアカウントにデプロイし、準拠の状況を管理したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "ルールを1つずつ手で作る",
+          "explanation": "数が多いと手間がかかり、漏れや差が生じます。"
+        },
+        {
+          "text": "AWS Config のコンフォーマンスパックをデプロイする",
+          "explanation": "コンフォーマンスパックは、Config のルールと修復のアクションをまとめたもので、アカウントや組織に1つの単位としてデプロイできます。"
+        },
+        {
+          "text": "CloudTrail の証跡を作る",
+          "explanation": "API の記録で、ルールのデプロイにはなりません。"
+        },
+        {
+          "text": "Trusted Advisor のチェックを更新する",
+          "explanation": "Config のルールのデプロイにはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "コンフォーマンスパックは、AWS Config のルールと修復のアクションの集まりで、アカウントやリージョン、組織全体に1つの単位としてデプロイできます。サンプルのテンプレートも用意されています。",
+      "references": [
+        {
+          "title": "AWS Config のコンフォーマンスパック",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/conformance-packs.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-047",
+      "domain": "d4",
+      "question": "カスタマーマネージドの KMS キーで、セキュリティの規程に沿って鍵の素材を定期的に自動で新しくしたい。暗号化されたデータの再暗号化はしたくない。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "KMS キーの自動ローテーションを有効にする",
+          "explanation": "自動ローテーションでは、鍵の素材が定期的に新しくなりますが、古い鍵の素材も保持されるので、既存のデータはそのまま復号できます。"
+        },
+        {
+          "text": "キーのエイリアスを毎年変える",
+          "explanation": "エイリアスを変えても、鍵の素材は変わりません。"
+        },
+        {
+          "text": "KMS キーを削除する",
+          "explanation": "そのキーで暗号化したデータが復号できなくなります。"
+        },
+        {
+          "text": "毎年新しい KMS キーを作り、すべてのデータを再暗号化する",
+          "explanation": "再暗号化はしたくない要件に合いません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "KMS の自動ローテーションを有効にすると、鍵の素材が定期的に新しくなります。キーの ID や ARN は変わらず、以前の鍵の素材も保持されるので、既存のデータを再暗号化する必要はありません。",
+      "references": [
+        {
+          "title": "AWS KMS キーのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/rotate-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-048",
+      "domain": "d4",
+      "question": "ALB で使っている ACM の公開証明書の期限が切れて、サイトにアクセスできなくなる事故を防ぎたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "毎年、担当者がカレンダーに期限を書いておく",
+          "explanation": "人が忘れると事故になります。"
+        },
+        {
+          "text": "証明書を使わずに HTTP で公開する",
+          "explanation": "通信が暗号化されなくなります。"
+        },
+        {
+          "text": "証明書の秘密鍵を S3 に保存しておく",
+          "explanation": "期限切れの防止にはなりません。"
+        },
+        {
+          "text": "DNS 検証で証明書を発行し、ACM のマネージド更新で自動的に更新させる",
+          "explanation": "DNS 検証の CNAME レコードが残っていれば、ACM が証明書を自動で更新します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ACM のマネージド更新は、ACM が発行した証明書を期限の前に自動で更新します。DNS 検証の場合は、検証用の CNAME レコードを残しておけば自動で更新されます。",
+      "references": [
+        {
+          "title": "ACM 証明書のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-049",
+      "domain": "d4",
+      "question": "RDS のデータベースの認証情報を、アプリケーションのサーバーの設定ファイルに平文で書いている。安全に保管し、定期的に自動で変更したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "設定ファイルのパーミッションを厳しくする",
+          "explanation": "平文のままで、ローテーションもできません。"
+        },
+        {
+          "text": "認証情報を Base64 でエンコードして保存する",
+          "explanation": "Base64 は暗号化ではありません。"
+        },
+        {
+          "text": "EBS のスナップショットに保存する",
+          "explanation": "安全な保管とローテーションの仕組みではありません。"
+        },
+        {
+          "text": "AWS Secrets Manager に保存し、自動ローテーションを設定して、アプリケーションは実行時に取得する",
+          "explanation": "Secrets Manager は、シークレットを暗号化して保管し、自動でローテーションできます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Secrets Manager は、データベースの認証情報などのシークレットを保管し、ローテーションを自動化します。アプリケーションは API でシークレットを取得するので、設定ファイルに書く必要がなくなります。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-050",
+      "domain": "d4",
+      "question": "GuardDuty が重大度の高い検出結果（例：インスタンスからの暗号通貨のマイニングの通信）を出したら、すぐにセキュリティチームに通知し、自動で対処の処理を動かしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "CloudTrail の証跡を無効にする",
+          "explanation": "調査の材料がなくなります。"
+        },
+        {
+          "text": "GuardDuty のコンソールを毎日確認する",
+          "explanation": "すぐには対応できません。"
+        },
+        {
+          "text": "GuardDuty の検出結果のイベントに一致する EventBridge のルールを作り、SNS と Lambda 関数をターゲットにする",
+          "explanation": "GuardDuty の検出結果は EventBridge に送られるので、ルールで通知や自動の対処につなげられます。"
+        },
+        {
+          "text": "Amazon Inspector を無効にする",
+          "explanation": "対処の自動化にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "GuardDuty の検出結果は、イベントとして EventBridge に送られます。ルールで重大度などを絞り込み、SNS での通知や Lambda での自動の対処につなげられます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge による GuardDuty の検出結果の処理",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_findings_eventbridge.html"
+        },
+        {
+          "title": "Amazon GuardDuty とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/what-is-guardduty.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-051",
+      "domain": "d4",
+      "question": "セキュリティの規程で、新しく作るすべての EBS ボリュームを、作る人が設定を忘れても必ず暗号化したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "EBS ボリュームを作るたびに、担当者が暗号化のチェックを入れる",
+          "explanation": "人が忘れると暗号化されません。"
+        },
+        {
+          "text": "リージョンで EBS のデフォルトでの暗号化を有効にする",
+          "explanation": "有効にすると、そのリージョンで新しく作る EBS ボリュームやスナップショットのコピーが自動で暗号化されます。"
+        },
+        {
+          "text": "インスタンスストアを使う",
+          "explanation": "EBS ボリュームの暗号化の強制にはなりません。"
+        },
+        {
+          "text": "EBS のスナップショットを毎日取る",
+          "explanation": "暗号化にはなりません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EBS のデフォルトでの暗号化は、リージョンごとの設定です。有効にすると、そのリージョンで新しく作る EBS ボリュームが自動的に暗号化されます。",
+      "references": [
+        {
+          "title": "デフォルトでの EBS の暗号化",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/encryption-by-default.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-052",
+      "domain": "d4",
+      "question": "ある IAM ユーザーが「S3 のオブジェクトを削除できない」と問い合わせてきた。どのポリシーのどの記述で拒否されているかを、実際に削除を試さずに調べたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "IAM ポリシーシミュレーターで、そのユーザーと s3:DeleteObject の操作をシミュレーションする",
+          "explanation": "どのポリシーで許可・拒否されているかを、実際の操作なしに確認できます。"
+        },
+        {
+          "text": "ユーザーに管理者の権限を一時的に与えて削除させる",
+          "explanation": "最小権限に反し、原因の特定にもなりません。"
+        },
+        {
+          "text": "Compute Optimizer で推奨を確認する",
+          "explanation": "リソースのサイズの推奨で、権限の調査ではありません。"
+        },
+        {
+          "text": "S3 のバケットを削除して作り直す",
+          "explanation": "データが失われます。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "IAM ポリシーシミュレーターを使うと、アイデンティティベースのポリシーやリソースベースのポリシーなどを、実際の操作なしでテストし、拒否の原因の記述を特定できます。",
+      "references": [
+        {
+          "title": "IAM ポリシーシミュレーターを使用した IAM ポリシーのテスト",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_testing-policies.html"
+        },
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-053",
+      "domain": "d4",
+      "question": "規制の要件で、顧客のデータを特定のリージョンの外に保存してはいけない。組織のすべてのアカウントで、許可したリージョン以外でリソースを作れないようにしたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "SCP で、許可したリージョン以外での操作を aws:RequestedRegion の条件で拒否する",
+          "explanation": "SCP のリージョンの条件で、組織全体の操作を許可したリージョンに限定できます。"
+        },
+        {
+          "text": "各アカウントで、使わないリージョンのリソースを毎月削除する",
+          "explanation": "作られてしまってからの対処で、要件に合いません。"
+        },
+        {
+          "text": "CloudTrail の証跡を1つのリージョンだけにする",
+          "explanation": "記録の範囲が変わるだけで、リソースの作成は防げません。"
+        },
+        {
+          "text": "Trusted Advisor のチェックで確認する",
+          "explanation": "作成を防ぐ仕組みではありません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SCP の条件キー aws:RequestedRegion を使うと、許可したリージョン以外への API のリクエストを拒否できます。データの所在地の要件に対応する一般的な方法です。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-054",
+      "domain": "d5",
+      "question": "プライベートサブネットの EC2 インスタンスから、OS のアップデートのためにインターネット上のリポジトリに接続したい。インターネットからインスタンスへの接続は受け付けたくない（IPv4）。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "プライベートサブネットのルートテーブルで 0.0.0.0/0 をインターネットゲートウェイに向ける",
+          "explanation": "パブリックサブネットになり、パブリック IP があれば外から到達できるようになります。"
+        },
+        {
+          "text": "S3 のゲートウェイエンドポイントを作る",
+          "explanation": "S3 にだけプライベートに接続する仕組みで、インターネット上のリポジトリには接続できません。"
+        },
+        {
+          "text": "インスタンスにパブリック IP アドレスを割り当てる",
+          "explanation": "インターネットから到達できるようになります。"
+        },
+        {
+          "text": "パブリックサブネットに NAT ゲートウェイを置き、プライベートサブネットのルートテーブルで 0.0.0.0/0 を NAT ゲートウェイに向ける",
+          "explanation": "NAT ゲートウェイは、プライベートサブネットからインターネットへの外向きの通信を許可し、外からの接続は受け付けません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "NAT ゲートウェイを使うと、プライベートサブネットのインスタンスは VPC の外のサービスに接続できますが、外のサービスからインスタンスへの接続は受け付けません。",
+      "references": [
+        {
+          "title": "NAT ゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ],
+      "group": "soa-vpc-egress"
+    },
+    {
+      "id": "soa-055",
+      "domain": "d5",
+      "question": "IPv6 のアドレスを持つプライベートなインスタンスから、インターネットへの外向きの通信だけを許可し、インターネットからの IPv6 の接続は受け付けたくない。最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "インターネットゲートウェイに ::/0 のルートを向ける",
+          "explanation": "外からの IPv6 の接続も受け付けてしまいます。"
+        },
+        {
+          "text": "Egress-Only インターネットゲートウェイを作り、IPv6 の外向きのルートを向ける",
+          "explanation": "IPv6 の外向きの通信だけを許可し、外からの接続は受け付けないゲートウェイです。"
+        },
+        {
+          "text": "VPC ピアリング",
+          "explanation": "VPC どうしをつなぐもので、インターネットへの出口ではありません。"
+        },
+        {
+          "text": "NAT ゲートウェイ",
+          "explanation": "IPv4 で使う一般的な方法で、IPv6 の外向きの通信だけを許可する用途には Egress-Only インターネットゲートウェイを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Egress-Only インターネットゲートウェイは、IPv6 で VPC からインターネットへの外向きの通信を許可し、インターネットからインスタンスへの接続を防ぎます。",
+      "references": [
+        {
+          "title": "Egress-Only インターネットゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/egress-only-internet-gateway.html"
+        }
+      ],
+      "group": "soa-vpc-egress"
+    },
+    {
+      "id": "soa-056",
+      "domain": "d5",
+      "question": "プライベートサブネットのインスタンスが、NAT ゲートウェイ経由で大量のデータを S3 に送っており、NAT ゲートウェイのデータ処理の料金が高い。インターネットを経由せずに、費用を下げたい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "インスタンスをパブリックサブネットに移す",
+          "explanation": "インスタンスが外から到達できるようになるおそれがあります。"
+        },
+        {
+          "text": "S3 Transfer Acceleration を有効にする",
+          "explanation": "転送を速くする機能で、追加の料金がかかります。"
+        },
+        {
+          "text": "S3 のゲートウェイ VPC エンドポイントを作り、プライベートサブネットのルートテーブルに追加する",
+          "explanation": "ゲートウェイエンドポイントを使うと、インターネットゲートウェイや NAT を通さずに S3 に接続でき、エンドポイント自体の追加料金もかかりません。"
+        },
+        {
+          "text": "NAT ゲートウェイを大きいサイズに変える",
+          "explanation": "NAT ゲートウェイにサイズの選択はなく、料金も下がりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 と DynamoDB にはゲートウェイエンドポイントがあり、ルートテーブルに追加するだけで、インターネットを通さずにアクセスできます。ゲートウェイエンドポイントに追加の料金はかかりません。",
+      "references": [
+        {
+          "title": "ゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ],
+      "group": "soa-vpc-egress"
+    },
+    {
+      "id": "soa-057",
+      "domain": "d5",
+      "question": "インターネットへの経路がない VPC のプライベートサブネットのインスタンスを、Systems Manager で管理したい。インスタンスから Systems Manager の API にプライベートに接続する方法として、最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "インスタンスにパブリック IP アドレスを付ける",
+          "explanation": "インターネットへの経路がないので接続できず、要件にも反します。"
+        },
+        {
+          "text": "VPC ピアリングで Systems Manager の VPC とつなぐ",
+          "explanation": "AWS のサービスの VPC とピアリングすることはできません。"
+        },
+        {
+          "text": "Systems Manager のインターフェイス VPC エンドポイント（AWS PrivateLink）を作る",
+          "explanation": "インターフェイスエンドポイントで、VPC の中のプライベート IP アドレスから AWS のサービスの API に接続できます。"
+        },
+        {
+          "text": "S3 のゲートウェイエンドポイントを作る",
+          "explanation": "S3 にしか接続できません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "インターフェイス VPC エンドポイントは、サブネットに作られるネットワークインターフェイスを通して、AWS PrivateLink で AWS のサービスにプライベートに接続します。",
+      "references": [
+        {
+          "title": "インターフェイス VPC エンドポイントを使用して AWS のサービスにアクセスする",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/create-interface-endpoint.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-058",
+      "domain": "d5",
+      "question": "VPC A と VPC B、VPC B と VPC C をそれぞれ VPC ピアリングでつないだが、VPC A から VPC C に通信できない。今後 VPC は20個に増える予定である。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "AWS Transit Gateway を作り、すべての VPC をアタッチしてハブで接続する",
+          "explanation": "ピアリングは推移的なルーティングをサポートしません。Transit Gateway なら、多数の VPC をハブでつなげます。"
+        },
+        {
+          "text": "VPC B のルートテーブルに、VPC A から VPC C へのルートを追加する",
+          "explanation": "ピアリングでは、別のピアリングを経由する推移的なルーティングはできません。"
+        },
+        {
+          "text": "すべての VPC の CIDR を同じにする",
+          "explanation": "CIDR が重複すると、ピアリングも Transit Gateway のルーティングもできなくなります。"
+        },
+        {
+          "text": "VPC A のセキュリティグループで、VPC C の CIDR を許可する",
+          "explanation": "ルーティングができないので、許可しても届きません。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "VPC ピアリングは1対1の接続で、推移的なピアリングはサポートされません。多数の VPC やオンプレミスをつなぐなら、Transit Gateway をハブにすると管理が簡単になります。",
+      "references": [
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
+        },
+        {
+          "title": "AWS Transit Gateway とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/what-is-transit-gateway.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-059",
+      "domain": "d5",
+      "question": "東京リージョンとフランクフルトリージョンで同じアプリケーションを動かしている。利用者を、ネットワークの遅延が最も小さいリージョンに自動で振り分けたい。最も適切な Route 53 のルーティングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "加重ルーティング",
+          "explanation": "決めた割合で振り分ける方式です。"
+        },
+        {
+          "text": "レイテンシーベースのルーティング",
+          "explanation": "利用者からの遅延が最も小さいリージョンのリソースに振り分けます。"
+        },
+        {
+          "text": "シンプルルーティング",
+          "explanation": "1つのリソースに振り分ける方式です。"
+        },
+        {
+          "text": "位置情報ルーティング",
+          "explanation": "利用者の国や大陸で振り分ける方式で、遅延の大小で選ぶのではありません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "レイテンシーベースのルーティングは、複数のリージョンにリソースがあるとき、遅延が最も小さいリージョンに利用者を振り分けます。",
+      "references": [
+        {
+          "title": "レイテンシーベースのルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-latency.html"
+        }
+      ],
+      "group": "soa-r53-routing"
+    },
+    {
+      "id": "soa-060",
+      "domain": "d5",
+      "question": "オンプレミスから AWS への移行の途中で、Web サイトへのアクセスの10%だけを新しい AWS の環境に送り、問題がなければ割合を徐々に増やしたい。最も適切な Route 53 のルーティングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "レイテンシーベースのルーティング",
+          "explanation": "遅延の小さいリージョンに振り分ける方式です。"
+        },
+        {
+          "text": "位置情報ルーティング",
+          "explanation": "利用者の場所で振り分ける方式です。"
+        },
+        {
+          "text": "フェイルオーバールーティング",
+          "explanation": "プライマリが異常なときだけセカンダリに切り替える方式で、割合の振り分けはできません。"
+        },
+        {
+          "text": "加重ルーティング",
+          "explanation": "レコードごとに重みを決め、その割合で通信を振り分けます。割合を変えるだけで段階的に移行できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "加重ルーティングでは、複数のリソースに、指定した割合で通信を振り分けられます。新しいバージョンのテストや段階的な移行に使えます。",
+      "references": [
+        {
+          "title": "加重ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-weighted.html"
+        }
+      ],
+      "group": "soa-r53-routing"
+    },
+    {
+      "id": "soa-061",
+      "domain": "d5",
+      "question": "動画配信サービスで、契約の都合により、日本からのアクセスには日本向けの環境を、それ以外の国からのアクセスには別の環境を返したい。最も適切な Route 53 のルーティングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "位置情報ルーティング",
+          "explanation": "DNS クエリの送信元の場所（国・大陸など）に基づいて振り分けます。"
+        },
+        {
+          "text": "レイテンシーベースのルーティング",
+          "explanation": "遅延の大小で振り分けるので、国の境界で確実に分けることはできません。"
+        },
+        {
+          "text": "加重ルーティング",
+          "explanation": "割合で振り分ける方式です。"
+        },
+        {
+          "text": "フェイルオーバールーティング",
+          "explanation": "障害時の切り替えの方式です。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "位置情報ルーティングは、利用者の場所に基づいて振り分けます。コンテンツのローカライズや、配信の権利による地域の制限などに使えます。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ],
+      "group": "soa-r53-routing"
+    },
+    {
+      "id": "soa-062",
+      "domain": "d5",
+      "question": "オンプレミスのサーバーから、VPC の Route 53 のプライベートホストゾーンの名前を解決したい。また、VPC のインスタンスから、オンプレミスの DNS サーバーが管理する社内のドメイン名も解決したい。最も適切な構成はどれか。",
+      "choices": [
+        {
+          "text": "VPC の DHCP オプションセットを削除する",
+          "explanation": "名前解決ができなくなります。"
+        },
+        {
+          "text": "オンプレミスの DNS サーバーを EC2 に移す",
+          "explanation": "双方向の名前解決の仕組みにはなりません。"
+        },
+        {
+          "text": "Route 53 Resolver のインバウンドエンドポイントとアウトバウンドエンドポイントを作り、アウトバウンドには転送ルールを設定する",
+          "explanation": "インバウンドはオンプレミスから VPC への名前解決、アウトバウンドと転送ルールは VPC からオンプレミスへの名前解決に使います。"
+        },
+        {
+          "text": "プライベートホストゾーンをパブリックホストゾーンに変える",
+          "explanation": "社内の名前がインターネットに公開されてしまいます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Route 53 Resolver のエンドポイントを使うと、VPC とオンプレミスのネットワークの間で DNS の名前解決ができます。インバウンドは VPC への問い合わせを受け、アウトバウンドはルールに従ってオンプレミスに転送します。",
+      "references": [
+        {
+          "title": "Route 53 Resolver のエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-063",
+      "domain": "d5",
+      "question": "CloudFront で配信している Web サイトの CSS ファイルを修正して、オリジンの S3 にアップロードした。しかし、利用者には古い CSS が表示され続けている。今すぐ新しいファイルを配信したい。最も適切な方法はどれか。",
+      "choices": [
+        {
+          "text": "S3 のバケットのバージョニングを有効にする",
+          "explanation": "CloudFront のキャッシュは消えません。"
+        },
+        {
+          "text": "CloudFront で、そのファイルのパスの無効化（invalidation）を作成する",
+          "explanation": "無効化すると、エッジのキャッシュからファイルが消え、次のリクエストでオリジンから新しいファイルを取得します。"
+        },
+        {
+          "text": "CloudFront のディストリビューションを削除して作り直す",
+          "explanation": "時間がかかり、配信も止まります。"
+        },
+        {
+          "text": "オリジンの S3 バケットを別のリージョンに移す",
+          "explanation": "キャッシュは消えません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CloudFront は有効期限（TTL）が切れるまでキャッシュを返します。すぐに更新したい場合は無効化を作成します。頻繁に更新するなら、ファイル名にバージョンを入れる方法もあります。",
+      "references": [
+        {
+          "title": "CloudFront のファイルの無効化",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html"
+        },
+        {
+          "title": "CloudFront のキャッシュの有効期間",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Expiration.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-064",
+      "domain": "d5",
+      "question": "パブリックサブネットの Web サーバーに、インターネットから HTTPS で接続できない。セキュリティグループでは443番ポートのインバウンドを許可している。サブネットのネットワーク ACL では、インバウンドで443番ポートを許可し、アウトバウンドでは443番ポートだけを許可している。最も可能性の高い原因と対処はどれか。",
+      "choices": [
+        {
+          "text": "セキュリティグループのアウトバウンドで443番ポートを拒否する",
+          "explanation": "セキュリティグループには拒否のルールはなく、ステートフルなので応答は自動で許可されます。"
+        },
+        {
+          "text": "Web サーバーのインスタンスタイプを大きくする",
+          "explanation": "通信が届かない原因とは関係ありません。"
+        },
+        {
+          "text": "ネットワーク ACL のインバウンドで443番ポートを拒否する",
+          "explanation": "接続できなくなるだけです。"
+        },
+        {
+          "text": "ネットワーク ACL はステートレスなので、アウトバウンドでクライアントへの応答のエフェメラルポート（1024〜65535 など）を許可する",
+          "explanation": "応答の通信はクライアントのエフェメラルポートに送られます。ネットワーク ACL では、応答のためのルールも明示的に必要です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ネットワーク ACL はステートレスなので、インバウンドの通信を許可しても、その応答のアウトバウンドの通信は自動では許可されません。応答はクライアントのエフェメラルポートに送られるので、そのポートの範囲を許可します。",
+      "references": [
+        {
+          "title": "カスタムネットワーク ACL（応答のトラフィックとエフェメラルポート）",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/custom-network-acl.html"
+        },
+        {
+          "title": "ネットワーク ACL",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-network-acls.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-065",
+      "domain": "d5",
+      "question": "EC2 インスタンスから、別の VPC の RDS に接続できない。ルートテーブル・セキュリティグループ・ネットワーク ACL・Transit Gateway のどこで通信が止まっているかを、実際に通信を送らずに分析したい。最も適切なサービスはどれか。",
+      "choices": [
+        {
+          "text": "Amazon Inspector",
+          "explanation": "ソフトウェアの脆弱性を見つけるサービスです。"
+        },
+        {
+          "text": "VPC Reachability Analyzer",
+          "explanation": "送信元と送信先の間の到達可能性を、設定をもとに分析し、通信を妨げている設定の部分を示します。"
+        },
+        {
+          "text": "VPC フローログ",
+          "explanation": "実際に流れた通信の記録です。通信を送らずに経路を分析するものではありません。"
+        },
+        {
+          "text": "AWS Trusted Advisor",
+          "explanation": "ベストプラクティスとの差の確認です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Reachability Analyzer は、VPC の中のリソース間の到達可能性を、パケットを送らずに設定から分析します。到達できない場合は、原因になっている設定の部分を示します。",
+      "references": [
+        {
+          "title": "VPC Reachability Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/reachability/what-is-reachability-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d001",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-001",
+      "point": "詳細モニタリング",
+      "question": "EC2 の詳細モニタリングを有効にすると、メモリの使用率のメトリクスも自動で収集される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。詳細モニタリングは既定のメトリクスの間隔を1分にするだけです。メモリのメトリクスは CloudWatch エージェントで収集します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "詳細モニタリングは既定のメトリクスの間隔を1分にするだけです。メモリのメトリクスは CloudWatch エージェントで収集します。",
+      "references": [
+        {
+          "title": "CloudWatch エージェントでメトリクスとログを収集する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+        },
+        {
+          "title": "CloudWatch エージェントが収集するメトリクス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/metrics-collected-by-CloudWatch-agent.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d002",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-001",
+      "point": "エージェントとログ",
+      "question": "CloudWatch エージェントは、メトリクスだけでなく、インスタンスのログファイルも CloudWatch Logs に送れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。エージェントは、メトリクスとログの両方を収集できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "エージェントは、メトリクスとログの両方を収集できます。",
+      "references": [
+        {
+          "title": "CloudWatch エージェントでメトリクスとログを収集する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+        },
+        {
+          "title": "CloudWatch エージェントが収集するメトリクス",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/metrics-collected-by-CloudWatch-agent.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d003",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-002",
+      "point": "複合アラームの入力",
+      "question": "複合アラームの条件には、メトリクスを直接指定する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。複合アラームの条件（ルール式）には、ほかのアラームの状態を指定します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "複合アラームの条件（ルール式）には、ほかのアラームの状態を指定します。",
+      "references": [
+        {
+          "title": "複合アラームの作成",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d004",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-002",
+      "point": "アラームの通知",
+      "question": "CloudWatch のアラームは、ALARM の状態になったときに Amazon SNS のトピックに通知できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。アラームのアクションで、SNS のトピックに通知を送れます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "アラームのアクションで、SNS のトピックに通知を送れます。",
+      "references": [
+        {
+          "title": "アラームのアクション",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d005",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-003",
+      "point": "2つのステータスチェック",
+      "question": "インスタンスのステータスチェックの失敗は、AWS の基盤（ハードウェアや電源）の問題を示す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。基盤の問題はシステムのステータスチェックで検出します。インスタンスのステータスチェックは、OS の設定などインスタンス側の問題を示します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "基盤の問題はシステムのステータスチェックで検出します。インスタンスのステータスチェックは、OS の設定などインスタンス側の問題を示します。",
+      "references": [
+        {
+          "title": "インスタンスを停止・終了・再起動・復旧するアラームを作成する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/UsingAlarmActions.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d006",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-003",
+      "point": "アラームのアクション",
+      "question": "CloudWatch のアラームから直接実行できる EC2 のアクションに含まれないものはどれか。",
+      "choices": [
+        {
+          "text": "再起動",
+          "explanation": "アラームのアクションでインスタンスを再起動できます。"
+        },
+        {
+          "text": "停止",
+          "explanation": "アラームのアクションでインスタンスを停止できます。"
+        },
+        {
+          "text": "終了",
+          "explanation": "アラームのアクションでインスタンスを終了できます。"
+        },
+        {
+          "text": "インスタンスタイプの変更",
+          "explanation": "アラームのアクションでインスタンスタイプは変えられません。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EC2 のアラームのアクションには、停止・終了・再起動・復旧があります。",
+      "references": [
+        {
+          "title": "インスタンスを停止・終了・再起動・復旧するアラームを作成する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/UsingAlarmActions.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d007",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-004",
+      "point": "ダッシュボードとリージョン",
+      "question": "CloudWatch のダッシュボードには、作成したリージョンのメトリクスしか表示できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ダッシュボードには、複数のリージョンのリソースのメトリクスを表示できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ダッシュボードには、複数のリージョンのリソースのメトリクスを表示できます。",
+      "references": [
+        {
+          "title": "CloudWatch ダッシュボードの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d008",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-004",
+      "point": "ダッシュボードの共有",
+      "question": "CloudWatch のダッシュボードは、AWS アカウントを持たない人にも共有できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ダッシュボードは、アカウントを持たない人にも共有できます（共有の方法を選びます）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ダッシュボードは、アカウントを持たない人にも共有できます（共有の方法を選びます）。",
+      "references": [
+        {
+          "title": "CloudWatch ダッシュボードの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d009",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-005",
+      "point": "調べるメトリクス",
+      "question": "EventBridge のルールが実際にターゲットを呼び出したかどうかを確認するのに使えるメトリクスはどれか。",
+      "choices": [
+        {
+          "text": "RDS の DatabaseConnections",
+          "explanation": "EventBridge の配信とは関係ありません。"
+        },
+        {
+          "text": "S3 の BucketSizeBytes",
+          "explanation": "EventBridge の配信とは関係ありません。"
+        },
+        {
+          "text": "ルールの Invocations と FailedInvocations",
+          "explanation": "ルールがターゲットを呼び出した回数と、失敗した回数を確認できます。"
+        },
+        {
+          "text": "EC2 の CPUUtilization",
+          "explanation": "EventBridge の配信とは関係ありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ルールの Invocations・FailedInvocations・TriggeredRules などのメトリクスで、配信の状況を確認できます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のトラブルシューティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-troubleshooting.html"
+        },
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d010",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-005",
+      "point": "イベントパターン",
+      "question": "EventBridge のイベントパターンで1文字でも値が違うと、イベントはルールに一致しない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。イベントパターンは、イベントの値と完全に一致する必要があります。パターンの誤りは、ルールが一致しないよくある原因です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "イベントパターンは、イベントの値と完全に一致する必要があります。パターンの誤りは、ルールが一致しないよくある原因です。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d011",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-006",
+      "point": "同時実行の制御",
+      "question": "Systems Manager Automation では、一度に処理するリソースの数を制御できず、すべてのリソースに同時に実行される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Automation では、同時に処理するリソースの数（同時実行数）やエラーのしきい値を細かく制御できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Automation では、同時に処理するリソースの数（同時実行数）やエラーのしきい値を細かく制御できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Automation",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-automation.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d012",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-006",
+      "point": "承認のステップ",
+      "question": "Systems Manager Automation のランブックには、人の承認を待つステップを入れられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。aws:approve のアクションで、承認されるまで実行を待てます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "aws:approve のアクションで、承認されるまで実行を待てます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Automation",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-automation.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d013",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-007",
+      "point": "手動の修復",
+      "question": "AWS Config の修復のアクションは、自動でしか実行できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。修復のアクションは、自動の修復にも、手動で実行する修復にも設定できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "修復のアクションは、自動の修復にも、手動で実行する修復にも設定できます。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠のリソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d014",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-007",
+      "point": "ルールの役割",
+      "question": "AWS Config のルールの役割として正しいものはどれか。",
+      "choices": [
+        {
+          "text": "API の呼び出しを記録する",
+          "explanation": "これは CloudTrail の役割です。"
+        },
+        {
+          "text": "リソースの使用料を計算する",
+          "explanation": "これは料金のサービスの役割です。"
+        },
+        {
+          "text": "リソースの設定が、望ましい設定に沿っているかを評価する",
+          "explanation": "Config のルールは、リソースの設定が準拠しているかを評価します。"
+        },
+        {
+          "text": "インスタンスの OS にパッチを当てる",
+          "explanation": "これは Patch Manager の役割です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Config のルールで設定を評価し、修復のアクションで直します。",
+      "references": [
+        {
+          "title": "AWS Config ルールによる非準拠のリソースの修復",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d015",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-008",
+      "point": "使いながらの変更",
+      "question": "EBS のボリュームタイプを変えるには、必ずインスタンスを停止してボリュームをデタッチする必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。エラスティックボリュームで、インスタンスにアタッチしたまま、ボリュームタイプ・サイズ・IOPS を変更できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "エラスティックボリュームで、インスタンスにアタッチしたまま、ボリュームタイプ・サイズ・IOPS を変更できます。",
+      "references": [
+        {
+          "title": "Amazon EBS エラスティックボリューム",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-modify-volume.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d016",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-008",
+      "point": "高い IOPS",
+      "question": "サブミリ秒の遅延と、非常に高い IOPS・耐久性が必要なミッションクリティカルなデータベースに向く EBS のボリュームタイプはどれか。",
+      "choices": [
+        {
+          "text": "st1",
+          "explanation": "スループット重視の HDD です。"
+        },
+        {
+          "text": "sc1",
+          "explanation": "アクセスの少ないデータ向けの HDD です。"
+        },
+        {
+          "text": "gp2",
+          "explanation": "汎用 SSD で、最も高い IOPS が必要な用途には io2 が向いています。"
+        },
+        {
+          "text": "io2 Block Express",
+          "explanation": "プロビジョンド IOPS の SSD で、高い IOPS と耐久性が必要なワークロード向けです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "EBS のボリュームタイプは、汎用 SSD（gp3・gp2）、プロビジョンド IOPS SSD（io2・io1）、HDD（st1・sc1）などがあります。",
+      "references": [
+        {
+          "title": "Amazon EBS のボリュームタイプ",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-volume-types.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d017",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-009",
+      "point": "大きなファイル",
+      "question": "数 GB のファイルの S3 へのアップロードで、途中で失敗しても一部だけ再送でき、並行して送れる方法はどれか。",
+      "choices": [
+        {
+          "text": "署名付き URL",
+          "explanation": "一時的なアクセスを許可する仕組みです。"
+        },
+        {
+          "text": "バケットポリシー",
+          "explanation": "アクセス許可の仕組みです。"
+        },
+        {
+          "text": "ライフサイクルの設定",
+          "explanation": "オブジェクトの移行と削除の仕組みです。"
+        },
+        {
+          "text": "マルチパートアップロード",
+          "explanation": "ファイルを複数のパートに分けて並行してアップロードでき、失敗したパートだけを再送できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "大きなオブジェクトにはマルチパートアップロードを使います（100 MB 以上で検討することが推奨されています）。",
+      "references": [
+        {
+          "title": "マルチパートアップロード",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/mpuoverview.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d018",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-009",
+      "point": "Transfer Acceleration の料金",
+      "question": "S3 Transfer Acceleration は、追加の料金なしで使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Transfer Acceleration には、通常のデータ転送とは別に料金がかかります。高速化の効果がない転送には課金されません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Transfer Acceleration には、通常のデータ転送とは別に料金がかかります。高速化の効果がない転送には課金されません。",
+      "references": [
+        {
+          "title": "Amazon S3 Transfer Acceleration",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/transfer-acceleration.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d019",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-010",
+      "point": "元に戻す",
+      "question": "EFS のライフサイクル管理では、IA に移したファイルに再びアクセスがあったとき、標準のストレージクラスに戻すように設定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ライフサイクルのポリシーで、アクセスされたファイルを標準のストレージクラスに戻せます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ライフサイクルのポリシーで、アクセスされたファイルを標準のストレージクラスに戻せます。",
+      "references": [
+        {
+          "title": "Amazon EFS のライフサイクル管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/efs/latest/ug/lifecycle-management-efs.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d020",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-010",
+      "point": "オンラインのデータ移行",
+      "question": "オンプレミスの NFS サーバーのデータを、ネットワーク経由で Amazon EFS や S3 に自動で効率よく移したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "S3 Transfer Acceleration",
+          "explanation": "S3 へのアップロードを速くする機能で、NFS からの移行の自動化ではありません。"
+        },
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性を見つけるサービスです。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "オンプレミスと AWS のストレージサービスの間で、データの移動を自動化・高速化します。"
+        },
+        {
+          "text": "AWS Backup",
+          "explanation": "バックアップを管理するサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "DataSync は、オンプレミスと AWS の間などでデータを移動するオンラインのサービスです。",
+      "references": [
+        {
+          "title": "AWS DataSync とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d021",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-011",
+      "point": "負荷の絞り込み",
+      "question": "CloudWatch Database Insights では、RDS の DB の負荷を、SQL 文や待機イベントごとに分けて確認できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Database Insights のダッシュボードで、DB の負荷を待機イベント・SQL 文・ホスト・ユーザーで絞り込めます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Database Insights のダッシュボードで、DB の負荷を待機イベント・SQL 文・ホスト・ユーザーで絞り込めます。",
+      "references": [
+        {
+          "title": "Amazon CloudWatch Database Insights による Amazon RDS の DB 負荷のモニタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PerfInsights.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d022",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-011",
+      "point": "OS のメトリクスとの違い",
+      "question": "負荷の原因になっている SQL 文を特定するには、OS のメトリクス（拡張モニタリング）を見れば十分である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。OS のメトリクスでは CPU やメモリの状態はわかっても、どの SQL 文が原因かはわかりません。DB の負荷の分析には Database Insights を使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "OS のメトリクスでは CPU やメモリの状態はわかっても、どの SQL 文が原因かはわかりません。DB の負荷の分析には Database Insights を使います。",
+      "references": [
+        {
+          "title": "Amazon CloudWatch Database Insights による Amazon RDS の DB 負荷のモニタリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PerfInsights.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d023",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-012",
+      "point": "分散の配置",
+      "question": "少数の重要なインスタンスを、別々のハードウェアに配置して、同時に障害が起きるリスクを減らしたい。どのプレイスメントグループを使うか。",
+      "choices": [
+        {
+          "text": "Dedicated Hosts",
+          "explanation": "物理サーバーを専有する購入オプションです。"
+        },
+        {
+          "text": "クラスタープレイスメントグループ",
+          "explanation": "インスタンスを近くにまとめる配置です。"
+        },
+        {
+          "text": "分散プレイスメントグループ",
+          "explanation": "インスタンスを別々のハードウェアに配置し、同時の障害のリスクを減らします。"
+        },
+        {
+          "text": "パーティションプレイスメントグループ",
+          "explanation": "大規模な分散システムで、パーティションの単位でハードウェアを分ける配置です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "少数の重要なインスタンスには分散プレイスメントグループを使います。",
+      "references": [
+        {
+          "title": "プレイスメントグループ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d024",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-012",
+      "point": "クラスターと AZ",
+      "question": "クラスタープレイスメントグループは、複数の AZ にまたがって作れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。クラスタープレイスメントグループは、1つの AZ の中にインスタンスをまとめます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "クラスタープレイスメントグループは、1つの AZ の中にインスタンスをまとめます。",
+      "references": [
+        {
+          "title": "プレイスメントグループ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/placement-groups.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d025",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-013",
+      "point": "Compute Optimizer の対象",
+      "question": "AWS Compute Optimizer は、EC2 インスタンスだけでなく、EBS ボリュームや Lambda 関数の推奨も示す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Compute Optimizer は、EC2・Auto Scaling グループ・EBS・Lambda などを対象にします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Compute Optimizer は、EC2・Auto Scaling グループ・EBS・Lambda などを対象にします。",
+      "references": [
+        {
+          "title": "AWS Compute Optimizer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d026",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-013",
+      "point": "コンテナのメトリクス",
+      "question": "Amazon EKS で動くコンテナのアプリケーションのメトリクスを、Prometheus と互換性のある方法で、サーバーを管理せずに収集・保存したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データを見つけるサービスです。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "データ移行のサービスです。"
+        },
+        {
+          "text": "AWS Compute Optimizer",
+          "explanation": "リソースのサイズの推奨のサービスです。"
+        },
+        {
+          "text": "Amazon Managed Service for Prometheus",
+          "explanation": "Prometheus と互換性のある、フルマネージドのメトリクスの監視サービスです。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Managed Service for Prometheus は、コンテナのメトリクスを Prometheus と互換性のある方法で監視します。",
+      "references": [
+        {
+          "title": "Amazon Managed Service for Prometheus とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/prometheus/latest/userguide/what-is-Amazon-Managed-Service-Prometheus.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d027",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-014",
+      "point": "Logs Insights の料金",
+      "question": "CloudWatch Logs Insights は、クエリで調べたデータの量に応じて料金がかかる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Logs Insights は、クエリでスキャンしたデータの量に応じて課金されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Logs Insights は、クエリでスキャンしたデータの量に応じて課金されます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d028",
+      "type": "drill",
+      "domain": "d1",
+      "source": "soa-014",
+      "point": "継続的な監視",
+      "question": "特定のエラーの件数を継続的に監視してアラームを出すには、毎回 Logs Insights のクエリを手で実行するしかない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。メトリクスフィルターでログからメトリクスを作れば、CloudWatch のアラームで継続的に監視できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "メトリクスフィルターでログからメトリクスを作れば、CloudWatch のアラームで継続的に監視できます。",
+      "references": [
+        {
+          "title": "CloudWatch Logs Insights",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d029",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-015",
+      "point": "アラームの作成",
+      "question": "ターゲット追跡スケーリングポリシーを使うには、利用者が CloudWatch のアラームを自分で作る必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ターゲット追跡スケーリングでは、Auto Scaling が必要な CloudWatch のアラームを作成・管理します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ターゲット追跡スケーリングでは、Auto Scaling が必要な CloudWatch のアラームを作成・管理します。",
+      "references": [
+        {
+          "title": "ターゲット追跡スケーリングポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d030",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-015",
+      "point": "スケールインの考え方",
+      "question": "ターゲット追跡スケーリングは、負荷が下がると台数を減らす（スケールインする）こともできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。メトリクスが目標の値より下がれば、台数を減らします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "メトリクスが目標の値より下がれば、台数を減らします。",
+      "references": [
+        {
+          "title": "ターゲット追跡スケーリングポリシー",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d031",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-016",
+      "point": "繰り返し",
+      "question": "スケジュールに基づくスケーリングは、一度きりの日時しか指定できない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。cron の形式で、繰り返しのスケジュールも設定できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "cron の形式で、繰り返しのスケジュールも設定できます。",
+      "references": [
+        {
+          "title": "スケジュールに基づくスケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d032",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-016",
+      "point": "過去の傾向から",
+      "question": "過去の負荷のパターンを機械学習で分析し、日々の周期的な需要に合わせて前もって容量を増やしたい。どれを使うか。",
+      "choices": [
+        {
+          "text": "手動のスケーリング",
+          "explanation": "人が台数を変えます。"
+        },
+        {
+          "text": "シンプルスケーリング",
+          "explanation": "アラームに応じて、決めた数だけ台数を変える方式です。"
+        },
+        {
+          "text": "ヘルスチェック",
+          "explanation": "異常なインスタンスを見つける仕組みです。"
+        },
+        {
+          "text": "予測スケーリング",
+          "explanation": "過去のデータから将来の需要を予測し、前もって容量を用意します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "予測スケーリングは、周期的な需要のパターンをもとに、前もって容量を増やします。",
+      "references": [
+        {
+          "title": "予測スケーリング",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-predictive-scaling.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d033",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-017",
+      "point": "待機の状態",
+      "question": "ウォームプールのインスタンスは、実行中の状態でしか待機させられない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ウォームプールのインスタンスは、停止・実行中・休止のいずれかの状態で待機させられます。停止状態なら費用を抑えられます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ウォームプールのインスタンスは、停止・実行中・休止のいずれかの状態で待機させられます。停止状態なら費用を抑えられます。",
+      "references": [
+        {
+          "title": "ウォームプール",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d034",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-017",
+      "point": "費用の考え方",
+      "question": "ウォームプールで停止状態にしたインスタンスでは、アタッチした EBS ボリュームなどの費用はかかる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。停止中のインスタンスのコンピューティングの料金はかかりませんが、EBS ボリュームなどの料金はかかります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "停止中のインスタンスのコンピューティングの料金はかかりませんが、EBS ボリュームなどの料金はかかります。",
+      "references": [
+        {
+          "title": "ウォームプール",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d035",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-018",
+      "point": "予測できる量",
+      "question": "予測できる、徐々に変化するトラフィックの DynamoDB のテーブルで、費用を抑えつつ量の変化に合わせたい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "オンデマンドモード",
+          "explanation": "使えますが、予測できる量なら、プロビジョンドモードのほうが安くなることが多いです。"
+        },
+        {
+          "text": "キャパシティを最小にした固定の設定",
+          "explanation": "量が増えるとスロットリングされます。"
+        },
+        {
+          "text": "プロビジョンドモードと DynamoDB Auto Scaling",
+          "explanation": "使用量に合わせて、プロビジョンドのキャパシティを自動で調整します。"
+        },
+        {
+          "text": "テーブルを複数に分ける",
+          "explanation": "キャパシティの調整にはなりません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "DynamoDB Auto Scaling は、使用率の目標に合わせて、プロビジョンドのキャパシティを自動で増減します。",
+      "references": [
+        {
+          "title": "DynamoDB Auto Scaling によるスループットキャパシティの自動管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/AutoScaling.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d036",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-018",
+      "point": "オンデマンドの計画",
+      "question": "オンデマンドのキャパシティモードでは、利用者が読み込みと書き込みのキャパシティを指定する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。オンデマンドモードでは、キャパシティを指定せず、リクエストの量に応じて支払います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "オンデマンドモードでは、キャパシティを指定せず、リクエストの量に応じて支払います。",
+      "references": [
+        {
+          "title": "DynamoDB の読み取り/書き込みキャパシティモード",
+          "url": "https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d037",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-019",
+      "point": "キャパシティの単位",
+      "question": "Aurora Serverless v2 のキャパシティは、Aurora キャパシティユニット（ACU）で表す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Aurora Serverless v2 のキャパシティは ACU の単位で、最小と最大の範囲を指定します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Aurora Serverless v2 のキャパシティは ACU の単位で、最小と最大の範囲を指定します。",
+      "references": [
+        {
+          "title": "Aurora Serverless v2",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d038",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-019",
+      "point": "読み取りの負荷",
+      "question": "RDS の DB インスタンスで、読み取りのクエリが多すぎて性能が落ちている。書き込みは少ない。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "バックアップの保持期間を延ばす",
+          "explanation": "性能は変わりません。"
+        },
+        {
+          "text": "ストレージを暗号化する",
+          "explanation": "性能の改善にはなりません。"
+        },
+        {
+          "text": "マルチ AZ 配置にする",
+          "explanation": "可用性のための機能で、スタンバイは読み取りに使えません（マルチ AZ の DB インスタンス配置の場合）。"
+        },
+        {
+          "text": "リードレプリカを作り、読み取りのクエリをレプリカに振り分ける",
+          "explanation": "読み取りの負荷を元の DB インスタンスから分散できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "リードレプリカは読み取りの拡張、マルチ AZ は可用性のために使います。",
+      "references": [
+        {
+          "title": "リードレプリカ",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d039",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-020",
+      "point": "既定のヘルスチェック",
+      "question": "Auto Scaling グループは、既定でロードバランサーのヘルスチェックの結果を使ってインスタンスを置き換える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。既定では EC2 のステータスチェックだけを使います。ELB のヘルスチェックは追加で有効にします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "既定では EC2 のステータスチェックだけを使います。ELB のヘルスチェックは追加で有効にします。",
+      "references": [
+        {
+          "title": "Auto Scaling グループのインスタンスのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html"
+        },
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d040",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-020",
+      "point": "猶予期間",
+      "question": "ヘルスチェックの猶予期間は、起動したばかりのインスタンスが初期化中に異常と判定されて置き換えられるのを防ぐ。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。猶予期間の間は、新しいインスタンスのヘルスチェックの結果で置き換えません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "猶予期間の間は、新しいインスタンスのヘルスチェックの結果で置き換えません。",
+      "references": [
+        {
+          "title": "Auto Scaling グループのインスタンスのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html"
+        },
+        {
+          "title": "ターゲットグループのヘルスチェック",
+          "url": "https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d041",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-021",
+      "point": "ヘルスチェックの対象",
+      "question": "Route 53 のヘルスチェックでは、ほかのヘルスチェックの状態や CloudWatch のアラームの状態も監視できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Route 53 のヘルスチェックは、エンドポイント・ほかのヘルスチェック（計算されたヘルスチェック）・CloudWatch のアラームを監視できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Route 53 のヘルスチェックは、エンドポイント・ほかのヘルスチェック（計算されたヘルスチェック）・CloudWatch のアラームを監視できます。",
+      "references": [
+        {
+          "title": "Route 53 のヘルスチェックの種類",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/health-checks-types.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d042",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-021",
+      "point": "切り替えの仕組み",
+      "question": "Route 53 のフェイルオーバーでは、ALB が自分で DNS のレコードを書き換えて切り替える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Route 53 がヘルスチェックの結果をもとに、DNS の応答をセカンダリに切り替えます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Route 53 がヘルスチェックの結果をもとに、DNS の応答をセカンダリに切り替えます。",
+      "references": [
+        {
+          "title": "フェイルオーバールーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-failover.html"
+        },
+        {
+          "title": "Route 53 のヘルスチェックの種類",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/health-checks-types.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d043",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-022",
+      "point": "スタンバイの読み取り",
+      "question": "マルチ AZ の DB インスタンス配置のスタンバイは、読み取りのクエリにも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。マルチ AZ の DB インスタンス配置のスタンバイは、読み取りには使えません。読み取りの拡張にはリードレプリカを使います（読み取り可能なスタンバイを持つ、マルチ AZ の DB クラスター配置もあります）。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "マルチ AZ の DB インスタンス配置のスタンバイは、読み取りには使えません。読み取りの拡張にはリードレプリカを使います（読み取り可能なスタンバイを持つ、マルチ AZ の DB クラスター配置もあります）。",
+      "references": [
+        {
+          "title": "Amazon RDS のマルチ AZ の DB インスタンス配置",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d044",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-022",
+      "point": "複製の方式",
+      "question": "マルチ AZ 配置のスタンバイへの複製は、同期で行われる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。プライマリからスタンバイへは同期で複製されるので、フェイルオーバーしてもデータが失われにくくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "プライマリからスタンバイへは同期で複製されるので、フェイルオーバーしてもデータが失われにくくなります。",
+      "references": [
+        {
+          "title": "マルチ AZ 配置",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+        },
+        {
+          "title": "Amazon RDS のマルチ AZ の DB インスタンス配置",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d045",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-023",
+      "point": "リソースの割り当て",
+      "question": "AWS Backup のバックアッププランには、タグを使ってリソースをまとめて割り当てられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。リソースの割り当てでタグを指定すると、そのタグの付いたリソースがプランの対象になります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "リソースの割り当てでタグを指定すると、そのタグの付いたリソースがプランの対象になります。",
+      "references": [
+        {
+          "title": "AWS Backup のバックアッププラン",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/about-backup-plans.html"
+        },
+        {
+          "title": "AWS Backup のクロスリージョンのコピー",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/cross-region-backup.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d046",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-023",
+      "point": "バックアップの保管場所",
+      "question": "AWS Backup で作ったバックアップ（復旧ポイント）を保管する入れ物はどれか。",
+      "choices": [
+        {
+          "text": "CloudFormation のスタック",
+          "explanation": "インフラの管理の単位です。"
+        },
+        {
+          "text": "EBS のスナップショットのタグ",
+          "explanation": "タグは入れ物ではありません。"
+        },
+        {
+          "text": "バックアップボールト",
+          "explanation": "復旧ポイントを保管・整理する入れ物です。"
+        },
+        {
+          "text": "S3 のライフサイクルの設定",
+          "explanation": "S3 のオブジェクトの移行と削除の仕組みです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "AWS Backup の復旧ポイントは、バックアップボールトに保管されます。",
+      "references": [
+        {
+          "title": "AWS Backup とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/whatisbackup.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d047",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-024",
+      "point": "復元先",
+      "question": "RDS のポイントインタイムリカバリでは、元の DB インスタンスがその時点の状態に上書きされる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ポイントインタイムリカバリは、新しい DB インスタンスとして復元します。元のインスタンスは上書きされません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ポイントインタイムリカバリは、新しい DB インスタンスとして復元します。元のインスタンスは上書きされません。",
+      "references": [
+        {
+          "title": "DB インスタンスを特定の時点に復元する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PIT.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d048",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-024",
+      "point": "復元できる範囲",
+      "question": "RDS のポイントインタイムリカバリで戻せるのは、自動バックアップの保持期間の中の時点である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。保持期間の中の任意の時点に戻せます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "保持期間の中の任意の時点に戻せます。",
+      "references": [
+        {
+          "title": "DB インスタンスを特定の時点に復元する",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PIT.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d049",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-025",
+      "point": "バージョニングの無効化",
+      "question": "一度有効にした S3 のバージョニングは、無効（未設定の状態）に戻せる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。一度有効にしたバージョニングは、停止はできますが、未設定の状態には戻せません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "一度有効にしたバージョニングは、停止はできますが、未設定の状態には戻せません。",
+      "references": [
+        {
+          "title": "S3 バケットでのバージョニングの使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Versioning.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d050",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-025",
+      "point": "別のリージョンへの複製",
+      "question": "S3 のオブジェクトを、災害に備えて別のリージョンのバケットに自動で複製したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "署名付き URL",
+          "explanation": "一時的なアクセスの許可です。"
+        },
+        {
+          "text": "Transfer Acceleration",
+          "explanation": "転送を速くする機能です。"
+        },
+        {
+          "text": "レプリケーション（クロスリージョンレプリケーション）",
+          "explanation": "オブジェクトを、別のリージョンなどのバケットに自動で非同期に複製します（バージョニングが必要です）。"
+        },
+        {
+          "text": "S3 のイベント通知",
+          "explanation": "イベントを通知する機能です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 のレプリケーションで、別のリージョンのバケットにオブジェクトを複製できます。",
+      "references": [
+        {
+          "title": "リージョン内およびリージョン間でのオブジェクトのレプリケーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/replication.html"
+        },
+        {
+          "title": "レプリケーションの要件",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/replication-requirements.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d051",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-026",
+      "point": "パイロットライトの状態",
+      "question": "パイロットライトでは、DR のリージョンでも本番と同じ規模のアプリケーションのサーバーを常に動かしておく。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。パイロットライトでは、データは複製しますが、アプリケーションのサーバーは止めておき、災害時に起動します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "パイロットライトでは、データは複製しますが、アプリケーションのサーバーは止めておき、災害時に起動します。",
+      "references": [
+        {
+          "title": "クラウドでのディザスタリカバリのオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d052",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-026",
+      "point": "RTO と RPO",
+      "question": "RPO は、障害からサービスを復旧するまでに許される時間である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。それは RTO（目標復旧時間）です。RPO（目標復旧時点）は、許されるデータの損失の量（どの時点まで戻せればよいか）です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "それは RTO（目標復旧時間）です。RPO（目標復旧時点）は、許されるデータの損失の量（どの時点まで戻せればよいか）です。",
+      "references": [
+        {
+          "title": "クラウドでのディザスタリカバリのオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d053",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-027",
+      "point": "ウォームスタンバイの特徴",
+      "question": "ウォームスタンバイでは、DR のリージョンの環境が常に動いているので、切り替えの前にその環境でテストもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。常に動いている縮小版の環境があるので、パイロットライトより RTO が短く、テストもしやすくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "常に動いている縮小版の環境があるので、パイロットライトより RTO が短く、テストもしやすくなります。",
+      "references": [
+        {
+          "title": "クラウドでのディザスタリカバリのオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d054",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-027",
+      "point": "最も安い方式",
+      "question": "RTO・RPO が数時間でよく、費用を最も抑えたい DR の方式はどれか。",
+      "choices": [
+        {
+          "text": "パイロットライト",
+          "explanation": "データを常に複製するので、バックアップと復元より費用がかかります。"
+        },
+        {
+          "text": "ウォームスタンバイ",
+          "explanation": "縮小した環境を常に動かすので、バックアップと復元より費用がかかります。"
+        },
+        {
+          "text": "マルチサイトアクティブ/アクティブ",
+          "explanation": "最も費用が高い方式です。"
+        },
+        {
+          "text": "バックアップと復元",
+          "explanation": "バックアップを別のリージョンに保管し、災害時に環境を作り直す、最も費用の低い方式です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "RTO・RPO に余裕があるなら、バックアップと復元が最も安い方式です。",
+      "references": [
+        {
+          "title": "クラウドでのディザスタリカバリのオプション",
+          "url": "https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d055",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-028",
+      "point": "ライトスルー",
+      "question": "ライトスルーの戦略では、データベースに書き込むたびにキャッシュも更新するので、キャッシュのデータが古くなりにくい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ライトスルーは書き込みのたびにキャッシュを更新します。その代わり、読まれないデータもキャッシュに入ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ライトスルーは書き込みのたびにキャッシュを更新します。その代わり、読まれないデータもキャッシュに入ります。",
+      "references": [
+        {
+          "title": "ElastiCache のキャッシュ戦略",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Strategies.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d056",
+      "type": "drill",
+      "domain": "d2",
+      "source": "soa-028",
+      "point": "接続の急増",
+      "question": "Lambda 関数から RDS への接続が急増し、データベースの接続数の上限に達してしまう。接続をプールして共有したい。どれを使うか。",
+      "choices": [
+        {
+          "text": "Aurora Serverless v2",
+          "explanation": "キャパシティを自動で増減しますが、接続のプールの仕組みではありません。"
+        },
+        {
+          "text": "リードレプリカ",
+          "explanation": "読み取りを分散する機能です。"
+        },
+        {
+          "text": "Amazon ElastiCache",
+          "explanation": "キャッシュのサービスで、接続のプールではありません。"
+        },
+        {
+          "text": "Amazon RDS Proxy",
+          "explanation": "データベースへの接続をプールして共有し、多数の接続からデータベースを守ります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "RDS Proxy は、接続をプールし、Lambda のように接続が急増する用途でデータベースを守ります。",
+      "references": [
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d057",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-029",
+      "point": "コンテナイメージ",
+      "question": "EC2 Image Builder で作れるのは AMI だけで、コンテナイメージは作れない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Image Builder は、AMI とコンテナイメージの両方を作れます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Image Builder は、AMI とコンテナイメージの両方を作れます。",
+      "references": [
+        {
+          "title": "EC2 Image Builder とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/imagebuilder/latest/userguide/what-is-image-builder.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d058",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-029",
+      "point": "テストの段階",
+      "question": "EC2 Image Builder のパイプラインでは、作ったイメージを配布する前にテストを実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。パイプラインにテストのコンポーネントを入れて、イメージを検証してから配布できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "パイプラインにテストのコンポーネントを入れて、イメージを検証してから配布できます。",
+      "references": [
+        {
+          "title": "EC2 Image Builder とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/imagebuilder/latest/userguide/what-is-image-builder.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d059",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-030",
+      "point": "管理の起点",
+      "question": "StackSets では、管理者のアカウントで1つのテンプレートを管理し、それをもとに対象のアカウントとリージョンにスタックを作る。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。管理者のアカウントでテンプレートを定義・管理し、選んだアカウントとリージョンにスタックをプロビジョニングします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "管理者のアカウントでテンプレートを定義・管理し、選んだアカウントとリージョンにスタックをプロビジョニングします。",
+      "references": [
+        {
+          "title": "CloudFormation StackSets の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d060",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-030",
+      "point": "自動デプロイ",
+      "question": "StackSets の自動デプロイを使っても、組織に新しく加わったアカウントには手でスタックを作る必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。サービスマネージドのアクセス許可と自動デプロイを使うと、対象の OU に加わったアカウントに自動でスタックが作られます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "サービスマネージドのアクセス許可と自動デプロイを使うと、対象の OU に加わったアカウントに自動でスタックが作られます。",
+      "references": [
+        {
+          "title": "CloudFormation StackSets の使用",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d061",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-031",
+      "point": "共有できるもの",
+      "question": "AWS RAM で共有できるリソースはどれか。",
+      "choices": [
+        {
+          "text": "CloudWatch のアラームの状態",
+          "explanation": "RAM で共有するリソースではありません。"
+        },
+        {
+          "text": "ルートユーザーのパスワード",
+          "explanation": "共有するものではありません。"
+        },
+        {
+          "text": "AWS Transit Gateway",
+          "explanation": "Transit Gateway は RAM で共有できるリソースです。"
+        },
+        {
+          "text": "IAM ユーザー",
+          "explanation": "IAM ユーザーは共有するものではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "RAM では、サブネット・Transit Gateway・Route 53 Resolver のルールなどを共有できます。",
+      "references": [
+        {
+          "title": "共有できる AWS のリソース",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/shareable.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d062",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-031",
+      "point": "組織内の共有",
+      "question": "AWS RAM では、AWS Organizations の組織全体や OU を共有の相手に指定できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。組織や OU を指定すると、その中のアカウントとまとめて共有できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "組織や OU を指定すると、その中のアカウントとまとめて共有できます。",
+      "references": [
+        {
+          "title": "AWS Resource Access Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/what-is.html"
+        },
+        {
+          "title": "共有できる AWS のリソース",
+          "url": "https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/shareable.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d063",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-032",
+      "point": "既定の動作",
+      "question": "DeletionPolicy を指定しないと、多くのリソースはスタックの削除時に一緒に削除される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。既定では、CloudFormation はスタックの削除時にリソースを削除します（一部のリソースは既定がスナップショット）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "既定では、CloudFormation はスタックの削除時にリソースを削除します（一部のリソースは既定がスナップショット）。",
+      "references": [
+        {
+          "title": "DeletionPolicy 属性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d064",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-032",
+      "point": "手で変えた設定",
+      "question": "CloudFormation で作ったリソースの設定を、誰かがコンソールで直接変更したかどうかを調べたい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "StackSets",
+          "explanation": "複数のアカウントとリージョンにスタックを配る機能です。"
+        },
+        {
+          "text": "変更セット",
+          "explanation": "テンプレートの更新の影響を、事前に確認する機能です。"
+        },
+        {
+          "text": "DeletionPolicy",
+          "explanation": "削除時の動作を決める属性です。"
+        },
+        {
+          "text": "ドリフトの検出",
+          "explanation": "スタックのリソースの実際の設定が、テンプレートの定義と違っていないかを検出します。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ドリフトの検出で、テンプレートの外で行われた変更を見つけられます。",
+      "references": [
+        {
+          "title": "CloudFormation のドリフトの検出",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d065",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-033",
+      "point": "タイムアウト",
+      "question": "CreationPolicy で指定した時間内に成功のシグナルが届かなくても、リソースの作成は成功として扱われる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。タイムアウトまでに必要な数の成功のシグナルを受け取れないと、作成は失敗となり、スタックはロールバックします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "タイムアウトまでに必要な数の成功のシグナルを受け取れないと、作成は失敗となり、スタックはロールバックします。",
+      "references": [
+        {
+          "title": "CreationPolicy 属性",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/TemplateReference/aws-attribute-creationpolicy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d066",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-033",
+      "point": "エラーの調べ方",
+      "question": "CloudFormation のスタックの作成が失敗した。どのリソースがなぜ失敗したかを、まず確認する場所はどれか。",
+      "choices": [
+        {
+          "text": "Cost Explorer",
+          "explanation": "費用の分析です。"
+        },
+        {
+          "text": "AWS Artifact",
+          "explanation": "コンプライアンスのレポートです。"
+        },
+        {
+          "text": "スタックのイベント",
+          "explanation": "リソースごとの状態の変化と、失敗の理由が記録されています。"
+        },
+        {
+          "text": "Trusted Advisor",
+          "explanation": "ベストプラクティスとの差の確認です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "スタックのイベントに、失敗したリソースとその理由が出ます。",
+      "references": [
+        {
+          "title": "CloudFormation のトラブルシューティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/troubleshooting.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d067",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-034",
+      "point": "予約された IP アドレス",
+      "question": "/24 のサブネット（256個の IP アドレス）では、256個すべてを EC2 インスタンスに割り当てられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。各サブネットでは5つの IP アドレスが AWS に予約されるので、/24 で使えるのは251個です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "各サブネットでは5つの IP アドレスが AWS に予約されるので、/24 で使えるのは251個です。",
+      "references": [
+        {
+          "title": "VPC とサブネットの CIDR ブロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/subnet-sizing.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d068",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-034",
+      "point": "IP アドレスの計画",
+      "question": "組織の複数のアカウントの VPC の IP アドレスの割り当てを、重複しないように計画・追跡したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "AWS RAM",
+          "explanation": "リソースを共有するサービスです。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "設定の記録と評価のサービスです。"
+        },
+        {
+          "text": "Amazon VPC IP Address Manager（IPAM）",
+          "explanation": "IP アドレスの計画・追跡・監視を、アカウントやリージョンをまたいで行えます。"
+        },
+        {
+          "text": "Route 53",
+          "explanation": "DNS のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "IPAM で、組織の IP アドレスの割り当てを計画・追跡できます。",
+      "references": [
+        {
+          "title": "Amazon VPC IP Address Manager とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/ipam/what-it-is-ipam.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d069",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-035",
+      "point": "CDK の言語",
+      "question": "AWS CDK で使える言語は YAML だけである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。CDK は、TypeScript・JavaScript・Python・Java・C#・Go などのプログラミング言語で書けます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CDK は、TypeScript・JavaScript・Python・Java・C#・Go などのプログラミング言語で書けます。",
+      "references": [
+        {
+          "title": "AWS CDK とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cdk/v2/guide/home.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d070",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-035",
+      "point": "合成",
+      "question": "AWS CDK のアプリケーションは、デプロイの前に CloudFormation のテンプレートに合成される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。cdk synth でテンプレートに合成し、CloudFormation でデプロイします。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "cdk synth でテンプレートに合成し、CloudFormation でデプロイします。",
+      "references": [
+        {
+          "title": "AWS CDK とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/cdk/v2/guide/home.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d071",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-036",
+      "point": "マネージドノード",
+      "question": "Systems Manager でインスタンスを管理するには、SSM Agent と、Systems Manager を使うためのアクセス許可（インスタンスプロファイルなど）が必要である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。SSM Agent が動き、適切なアクセス許可があるインスタンスが、マネージドノードとして管理されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "SSM Agent が動き、適切なアクセス許可があるインスタンスが、マネージドノードとして管理されます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/patch-manager.html"
+        },
+        {
+          "title": "AWS Systems Manager のメンテナンスウィンドウ",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/maintenance-windows.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d072",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-036",
+      "point": "パッチの対象",
+      "question": "Patch Manager でパッチを適用できるのは、Windows のインスタンスだけである。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Patch Manager は、Windows と Linux・macOS などのオペレーティングシステムに対応しています。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Patch Manager は、Windows と Linux・macOS などのオペレーティングシステムに対応しています。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/patch-manager.html"
+        },
+        {
+          "title": "AWS Systems Manager のメンテナンスウィンドウ",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/maintenance-windows.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d073",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-037",
+      "point": "対話的なシェル",
+      "question": "インバウンドのポートを開けず、SSH の鍵も使わずに、インスタンスに対話的なシェルで接続したい。操作の記録も残したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "EC2 Image Builder",
+          "explanation": "イメージを作るサービスです。"
+        },
+        {
+          "text": "Systems Manager Patch Manager",
+          "explanation": "パッチの適用の機能です。"
+        },
+        {
+          "text": "AWS RAM",
+          "explanation": "リソースを共有するサービスです。"
+        },
+        {
+          "text": "Systems Manager Session Manager",
+          "explanation": "インバウンドのポートや踏み台、SSH の鍵なしで接続でき、セッションのログも残せます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Session Manager は、ポートを開けずに安全にインスタンスに接続でき、操作のログを残せます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d074",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-037",
+      "point": "ポートの開放",
+      "question": "Session Manager でインスタンスに接続するには、セキュリティグループで22番ポートのインバウンドを開ける必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Session Manager は、インバウンドのポートを開けずに接続できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Session Manager は、インバウンドのポートを開けずに接続できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d075",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-038",
+      "point": "一度きりとの違い",
+      "question": "State Manager の関連付けは一度だけ実行され、その後は状態を確認しない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。関連付けは、スケジュールに沿って繰り返し適用され、状態を保ちます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "関連付けは、スケジュールに沿って繰り返し適用され、状態を保ちます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager State Manager",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-state.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d076",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-038",
+      "point": "設定値の保管",
+      "question": "各インスタンスのスクリプトが使う設定値（接続先のホスト名など）を、一元的に保管して参照したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "Systems Manager Session Manager",
+          "explanation": "インスタンスに接続する機能です。"
+        },
+        {
+          "text": "EC2 Image Builder",
+          "explanation": "イメージを作るサービスです。"
+        },
+        {
+          "text": "Systems Manager Run Command",
+          "explanation": "コマンドを実行する機能です。"
+        },
+        {
+          "text": "Systems Manager Parameter Store",
+          "explanation": "設定データやシークレットを、階層的に保管できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Parameter Store で、設定値を一元的に保管できます。",
+      "references": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d077",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-039",
+      "point": "イベントの送り先",
+      "question": "S3 のイベント通知は、Amazon EventBridge にも送れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。S3 のイベントを EventBridge に送ると、ルールで多くのターゲットに振り分けられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "S3 のイベントを EventBridge に送ると、ルールで多くのターゲットに振り分けられます。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d078",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-039",
+      "point": "ループの防止",
+      "question": "変換後のファイルを、イベント通知を設定した同じバケットの同じ場所に保存しても、問題は起きない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。同じバケットに書き込むと、その書き込みがまたイベントを発生させ、処理が繰り返されるおそれがあります。出力は別のバケットや別のプレフィックスにします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "同じバケットに書き込むと、その書き込みがまたイベントを発生させ、処理が繰り返されるおそれがあります。出力は別のバケットや別のプレフィックスにします。",
+      "references": [
+        {
+          "title": "Amazon S3 のイベント通知",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d079",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-040",
+      "point": "一度きりのスケジュール",
+      "question": "EventBridge Scheduler では、一度だけ実行するスケジュールも作れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。繰り返しのスケジュールのほか、一度きりのスケジュールも作れます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "繰り返しのスケジュールのほか、一度きりのスケジュールも作れます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge Scheduler",
+          "url": "https://docs.aws.amazon.com/ja_jp/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d080",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-040",
+      "point": "失敗時の再試行",
+      "question": "EventBridge Scheduler では、ターゲットの呼び出しに失敗しても再試行の設定はできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。EventBridge Scheduler では、再試行の上限や、失敗したトリガーを保持する最大の時間を設定できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "EventBridge Scheduler では、再試行の上限や、失敗したトリガーを保持する最大の時間を設定できます。",
+      "references": [
+        {
+          "title": "Amazon EventBridge Scheduler",
+          "url": "https://docs.aws.amazon.com/ja_jp/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d081",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-041",
+      "point": "変更セットの実行",
+      "question": "変更セットを作成した時点で、スタックの変更が自動で実行される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。変更セットは作成しただけでは反映されず、実行（execute）したときに初めてスタックが変更されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "変更セットは作成しただけでは反映されず、実行（execute）したときに初めてスタックが変更されます。",
+      "references": [
+        {
+          "title": "CloudFormation の変更セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d082",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-041",
+      "point": "置き換えの影響",
+      "question": "CloudFormation でリソースが置き換えられると、新しいリソースが作られ、古いリソースは削除される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。置き換えでは新しい物理 ID のリソースが作られるので、データを持つリソースでは特に注意が必要です。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "置き換えでは新しい物理 ID のリソースが作られるので、データを持つリソースでは特に注意が必要です。",
+      "references": [
+        {
+          "title": "CloudFormation の変更セット",
+          "url": "https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d083",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-042",
+      "point": "ルールの種類",
+      "question": "EventBridge のルールには、イベントのパターンに一致したときに動くものと、スケジュールで動くものがある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ルールは、イベントのパターンへの一致か、スケジュールをきっかけにターゲットを呼び出します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ルールは、イベントのパターンへの一致か、スケジュールをきっかけにターゲットを呼び出します。",
+      "references": [
+        {
+          "title": "Amazon EventBridge のルール",
+          "url": "https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d084",
+      "type": "drill",
+      "domain": "d3",
+      "source": "soa-042",
+      "point": "タグの強制",
+      "question": "組織のアカウントで、特定のタグを付けないとリソースを作れないようにしたい。予防の仕組みとして最も適切なものはどれか。",
+      "choices": [
+        {
+          "text": "Cost Explorer で確認する",
+          "explanation": "費用の分析で、予防ではありません。"
+        },
+        {
+          "text": "CloudTrail のログを保存する",
+          "explanation": "記録で、予防ではありません。"
+        },
+        {
+          "text": "サービスコントロールポリシー（SCP）で、タグの条件を満たさない作成を拒否する",
+          "explanation": "SCP の条件で、タグのない作成のリクエストを拒否できます。"
+        },
+        {
+          "text": "EventBridge のルールで作成後に通知する",
+          "explanation": "作成後の検知で、予防ではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "作成後の検知と修正には EventBridge と Lambda、作成の予防には SCP などのポリシーを使います。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d085",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-043",
+      "point": "ポリシーの対象",
+      "question": "IAM のアカウントのパスワードポリシーは、ルートユーザーのパスワードにも適用される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。アカウントのパスワードポリシーは IAM ユーザーに適用され、ルートユーザーには適用されません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "アカウントのパスワードポリシーは IAM ユーザーに適用され、ルートユーザーには適用されません。",
+      "references": [
+        {
+          "title": "IAM ユーザーのアカウントパスワードポリシーの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d086",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-043",
+      "point": "再利用の防止",
+      "question": "IAM のパスワードポリシーで、過去に使ったパスワードの再利用を防げる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。パスワードポリシーで、以前のパスワードの再利用を防ぐ設定ができます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "パスワードポリシーで、以前のパスワードの再利用を防ぐ設定ができます。",
+      "references": [
+        {
+          "title": "IAM ユーザーのアカウントパスワードポリシーの設定",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d087",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-044",
+      "point": "使われていない権限",
+      "question": "IAM Access Analyzer では、使われていないアクセス許可やロールを見つけることもできる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Access Analyzer の未使用のアクセスの分析で、使われていないロールやアクセス許可を見つけられます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Access Analyzer の未使用のアクセスの分析で、使われていないロールやアクセス許可を見つけられます。",
+      "references": [
+        {
+          "title": "IAM Access Analyzer",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d088",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-044",
+      "point": "権限のテスト",
+      "question": "ある IAM ユーザーが特定の操作をできない理由を調べるため、ポリシーを実際に実行せずに評価したい。どのツールを使うか。",
+      "choices": [
+        {
+          "text": "Amazon Inspector",
+          "explanation": "脆弱性のスキャンです。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "データ移行のサービスです。"
+        },
+        {
+          "text": "IAM ポリシーシミュレーター",
+          "explanation": "ポリシーをテストし、特定の操作が許可されるか拒否されるかを確認できます。"
+        },
+        {
+          "text": "AWS Trusted Advisor",
+          "explanation": "ベストプラクティスとの差の確認です。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "ポリシーシミュレーターで、ポリシーの効果を実際の操作なしに確認できます。",
+      "references": [
+        {
+          "title": "IAM ポリシーシミュレーターを使用した IAM ポリシーのテスト",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_testing-policies.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d089",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-045",
+      "point": "管理アカウント",
+      "question": "SCP は、組織の管理アカウントのユーザーとロールにも適用される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP は管理アカウントには影響しません。メンバーアカウントにだけ適用されます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SCP は管理アカウントには影響しません。メンバーアカウントにだけ適用されます。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d090",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-045",
+      "point": "社員のアクセスの一元管理",
+      "question": "組織の複数のアカウントへの社員のアクセスを一元的に管理し、アカウントごとに許可セットで権限を割り当てたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Amazon Cognito",
+          "explanation": "アプリの利用者の認証のサービスです。"
+        },
+        {
+          "text": "IAM Access Analyzer",
+          "explanation": "アクセスを分析するサービスです。"
+        },
+        {
+          "text": "AWS RAM",
+          "explanation": "リソースを共有するサービスです。"
+        },
+        {
+          "text": "IAM アイデンティティセンター",
+          "explanation": "複数のアカウントへのアクセスを一元管理し、許可セットで権限を割り当てます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "IAM アイデンティティセンターで、社員の複数のアカウントへのアクセスと権限を一元管理できます。",
+      "references": [
+        {
+          "title": "IAM アイデンティティセンターとは",
+          "url": "https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/what-is.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d091",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-046",
+      "point": "サンプルのテンプレート",
+      "question": "コンフォーマンスパックは、利用者が一からテンプレートを書かなければ使えない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。AWS が用意したサンプルのテンプレートを使うことも、自分で作ることもできます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "AWS が用意したサンプルのテンプレートを使うことも、自分で作ることもできます。",
+      "references": [
+        {
+          "title": "AWS Config のコンフォーマンスパック",
+          "url": "https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/conformance-packs.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d092",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-046",
+      "point": "セキュリティチェックの結果への対応",
+      "question": "Trusted Advisor のセキュリティのチェックで「ルートユーザーに MFA が設定されていない」と出た。最も適切な対応はどれか。",
+      "choices": [
+        {
+          "text": "IAM ユーザーを削除する",
+          "explanation": "チェックの内容と関係ありません。"
+        },
+        {
+          "text": "Trusted Advisor のチェックを無効にする",
+          "explanation": "問題が見えなくなるだけです。"
+        },
+        {
+          "text": "ルートユーザーに MFA を設定する",
+          "explanation": "推奨事項に沿って、ルートユーザーの MFA を有効にします。"
+        },
+        {
+          "text": "ルートユーザーのアクセスキーを作る",
+          "explanation": "リスクが増えます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Trusted Advisor のチェックの結果をもとに、推奨事項に沿って修復します。",
+      "references": [
+        {
+          "title": "AWS Trusted Advisor",
+          "url": "https://docs.aws.amazon.com/ja_jp/awssupport/latest/user/trusted-advisor.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d093",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-047",
+      "point": "古いデータの復号",
+      "question": "KMS キーの鍵の素材をローテーションすると、それ以前に暗号化したデータは復号できなくなる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。KMS は以前の鍵の素材を保持するので、ローテーションの前に暗号化したデータも復号できます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "KMS は以前の鍵の素材を保持するので、ローテーションの前に暗号化したデータも復号できます。",
+      "references": [
+        {
+          "title": "AWS KMS キーのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/rotate-keys.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d094",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-047",
+      "point": "別のアカウントでの使用",
+      "question": "アカウント A の KMS キーを、アカウント B のロールに使わせたい。必要な設定の組み合わせはどれか。",
+      "choices": [
+        {
+          "text": "アカウント B に同じ名前のキーを作る",
+          "explanation": "別のキーになります。"
+        },
+        {
+          "text": "キーの素材をアカウント B にコピーする",
+          "explanation": "KMS キーの素材は取り出せません。"
+        },
+        {
+          "text": "アカウント A の SCP でアカウント B を許可する",
+          "explanation": "SCP はアクセス許可を与えません。"
+        },
+        {
+          "text": "アカウント A のキーポリシーでアカウント B を許可し、アカウント B の IAM ポリシーでそのキーの使用を許可する",
+          "explanation": "別のアカウントでの使用には、キーポリシーと、相手のアカウントの IAM ポリシーの両方が必要です。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "KMS キーのクロスアカウントの使用には、キーポリシーと IAM ポリシーの両方での許可が必要です。",
+      "references": [
+        {
+          "title": "他のアカウントのユーザーに KMS キーの使用を許可する",
+          "url": "https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-policy-modifying-external-accounts.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d095",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-048",
+      "point": "インポートした証明書",
+      "question": "ACM にインポートした外部の証明書も、ACM が自動で更新する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ACM が自動で更新するのは、ACM が発行した証明書です。インポートした証明書は、利用者が更新して再インポートします。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ACM が自動で更新するのは、ACM が発行した証明書です。インポートした証明書は、利用者が更新して再インポートします。",
+      "references": [
+        {
+          "title": "ACM 証明書のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d096",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-048",
+      "point": "メール検証の場合",
+      "question": "メール検証で発行した ACM の証明書でも、DNS 検証と同じく、何もしなくても自動で更新される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ACM が自動で更新するのは DNS 検証の場合です。それ以外の場合は、期限が近づくとメールで通知されるので、対応が必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ACM が自動で更新するのは DNS 検証の場合です。それ以外の場合は、期限が近づくとメールで通知されるので、対応が必要です。",
+      "references": [
+        {
+          "title": "ACM 証明書のマネージド更新",
+          "url": "https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/managed-renewal.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d097",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-049",
+      "point": "ローテーションの間隔",
+      "question": "Secrets Manager の自動ローテーションは、スケジュールを決めて定期的に実行できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ローテーションは、シークレットを定期的に更新するプロセスです。自動ローテーションを設定できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ローテーションは、シークレットを定期的に更新するプロセスです。自動ローテーションを設定できます。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d098",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-049",
+      "point": "暗号化",
+      "question": "Secrets Manager は、シークレットを暗号化せずに保存する。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Secrets Manager は、シークレットを KMS の鍵で暗号化して保存します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Secrets Manager は、シークレットを KMS の鍵で暗号化して保存します。",
+      "references": [
+        {
+          "title": "AWS Secrets Manager のシークレットのローテーション",
+          "url": "https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/rotating-secrets.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d099",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-050",
+      "point": "検出結果の集約",
+      "question": "GuardDuty・Inspector・Macie などの検出結果を1か所に集め、セキュリティの基準に対する状況もまとめて確認したい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Amazon CloudWatch のメトリクス",
+          "explanation": "数値の監視です。"
+        },
+        {
+          "text": "AWS Config のダッシュボード",
+          "explanation": "設定の準拠の状況の確認が中心です。"
+        },
+        {
+          "text": "AWS Security Hub",
+          "explanation": "複数のセキュリティサービスの検出結果を集約し、セキュリティの基準の状況を確認できます。"
+        },
+        {
+          "text": "AWS DataSync",
+          "explanation": "データ移行のサービスです。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "Security Hub は、セキュリティの検出結果を集約し、優先順位を付けて対処するのを助けます。",
+      "references": [
+        {
+          "title": "AWS Security Hub とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d100",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-050",
+      "point": "機密データの分類",
+      "question": "S3 にある個人情報などの機密データを見つけて分類するには、Amazon Macie を使う。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Macie は、S3 の機密データを検出し、データの分類と保護を助けます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Macie は、S3 の機密データを検出し、データの分類と保護を助けます。",
+      "references": [
+        {
+          "title": "Amazon Macie とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/macie/latest/user/what-is-macie.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d101",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-051",
+      "point": "既存のボリューム",
+      "question": "EBS のデフォルトでの暗号化を有効にすると、既にある暗号化されていないボリュームも自動で暗号化される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。デフォルトでの暗号化は、有効にした後に新しく作るボリュームが対象です。既存のボリュームはスナップショットを暗号化してコピーし、作り直します。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "デフォルトでの暗号化は、有効にした後に新しく作るボリュームが対象です。既存のボリュームはスナップショットを暗号化してコピーし、作り直します。",
+      "references": [
+        {
+          "title": "デフォルトでの EBS の暗号化",
+          "url": "https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/encryption-by-default.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d102",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-051",
+      "point": "S3 の公開を防ぐ",
+      "question": "アカウントのすべての S3 バケットが、設定の誤りで公開されることを防ぎたい。最も適切な設定はどれか。",
+      "choices": [
+        {
+          "text": "ライフサイクルの設定を追加する",
+          "explanation": "オブジェクトの移行と削除の仕組みです。"
+        },
+        {
+          "text": "Transfer Acceleration を有効にする",
+          "explanation": "転送を速くする機能です。"
+        },
+        {
+          "text": "バケットのバージョニングを有効にする",
+          "explanation": "前の版を残す機能です。"
+        },
+        {
+          "text": "アカウントのレベルで S3 のブロックパブリックアクセスを有効にする",
+          "explanation": "バケットポリシーや ACL で公開しようとしても、公開アクセスがブロックされます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "ブロックパブリックアクセスを使うと、バケットやアカウントのレベルで公開のアクセスを防げます。",
+      "references": [
+        {
+          "title": "Amazon S3 ストレージへのパブリックアクセスのブロック",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d103",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-052",
+      "point": "記録の確認",
+      "question": "実際に拒否された操作は、AWS CloudTrail のイベントで、エラーとして確認できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。CloudTrail には、拒否されたリクエストも AccessDenied などのエラーとして記録されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "CloudTrail には、拒否されたリクエストも AccessDenied などのエラーとして記録されます。",
+      "references": [
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d104",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-052",
+      "point": "シミュレーターの対象",
+      "question": "IAM ポリシーシミュレーターでは、SCP の影響は一切考慮されない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。ポリシーシミュレーターは、組織に属するアカウントでは SCP の影響も含めてシミュレーションできます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "ポリシーシミュレーターは、組織に属するアカウントでは SCP の影響も含めてシミュレーションできます。",
+      "references": [
+        {
+          "title": "IAM ポリシーシミュレーターを使用した IAM ポリシーのテスト",
+          "url": "https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_testing-policies.html"
+        },
+        {
+          "title": "AWS CloudTrail とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d105",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-053",
+      "point": "グローバルなサービス",
+      "question": "リージョンを制限する SCP を作るときは、IAM などのグローバルなサービスの操作まで拒否しないよう注意が必要である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。グローバルなサービスのリクエストは特定のリージョンで処理されるので、除外の設定をしないと必要な操作まで拒否されることがあります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "グローバルなサービスのリクエストは特定のリージョンで処理されるので、除外の設定をしないと必要な操作まで拒否されることがあります。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d106",
+      "type": "drill",
+      "domain": "d4",
+      "source": "soa-053",
+      "point": "SCP と許可",
+      "question": "SCP でリージョンを許可しておけば、アカウントの IAM ユーザーは IAM ポリシーがなくてもそのリージョンで操作できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。SCP はアクセス許可を与えません。操作には IAM ポリシーなどでの許可も必要です。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "SCP はアクセス許可を与えません。操作には IAM ポリシーなどでの許可も必要です。",
+      "references": [
+        {
+          "title": "サービスコントロールポリシー (SCP)",
+          "url": "https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d107",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-054",
+      "point": "NAT ゲートウェイの置き場所",
+      "question": "インターネットに出るためのパブリック NAT ゲートウェイは、プライベートサブネットに置く。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。パブリック NAT ゲートウェイはパブリックサブネットに作り、Elastic IP アドレスを関連付けます。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "パブリック NAT ゲートウェイはパブリックサブネットに作り、Elastic IP アドレスを関連付けます。",
+      "references": [
+        {
+          "title": "NAT ゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d108",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-054",
+      "point": "外からの接続",
+      "question": "パブリック NAT ゲートウェイを経由すると、インターネットからプライベートサブネットのインスタンスへの新しい接続も受け付けられる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。NAT ゲートウェイ経由でインスタンスから外に接続できますが、インターネットから求められていない接続は受け付けません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "NAT ゲートウェイ経由でインスタンスから外に接続できますが、インターネットから求められていない接続は受け付けません。",
+      "references": [
+        {
+          "title": "NAT ゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d109",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-055",
+      "point": "IPv4 での利用",
+      "question": "Egress-Only インターネットゲートウェイは、IPv4 の通信にも使える。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。Egress-Only インターネットゲートウェイは IPv6 専用です。IPv4 では NAT ゲートウェイを使います。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "Egress-Only インターネットゲートウェイは IPv6 専用です。IPv4 では NAT ゲートウェイを使います。",
+      "references": [
+        {
+          "title": "Egress-Only インターネットゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/egress-only-internet-gateway.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d110",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-055",
+      "point": "ステートフル",
+      "question": "Egress-Only インターネットゲートウェイは、インスタンスから始めた通信への応答は通す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ステートフルなので、外向きの通信への応答はインスタンスに戻ります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ステートフルなので、外向きの通信への応答はインスタンスに戻ります。",
+      "references": [
+        {
+          "title": "Egress-Only インターネットゲートウェイ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/egress-only-internet-gateway.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d111",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-056",
+      "point": "ゲートウェイエンドポイントの対象",
+      "question": "ゲートウェイ VPC エンドポイントを使えるサービスの組み合わせはどれか。",
+      "choices": [
+        {
+          "text": "AWS KMS と AWS STS",
+          "explanation": "これらはインターフェイスエンドポイントを使います。"
+        },
+        {
+          "text": "Amazon S3 と Amazon EC2",
+          "explanation": "EC2 の API にはインターフェイスエンドポイントを使います。"
+        },
+        {
+          "text": "Amazon S3 と Amazon DynamoDB",
+          "explanation": "ゲートウェイエンドポイントに対応しているのは、S3 と DynamoDB です。"
+        },
+        {
+          "text": "Amazon SQS と Amazon SNS",
+          "explanation": "これらはインターフェイスエンドポイントを使います。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "S3 と DynamoDB はゲートウェイエンドポイント、ほかの多くのサービスはインターフェイスエンドポイントで接続します。",
+      "references": [
+        {
+          "title": "ゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d112",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-056",
+      "point": "ルートテーブル",
+      "question": "ゲートウェイエンドポイントを使うには、サブネットのルートテーブルに、サービスのプレフィックスリストを宛先とするエンドポイントへのルートが必要である。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ゲートウェイエンドポイントを作るときに選んだルートテーブルに、サービスのプレフィックスリストへのルートが自動で追加されます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ゲートウェイエンドポイントを作るときに選んだルートテーブルに、サービスのプレフィックスリストへのルートが自動で追加されます。",
+      "references": [
+        {
+          "title": "ゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d113",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-057",
+      "point": "プライベート DNS",
+      "question": "インターフェイスエンドポイントでプライベート DNS を有効にすると、サービスの既定の DNS 名のままでエンドポイントに接続できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。プライベート DNS を有効にすると、アプリケーションのコードを変えずにエンドポイントを使えます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "プライベート DNS を有効にすると、アプリケーションのコードを変えずにエンドポイントを使えます。",
+      "references": [
+        {
+          "title": "インターフェイス VPC エンドポイントを使用して AWS のサービスにアクセスする",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/create-interface-endpoint.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d114",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-057",
+      "point": "インターフェイスエンドポイントの料金",
+      "question": "インターフェイス VPC エンドポイントは、ゲートウェイエンドポイントと同じく、料金がかからない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。インターフェイスエンドポイントには、時間あたりとデータ処理の料金がかかります。ゲートウェイエンドポイントは追加料金なしです。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "インターフェイスエンドポイントには、時間あたりとデータ処理の料金がかかります。ゲートウェイエンドポイントは追加料金なしです。",
+      "references": [
+        {
+          "title": "ゲートウェイエンドポイント",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d115",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-058",
+      "point": "CIDR の重複",
+      "question": "CIDR ブロックが重複している VPC どうしでも、VPC ピアリングは作れる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。CIDR ブロックが重複している VPC 間では、ピアリング接続を作れません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "CIDR ブロックが重複している VPC 間では、ピアリング接続を作れません。",
+      "references": [
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d116",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-058",
+      "point": "ピアリングとルート",
+      "question": "VPC ピアリングを作ったら、両方の VPC のルートテーブルに相手の CIDR へのルートを追加する必要がある。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ピアリング接続を作るだけでは通信できず、ルートテーブルにルートを追加します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ピアリング接続を作るだけでは通信できず、ルートテーブルにルートを追加します。",
+      "references": [
+        {
+          "title": "VPC ピアリングとは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/what-is-vpc-peering.html"
+        },
+        {
+          "title": "VPC ピアリングの制限",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d117",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-059",
+      "point": "遅延と距離",
+      "question": "レイテンシーベースのルーティングでは、地理的に最も近いリージョンが必ず選ばれる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。選ばれるのは、測定された遅延が最も小さいリージョンです。地理的に最も近いとは限りません。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "選ばれるのは、測定された遅延が最も小さいリージョンです。地理的に最も近いとは限りません。",
+      "references": [
+        {
+          "title": "レイテンシーベースのルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-latency.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d118",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-059",
+      "point": "固定の IP アドレス",
+      "question": "世界中の利用者に、2つの固定のエニーキャスト IP アドレスでアプリケーションを提供し、AWS のグローバルネットワークで最適なリージョンに通信を運びたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "Route 53 の加重ルーティング",
+          "explanation": "DNS で割合に応じて振り分ける方式です。"
+        },
+        {
+          "text": "VPC ピアリング",
+          "explanation": "VPC どうしをつなぐ機能です。"
+        },
+        {
+          "text": "Amazon CloudFront",
+          "explanation": "コンテンツのキャッシュと配信のサービスです。"
+        },
+        {
+          "text": "AWS Global Accelerator",
+          "explanation": "固定のエニーキャスト IP アドレスを入口に、AWS のグローバルネットワークで最適なエンドポイントに通信を運びます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Global Accelerator は、固定の IP アドレスで、AWS のグローバルネットワークを使って性能と可用性を上げます。",
+      "references": [
+        {
+          "title": "AWS Global Accelerator とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/what-is-global-accelerator.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d119",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-060",
+      "point": "重み0",
+      "question": "加重ルーティングで、あるレコードの重みを0にすると、そのリソースには通信が送られなくなる（ほかのレコードの重みが0でない場合）。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。重み0のレコードには、ほかに重みのあるレコードがある限り、通信は送られません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "重み0のレコードには、ほかに重みのあるレコードがある限り、通信は送られません。",
+      "references": [
+        {
+          "title": "加重ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-weighted.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d120",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-060",
+      "point": "ヘルスチェックとの組み合わせ",
+      "question": "加重ルーティングでは、ヘルスチェックを組み合わせることはできない。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "この文は誤りです（理由は × の解説を参照）。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "正しいです。加重ルーティングのレコードにもヘルスチェックを関連付けられ、異常なリソースには振り分けなくなります。"
+        }
+      ],
+      "answers": [
+        1
+      ],
+      "explanation": "加重ルーティングのレコードにもヘルスチェックを関連付けられ、異常なリソースには振り分けなくなります。",
+      "references": [
+        {
+          "title": "加重ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-weighted.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d121",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-061",
+      "point": "既定のレコード",
+      "question": "位置情報ルーティングでは、どの場所にも一致しないクエリのために、既定（デフォルト）のレコードを作っておくのがよい。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。既定のレコードがないと、一致する場所のレコードがないクエリには応答が返りません。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "既定のレコードがないと、一致する場所のレコードがないクエリには応答が返りません。",
+      "references": [
+        {
+          "title": "位置情報ルーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d122",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-061",
+      "point": "ルーティングポリシーの使い分け",
+      "question": "「プライマリのリソースが異常なときだけ、セカンダリに切り替えたい」場合のルーティングポリシーはどれか。",
+      "choices": [
+        {
+          "text": "加重ルーティング",
+          "explanation": "割合で振り分けます。"
+        },
+        {
+          "text": "レイテンシーベースのルーティング",
+          "explanation": "遅延で振り分けます。"
+        },
+        {
+          "text": "フェイルオーバールーティング",
+          "explanation": "アクティブ・パッシブの構成で、プライマリが異常なときにセカンダリに切り替えます。"
+        },
+        {
+          "text": "位置情報ルーティング",
+          "explanation": "利用者の場所で振り分けます。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "場所 → 位置情報、割合 → 加重、遅延 → レイテンシー、障害時の切り替え → フェイルオーバー。",
+      "references": [
+        {
+          "title": "フェイルオーバールーティング",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-failover.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d123",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-062",
+      "point": "クエリのログ",
+      "question": "Route 53 Resolver のクエリのログ記録で、VPC の中から行われた DNS クエリを記録できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Resolver のクエリのログ記録で、VPC の DNS クエリを CloudWatch Logs・S3・Firehose に記録できます。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Resolver のクエリのログ記録で、VPC の DNS クエリを CloudWatch Logs・S3・Firehose に記録できます。",
+      "references": [
+        {
+          "title": "Route 53 Resolver のクエリのログ記録",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-query-logs.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d124",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-062",
+      "point": "悪意のあるドメイン",
+      "question": "VPC のインスタンスが、既知の悪意のあるドメインの名前を解決できないようにしたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "AWS WAF",
+          "explanation": "Web リクエストを検査するサービスです。"
+        },
+        {
+          "text": "セキュリティグループ",
+          "explanation": "IP アドレスとポートで通信を制御するもので、ドメイン名では制御できません。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データを見つけるサービスです。"
+        },
+        {
+          "text": "Route 53 Resolver DNS Firewall",
+          "explanation": "VPC からの DNS クエリを、ドメインのリストでブロック・許可できます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "DNS Firewall で、VPC からの DNS クエリをドメイン名でフィルタリングできます。",
+      "references": [
+        {
+          "title": "Route 53 Resolver DNS Firewall",
+          "url": "https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-dns-firewall.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d125",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-063",
+      "point": "バージョン付きのファイル名",
+      "question": "ファイル名にバージョンを入れる方法（例：style_v2.css）を使うと、無効化を作成せずに新しいファイルを配信できる。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。新しい名前のファイルはキャッシュにないので、オリジンから取得されます。どのバージョンを配信するかも管理しやすくなります。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "新しい名前のファイルはキャッシュにないので、オリジンから取得されます。どのバージョンを配信するかも管理しやすくなります。",
+      "references": [
+        {
+          "title": "CloudFront のファイルの無効化",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html"
+        },
+        {
+          "title": "CloudFront のキャッシュの有効期間",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Expiration.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d126",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-063",
+      "point": "キャッシュのヒット率",
+      "question": "CloudFront のキャッシュのヒット率が低い。キャッシュキーに不要なクエリ文字列や Cookie が含まれていることがわかった。最も適切な対処はどれか。",
+      "choices": [
+        {
+          "text": "TTL を0にする",
+          "explanation": "キャッシュされなくなり、ヒット率はさらに下がります。"
+        },
+        {
+          "text": "オリジンの数を増やす",
+          "explanation": "ヒット率は上がりません。"
+        },
+        {
+          "text": "価格クラスを変える",
+          "explanation": "エッジの範囲の設定で、ヒット率の改善にはなりません。"
+        },
+        {
+          "text": "キャッシュポリシーで、キャッシュキーに含める値を必要なものだけに絞る",
+          "explanation": "キャッシュキーの値が少ないほど、同じキャッシュを共有するリクエストが増え、ヒット率が上がります。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "キャッシュキーに含める値を必要最小限にすると、キャッシュのヒット率が上がります。",
+      "references": [
+        {
+          "title": "CloudFront のキャッシュキーの管理",
+          "url": "https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/understanding-the-cache-key.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d127",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-064",
+      "point": "拒否された通信の確認",
+      "question": "どの通信がセキュリティグループやネットワーク ACL で拒否されたかを、記録から確認したい。どの機能を使うか。",
+      "choices": [
+        {
+          "text": "Route 53 Resolver のクエリのログ",
+          "explanation": "DNS のクエリの記録です。"
+        },
+        {
+          "text": "CloudTrail",
+          "explanation": "API の操作の記録で、パケットの通信は記録しません。"
+        },
+        {
+          "text": "VPC フローログ",
+          "explanation": "ネットワークインターフェイスの通信を記録し、ACCEPT や REJECT の結果も確認できます。"
+        },
+        {
+          "text": "AWS Config",
+          "explanation": "設定の記録で、通信の記録ではありません。"
+        }
+      ],
+      "answers": [
+        2
+      ],
+      "explanation": "VPC フローログで、通信が許可（ACCEPT）されたか拒否（REJECT）されたかを確認できます。",
+      "references": [
+        {
+          "title": "VPC フローログ",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/flow-logs.html"
+        },
+        {
+          "title": "フローログのレコード",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/flow-log-records.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d128",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-064",
+      "point": "ルールの評価の順番",
+      "question": "ネットワーク ACL のルールは、番号の小さいものから順に評価され、最初に一致したルールが適用される。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。ネットワーク ACL は、ルール番号の小さい順に評価し、一致したルールを適用します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "ネットワーク ACL は、ルール番号の小さい順に評価し、一致したルールを適用します。",
+      "references": [
+        {
+          "title": "ネットワーク ACL",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-network-acls.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d129",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-065",
+      "point": "分析の方法",
+      "question": "VPC Reachability Analyzer は、ネットワークの設定を分析するツールで、到達できない場合は通信を妨げている部分（セキュリティグループ・ネットワーク ACL・ルートテーブルなど）を示す。",
+      "choices": [
+        {
+          "text": "○ 正しい",
+          "explanation": "正しいです。Reachability Analyzer は設定の分析ツールで、到達できないときは原因の部分を特定します。"
+        },
+        {
+          "text": "× 誤り",
+          "explanation": "この文は正しいです（理由は ○ の解説を参照）。"
+        }
+      ],
+      "answers": [
+        0
+      ],
+      "explanation": "Reachability Analyzer は設定の分析ツールで、到達できないときは原因の部分を特定します。",
+      "references": [
+        {
+          "title": "VPC Reachability Analyzer とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/vpc/latest/reachability/what-is-reachability-analyzer.html"
+        }
+      ]
+    },
+    {
+      "id": "soa-d130",
+      "type": "drill",
+      "domain": "d5",
+      "source": "soa-065",
+      "point": "VPC の通信の検査",
+      "question": "VPC に出入りする通信を、ステートフルなルールや侵入防止のルールで検査・フィルタリングしたい。どのサービスを使うか。",
+      "choices": [
+        {
+          "text": "セキュリティグループ",
+          "explanation": "インスタンス単位のファイアウォールで、侵入防止の検査はしません。"
+        },
+        {
+          "text": "AWS Shield Standard",
+          "explanation": "DDoS 攻撃から守るものです。"
+        },
+        {
+          "text": "Amazon Macie",
+          "explanation": "機密データを見つけるサービスです。"
+        },
+        {
+          "text": "AWS Network Firewall",
+          "explanation": "VPC のためのマネージドなネットワークファイアウォールで、ステートフルな検査や侵入防止のルールを使えます。"
+        }
+      ],
+      "answers": [
+        3
+      ],
+      "explanation": "Network Firewall は、VPC の通信をステートフルに検査・フィルタリングするマネージドサービスです。",
+      "references": [
+        {
+          "title": "AWS Network Firewall とは",
+          "url": "https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ]
+    }
+  ]
+}
